@@ -2,8 +2,6 @@ name: Release
 
 on:
   push:
-    branches:
-      - main
 
 jobs:
   format-json:
@@ -12,4 +10,4 @@ jobs:
       - name: checkout repo
         uses: actions/checkout@v4
       - name: Format JSON
-        run: bash .github/workflow/format-json.sh
+        run: bash workflow/format-json.sh
