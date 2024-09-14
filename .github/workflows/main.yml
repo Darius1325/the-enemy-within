@@ -9,5 +9,7 @@ jobs:
   format-json:
     runs-on: ubuntu-latest
     steps:
+      - name: checkout repo
+        uses: actions/checkout@v4
       - name: Format JSON
-        run: bash ./format-json.sh
+        run: bash .github/workflow/format-json.sh
