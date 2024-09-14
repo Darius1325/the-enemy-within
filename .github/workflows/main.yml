@@ -10,4 +10,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Format JSON
-        run: bash 
+        run: bash ./format-json.sh
