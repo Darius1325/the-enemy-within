@@ -105,7 +105,7 @@
         "pitch": 100,
         "volume": 90
     },
-    "editMapId": 4,
+    "editMapId": 1,
     "elements": [
         "",
         "Physique",
@@ -323,12 +323,12 @@
             "volume": 90
         }
     ],
-    "startMapId": 1,
-    "startX": 3,
-    "startY": 27,
+    "startMapId": 4,
+    "startX": 28,
+    "startY": 50,
     "switches": [
         "",
-        "",
+        "C1: Players seated",
         "",
         "",
         "",
@@ -534,7 +534,7 @@
         "",
         ""
     ],
-    "versionId": 60890530,
+    "versionId": 49119541,
     "victoryMe": {
         "name": "Victory1",
         "pan": 0,

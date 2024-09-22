@@ -18035,9 +18035,10 @@
     ],
     "events": [
         null,
+        null,
         {
-            "id": 1,
-            "name": "test",
+            "id": 2,
+            "name": "EV002",
             "note": "",
             "pages": [
                 {
@@ -18058,28 +18059,54 @@
                     },
                     "directionFix": false,
                     "image": {
-                        "tileId": 0,
-                        "characterName": "Actor1",
+                        "characterIndex": 0,
+                        "characterName": "",
                         "direction": 2,
                         "pattern": 0,
-                        "characterIndex": 0
+                        "tileId": 0
                     },
                     "list": [
                         {
-                            "code": 101,
+                            "code": 201,
                             "indent": 0,
                             "parameters": [
-                                "",
                                 0,
+                                1,
+                                3,
+                                28,
                                 0,
-                                2
+                                0
                             ]
                         },
                         {
-                            "code": 401,
+                            "code": 205,
                             "indent": 0,
                             "parameters": [
-                                "toto"
+                                -1,
+                                {
+                                    "list": [
+                                        {
+                                            "code": 4,
+                                            "indent": null
+                                        },
+                                        {
+                                            "code": 0
+                                        }
+                                    ],
+                                    "repeat": false,
+                                    "skippable": false,
+                                    "wait": true
+                                }
+                            ]
+                        },
+                        {
+                            "code": 505,
+                            "indent": 0,
+                            "parameters": [
+                                {
+                                    "code": 4,
+                                    "indent": null
+                                }
                             ]
                         },
                         {
@@ -18102,15 +18129,15 @@
                     },
                     "moveSpeed": 3,
                     "moveType": 0,
-                    "priorityType": 1,
+                    "priorityType": 0,
                     "stepAnime": false,
                     "through": false,
-                    "trigger": 0,
+                    "trigger": 1,
                     "walkAnime": true
                 }
             ],
-            "x": 23,
-            "y": 52
+            "x": 28,
+            "y": 49
         }
     ]
 }
