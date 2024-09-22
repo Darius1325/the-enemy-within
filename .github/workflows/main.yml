@@ -1,16 +1,20 @@
-name: Release
+name: Format
 
 on:
   push:
   workflow_dispatch:
 
-permissions: write-all
-
 jobs:
   format-json:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: checkout repo
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
       - name: Format JSON
         run: bash format-json.sh
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v5
