@@ -1,7 +1,8 @@
 #!/bin/bash
 
 DATA_FOLDER="./data"
-for file in ${DATA_FOLDER}/*.json
+for file in $DATA_FOLDER/*.json
 do
-  cat ${file} | json_pp > ${file}
+  temp=$(python3 -m json.tool $file)
+  cat <<< $temp > $file
 done
