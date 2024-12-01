@@ -87,7 +87,7 @@ Game_BattlerBase.prototype.paramRate = function(paramId) {
 };
 
 
-
+// Replacing HP
 
 // Game_BattlerBase.prototype.die = function() {
 //     this._hp = 0;
@@ -100,41 +100,3 @@ Game_BattlerBase.prototype.paramRate = function(paramId) {
 //         this._hp = 1;
 //     }
 // };
-
-
-
-// Game_Interpreter
-
-Game_Interpreter.prototype.rollD100 = function() {
-    return Math.floor(Math.random() * 100);
-};
-
-Game_Interpreter.prototype.testPartySkill = function(skillName, modifier) {
-    const actorSkillBaseValues = [];
-    for (let i = 0; i < $gameActors._data.length; i++) {
-        if ($gameActors._data[i]) {
-            actorSkillBaseValues.push($gameActors._data[i][skillName]);
-        }
-    }
-    const maxPartySkill = Math.max(...actorSkillBaseValues) + modifier;
-    console.log(maxPartySkill);
-
-    const roll = this.rollD100();
-    let success = maxPartySkill >= roll;
-
-    let dr = Math.floor(maxPartySkill / 10) - Math.floor(roll / 10);
-
-    if (roll <= 5) {
-        success = true;
-        dr = dr > 0 ? dr : 0;
-    } else if (roll >= 96) {
-        success = false;
-        dr = dr < 0 ? dr : 0;
-    }
-
-    return {
-        dr,
-        success,
-        critical: roll % 11 === 0 || roll === 100,
-    };
-};
