@@ -6,8 +6,8 @@
         "name": "Coach and Horses - RDC1",
         "order": 4,
         "parentId": 4,
-        "scrollX": 693.3333333333334,
-        "scrollY": 662.2222222222222
+        "scrollX": 1005.3333333333334,
+        "scrollY": 804.4444444444445
     },
     {
         "id": 2,
@@ -15,8 +15,8 @@
         "name": "Coach and Horses - RDC2",
         "order": 3,
         "parentId": 4,
-        "scrollX": 693.3333333333334,
-        "scrollY": 767.1111111111111
+        "scrollX": 1005.3333333333334,
+        "scrollY": 587.5555555555555
     },
     {
         "id": 3,
@@ -24,8 +24,8 @@
         "name": "Coach and Horses - 1st",
         "order": 2,
         "parentId": 4,
-        "scrollX": 693.3333333333334,
-        "scrollY": 527.1111111111111
+        "scrollX": 1154.6666666666667,
+        "scrollY": 580.4444444444445
     },
     {
         "id": 4,
@@ -33,8 +33,8 @@
         "name": "Coach and Horses - Ext",
         "order": 1,
         "parentId": 0,
-        "scrollX": 1342.2222222222222,
-        "scrollY": 2407.1111111111113
+        "scrollX": 1005.3333333333334,
+        "scrollY": 1524.4444444444443
     },
     {
         "id": 5,
