@@ -139,7 +139,7 @@ Window_Dice.prototype.refresh = function() {
     this.contents.drawDie(100, 1, this._units, 'black', 'lightblue');
 };
 
-Window_Gold.prototype.open = function() {
+Window_Dice.prototype.open = function() {
     this.refresh();
     Window_Base.prototype.open.call(this);
 };
