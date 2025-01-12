@@ -56,7 +56,8 @@ TEW.statsVerbose = [
 
 // 0 for base skills, -1 for acquired
 TEW.baseCompValues = TEW.compsArray.reduce((acc, compName) => {
-    acc.push(TEW.comps[compName].isBase ? 0 : -1)
+    acc.push(TEW.comps[compName].isBase ? 0 : -1);
+    return acc;
 }, []);
 
 // Game_BattlerBase

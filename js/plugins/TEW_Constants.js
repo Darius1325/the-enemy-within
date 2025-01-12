@@ -1,3 +1,8 @@
+
+var Imported = Imported || {};
+Imported.TEW_Constants = true;
+var TEW = TEW || {};
+
 TEW.comps = TEW.comps || {
     animalCare: {
         name: "Animal Care",
@@ -121,7 +126,7 @@ TEW.comps = TEW.comps || {
     },
     dodge: {
         name: "Dodge",
-        stat: "Agil",
+        stat: "agil",
         isBase: true
     },
     drive: {
@@ -589,7 +594,7 @@ TEW.comps = TEW.comps || {
         stat: "agil",
         isBase: false
     },
-    StealthUnderground: {
+    stealthUnderground: {
         name: "Stealth (Underground)",
         stat: "agil",
         isBase: false
@@ -666,9 +671,9 @@ TEW.comps = TEW.comps || {
     },
 };
 
-TEW.compsArray = Object.values(TEW.comps);
-TEW.baseComps = Object.entries(TEW.comps).filter((_, data) => data.isBase).sort((a, b) => a[0].localeCompare(b[0]));
-TEW.advancedComps = Object.entries(TEW.comps).filter((_, data) => !data.isBase).sort((a, b) => a[0].localeCompare(b[0]));
+TEW.compsArray = Object.keys(TEW.comps);
+TEW.baseComps = Object.entries(TEW.comps).filter((comp) => comp[1].isBase).sort((a, b) => a[0].localeCompare(b[0]));
+TEW.advancedComps = Object.entries(TEW.comps).filter((comp) => !comp[1].isBase).sort((a, b) => a[0].localeCompare(b[0]));
 
 TEW.talents = TEW.talents || {
     accurateShot : {

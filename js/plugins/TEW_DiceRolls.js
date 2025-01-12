@@ -144,6 +144,7 @@ Window_Dice.prototype.open = function() {
     Window_Base.prototype.open.call(this);
 };
 
+
 // Bitmap
 
 TEW.die10points = [
