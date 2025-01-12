@@ -54,6 +54,11 @@ TEW.statsVerbose = [
     'Fellowship'
 ];
 
+// 0 for base skills, -1 for acquired
+TEW.baseCompValues = TEW.compsArray.reduce((acc, compName) => {
+    acc.push(TEW.comps[compName].isBase ? 0 : -1)
+}, []);
+
 // Game_BattlerBase
 Object.defineProperties(Game_BattlerBase.prototype, {
     mp: { get: function() { return 0; }, configurable: true },
@@ -72,6 +77,7 @@ const battlerBaseInit = Game_BattlerBase.prototype.initialize;
 Game_BattlerBase.prototype.initialize = function() {
     battlerBaseInit.call(this);
     this._paramBase = [1,0,0,0,0,0,0,0,0,0,0];
+    this.competences = TEW.baseCompValues.slice();
 };
 
 Object.defineProperties(Game_BattlerBase.prototype, {
@@ -114,6 +120,26 @@ Game_BattlerBase.prototype.param = function(paramId) {
     return Math.round(value < 0 ? 0 : value);
 };
 
+Game_BattlerBase.prototype.paramByName = function(paramName) {
+    return this.param(TEW.stats[paramName]);
+};
+
+Game_BattlerBase.prototype.compPlus = function(compName) {
+    const compValue = this.competences[TEW.compsArray.indexOf(compName)];
+    return compValue === -1 ? 0 : compValue;
+};
+
+Game_BattlerBase.prototype.comp = function(compName) {
+    const associatedStat = TEW.comps[compName].stat;
+    return this.compPlus(compName) + this.paramByName(associatedStat);
+};
+
+Game_BattlerBase.prototype.hasComp = function(compName) {
+    if (TEW.comps[compName].isBase) {
+        return true;
+    }
+    return this.competences[TEW.compsArray.indexOf(compName)] === -1;
+};
 
 // Game_Actor
 
@@ -132,26 +158,6 @@ Game_Interpreter.prototype.setBaseStat = function(playerName, statName, value) {
     const player = $gameActors._data[TEW.characters[playerName]];
     player._paramBase[TEW.stats[statName]] = value;
     console.log(player.param(0));
-};
-
-
-// Windows
-
-Window_Status.prototype.drawBlock3 = function(y) {
-    this.drawParameters(48, y, 0);
-    this.drawParameters(432, y, 5);
-};
-
-Window_Status.prototype.drawParameters = function(x, y, offset) {
-    var lineHeight = this.lineHeight();
-    for (var i = 0; i < 5; i++) {
-        var paramId = i + offset + 1;
-        var y2 = y + lineHeight * i;
-        this.changeTextColor(this.systemColor());
-        this.drawText(TextManager.param(paramId), x, y2, 160);
-        this.resetTextColor();
-        this.drawText(this._actor.param(paramId), x + 160, y2, 60, 'right');
-    }
 };
 
 

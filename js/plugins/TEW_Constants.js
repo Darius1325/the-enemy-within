@@ -666,6 +666,10 @@ TEW.comps = TEW.comps || {
     },
 };
 
+TEW.compsArray = Object.values(TEW.comps);
+TEW.baseComps = Object.entries(TEW.comps).filter((_, data) => data.isBase).sort((a, b) => a[0].localeCompare(b[0]));
+TEW.advancedComps = Object.entries(TEW.comps).filter((_, data) => !data.isBase).sort((a, b) => a[0].localeCompare(b[0]));
+
 TEW.talents = TEW.talents || {
     accurateShot : {
         name: "Accurate Shot",
