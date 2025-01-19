@@ -21,17 +21,20 @@ TEW.displayDiceRoll = function() {
 
 Game_Interpreter.prototype.partySkillTest = function(skillName, modifier) {
     const actorSkillBaseValues = [];
+    // Select the best character for the job
     for (let i = 0; i < $gameActors._data.length; i++) {
         if ($gameActors._data[i]) {
             actorSkillBaseValues.push($gameActors._data[i][skillName]);
         }
     }
     const maxPartySkill = Math.max(...actorSkillBaseValues) + modifier;
+
     const roll = TEW.displayDiceRoll();
     let success = maxPartySkill >= roll;
 
     let dr = Math.floor(maxPartySkill / 10) - Math.floor(roll / 10);
 
+    // Special rules : 5 or below is always a success, 96 or above is always a failure
     if (roll <= 5) {
         success = true;
         dr = dr > 0 ? dr : 0;
@@ -147,7 +150,7 @@ Window_Dice.prototype.open = function() {
 
 // Bitmap
 
-TEW.die10points = [
+TEW.DIE_10_POINTS = [
     [0, 22],
     [0, 45],
     [38, 67],
@@ -168,8 +171,8 @@ TEW.drawLine = function(context, start, end) {
 
 Bitmap.prototype.drawDie = function(x, size, value, edgeColor, fillColor) {
     const points = [];
-    for (let i = 0; i < TEW.die10points.length; i++) {
-        points.push([TEW.die10points[i][0] + x, TEW.die10points[i][1]]);
+    for (let i = 0; i < TEW.DIE_10_POINTS.length; i++) {
+        points.push([TEW.DIE_10_POINTS[i][0] + x, TEW.DIE_10_POINTS[i][1]]);
     }
 
     var context = this._context;

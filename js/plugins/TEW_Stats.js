@@ -18,7 +18,7 @@ var TEW = TEW || {};
 * Fellowship : felw
 */
 
-TEW.characters = TEW.characters || {
+TEW.CHARACTERS = TEW.CHARACTERS || {
     Cecile: 1,
     Cheplu: 2,
     Ciara: 3,
@@ -27,7 +27,7 @@ TEW.characters = TEW.characters || {
     Wanda: 6
 };
 
-TEW.stats = TEW.stats || {
+TEW.STATS = TEW.STATS || {
     mhp: 0,
     weas: 1,
     bals: 2,
@@ -40,7 +40,7 @@ TEW.stats = TEW.stats || {
     will: 9,
     felw: 10
 };
-TEW.statsVerbose = [
+TEW.STATS_VERBOSE = [
     'Max Wounds',
     'Weapon skill',
     'Ballistic skill',
@@ -55,8 +55,8 @@ TEW.statsVerbose = [
 ];
 
 // 0 for base skills, -1 for acquired
-TEW.baseCompValues = TEW.compsArray.reduce((acc, compName) => {
-    acc.push(TEW.comps[compName].isBase ? 0 : -1);
+TEW.BASE_COMP_VALUES = TEW.COMPS_ARRAY.reduce((acc, compName) => {
+    acc.push(TEW.COMPS[compName].isBase ? 0 : -1);
     return acc;
 }, []);
 
@@ -78,7 +78,23 @@ const battlerBaseInit = Game_BattlerBase.prototype.initialize;
 Game_BattlerBase.prototype.initialize = function() {
     battlerBaseInit.call(this);
     this._paramBase = [1,0,0,0,0,0,0,0,0,0,0];
-    this.competences = TEW.baseCompValues.slice();
+    this.competences = TEW.BASE_COMP_VALUES.slice();
+    // temp
+    this.competences[0] = 2;
+    this.competences[1] = 2;
+    this.competences[2] = 2;
+    this.competences[3] = 2;
+    this.competences[4] = 2;
+    this.competences[5] = 2;
+    this.competences[6] = 2;
+    this.competences[7] = 2;
+    this.competences[8] = 2;
+    this.competences[9] = 2;
+    this.competences[10] = 2;
+    this.competences[11] = 2;
+    this.competences[12] = 2;
+    this.competences[13] = 2;
+    this.competences[14] = 2;
 };
 
 Object.defineProperties(Game_BattlerBase.prototype, {
@@ -122,24 +138,24 @@ Game_BattlerBase.prototype.param = function(paramId) {
 };
 
 Game_BattlerBase.prototype.paramByName = function(paramName) {
-    return this.param(TEW.stats[paramName]);
+    return this.param(TEW.STATS[paramName]);
 };
 
 Game_BattlerBase.prototype.compPlus = function(compName) {
-    const compValue = this.competences[TEW.compsArray.indexOf(compName)];
+    const compValue = this.competences[TEW.COMPS_ARRAY.indexOf(compName)];
     return compValue === -1 ? 0 : compValue;
 };
 
 Game_BattlerBase.prototype.comp = function(compName) {
-    const associatedStat = TEW.comps[compName].stat;
+    const associatedStat = TEW.COMPS[compName].stat;
     return this.compPlus(compName) + this.paramByName(associatedStat);
 };
 
 Game_BattlerBase.prototype.hasComp = function(compName) {
-    if (TEW.comps[compName].isBase) {
+    if (TEW.COMPS[compName].isBase) {
         return true;
     }
-    return this.competences[TEW.compsArray.indexOf(compName)] === -1;
+    return this.competences[TEW.COMPS_ARRAY.indexOf(compName)] !== -1;
 };
 
 // Game_Actor
@@ -156,8 +172,8 @@ Game_Actor.prototype.paramPlus = function(paramId) {
 // Game_Interpreter
 
 Game_Interpreter.prototype.setBaseStat = function(playerName, statName, value) {
-    const player = $gameActors._data[TEW.characters[playerName]];
-    player._paramBase[TEW.stats[statName]] = value;
+    const player = $gameActors._data[TEW.CHARACTERS[playerName]];
+    player._paramBase[TEW.STATS[statName]] = value;
     console.log(player.param(0));
 };
 
@@ -165,7 +181,7 @@ Game_Interpreter.prototype.setBaseStat = function(playerName, statName, value) {
 // Text
 
 TextManager.param = function(paramId) {
-    return TEW.statsVerbose[paramId];
+    return TEW.STATS_VERBOSE[paramId];
 };
 
 
