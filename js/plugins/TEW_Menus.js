@@ -115,23 +115,6 @@ Window_Status.prototype.refresh = function() {
     }
 };
 
-// Window_Status.prototype.scrollDown = function() {
-//     console.log("DOOOOWWWWNNNNNNN!!!!!");
-//     console.log("this.topRow() : ", this.topRow());
-//     console.log("this.maxRows() : ", this.maxRows());
-//     if (this.topRow() + 1 < this.maxRows()) {
-//         this.setTopRow(this.topRow() + 1);
-//     }
-// };
-
-// Window_Status.prototype.scrollUp = function() {
-//     // console.log("UUUUUUUUUUUUPPPPPPPP!!!!!!");
-//     // console.log("this.topRow() : ", this.topRow());
-//     if (this.topRow() > 0) {
-//         this.setTopRow(this.topRow() - 1);
-//     }
-// };
-
 Window_Status.prototype.drawStatsTab = function() {
     this.drawCharacterInfo(1);
     this.drawHorzLine(TEW.MENU_LINE_HEIGHT * 7);
@@ -162,46 +145,9 @@ Window_Status.prototype.drawParameters = function(x, y, offset) {
     }
 };
 
-// Window_Status.prototype.drawCompetences = function(y) {
-//     this.drawBaseComps(y);
-//     this.drawHorzLine(y + Window_Status.BASE_COMPETENCE_WINDOW_HEIGHT);
-//     this.drawAdvancedComps(y + 1 + Window_Status.BASE_COMPETENCE_WINDOW_HEIGHT);
-// };
-
-// Window_Status.prototype.drawBaseComps = function (y) {
-//     this.drawCompList(y, TEW.BASE_COMPS);
-// };
-
-// Window_Status.prototype.drawAdvancedComps = function(y) {
-//     this.drawCompList(y, this._advancedCompsList);
-// };
-
-// Window_Status.prototype.drawCompList = function(y, compList) {
-//     const x1 = 48;
-//     const x2 = 432;
-//     const halfPoint = Math.floor(compList.length / 2);
-//     for (var i = 0; i < halfPoint; i++) {
-//         var y2 = y + TEW.MENU_LINE_HEIGHT * i;
-//         var comp = compList[i]; // [<internal name>, {<competence data>}]
-//         this.changeTextColor(this.systemColor());
-//         this.drawText(comp[1].name, x1, y2, 160);
-//         this.resetTextColor();
-//         this.drawText(this._actor.comp(comp[0]) + '(' + this._actor.compPlus(comp[0]) + ')', x1 + 260, y2, 60, 'right');
-//     }
-//     for (var i = halfPoint; i < compList.length; i++) {
-//         var y2 = y + TEW.MENU_LINE_HEIGHT * (i - halfPoint);
-//         var comp = compList[i]; // [<internal name>, {<competence data>}]
-//         this.changeTextColor(this.systemColor());
-//         this.drawText(comp[1].name, x2, y2, 160);
-//         this.resetTextColor();
-//         this.drawText(this._actor.comp(comp[0]) + '(' + this._actor.compPlus(comp[0]) + ')', x2 + 260, y2, 60, 'right');
-//     }
-// };
-
 Window_Status.prototype.drawAllItems = function() {
     var topIndex = this.topIndex();
     for (var i = 0; i < this.maxPageItems(); i++) {
-        console.log("ALED : ", this._scrollY, this.itemHeight());
         var index = topIndex + i;
         if (index < this.maxItems()) {
             this.drawItem(index);
@@ -210,7 +156,6 @@ Window_Status.prototype.drawAllItems = function() {
 };
 
 Window_Status.prototype.drawItem = function(index) {
-    console.log("aled", index);
     const normalizedIndex = index - this.topIndex();
     const x = index % 2 === 0 ? 48 : 432;
     const y = Math.floor(normalizedIndex / 2) * TEW.MENU_LINE_HEIGHT + STATUS_WINDOW_TOPBAR_HEIGHT;
@@ -314,4 +259,36 @@ Scene_Status.prototype.displayStatusTalents = function() {
 Scene_Status.prototype.displayStatusSpells = function() {
     this._statusWindow.switchTab('spells');
     this._commandWindow.activate();
+};
+
+
+//-----------------------------------------------------------------------------
+// Window_Scrollable
+//
+// Streamlined Window_Selectable to use an object instead of overriding drawItems()
+
+function Window_Scrollable() {
+    this.initialize.apply(this, arguments);
+}
+
+Window_Scrollable.prototype = Object.create(Window_Selectable.prototype);
+Window_Scrollable.prototype.constructor = Window_Scrollable;
+
+Window_Scrollable.prototype.initialize = function(x, y, width, height) {
+    Window_Selectable.prototype.initialize.call(this, x, y, width, height, items);
+    this._items = items;
+    this._maxItems = items.length;
+};
+
+Window_Scrollable.prototype.maxItems = function() {
+    return this._maxItems;
+};
+
+Window_Scrollable.prototype.drawAllItems = function() {
+    for (var i = 0; i < this._maxItems; i++) {
+        const y = this._height + i * TEW.MENU_LINE_HEIGHT;
+        for (var j = 0; j < this._items[i].length; j++) {
+            this._items[i].drawItem.call(this, this._items[i][j].x);
+        }
+    }
 };
