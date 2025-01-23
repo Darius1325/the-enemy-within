@@ -18,7 +18,7 @@ var TEW = TEW || {};
 * Fellowship : felw
 */
 
-TEW.CHARACTERS = TEW.CHARACTERS || {
+TEW.CHARACTERS = {
     Cecile: 1,
     Cheplu: 2,
     Ciara: 3,
@@ -27,7 +27,7 @@ TEW.CHARACTERS = TEW.CHARACTERS || {
     Wanda: 6
 };
 
-TEW.STATS = TEW.STATS || {
+TEW.STATS = {
     mhp: 0,
     weas: 1,
     bals: 2,
