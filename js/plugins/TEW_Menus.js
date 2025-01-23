@@ -274,9 +274,14 @@ function Window_Scrollable() {
 Window_Scrollable.prototype = Object.create(Window_Selectable.prototype);
 Window_Scrollable.prototype.constructor = Window_Scrollable;
 
-Window_Scrollable.prototype.initialize = function(x, y, width, height) {
-    Window_Selectable.prototype.initialize.call(this, x, y, width, height, items);
+Window_Scrollable.prototype.initialize = function(x, y, width, height, displayControl) {
+    Window_Selectable.prototype.initialize.call(this, x, y, width, height);
+    const {
+        items,
+        ...displayData
+    } = displayControl;
     this._items = items;
+    this._displayData = displayData;
     this._maxItems = items.length;
 };
 
@@ -285,10 +290,87 @@ Window_Scrollable.prototype.maxItems = function() {
 };
 
 Window_Scrollable.prototype.drawAllItems = function() {
-    for (var i = 0; i < this._maxItems; i++) {
-        const y = this._height + i * TEW.MENU_LINE_HEIGHT;
+    const maxIndex = Math.max(this._maxItems, this.maxPageRows() + this.topRow());
+    for (var i = this.topRow(); i < maxIndex; i++) {
+        const horizontalAlignment = this._height + (i - this.topRow()) * TEW.MENU_LINE_HEIGHT;
         for (var j = 0; j < this._items[i].length; j++) {
-            this._items[i].drawItem.call(this, this._items[i][j].x);
+            const verticalAlignment = this._items[i][j].x ?? this._displayData.xCoordinates[j];
+            const drawItem = this._items[i].drawItem ?? this._displayData.drawItem;
+            drawItem({
+                window: this,
+                item: this._items[i][j].item,
+                x: verticalAlignment,
+                y: horizontalAlignment
+            });
         }
     }
 };
+
+Window_Scrollable.prototype.close = function() {
+    this._items = undefined;
+    this._displayData = undefined;
+    Window_Selectable.prototype.close.call(this);
+};
+
+
+function Window_Competences() {
+    this.initialize.apply(this, arguments);
+}
+
+Window_Competences.prototype = Object.create(Window_Scrollable.prototype);
+Window_Competences.prototype.constructor = Window_Competences;
+
+Window_Competences.BASE_SKILLS_TITLE = 'Base skills';
+Window_Competences.ADVANCED_SKILLS_TITLE = 'Advanced skills';
+
+Window_Competences.prototype.initialize = function() {
+    const selectedActor = $gameActors[$gameParty._menuActorId];
+    Window_Scrollable.prototype.initialize.call(this,
+        0, STATUS_WINDOW_TOPBAR_HEIGHT,
+        Graphics.boxWidth, Graphics.boxHeight - STATUS_WINDOW_TOPBAR_HEIGHT,
+        {
+            drawItem: ({window, item, x, y}) => {
+                window.changeTextColor(window.systemColor());
+                window.drawText(item.name, x, y, 160);
+                window.resetTextColor();
+                window.drawText(item.value + '(' + item.bonus + ')', x + 260, y, 60, 'right');
+            },
+            xCoordinates: [48, 432],
+            items: [
+                {
+                    item: Window_Competences.BASE_SKILLS_TITLE,
+                    x: 0,
+                    drawItem: (window, item, x, y) => {
+                        window.resetTextColor();
+                        window.drawText(item, x, y, window._width, 'center');
+                    }
+                },
+                ...TEW.BASE_COMPS.map(comp => ({
+                    name: comp[0],
+                    value: selectedActor.comp(comp[0]),
+                    bonus: selectedActor.compPlus(comp[0])
+                })),
+                {
+                    drawItem: ({window, y}) => {
+                        window.drawHorzLine(y);
+                    }
+                },
+                {
+                    item: Window_Competences.ADVANCED_SKILLS_TITLE,
+                    x: 0,
+                    drawItem: (window, item, x, y) => {
+                        window.resetTextColor();
+                        window.drawText(item, x, y, window._width, 'center');
+                    }
+                },
+                ...TEW.ADVANCED_COMPS
+                    .filter(comp => selectedActor.hasComp(comp[0]))
+                    .map(comp => ({
+                        name: comp[0],
+                        value: selectedActor.comp(comp[0]),
+                        bonus: selectedActor.compPlus(comp[0])
+                    }))
+            ]
+        }
+    );
+}
