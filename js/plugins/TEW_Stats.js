@@ -79,7 +79,14 @@ Game_BattlerBase.prototype.initialize = function() {
     battlerBaseInit.call(this);
     this._paramBase = [1,0,0,0,0,0,0,0,0,0,0];
     this.competences = TEW.BASE_COMP_VALUES.slice();
+    this.talents = {};
     // temp
+    this.competences[8] = 2;
+    this.competences[9] = 2;
+    this.competences[10] = 2;
+    this.competences[11] = 2;
+    this.competences[12] = 2;
+    this.competences[13] = 2;
     this.competences[0] = 2;
     this.competences[1] = 2;
     this.competences[2] = 2;
@@ -88,12 +95,6 @@ Game_BattlerBase.prototype.initialize = function() {
     this.competences[5] = 2;
     this.competences[6] = 2;
     this.competences[7] = 2;
-    this.competences[8] = 2;
-    this.competences[9] = 2;
-    this.competences[10] = 2;
-    this.competences[11] = 2;
-    this.competences[12] = 2;
-    this.competences[13] = 2;
     this.competences[14] = 2;
 };
 
@@ -123,14 +124,9 @@ Object.defineProperties(Game_BattlerBase.prototype, {
 });
 
 
-Game_BattlerBase.prototype.clearBuffs = function() {
-    this._buffs = [0,0,0,0,0,0,0,0,0,0,0];
-    this._buffTurns = [0,0,0,0,0,0,0,0,0,0,0];
-};
+Game_BattlerBase.prototype.clearBuffs = function() {};
 
-Game_BattlerBase.prototype.clearParamPlus = function() {
-    this._paramPlus = [0,0,0,0,0,0,0,0,0,0,0];
-};
+Game_BattlerBase.prototype.clearParamPlus = function() {};
 
 Game_BattlerBase.prototype.param = function(paramId) {
     var value = this.paramBase(paramId) + this.paramPlus(paramId);
@@ -158,6 +154,20 @@ Game_BattlerBase.prototype.hasComp = function(compName) {
     return this.competences[TEW.COMPS_ARRAY.indexOf(compName)] !== -1;
 };
 
+Game_BattlerBase.prototype.addComp = function(compName, value) {
+    this.competences[TEW.COMPS_ARRAY.indexOf(compName)] += value;
+    this.refresh();
+};
+
+Game_BattlerBase.prototype.talent = function(talentName) {
+    return this.talents[talentName] ?? 0;
+};
+
+Game_BattlerBase.prototype.addTalent = function(talentName) {
+    this.talents[talentName] = this.talent(talentName) + 1;
+};
+
+
 // Game_Actor
 
 Game_Actor.prototype.paramBase = function(paramId) {
@@ -174,7 +184,6 @@ Game_Actor.prototype.paramPlus = function(paramId) {
 Game_Interpreter.prototype.setBaseStat = function(playerName, statName, value) {
     const player = $gameActors._data[TEW.CHARACTERS[playerName]];
     player._paramBase[TEW.STATS[statName]] = value;
-    console.log(player.param(0));
 };
 
 
