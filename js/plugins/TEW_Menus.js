@@ -289,11 +289,13 @@ Scene_Status.prototype.create = function() {
     Scene_MenuBase.prototype.create.call(this);
     this._statusWindow = new Window_Stats();
     this._competencesWindow = new Window_Competences();
+    this._talentsWindow = new Window_Talents();
     this.createCommandWindow();
     this._statusWindow.reserveFaceImages();
     this._competencesWindow.hide();
     this.addWindow(this._statusWindow);
     this.addWindow(this._competencesWindow);
+    this.addWindow(this._talentsWindow);
     this._currentWindow = this._statusWindow;
 };
 
@@ -337,25 +339,29 @@ Scene_Status.prototype.pageUp = function() {
 
 Scene_Status.prototype.displayStatusStats = function() {
     this._competencesWindow.hide();
+    this._talentsWindow.hide();
     this._statusWindow.show();
     this._commandWindow.activate();
 };
 
 Scene_Status.prototype.displayStatusComps = function() {
     this._statusWindow.hide();
+    this._talentsWindow.hide();
     this._competencesWindow.show();
     this._commandWindow.activate();
 };
 
 Scene_Status.prototype.displayStatusTalents = function() {
-    this._competencesWindow.hide();
     this._statusWindow.hide();
+    this._competencesWindow.hide();
+    this._talentsWindow.show();
     this._commandWindow.activate();
 };
 
 Scene_Status.prototype.displayStatusSpells = function() {
-    this._competencesWindow.hide();
     this._statusWindow.hide();
+    this._competencesWindow.hide();
+    this._talentsWindow.hide();
     this._commandWindow.activate();
 };
 
@@ -496,4 +502,39 @@ Window_Competences.prototype.processOk = function() {
             TEW.STATS_VERBOSE[TEW.STATS[this._items[this._index].item.stat]]
     });
     this._helpWindow.show();
+};
+
+
+//-----------------------------------------------------------------------------
+// Window_Talents
+//
+// Displays talents in the status menu
+
+function Window_Talents() {
+    this.initialize.apply(this, arguments);
+}
+
+Window_Talents.prototype = Object.create(Window_Scrollable.prototype);
+Window_Talents.prototype.constructor = Window_Talents;
+
+Window_Talents.prototype.initialize = function() {
+    const selectedActor = $gameActors[$gameParty._menuActorId];
+    Window_Scrollable.prototype.initialize.call(this,
+        0, STATUS_WINDOW_TOPBAR_HEIGHT,
+        Graphics.boxWidth, Graphics.boxHeight - STATUS_WINDOW_TOPBAR_HEIGHT,
+        {
+            drawItem: ({ window, item, x, y }) => {
+                window.changeTextColor(window.systemColor());
+                window.drawText(item, x, y, 300);
+            },
+            columnCoordinates: [48, 432],
+            items: Object.keys(selectedActor.talents)
+        }
+    );
+}
+
+Window_Talents.prototype.processOk = function() {
+    this.playOkSound();
+    this.updateInputData();
+    // display description
 };
