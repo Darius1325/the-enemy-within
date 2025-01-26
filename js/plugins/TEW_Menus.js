@@ -71,7 +71,6 @@ Window_Status.prototype.initialize = function() {
         0, STATUS_WINDOW_TOPBAR_HEIGHT,
         Graphics.boxWidth, Graphics.boxHeight - STATUS_WINDOW_TOPBAR_HEIGHT);
     this._actor = null;
-    this._tab = 'stats';
     this._maxItems = 0;
     this.activate();
     this.refresh();
@@ -80,65 +79,44 @@ Window_Status.prototype.initialize = function() {
 Window_Status.prototype.setActor = function(actor) {
     if (this._actor !== actor) {
         this._actor = actor;
-        this._advancedCompsList = TEW.ADVANCED_COMPS.filter(comp => actor.hasComp(comp[0]));
         this.refresh();
     }
 };
 
-Window_Status.prototype.switchTab = function(tab) {
-    this._tab = tab;
-    if (this._tab === 'stats') {
-        this._maxItems = 0;
+Window_Status.prototype.refresh = function() {
+    if (this.contents) {
+        this.contents.clear();
     }
-    else if (this._tab === 'comps') {
-        this._maxItems = TEW.BASE_COMPS.length + this._advancedCompsList.length;
+    if (this._actor) {
+        this.drawAllItems();
     }
-    this.refresh();
 };
 
 Window_Status.prototype.maxItems = function() {
     return this._maxItems;
 };
 
-Window_Status.prototype.maxCols = function() {
-    return 2;
+
+// Window_StatusStats
+
+function Window_StatusStats() {
+    this.initialize.apply(this, arguments);
+}
+
+Window_StatusStats.prototype = Object.create(Window_Status.prototype);
+Window_StatusStats.prototype.constructor = Window_StatusStats;
+
+Window_StatusStats.prototype.initialize = function() {
+    Window_Status.prototype.initialize.call(this);
 };
 
-Window_Status.prototype.refresh = function() {
-    if (this._actor) {
-        if (this._tab === 'stats') {
-            this.drawStatsTab();
-        }
-        else if (this._tab === 'comps') {
-            Window_Selectable.prototype.refresh.call(this);
-        }
-    }
-};
-
-// Window_Status.prototype.scrollDown = function() {
-//     console.log("DOOOOWWWWNNNNNNN!!!!!");
-//     console.log("this.topRow() : ", this.topRow());
-//     console.log("this.maxRows() : ", this.maxRows());
-//     if (this.topRow() + 1 < this.maxRows()) {
-//         this.setTopRow(this.topRow() + 1);
-//     }
-// };
-
-// Window_Status.prototype.scrollUp = function() {
-//     // console.log("UUUUUUUUUUUUPPPPPPPP!!!!!!");
-//     // console.log("this.topRow() : ", this.topRow());
-//     if (this.topRow() > 0) {
-//         this.setTopRow(this.topRow() - 1);
-//     }
-// };
-
-Window_Status.prototype.drawStatsTab = function() {
+Window_StatusStats.prototype.drawAllItems = function() {
     this.drawCharacterInfo(1);
     this.drawHorzLine(TEW.MENU_LINE_HEIGHT * 7);
     this.drawStats(TEW.MENU_LINE_HEIGHT * 8);
 };
 
-Window_Status.prototype.drawCharacterInfo = function(y) {
+Window_StatusStats.prototype.drawCharacterInfo = function(y) {
     this.drawActorName(this._actor, 6, y);
     this.drawActorClass(this._actor, 192, y);
     this.drawHorzLine(y + TEW.MENU_LINE_HEIGHT);
@@ -146,12 +124,12 @@ Window_Status.prototype.drawCharacterInfo = function(y) {
     this.drawBasicInfo(204, y + TEW.MENU_LINE_HEIGHT * 2);
 };
 
-Window_Status.prototype.drawStats = function(y) {
+Window_StatusStats.prototype.drawStats = function(y) {
     this.drawParameters(48, y, 0);
     this.drawParameters(432, y, 5);
 };
 
-Window_Status.prototype.drawParameters = function(x, y, offset) {
+Window_StatusStats.prototype.drawParameters = function(x, y, offset) {
     for (var i = 0; i < 5; i++) {
         var paramId = i + offset + 1;
         var y2 = y + TEW.MENU_LINE_HEIGHT * i;
@@ -162,46 +140,36 @@ Window_Status.prototype.drawParameters = function(x, y, offset) {
     }
 };
 
-// Window_Status.prototype.drawCompetences = function(y) {
-//     this.drawBaseComps(y);
-//     this.drawHorzLine(y + Window_Status.BASE_COMPETENCE_WINDOW_HEIGHT);
-//     this.drawAdvancedComps(y + 1 + Window_Status.BASE_COMPETENCE_WINDOW_HEIGHT);
-// };
 
-// Window_Status.prototype.drawBaseComps = function (y) {
-//     this.drawCompList(y, TEW.BASE_COMPS);
-// };
+// Window_StatusCompetences
 
-// Window_Status.prototype.drawAdvancedComps = function(y) {
-//     this.drawCompList(y, this._advancedCompsList);
-// };
+function Window_StatusCompetences() {
+    this.initialize.apply(this, arguments);
+}
 
-// Window_Status.prototype.drawCompList = function(y, compList) {
-//     const x1 = 48;
-//     const x2 = 432;
-//     const halfPoint = Math.floor(compList.length / 2);
-//     for (var i = 0; i < halfPoint; i++) {
-//         var y2 = y + TEW.MENU_LINE_HEIGHT * i;
-//         var comp = compList[i]; // [<internal name>, {<competence data>}]
-//         this.changeTextColor(this.systemColor());
-//         this.drawText(comp[1].name, x1, y2, 160);
-//         this.resetTextColor();
-//         this.drawText(this._actor.comp(comp[0]) + '(' + this._actor.compPlus(comp[0]) + ')', x1 + 260, y2, 60, 'right');
-//     }
-//     for (var i = halfPoint; i < compList.length; i++) {
-//         var y2 = y + TEW.MENU_LINE_HEIGHT * (i - halfPoint);
-//         var comp = compList[i]; // [<internal name>, {<competence data>}]
-//         this.changeTextColor(this.systemColor());
-//         this.drawText(comp[1].name, x2, y2, 160);
-//         this.resetTextColor();
-//         this.drawText(this._actor.comp(comp[0]) + '(' + this._actor.compPlus(comp[0]) + ')', x2 + 260, y2, 60, 'right');
-//     }
-// };
+Window_StatusCompetences.prototype = Object.create(Window_Status.prototype);
+Window_StatusCompetences.prototype.constructor = Window_StatusCompetences;
 
-Window_Status.prototype.drawAllItems = function() {
+Window_StatusCompetences.prototype.initialize = function() {
+    Window_Status.prototype.initialize.call(this);
+};
+
+Window_StatusCompetences.prototype.setActor = function(actor) {
+    if (this._actor !== actor) {
+        this._actor = actor;
+        this._advancedCompsList = TEW.ADVANCED_COMPS.filter(comp => actor.hasComp(comp[0]));
+        this._maxItems = TEW.BASE_COMPS.length + this._advancedCompsList.length;
+        this.refresh();
+    }
+};
+
+Window_StatusCompetences.prototype.maxCols = () => 2;
+
+Window_StatusCompetences.prototype.drawAllItems = function() {
+    console.log("drawAllItems");
+    console.log(this.topIndex(), this.maxPageItems(), this.maxItems());
     var topIndex = this.topIndex();
     for (var i = 0; i < this.maxPageItems(); i++) {
-        console.log("ALED : ", this._scrollY, this.itemHeight());
         var index = topIndex + i;
         if (index < this.maxItems()) {
             this.drawItem(index);
@@ -209,11 +177,11 @@ Window_Status.prototype.drawAllItems = function() {
     }
 };
 
-Window_Status.prototype.drawItem = function(index) {
-    console.log("aled", index);
+Window_StatusCompetences.prototype.drawItem = function(index) {
+    console.log("drawItem");
     const normalizedIndex = index - this.topIndex();
     const x = index % 2 === 0 ? 48 : 432;
-    const y = Math.floor(normalizedIndex / 2) * TEW.MENU_LINE_HEIGHT + STATUS_WINDOW_TOPBAR_HEIGHT;
+    const y = Math.floor(normalizedIndex / 2) * TEW.MENU_LINE_HEIGHT;
 
     const comp = index < TEW.BASE_COMPS.length  // [<internal name>, {<competence data>}]
             ? TEW.BASE_COMPS[index]
@@ -274,10 +242,20 @@ Window_StatusCommand.prototype.makeCommandList = function() {
 // Creating the scene
 Scene_Status.prototype.create = function() {
     Scene_MenuBase.prototype.create.call(this);
-    this._statusWindow = new Window_Status();
     this.createCommandWindow();
-    this._statusWindow.reserveFaceImages();
-    this.addWindow(this._statusWindow);
+    this.createStatsWindow();
+    this.createCompsWindow();
+    this.createTalentsWindow();
+    this.createSpellWindow();
+    this.refreshActor();
+};
+
+Scene_Status.prototype.refreshActor = function() {
+    var actor = this.actor();
+    this._statsWindow.setActor(actor);
+    this._competencesWindow.setActor(actor);
+    // this._talentsWindow.setActor(actor);
+    // this._spellsWindow.setActor(actor);
 };
 
 // Creating the commands for this scene
@@ -296,22 +274,58 @@ Scene_Status.prototype.createCommandWindow = function(){
     this.addWindow(this._commandWindow);
 }
 
+// Creating the stats Window for the scene
+Scene_Status.prototype.createStatsWindow = function(){
+    this._statsWindow = new Window_StatusStats();
+    this._statsWindow.reserveFaceImages();
+    this.addWindow(this._statsWindow);
+}
+
+// Creating the competences Window for the scene
+Scene_Status.prototype.createCompsWindow = function(){
+    this._competencesWindow = new Window_StatusCompetences();
+    this._competencesWindow.setHandler('cancel', () => {
+        this._commandWindow.activate();
+        this._competencesWindow.deselect();
+    });
+    this._competencesWindow.hide();
+    this.addWindow(this._competencesWindow);
+}
+
+// Creating the talents Window for the scene
+Scene_Status.prototype.createTalentsWindow = function(){
+    
+}
+
+// Creating the spells Window for the scene
+Scene_Status.prototype.createSpellWindow = function(){
+    
+}
+
 Scene_Status.prototype.displayStatusStats = function() {
-    this._statusWindow.switchTab('stats');
+    this._competencesWindow.hide();
+    this._statsWindow.show();
     this._commandWindow.activate();
+    this._statsWindow.refresh();
 };
 
 Scene_Status.prototype.displayStatusComps = function() {
-    this._statusWindow.switchTab('comps');
-    this._commandWindow.activate();
+    this._statsWindow.hide();
+    this._competencesWindow.show();
+    this._commandWindow.deactivate();
+    this._competencesWindow.activate();
+    this._competencesWindow.select(0);
+    this._competencesWindow.refresh();
 };
 
 Scene_Status.prototype.displayStatusTalents = function() {
-    this._statusWindow.switchTab('talents');
+    this._statsWindow.hide();
+    this._competencesWindow.hide();
     this._commandWindow.activate();
 };
 
 Scene_Status.prototype.displayStatusSpells = function() {
-    this._statusWindow.switchTab('spells');
+    this._statsWindow.hide();
+    this._competencesWindow.hide();
     this._commandWindow.activate();
 };
