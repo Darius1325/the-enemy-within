@@ -124,9 +124,14 @@ Object.defineProperties(Game_BattlerBase.prototype, {
 });
 
 
-Game_BattlerBase.prototype.clearBuffs = function() {};
+Game_BattlerBase.prototype.clearBuffs = function() {
+    this._buffs = [0,0,0,0,0,0,0,0,0,0,0];
+    this._buffTurns = [0,0,0,0,0,0,0,0,0,0,0];
+};
 
-Game_BattlerBase.prototype.clearParamPlus = function() {};
+Game_BattlerBase.prototype.clearParamPlus = function() {
+    this._paramPlus = [0,0,0,0,0,0,0,0,0,0,0];
+};
 
 Game_BattlerBase.prototype.param = function(paramId) {
     var value = this.paramBase(paramId) + this.paramPlus(paramId);
@@ -160,7 +165,7 @@ Game_BattlerBase.prototype.addComp = function(compName, value) {
 };
 
 Game_BattlerBase.prototype.talent = function(talentName) {
-    return this.talents[talentName] ?? 0;
+    return this.talents[talentName] || 0;
 };
 
 Game_BattlerBase.prototype.addTalent = function(talentName) {
