@@ -69,7 +69,7 @@ Window_Selectable.prototype.setTopRow = function(row) {
 //-----------------------------------------------------------------------------
 // Window_Status (override)
 //
-// Character info, stats, competences (skills), talents and spells window
+// Character info window
 
 Window_Status.BASE_COMPETENCE_LINE_COUNT = Math.ceil(TEW.BASE_COMPS.length / 2);
 Window_Status.BASE_COMPETENCE_WINDOW_HEIGHT = (Window_Status.BASE_COMPETENCE_LINE_COUNT + 1) * TEW.MENU_LINE_HEIGHT;
@@ -79,29 +79,15 @@ Window_Status.prototype.initialize = function() {
         0, STATUS_WINDOW_TOPBAR_HEIGHT,
         Graphics.boxWidth, Graphics.boxHeight - STATUS_WINDOW_TOPBAR_HEIGHT);
     this._actor = null;
-    this._tab = 'stats';
     this._maxItems = 0;
-    this.activate();
     this.refresh();
 };
 
 Window_Status.prototype.setActor = function(actor) {
     if (this._actor !== actor) {
         this._actor = actor;
-        this._advancedCompsList = TEW.ADVANCED_COMPS.filter(comp => actor.hasComp(comp[0]));
         this.refresh();
     }
-};
-
-Window_Status.prototype.switchTab = function(tab) {
-    this._tab = tab;
-    if (this._tab === 'stats') {
-        this._maxItems = 0;
-    }
-    else if (this._tab === 'comps') {
-        this._maxItems = TEW.BASE_COMPS.length + this._advancedCompsList.length;
-    }
-    this.refresh();
 };
 
 Window_Status.prototype.maxItems = function() {
@@ -113,13 +99,9 @@ Window_Status.prototype.maxCols = function() {
 };
 
 Window_Status.prototype.refresh = function() {
+    Window_Selectable.prototype.refresh.call(this);
     if (this._actor) {
-        if (this._tab === 'stats') {
-            this.drawStatsTab();
-        }
-        else if (this._tab === 'comps') {
-            Window_Selectable.prototype.refresh.call(this);
-        }
+        this.drawStatsTab();
     }
 };
 
@@ -143,91 +125,6 @@ Window_Status.prototype.drawStats = function(y) {
 };
 
 Window_Status.prototype.drawParameters = function(x, y, offset) {
-    for (var i = 0; i < 5; i++) {
-        var paramId = i + offset + 1;
-        var y2 = y + TEW.MENU_LINE_HEIGHT * i;
-        this.changeTextColor(this.systemColor());
-        this.drawText(TextManager.param(paramId), x, y2, 160);
-        this.resetTextColor();
-        this.drawText(this._actor.param(paramId), x + 160, y2, 60, 'right');
-    }
-};
-
-Window_Status.prototype.drawAllItems = function() {
-    var topIndex = this.topIndex();
-    for (var i = 0; i < this.maxPageItems(); i++) {
-        var index = topIndex + i;
-        if (index < this.maxItems()) {
-            this.drawItem(index);
-        }
-    }
-};
-
-Window_Status.prototype.drawItem = function(index) {
-    const normalizedIndex = index - this.topIndex();
-    const x = index % 2 === 0 ? 48 : 432;
-    const y = Math.floor(normalizedIndex / 2) * TEW.MENU_LINE_HEIGHT + STATUS_WINDOW_TOPBAR_HEIGHT;
-
-    const comp = index < TEW.BASE_COMPS.length  // [<internal name>, {<competence data>}]
-            ? TEW.BASE_COMPS[index]
-            : this._advancedCompsList[index - TEW.BASE_COMPS.length];
-
-    this.changeTextColor(this.systemColor());
-    this.drawText(comp[1].name, x, y, 160);
-    this.resetTextColor();
-    this.drawText(this._actor.comp(comp[0]) + '(' + this._actor.compPlus(comp[0]) + ')', x + 260, y, 60, 'right');
-};
-
-
-//-----------------------------------------------------------------------------
-// Window_Stats
-
-function Window_Stats() {
-    this.initialize.apply(this, arguments);
-}
-
-Window_Stats.prototype = Object.create(Window_Selectable.prototype);
-Window_Stats.prototype.constructor = Window_Stats;
-
-Window_Stats.prototype.initialize = function() {
-    Window_Selectable.prototype.initialize.call(this,
-        0, STATUS_WINDOW_TOPBAR_HEIGHT,
-        Graphics.boxWidth, Graphics.boxHeight - STATUS_WINDOW_TOPBAR_HEIGHT);
-    this._actor = null;
-    this.refresh();
-};
-
-Window_Stats.prototype.refresh = function() {
-    Window_Selectable.prototype.refresh.call(this);
-    if (this._actor) {
-        this.drawStatsTab();
-    }
-};
-
-Window_Stats.prototype.drawHorzLine = Window_Status.prototype.drawHorzLine;
-
-Window_Stats.prototype.drawStatsTab = function() {
-    this.drawCharacterInfo(1);
-    this.drawHorzLine(TEW.MENU_LINE_HEIGHT * 7);
-    this.drawStats(TEW.MENU_LINE_HEIGHT * 8);
-};
-
-Window_Stats.prototype.drawBasicInfo = Window_Status.prototype.drawBasicInfo;
-
-Window_Stats.prototype.drawCharacterInfo = function(y) {
-    this.drawActorName(this._actor, 6, y);
-    this.drawActorClass(this._actor, 192, y);
-    this.drawHorzLine(y + TEW.MENU_LINE_HEIGHT);
-    this.drawActorFace(this._actor, 12, y + TEW.MENU_LINE_HEIGHT * 2);
-    this.drawBasicInfo(204, y + TEW.MENU_LINE_HEIGHT * 2);
-};
-
-Window_Stats.prototype.drawStats = function(y) {
-    this.drawParameters(48, y, 0);
-    this.drawParameters(432, y, 5);
-};
-
-Window_Stats.prototype.drawParameters = function(x, y, offset) {
     for (var i = 0; i < 5; i++) {
         var paramId = i + offset + 1;
         var y2 = y + TEW.MENU_LINE_HEIGHT * i;
@@ -287,12 +184,13 @@ Window_StatusCommand.prototype.makeCommandList = function() {
 // Creating the scene
 Scene_Status.prototype.create = function() {
     Scene_MenuBase.prototype.create.call(this);
-    this._statusWindow = new Window_Stats();
+    this._statusWindow = new Window_Status();
     this._competencesWindow = new Window_Competences();
     this._talentsWindow = new Window_Talents();
     this.createCommandWindow();
     this._statusWindow.reserveFaceImages();
     this._competencesWindow.hide();
+    this._talentsWindow.hide();
     this.addWindow(this._statusWindow);
     this.addWindow(this._competencesWindow);
     this.addWindow(this._talentsWindow);
@@ -378,8 +276,19 @@ function Window_Scrollable() {
 Window_Scrollable.prototype = Object.create(Window_Selectable.prototype);
 Window_Scrollable.prototype.constructor = Window_Scrollable;
 
-Window_Scrollable.prototype.initialize = function(x, y, width, height, displayControl) {
+Window_Scrollable.prototype.initialize = function(x, y, width, height) {
     Window_Selectable.prototype.initialize.call(this, x, y, width, height);
+    this._actor == null;
+};
+
+Window_Scrollable.prototype.setActor = function(actor) {
+    if (this._actor !== actor) {
+        this._actor = actor;
+        this.refresh();
+    }
+};
+
+Window_Scrollable.prototype.setItems = function(displayControl) {
     const {
         items,
         ...displayData
@@ -388,6 +297,15 @@ Window_Scrollable.prototype.initialize = function(x, y, width, height, displayCo
     this._displayData = displayData;
     this._maxItems = items.length;
     this._maxCols = displayData.columnCoordinates.length;
+};
+
+Window_Scrollable.prototype.refresh = function() {
+    if (this.contents) {
+        this.contents.clear();
+    }
+    if (this._items) {
+        this.drawAllItems();
+    }
 };
 
 Window_Scrollable.prototype.maxItems = function() {
@@ -403,8 +321,12 @@ Window_Scrollable.prototype.drawAllItems = function() {
     for (var i = this.topIndex(); i < maxIndex; i++) {
         const horizontalAlignment = this._height + (i - this.topIndex()) / this.maxCols() * TEW.MENU_LINE_HEIGHT;
         for (var j = 0; j < this._items[i].length; j++) {
-            const verticalAlignment = this._items[i][j].x ?? this._displayData.columnCoordinates[j];
-            const drawItem = this._items[i].drawItem ?? this._displayData.drawItem;
+            const verticalAlignment = this._items[i][j].x === undefined
+                    ? this._displayData.columnCoordinates[j]
+                    : this._items[i][j].x;
+            const drawItem = this._items[i].drawItem === undefined
+                     ? this._displayData.drawItem
+                     : this._items[i].drawItem;
             drawItem({
                 window: this,
                 item: this._items[i][j].item,
@@ -439,11 +361,18 @@ Window_Competences.ADVANCED_SKILLS_TITLE = 'Advanced skills';
 Window_Competences.STAT_BASE = 'Based on ';
 
 Window_Competences.prototype.initialize = function() {
-    const selectedActor = $gameActors[$gameParty._menuActorId];
     Window_Scrollable.prototype.initialize.call(this,
         0, STATUS_WINDOW_TOPBAR_HEIGHT,
         Graphics.boxWidth, Graphics.boxHeight - STATUS_WINDOW_TOPBAR_HEIGHT,
-        {
+    );
+    this.setHelpWindow(new Window_Help(1));
+    this._helpWindow.hide();
+}
+
+Window_Competences.prototype.setActor = function(actor) {
+    Window_Scrollable.prototype.setActor.call(this, actor);
+    if (actor) {
+        this.setItems({
             drawItem: ({ window, item, x, y }) => {
                 window.changeTextColor(window.systemColor());
                 window.drawText(item.name, x, y, 160);
@@ -462,8 +391,8 @@ Window_Competences.prototype.initialize = function() {
                 },
                 ...TEW.BASE_COMPS.map(comp => ({
                     name: comp[0],
-                    value: selectedActor.comp(comp[0]),
-                    bonus: selectedActor.compPlus(comp[0]),
+                    value: actor.comp(comp[0]),
+                    bonus: actor.compPlus(comp[0]),
                     stat: comp.stat
                 })),
                 {
@@ -480,19 +409,17 @@ Window_Competences.prototype.initialize = function() {
                     }
                 },
                 ...TEW.ADVANCED_COMPS
-                    .filter(comp => selectedActor.hasComp(comp[0]))
+                    .filter(comp => actor.hasComp(comp[0]))
                     .map(comp => ({
                         name: comp[0],
-                        value: selectedActor.comp(comp[0]),
-                        bonus: selectedActor.compPlus(comp[0]),
+                        value: actor.comp(comp[0]),
+                        bonus: actor.compPlus(comp[0]),
                         stat: comp.stat
                     }))
             ]
-        }
-    );
-    this.setHelpWindow(new Window_Help(1));
-    this._helpWindow.hide();
-}
+        });
+    }
+};
 
 Window_Competences.prototype.processOk = function() {
     this.playOkSound();
@@ -518,20 +445,25 @@ Window_Talents.prototype = Object.create(Window_Scrollable.prototype);
 Window_Talents.prototype.constructor = Window_Talents;
 
 Window_Talents.prototype.initialize = function() {
-    const selectedActor = $gameActors[$gameParty._menuActorId];
     Window_Scrollable.prototype.initialize.call(this,
         0, STATUS_WINDOW_TOPBAR_HEIGHT,
         Graphics.boxWidth, Graphics.boxHeight - STATUS_WINDOW_TOPBAR_HEIGHT,
-        {
+    );
+}
+
+Window_Talents.prototype.setActor = function(actor) {
+    Window_Scrollable.prototype.setActor.call(this, actor);
+    if (actor) {
+        this.setItems({
             drawItem: ({ window, item, x, y }) => {
                 window.changeTextColor(window.systemColor());
                 window.drawText(item, x, y, 300);
             },
             columnCoordinates: [48, 432],
             items: Object.keys(selectedActor.talents)
-        }
-    );
-}
+        });
+    }
+};
 
 Window_Talents.prototype.processOk = function() {
     this.playOkSound();
