@@ -244,7 +244,109 @@ Window_StatusCompetences.prototype.showHelpWindow = function() {
 Window_StatusCompetences.prototype.updateHelp = function() {
 };
 
+// Window_StatusTalents
 
+function Window_StatusTalents() {
+    this.initialize.apply(this, arguments);
+}
+
+Window_StatusTalents.prototype = Object.create(Window_Status.prototype);
+Window_StatusTalents.prototype.constructor = Window_StatusTalents;
+
+Window_StatusTalents.prototype.initialize = function() {
+    Window_Status.prototype.initialize.call(this);
+    this._helpWindow = null;
+    this.setHandler('ok', this.showHelpWindow.bind(this));
+};
+
+Window_StatusTalents.prototype.setActor = function(actor) {
+    if (this._actor !== actor) {
+        this._actor = actor;
+        this._talents = TEW.TALENTS_ARRAY.filter(talent => actor.hasTalent(talent));
+        this._maxItems = this._talents.length;
+        this.refresh();
+    }
+};
+
+Window_StatusTalents.prototype.maxCols = () => 2;
+
+Window_StatusTalents.prototype.drawAllItems = function() {
+    var topIndex = this.topIndex();
+    for (var i = 0; i < this.maxPageItems(); i++) {
+        var index = topIndex + i;
+        if (index < this.maxItems()) {
+            this.drawItem(index);
+        }
+    }
+};
+
+Window_StatusTalents.prototype.drawItem = function(index) { // TODO
+    const normalizedIndex = index - this.topIndex();
+    const x = index % 2 === 0 ? 48 : 432;
+    const y = Math.floor(normalizedIndex / 2) * TEW.MENU_LINE_HEIGHT;
+
+    const talent = this.TalentFromIndex(index);
+    console.log("talent : ", talent);
+    
+    this.changeTextColor(this.systemColor());
+    this.drawText(talent, x, y, 160);
+    this.resetTextColor();
+    // this.drawText(this._actor.talent(talent[0]));
+    // this.drawText("ELOZER");
+    // this.drawText(this._actor.talent(talent[0]) + '(' + this._actor.compPlus(comp[0]) + ')', x + 260, y, 60, 'right');
+};
+
+Window_StatusTalents.prototype.TalentFromIndex = function(index) {
+    return this._talents[index];
+};
+
+Window_StatusTalents.prototype.item = function() {
+    return 'Depends on ' + TEW.STATS_VERBOSE[TEW.STATS[
+        this.TalentFromIndex(this._index)[1].stat
+    ]];
+};
+
+Window_StatusTalents.prototype.updateHelp = function() {
+    if (this._index >= 0) {
+        this.setHelpWindowItem(this.item());
+    }
+};
+
+Window_StatusTalents.prototype.select = function(index) {
+    if (this._index !== index) {
+        this.hideHelpWindow();
+    }
+    this._index = index;
+    this._stayCount = 0;
+    this.ensureCursorVisible();
+    this.updateCursor();
+    this.callUpdateHelp();
+};
+
+Window_StatusTalents.prototype.processOk = function() {
+    if (this.isCurrentItemEnabled()) {
+        this.playOkSound();
+        this.updateInputData();
+        this.callOkHandler();
+    } else {
+        this.playBuzzerSound();
+    }
+};
+
+Window_StatusTalents.prototype.isCurrentItemEnabled = function() {
+    return true; // TODO
+};
+
+Window_StatusTalents.prototype.showHelpWindow = function() {
+    console.log(this._helpWindow);
+    if (this._helpWindow) {
+        this._helpWindow.show();
+        this._helpWindow.refresh();
+    }
+};
+
+Window_StatusTalents.prototype.updateHelp = function() {
+};
 //-----------------------------------------------------------------------------
 // Window_StatusCommand
 //
@@ -324,7 +426,7 @@ Scene_Status.prototype.refreshActor = function() {
     var actor = this.actor();
     this._statsWindow.setActor(actor);
     this._competencesWindow.setActor(actor);
-    // this._talentsWindow.setActor(actor);
+    this._talentsWindow.setActor(actor);
     // this._spellsWindow.setActor(actor);
 };
 
@@ -366,7 +468,13 @@ Scene_Status.prototype.createCompsWindow = function(){
 
 // Creating the talents Window for the scene
 Scene_Status.prototype.createTalentsWindow = function(){
-    
+    this._talentsWindow = new Window_StatusTalents();
+    this._talentsWindow.setHandler('cancel', () => {
+        this._commandWindow.activate();
+        this._talentsWindow.deselect();
+    });
+    this._talentsWindow.hide();
+    this.addWindow(this._talentsWindow);
 }
 
 // Creating the spells Window for the scene
@@ -378,7 +486,7 @@ Scene_Status.prototype.createSpellWindow = function(){
 Scene_Status.prototype.hideAllWindows = function(){
     this._statsWindow.hide();
     this._competencesWindow.hide();
-    // this._talentsWindow.hide();
+    this._talentsWindow.hide();
     // this._spellsWindow.hide();
 }
 
@@ -397,9 +505,9 @@ Scene_Status.prototype.displayWindow = function(){
         this._competencesWindow.refresh();
         this._competencesWindow.deactivate();
     } else if (this._commandWindow.index() == this.TALENTS_WINDOW_INDEX){
-        // this._talentsWindow.show();
-        // this._talentsWindow.refresh();
-        // this._talentsWindow.deactivate();
+        this._talentsWindow.show();
+        this._talentsWindow.refresh();
+        this._talentsWindow.deactivate();
     } else if (this._commandWindow.index() == this.SPELLS_WINDOW_INDEX){
         // this._spellsWindow.show();
         // this._spellsWindow.refresh();
@@ -408,15 +516,17 @@ Scene_Status.prototype.displayWindow = function(){
 }
 
 Scene_Status.prototype.activateStatusStats = function() {
+    this.hideAllWindows();
     // this._competencesWindow.hide();
-    // this._statsWindow.show();
+    this._statsWindow.show();
     this._commandWindow.activate();
     this._statsWindow.refresh();
 };
 
 Scene_Status.prototype.activateStatusComps = function() {
+    this.hideAllWindows()
     // this._statsWindow.hide();
-    // this._competencesWindow.show();
+    this._competencesWindow.show();
     this._commandWindow.deactivate();
     this._competencesWindow.activate();
     this._competencesWindow.select(0);
@@ -424,9 +534,12 @@ Scene_Status.prototype.activateStatusComps = function() {
 };
 
 Scene_Status.prototype.activateStatusTalents = function() {
+    this.hideAllWindows;
     // this._statsWindow.hide();
     // this._competencesWindow.hide();
+    this._talentsWindow.show();
     this._commandWindow.activate();
+    this._talentsWindow.refresh();
 };
 
 Scene_Status.prototype.activateStatusSpells = function() {

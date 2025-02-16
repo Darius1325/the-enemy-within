@@ -133,7 +133,7 @@ TEW.NPCs = TEW.NPCs || {
         ],
         talents: ["JUMP_UP", "RELENTLESS", "STRIKE_MIGHTY_BLOW", "STRIKE_TO_STUN", "TENACIOUS", "VERY_STRONG"],
         traits: [],
-        weapons: ["SWORD", "KNUCKLE_DUSTERS"],
+        weapons: ["SWORD", "KNUCKLEDUSTERS"],
         armor: ["LEATHER_JACK", "LEATHER_LEGGINGS", "LEATHER_SKULLCAP"],
         trappings: [],
         spells: [],

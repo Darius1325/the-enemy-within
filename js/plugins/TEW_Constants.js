@@ -1692,3 +1692,5 @@ TEW.TALENTS = TEW.TALENTS || {
         maxTaken: "will"
     }
 }
+
+TEW.TALENTS_ARRAY = Object.keys(TEW.TALENTS);
