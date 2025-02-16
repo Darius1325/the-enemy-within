@@ -152,6 +152,8 @@ Window_StatusCompetences.prototype.constructor = Window_StatusCompetences;
 
 Window_StatusCompetences.prototype.initialize = function() {
     Window_Status.prototype.initialize.call(this);
+    this._helpWindow = null;
+    this.setHandler('ok', this.showHelpWindow.bind(this));
 };
 
 Window_StatusCompetences.prototype.setActor = function(actor) {
@@ -166,8 +168,6 @@ Window_StatusCompetences.prototype.setActor = function(actor) {
 Window_StatusCompetences.prototype.maxCols = () => 2;
 
 Window_StatusCompetences.prototype.drawAllItems = function() {
-    console.log("drawAllItems");
-    console.log(this.topIndex(), this.maxPageItems(), this.maxItems());
     var topIndex = this.topIndex();
     for (var i = 0; i < this.maxPageItems(); i++) {
         var index = topIndex + i;
@@ -178,19 +178,70 @@ Window_StatusCompetences.prototype.drawAllItems = function() {
 };
 
 Window_StatusCompetences.prototype.drawItem = function(index) {
-    console.log("drawItem");
     const normalizedIndex = index - this.topIndex();
     const x = index % 2 === 0 ? 48 : 432;
     const y = Math.floor(normalizedIndex / 2) * TEW.MENU_LINE_HEIGHT;
 
-    const comp = index < TEW.BASE_COMPS.length  // [<internal name>, {<competence data>}]
-            ? TEW.BASE_COMPS[index]
-            : this._advancedCompsList[index - TEW.BASE_COMPS.length];
+    const comp = this.competenceFromIndex(index);
     
     this.changeTextColor(this.systemColor());
     this.drawText(comp[1].name, x, y, 160);
     this.resetTextColor();
     this.drawText(this._actor.comp(comp[0]) + '(' + this._actor.compPlus(comp[0]) + ')', x + 260, y, 60, 'right');
+};
+
+Window_StatusCompetences.prototype.competenceFromIndex = function(index) {
+    return index < TEW.BASE_COMPS.length  // [<internal name>, {<competence data>}]
+    ? TEW.BASE_COMPS[index]
+    : this._advancedCompsList[index - TEW.BASE_COMPS.length];
+};
+
+Window_StatusCompetences.prototype.item = function() {
+    return 'Depends on ' + TEW.STATS_VERBOSE[TEW.STATS[
+        this.competenceFromIndex(this._index)[1].stat
+    ]];
+};
+
+Window_StatusCompetences.prototype.updateHelp = function() {
+    if (this._index >= 0) {
+        this.setHelpWindowItem(this.item());
+    }
+};
+
+Window_StatusCompetences.prototype.select = function(index) {
+    if (this._index !== index) {
+        this.hideHelpWindow();
+    }
+    this._index = index;
+    this._stayCount = 0;
+    this.ensureCursorVisible();
+    this.updateCursor();
+    this.callUpdateHelp();
+};
+
+Window_StatusCompetences.prototype.processOk = function() {
+    if (this.isCurrentItemEnabled()) {
+        this.playOkSound();
+        this.updateInputData();
+        this.callOkHandler();
+    } else {
+        this.playBuzzerSound();
+    }
+};
+
+Window_StatusCompetences.prototype.isCurrentItemEnabled = function() {
+    return true; // TODO
+};
+
+Window_StatusCompetences.prototype.showHelpWindow = function() {
+    console.log(this._helpWindow);
+    if (this._helpWindow) {
+        this._helpWindow.show();
+        this._helpWindow.refresh();
+    }
+};
+
+Window_StatusCompetences.prototype.updateHelp = function() {
 };
 
 
@@ -232,12 +283,27 @@ Window_StatusCommand.prototype.makeCommandList = function() {
 };
 
 
+Window_StatusCommand.prototype.cursorRight = function(wrap) {
+    Window_HorzCommand.prototype.cursorRight.call(this, wrap);
+    this.callHandler('right');
+};
+
+Window_StatusCommand.prototype.cursorLeft = function(wrap) {
+    Window_HorzCommand.prototype.cursorLeft.call(this, wrap);
+    this.callHandler('left');
+};
+
 // Scenes
 
 //-----------------------------------------------------------------------------
 // Scene_Status
 //
 // Customizing the status scene
+
+Scene_Status.prototype.STATS_WINDOW_INDEX = 0;
+Scene_Status.prototype.COMPS_WINDOW_INDEX = 1;
+Scene_Status.prototype.TALENTS_WINDOW_INDEX = 2;
+Scene_Status.prototype.SPELLS_WINDOW_INDEX = 3;
 
 // Creating the scene
 Scene_Status.prototype.create = function() {
@@ -247,6 +313,10 @@ Scene_Status.prototype.create = function() {
     this.createCompsWindow();
     this.createTalentsWindow();
     this.createSpellWindow();
+    this.createHelpWindow();
+    this._helpWindow.move(0, Graphics.height - 50, Graphics.width, 50);
+    this._helpWindow.hide();
+    this._competencesWindow.setHelpWindow(this._helpWindow);
     this.refreshActor();
 };
 
@@ -267,10 +337,12 @@ Scene_Status.prototype.createCommandWindow = function(){
     this._commandWindow.setHandler('cancel', this.popScene.bind(this));
     this._commandWindow.setHandler('pagedown', this.nextActor.bind(this));
     this._commandWindow.setHandler('pageup', this.previousActor.bind(this));
-    this._commandWindow.setHandler('status_stats', this.displayStatusStats.bind(this));
-    this._commandWindow.setHandler('status_comps', this.displayStatusComps.bind(this));
-    this._commandWindow.setHandler('status_talents', this.displayStatusTalents.bind(this));
-    this._commandWindow.setHandler('status_spells', this.displayStatusSpells.bind(this));
+    this._commandWindow.setHandler('right', this.displayWindow.bind(this));
+    this._commandWindow.setHandler('left', this.displayWindow.bind(this));
+    this._commandWindow.setHandler('status_stats', this.activateStatusStats.bind(this));
+    this._commandWindow.setHandler('status_comps', this.activateStatusComps.bind(this));
+    this._commandWindow.setHandler('status_talents', this.activateStatusTalents.bind(this));
+    this._commandWindow.setHandler('status_spells', this.activateStatusSpells.bind(this));
     this.addWindow(this._commandWindow);
 }
 
@@ -302,30 +374,63 @@ Scene_Status.prototype.createSpellWindow = function(){
     
 }
 
-Scene_Status.prototype.displayStatusStats = function() {
+// Hiding all the window
+Scene_Status.prototype.hideAllWindows = function(){
+    this._statsWindow.hide();
     this._competencesWindow.hide();
-    this._statsWindow.show();
+    // this._talentsWindow.hide();
+    // this._spellsWindow.hide();
+}
+
+// Showing the corresponding window according to the current command window index
+Scene_Status.prototype.displayWindow = function(){
+    // hide all
+    this.hideAllWindows();
+    
+    // Changing window
+    if (this._commandWindow.index() == this.STATS_WINDOW_INDEX){
+        this._statsWindow.show();
+        this._statsWindow.refresh();
+        this._statsWindow.deactivate();
+    } else if (this._commandWindow.index() == this.COMPS_WINDOW_INDEX){
+        this._competencesWindow.show();
+        this._competencesWindow.refresh();
+        this._competencesWindow.deactivate();
+    } else if (this._commandWindow.index() == this.TALENTS_WINDOW_INDEX){
+        // this._talentsWindow.show();
+        // this._talentsWindow.refresh();
+        // this._talentsWindow.deactivate();
+    } else if (this._commandWindow.index() == this.SPELLS_WINDOW_INDEX){
+        // this._spellsWindow.show();
+        // this._spellsWindow.refresh();
+        // this._spellsWindow.deactivate();
+    }
+}
+
+Scene_Status.prototype.activateStatusStats = function() {
+    // this._competencesWindow.hide();
+    // this._statsWindow.show();
     this._commandWindow.activate();
     this._statsWindow.refresh();
 };
 
-Scene_Status.prototype.displayStatusComps = function() {
-    this._statsWindow.hide();
-    this._competencesWindow.show();
+Scene_Status.prototype.activateStatusComps = function() {
+    // this._statsWindow.hide();
+    // this._competencesWindow.show();
     this._commandWindow.deactivate();
     this._competencesWindow.activate();
     this._competencesWindow.select(0);
     this._competencesWindow.refresh();
 };
 
-Scene_Status.prototype.displayStatusTalents = function() {
-    this._statsWindow.hide();
-    this._competencesWindow.hide();
+Scene_Status.prototype.activateStatusTalents = function() {
+    // this._statsWindow.hide();
+    // this._competencesWindow.hide();
     this._commandWindow.activate();
 };
 
-Scene_Status.prototype.displayStatusSpells = function() {
-    this._statsWindow.hide();
-    this._competencesWindow.hide();
+Scene_Status.prototype.activateStatusSpells = function() {
+    // this._statsWindow.hide();
+    // this._competencesWindow.hide();
     this._commandWindow.activate();
 };
