@@ -77,9 +77,10 @@ Object.defineProperties(Game_BattlerBase.prototype, {
 const battlerBaseInit = Game_BattlerBase.prototype.initialize;
 Game_BattlerBase.prototype.initialize = function() {
     battlerBaseInit.call(this);
-    this._paramBase = [1,0,0,0,0,0,0,0,0,0,0];
+    this._paramBase = [1,999,0,0,0,0,0,0,0,0,0];
     this.competences = TEW.BASE_COMP_VALUES.slice();
     this.talents = [];
+    this.spells = [];
     // temp
     this.competences[8] = 2;
     this.competences[9] = 2;
@@ -99,9 +100,10 @@ Game_BattlerBase.prototype.initialize = function() {
 
     // temp 2
     this.addTalent("ACCURATE_SHOT");
-    this.addTalent("ACCURATE_SHOT");
-    console.log(this.talents);
-    
+    this.addTalent("WEALTHY");
+
+    // temp 3
+    this.addSpell("AETHYRIC_ARMS");
 };
 
 Object.defineProperties(Game_BattlerBase.prototype, {
@@ -170,16 +172,26 @@ Game_BattlerBase.prototype.addComp = function(compName, value) {
     this.refresh();
 };
 
-Game_BattlerBase.prototype.talent = function(talentName) {
-    return this.talents[talentName] || 0;
+Game_BattlerBase.prototype.talent = function(talentId) {
+    return this.talents[talentId] || 0;
 };
 
-Game_BattlerBase.prototype.hasTalent = function(talentName) {
-    return this.talents[talentName] > 0;
+Game_BattlerBase.prototype.hasTalent = function(talentId) {
+    return this.talents[talentId] > 0;
 };
 
-Game_BattlerBase.prototype.addTalent = function(talentName) {
-    this.talents[talentName] = this.talent(talentName) + 1;
+Game_BattlerBase.prototype.addTalent = function(talentId) {
+    this.talents[talentId] = this.talent(talentId) + 1;
+};
+
+Game_BattlerBase.prototype.hasSpell = function(spellId) {
+    return this.spells.includes(spellId);
+};
+
+Game_BattlerBase.prototype.addSpell = function(spellId) {
+    if (!this.hasSpell(spellId)) {
+        this.spells.push(spellId);
+    }
 };
 
 
