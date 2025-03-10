@@ -1,4 +1,26 @@
 [
-null,
-{"id":1,"battlerName":"Actor4","characterIndex":0,"characterName":"Actor4","classId":1,"equips":[1,1,2,3,0],"faceIndex":0,"faceName":"Actor4","traits":[],"initialLevel":1,"maxLevel":99,"name":"Cécile","nickname":"","note":"","profile":""}
+    null,
+    {
+        "id": 1,
+        "battlerName": "Actor4",
+        "characterIndex": 0,
+        "characterName": "Actor4",
+        "classId": 1,
+        "equips": [
+            1,
+            1,
+            2,
+            3,
+            0
+        ],
+        "faceIndex": 0,
+        "faceName": "Actor4",
+        "traits": [],
+        "initialLevel": 1,
+        "maxLevel": 99,
+        "name": "C\u00e9cile",
+        "nickname": "",
+        "note": "",
+        "profile": ""
+    }
 ]
