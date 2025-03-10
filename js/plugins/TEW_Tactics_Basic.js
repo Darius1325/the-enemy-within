@@ -1,5 +1,5 @@
 //=============================================================================
-// Tactics_Basic.js v1.2.1
+// TEW_Tactics_Basic.js v1.0.0
 //=============================================================================
 
 /*:
@@ -314,7 +314,7 @@
  */
 
 var TacticsSystem = TacticsSystem || {};
-TacticsSystem.Parameters = PluginManager.parameters('Tactics_Basic');
+TacticsSystem.Parameters = PluginManager.parameters('TEW_Tactics_Basic');
 TacticsSystem.clearAll = true; // in game system
 
  /**
@@ -1562,7 +1562,6 @@ BattleManager.setupAction = function() {
 
 BattleManager.setupTarget = function() {
     this.setupCombat(this._action);
-    var subject = this._subject;
     var targets = this._action.makeTargets();
     var gameFriends = this._action.friendsUnit();
     var gameOpponents = this._action.opponentsUnit();
@@ -1667,7 +1666,7 @@ BattleManager.invokeAction = function(subject, target) {
 };
 
 BattleManager.invokeNormalAction = function(subject, target) {
-    var realTarget = this.applySubstitute(target);
+    // var realTarget = this.applySubstitute(target);
     this._action.apply(target);
     this._logWindow.displayActionResults(subject, target);
 };
@@ -1684,21 +1683,6 @@ BattleManager.invokeMagicReflection = function(subject, target) {
     this._logWindow.displayReflection(target);
     this._action.apply(subject);
     this._logWindow.displayActionResults(subject, subject);
-};
-
-BattleManager.applySubstitute = function(target) {
-    if (this.checkSubstitute(target)) {
-        var substitute = target.friendsUnit().substituteBattler();
-        if (substitute && target !== substitute) {
-            this._logWindow.displaySubstitute(substitute, target);
-            return substitute;
-        }
-    }
-    return target;
-};
-
-BattleManager.checkSubstitute = function(target) {
-    return target.isDying() && !this._action.isCertainHit();
 };
 
 BattleManager.updateTurnEnd = function() {
@@ -2978,19 +2962,11 @@ Game_Unit.prototype.onBattleStart = function() {
 // included.
 
 Game_Party.prototype.setupTactics = function(actors) {
-    var actorsId = [];
-    for (var i = 0; i < actors.length; i++) {
-        if (actorsId.indexOf(actors[i].actorId()) < 0) {
-            actorsId.push(actors[i].actorId());
-        }
-    }
-    this._maxBattleMembers = actorsId.length;
-    actorsId.forEach(function(actorId) {
-        if (this._actors.contains(actorId)) {
-            this.removeActor(actorId);
-        }
-    }, this);
-    this._actors = actorsId;
+    const actorIds = actors.map(actor => actor.actorId());
+    this._maxBattleMembers = actorIds.length;
+    this._actors = actorIds;
+    $gamePlayer.refresh();
+    $gameMap.requestRefresh();
 };
 
 

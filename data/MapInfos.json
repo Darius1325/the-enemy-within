@@ -1,48 +1,8 @@
 [
-    null,
-    {
-        "id": 1,
-        "expanded": true,
-        "name": "Coach and Horses - RDC1",
-        "order": 4,
-        "parentId": 4,
-        "scrollX": 1005.3333333333334,
-        "scrollY": 804.4444444444445
-    },
-    {
-        "id": 2,
-        "expanded": false,
-        "name": "Coach and Horses - RDC2",
-        "order": 3,
-        "parentId": 4,
-        "scrollX": 686.2222222222222,
-        "scrollY": 587.5555555555555
-    },
-    {
-        "id": 3,
-        "expanded": false,
-        "name": "Coach and Horses - 1st",
-        "order": 2,
-        "parentId": 4,
-        "scrollX": 1154.6666666666667,
-        "scrollY": 580.4444444444445
-    },
-    {
-        "id": 4,
-        "expanded": true,
-        "name": "Coach and Horses - Ext",
-        "order": 1,
-        "parentId": 0,
-        "scrollX": 1005.3333333333334,
-        "scrollY": 1686.2222222222222
-    },
-    {
-        "id": 5,
-        "expanded": false,
-        "name": "Coach and Horses - Annex",
-        "order": 5,
-        "parentId": 4,
-        "scrollX": 788,
-        "scrollY": 473
-    }
+null,
+{"id":1,"expanded":true,"name":"Coach and Horses - RDC1","order":4,"parentId":4,"scrollX":1005.3333333333334,"scrollY":804.4444444444445},
+{"id":2,"expanded":false,"name":"Coach and Horses - RDC2","order":3,"parentId":4,"scrollX":686.2222222222222,"scrollY":587.5555555555555},
+{"id":3,"expanded":false,"name":"Coach and Horses - 1st","order":2,"parentId":4,"scrollX":1154.6666666666667,"scrollY":580.4444444444445},
+{"id":4,"expanded":true,"name":"Coach and Horses - Ext","order":1,"parentId":0,"scrollX":686.2222222222222,"scrollY":1689.7777777777778},
+{"id":5,"expanded":false,"name":"Coach and Horses - Annex","order":5,"parentId":4,"scrollX":788,"scrollY":473}
 ]

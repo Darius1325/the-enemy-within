@@ -203,11 +203,14 @@ Window_StatusCompetences.prototype.item = function() {
 };
 
 Window_StatusCompetences.prototype.select = function(index) {
+    console.log("Window_StatusCompetences.prototype.select");
+
     if (this._index !== index) {
         this.hideHelpWindow();
     }
     this._index = index;
     if (this._index >= 0) {
+        console.log("this.item() : ", this.item());
         this._helpWindow.setText(this.item());
     }
     this._stayCount = 0;
@@ -233,7 +236,7 @@ Window_StatusCompetences.prototype.isCurrentItemEnabled = function() {
 };
 
 Window_StatusCompetences.prototype.showHelpWindow = function() {
-    if (this._helpWindow) {
+    if (this._helpWindow && this.active) {
         this._helpWindow.show();
         this._helpWindow.refresh();
     }
@@ -298,11 +301,14 @@ Window_StatusTalents.prototype.item = function() {
 };
 
 Window_StatusTalents.prototype.select = function(index) {
+    console.log("Window_StatusTalents.prototype.select");
+
     if (this._index !== index) {
         this.hideHelpWindow();
     }
     this._index = index;
     if (this._index >= 0) {
+        console.log("this.item() : ", this.item());
         this._helpWindow.setText(this.item());
     }
     this._stayCount = 0;
@@ -326,7 +332,7 @@ Window_StatusTalents.prototype.isCurrentItemEnabled = function() {
 };
 
 Window_StatusTalents.prototype.showHelpWindow = function() {
-    if (this._helpWindow) {
+    if (this._helpWindow && this.active) {
         this._helpWindow.show();
         this._helpWindow.refresh();
     }
@@ -393,11 +399,13 @@ Window_StatusSpells.prototype.item = function() {
 };
 
 Window_StatusSpells.prototype.select = function(index) {
+    console.log("Window_StatusSpells.prototype.select " + Window_StatusSpells.prototype.select.caller);
     if (this._index !== index) {
         this.hideHelpWindow();
     }
     this._index = index;
     if (this._index >= 0) {
+        console.log("this.item() : ", this.item());
         this._helpWindow.setText(this.item());
     }
     this._stayCount = 0;
@@ -421,7 +429,7 @@ Window_StatusSpells.prototype.isCurrentItemEnabled = function() {
 };
 
 Window_StatusSpells.prototype.showHelpWindow = function() {
-    if (this._helpWindow) {
+    if (this._helpWindow && this.active) {
         this._helpWindow.show();
         this._helpWindow.refresh();
     }
