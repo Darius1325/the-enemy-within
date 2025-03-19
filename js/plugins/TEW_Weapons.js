@@ -1,3 +1,7 @@
+var Imported = Imported || {};
+Imported.TEW_Constants = true;
+var TEW = TEW || {};
+
 TEW.MELEE_WEAPONS = TEW.MELEE_WEAPONS || {
     AXE: {
         name: "Axe",
@@ -191,10 +195,11 @@ TEW.MELEE_WEAPONS = TEW.MELEE_WEAPONS || {
         damage: 5,
         qualities: ["PUMMEL"]
     },
-    DEMI_LANCE: { //TODO only when charge
+    DEMI_LANCE: {
         name: "Demi-Lance",
         group: "CAVALRY",
         twoHanded: false,
+        onlyCharge: true,
         price: "1/0/0",
         enc: 2,
         availability: "SCARCE",
@@ -203,10 +208,11 @@ TEW.MELEE_WEAPONS = TEW.MELEE_WEAPONS || {
         damage: 5,
         qualities: ["IMPACT","IMPALE"]
     },
-    LANCE: { //TODO only when charge
+    LANCE: {
         name: "Lance",
         group: "CAVALRY",
         twoHanded: false,
+        onlyCharge: true,
         price: "1/0/0",
         enc: 3,
         availability: "RARE",
@@ -433,7 +439,7 @@ TEW.MELEE_WEAPONS = TEW.MELEE_WEAPONS || {
     },
     AHLSPIESS: {
         name: "Ahlspiess (2H)",
-        group: "POLEARM",
+        group: "POLE_ARM",
         twoHanded: true,
         price: "2/0/0",
         enc: 2,
@@ -445,7 +451,7 @@ TEW.MELEE_WEAPONS = TEW.MELEE_WEAPONS || {
     },
     BILL: {
         name: "Bill (2H)",
-        group: "POLEARM",
+        group: "POLE_ARM",
         twoHanded: true,
         price: "2/0/0",
         enc: 3,
@@ -457,7 +463,7 @@ TEW.MELEE_WEAPONS = TEW.MELEE_WEAPONS || {
     },
     HALBERD: {
         name: "Halberd (2H)",
-        group: "POLEARM",
+        group: "POLE_ARM",
         twoHanded: true,
         price: "2/0/0",
         enc: 3,
@@ -469,7 +475,7 @@ TEW.MELEE_WEAPONS = TEW.MELEE_WEAPONS || {
     },
     MANCATCHER: {
         name: "Mancatcher (2H)",
-        group: "POLEARM",
+        group: "POLE_ARM",
         twoHanded: true,
         price: "2/0/0",
         enc: 3,
@@ -481,7 +487,7 @@ TEW.MELEE_WEAPONS = TEW.MELEE_WEAPONS || {
     },
     PARTIZAN: {
         name: "Partizan (2H)",
-        group: "POLEARM",
+        group: "POLE_ARM",
         twoHanded: true,
         price: "2/0/0",
         enc: 3,
@@ -493,7 +499,7 @@ TEW.MELEE_WEAPONS = TEW.MELEE_WEAPONS || {
     },
     POLLAXE: {
         name: "Pollaxe (2H)",
-        group: "POLEARM",
+        group: "POLE_ARM",
         twoHanded: true,
         price: "2/0/0",
         enc: 3,
@@ -505,7 +511,7 @@ TEW.MELEE_WEAPONS = TEW.MELEE_WEAPONS || {
     },
     SPEAR: {
         name: "Spear (2H)",
-        group: "POLEARM",
+        group: "POLE_ARM",
         twoHanded: true,
         price: "0/15/0",
         enc: 2,
@@ -517,7 +523,7 @@ TEW.MELEE_WEAPONS = TEW.MELEE_WEAPONS || {
     },
     PIKE: {
         name: "Pike (2H)",
-        group: "POLEARM",
+        group: "POLE_ARM",
         twoHanded: true,
         price: "0/18/0",
         enc: 4,
@@ -529,7 +535,7 @@ TEW.MELEE_WEAPONS = TEW.MELEE_WEAPONS || {
     },
     QUATERSTAFF: {
         name: "Quaterstaff (2H)",
-        group: "POLEARM",
+        group: "POLE_ARM",
         twoHanded: true,
         price: "0/3/0",
         enc: 2,
@@ -541,7 +547,7 @@ TEW.MELEE_WEAPONS = TEW.MELEE_WEAPONS || {
     },
     ENCHANTED_STAFF: {
         name: "Enchanted Staff (2H)",
-        group: "POLEARM",
+        group: "POLE_ARM",
         twoHanded: true,
         price: "15/0/0",
         enc: 2,
@@ -1207,4 +1213,4 @@ TEW.AMMUNITION = TEW.AMMUNITION || {
         damage: "+2",
         qualities: ["IMPALE","IMPACT","PENETRATING"]
     }
-}
+};

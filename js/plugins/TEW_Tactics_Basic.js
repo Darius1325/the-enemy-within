@@ -856,9 +856,10 @@ Scene_Battle.prototype.startActorCommandSelection = function() {
 };
 
 Scene_Battle.prototype.commandAttack = function() {
+    console.log("ATTACK !!!");
     var action = BattleManager.inputtingAction();
-    action.setAttack();
-    BattleManager.setupCombat(action);
+    action.setAttack(); // TODO maybe get rid of that
+    // BattleManager.setupCombat(action); // WTF are you doing step bro ?
     BattleManager.refreshRedCells(action);
     this.onSelectAction();
 };
@@ -964,7 +965,6 @@ Scene_Battle.prototype.onItemCancel = function() {
 };
 
 Scene_Battle.prototype.onSelectAction = function() {
-    var action = BattleManager.inputtingAction();
     this._skillWindow.hide();
     this._itemWindow.hide();
     this._tacticsCommandWindow.close();
@@ -2446,7 +2446,7 @@ Game_Battler.prototype.event = function() {
 };
 
 Game_Battler.prototype.dataEvent = function() {
-    return this.event().event();  // stange method...
+    return this.event().event();  // strange method...
 };
 
 Game_Battler.prototype.pos = function(x, y) {

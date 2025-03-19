@@ -109,6 +109,10 @@ Game_Interpreter.prototype.opposedSkillTest = function(skillNamePlayer, modifier
     };
 };
 
+// Combat opposed test
+
+
+
 //---------------------------------------
 // Window_Dice
 //

@@ -203,14 +203,11 @@ Window_StatusCompetences.prototype.item = function() {
 };
 
 Window_StatusCompetences.prototype.select = function(index) {
-    console.log("Window_StatusCompetences.prototype.select");
-
     if (this._index !== index) {
         this.hideHelpWindow();
     }
     this._index = index;
     if (this._index >= 0) {
-        console.log("this.item() : ", this.item());
         this._helpWindow.setText(this.item());
     }
     this._stayCount = 0;
@@ -301,14 +298,11 @@ Window_StatusTalents.prototype.item = function() {
 };
 
 Window_StatusTalents.prototype.select = function(index) {
-    console.log("Window_StatusTalents.prototype.select");
-
     if (this._index !== index) {
         this.hideHelpWindow();
     }
     this._index = index;
     if (this._index >= 0) {
-        console.log("this.item() : ", this.item());
         this._helpWindow.setText(this.item());
     }
     this._stayCount = 0;
@@ -399,13 +393,11 @@ Window_StatusSpells.prototype.item = function() {
 };
 
 Window_StatusSpells.prototype.select = function(index) {
-    console.log("Window_StatusSpells.prototype.select " + Window_StatusSpells.prototype.select.caller);
     if (this._index !== index) {
         this.hideHelpWindow();
     }
     this._index = index;
     if (this._index >= 0) {
-        console.log("this.item() : ", this.item());
         this._helpWindow.setText(this.item());
     }
     this._stayCount = 0;
@@ -511,9 +503,11 @@ Scene_Status.prototype.create = function() {
     this._competencesWindow.setHelpWindow(this._helpWindow);
     this._talentsWindow.setHelpWindow(this._helpWindow);
     this._spellsWindow.setHelpWindow(this._helpWindow);
+    this.activateStatusStats(); // Desactivate all the windows, except the stats one
     this.refreshActor();
 };
 
+// Refreshing the actor
 Scene_Status.prototype.refreshActor = function() {
     var actor = this.actor();
     this._statsWindow.setActor(actor);
@@ -583,12 +577,16 @@ Scene_Status.prototype.createSpellWindow = function(){
 // Hiding all the windows
 Scene_Status.prototype.hideAllWindows = function(){
     this._statsWindow.hide();
+    this._statsWindow.deactivate();
+
     this._competencesWindow.hide();
-    this._competencesWindow.deselect();
+    this._competencesWindow.deactivate();
+
     this._talentsWindow.hide();
-    this._talentsWindow.deselect();
+    this._talentsWindow.deactivate();
+    
     this._spellsWindow.hide();
-    this._spellsWindow.deselect();
+    this._spellsWindow.deactivate();
 };
 
 // Showing the corresponding window according to the current command window index
@@ -600,22 +598,19 @@ Scene_Status.prototype.displayWindow = function(){
     if (this._commandWindow.index() == this.STATS_WINDOW_INDEX){
         this._statsWindow.show();
         this._statsWindow.refresh();
-        this._statsWindow.deactivate();
     } else if (this._commandWindow.index() == this.COMPS_WINDOW_INDEX){
         this._competencesWindow.show();
         this._competencesWindow.refresh();
-        this._competencesWindow.deactivate();
     } else if (this._commandWindow.index() == this.TALENTS_WINDOW_INDEX){
         this._talentsWindow.show();
         this._talentsWindow.refresh();
-        this._talentsWindow.deactivate();
     } else if (this._commandWindow.index() == this.SPELLS_WINDOW_INDEX){
         this._spellsWindow.show();
         this._spellsWindow.refresh();
-        this._spellsWindow.deactivate();
     }
 };
 
+// Activating the stats window 
 Scene_Status.prototype.activateStatusStats = function() {
     this.hideAllWindows();
     this._statsWindow.show();
@@ -623,6 +618,7 @@ Scene_Status.prototype.activateStatusStats = function() {
     this._statsWindow.refresh();
 };
 
+// Activating the competences window 
 Scene_Status.prototype.activateStatusComps = function() {
     this.hideAllWindows()
     this._competencesWindow.show();
@@ -633,6 +629,7 @@ Scene_Status.prototype.activateStatusComps = function() {
     this._competencesWindow.refresh();
 };
 
+// Activating the talents window 
 Scene_Status.prototype.activateStatusTalents = function() {
     this.hideAllWindows();
     this._talentsWindow.show();
@@ -643,6 +640,7 @@ Scene_Status.prototype.activateStatusTalents = function() {
     this._talentsWindow.refresh();
 };
 
+// Activating the spells window 
 Scene_Status.prototype.activateStatusSpells = function() {
     this.hideAllWindows();
     this._spellsWindow.show();
