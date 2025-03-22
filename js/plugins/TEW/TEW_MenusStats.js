@@ -7,12 +7,12 @@ var TEW = TEW || {};
 * This plugin contains windows for the custom status menu.
 */
 
-TEW.COMMAND_NAMES = {
-    26 : "Stats",
-    27 : "Skills",
-    28 : "Talents",
-    29 : "Spells",
-}
+// Init COMMAND_NAMES
+TEW.COMMAND_NAMES = TEW.COMMAND_NAMES || {};
+TEW.COMMAND_NAMES[30] = "Stats";
+TEW.COMMAND_NAMES[31] = "Skills";
+TEW.COMMAND_NAMES[32] = "Talents";
+TEW.COMMAND_NAMES[33] = "Spells";
 
 TEW.MENU_LINE_HEIGHT = 36;
 
@@ -35,10 +35,10 @@ const STATUS_WINDOW_TOPBAR_HEIGHT = 70;
 // Adding new Commands Entries
 
 Object.defineProperties(TextManager, {
-    statusStats :          TextManager.getter('command', 26),
-    statusComps :          TextManager.getter('command', 27),
-    statusTalents :        TextManager.getter('command', 28),
-    statusSpells :         TextManager.getter('command', 29)
+    statusStats :          TextManager.getter('command', 30),
+    statusComps :          TextManager.getter('command', 31),
+    statusTalents :        TextManager.getter('command', 32),
+    statusSpells :         TextManager.getter('command', 33)
 });
 
 

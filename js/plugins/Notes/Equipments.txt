@@ -1,7 +1,6 @@
 Equipments :
 
 - 4 Fenêtres
-- 1 CommandWindow pour changer de personnage + nom du perso
 - 1 CommandWindow pour changer de sous-menu
 
 Fenêtre Général 

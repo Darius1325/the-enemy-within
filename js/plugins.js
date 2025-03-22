@@ -10,7 +10,8 @@ var $plugins =
 {"name":"TEW/TEW_Constants/TEW_Npc","status":true,"description":"","parameters":{}},
 {"name":"TEW/TEW_Stats","status":true,"description":"","parameters":{}},
 {"name":"TEW/TEW_DiceRolls","status":true,"description":"","parameters":{}},
-{"name":"TEW/TEW_MenusStats","status":true,"description":"","parameters":{}},
+{"name":"TEW/TEW_MenusStats","status":true,"description":"Add the custom stats menu","parameters":{}},
+{"name":"TEW/TEW_MenusInventory","status":true,"description":"Add the custom inventory menu","parameters":{}},
 {"name":"TEW/TEW_Tactics_Basic","status":true,"description":"A Tactical Battle System designed for RPG Maker.","parameters":{"Basic Parameters":"","Selector File":"Selector","Selector Speed":"2","Grid Opacity":"30","Move Points":"5","Action Range":"1","Wait Skill Id":"7","Auto Turn End":"true","Tiles Color":"","Move Scope Color":"#0066CC","Ally Scope Color":"#008000","Enemy Scope Color":"#B22222","Display Manager":"","Show Hp Gauge":"true","Show State Icon":"true","Show Battle Start":"true","Duration Start Sprite":"300","Show Information Window":"true","Fade Out End":"true","Set Transparent Unit":"true","Show Face Unit":"true","Text Manager":"","Battle Start Term":"Battle Start","End Turn Term":"End Turn","Damage Term":"Damage","Recover Term":"Recover","Drain term":"Drain","Hit Rate Term":"Hit Rate","Critical Rate Term":"Cri Rate","Wait Command Name":"Wait","Progression Manager":"","Battle Start Id":"1","Player Phase Id":"2","Enemy Phase Id":"3","Current Phase Id":"1","Current Player Phase Id":"2","Current Battle Phase Id":"3","Turn Count Id":"4"}},
 {"name":"Samples/Tactics_Mouse","status":true,"description":"Add features for control with the mouse.\nRequires: TacticsSystem.js.","parameters":{}}
 ];
