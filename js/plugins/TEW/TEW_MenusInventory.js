@@ -30,7 +30,7 @@ TextManager.command = function(commandId) {
 
 // Windows
 
-const INVENTOTY_WINDOW_TOPBAR_HEIGHT = 70;
+const INVENTORY_WINDOW_TOPBAR_HEIGHT = 70;
 
 // The window for selecting a command on the inventory screen.
 // Adding new Commands Entries
@@ -59,6 +59,49 @@ Window_Selectable.prototype.setTopRow = function(row) {
         this.updateCursor();
     }
 };
+//-----------------------------------------------------------------------------
+// Window_Inventory
+
+function Window_Inventory() {
+    this.initialize.apply(this, arguments);
+}
+
+Window_Inventory.prototype = Object.create(Window_Selectable.prototype);
+Window_Inventory.prototype.constructor = Window_Inventory;
+
+Window_Inventory.prototype.initialize = function(offsetLine) {
+    if (isNaN(offsetLine)){
+        offsetLine = 0;
+    }
+    Window_Selectable.prototype.initialize.call(this,
+        0, INVENTORY_WINDOW_TOPBAR_HEIGHT * (offsetLine + 1),
+        Graphics.boxWidth, Graphics.boxHeight - INVENTORY_WINDOW_TOPBAR_HEIGHT * (offsetLine + 1));
+    this._actor = null;
+    this._maxItems = 0;
+    this.activate();
+    this.refresh();
+};
+
+Window_Inventory.prototype.setActor = function(actor) {
+    if (this._actor !== actor) {
+        this._actor = actor;
+        this.refresh();
+    }
+};
+
+Window_Inventory.prototype.refresh = function() {
+    if (this.contents) {
+        this.contents.clear();
+    }
+    if (this._actor) {
+        this.drawAllItems();
+    }
+};
+
+Window_Inventory.prototype.maxItems = function() {
+    return this._maxItems;
+};
+
 
 //-----------------------------------------------------------------------------
 // Window_InventoryInfos
@@ -67,11 +110,11 @@ function Window_InventoryInfos() {
     this.initialize.apply(this, arguments);
 }
 
-Window_InventoryInfos.prototype = Object.create(Window_EquipStatus.prototype);
+Window_InventoryInfos.prototype = Object.create(Window_Inventory.prototype);
 Window_InventoryInfos.prototype.constructor = Window_InventoryInfos;
 
 Window_InventoryInfos.prototype.initialize = function() {
-    Window_EquipStatus.prototype.initialize.call(this);
+    Window_Inventory.prototype.initialize.call(this);
     this._helpWindow = null;
     // this.setHandler('ok', this.showHelpWindow.bind(this));
 };
@@ -92,11 +135,11 @@ function Window_InventoryWeapons() {
     this.initialize.apply(this, arguments);
 }
 
-Window_InventoryWeapons.prototype = Object.create(Window_EquipSlot.prototype);
+Window_InventoryWeapons.prototype = Object.create(Window_Inventory.prototype);
 Window_InventoryWeapons.prototype.constructor = Window_InventoryWeapons;
 
 Window_InventoryWeapons.prototype.initialize = function() {
-    Window_EquipSlot.prototype.initialize.call(this);
+    Window_Inventory.prototype.initialize.call(this);
     this._helpWindow = null;
     // this.setHandler('ok', this.showHelpWindow.bind(this));
 };
@@ -117,11 +160,11 @@ function Window_InventoryArmors() {
     this.initialize.apply(this, arguments);
 }
 
-Window_InventoryArmors.prototype = Object.create(Window_EquipSlot.prototype);
+Window_InventoryArmors.prototype = Object.create(Window_Inventory.prototype);
 Window_InventoryArmors.prototype.constructor = Window_InventoryArmors;
 
 Window_InventoryArmors.prototype.initialize = function() {
-    Window_EquipSlot.prototype.initialize.call(this);
+    Window_Inventory.prototype.initialize.call(this);
     this._helpWindow = null;
     // this.setHandler('ok', this.showHelpWindow.bind(this));
 };
@@ -142,11 +185,11 @@ function Window_InventoryItems() {
     this.initialize.apply(this, arguments);
 }
 
-Window_InventoryItems.prototype = Object.create(Window_EquipSlot.prototype);
+Window_InventoryItems.prototype = Object.create(Window_Inventory.prototype);
 Window_InventoryItems.prototype.constructor = Window_InventoryItems;
 
 Window_InventoryItems.prototype.initialize = function() {
-    Window_EquipSlot.prototype.initialize.call(this);
+    Window_Inventory.prototype.initialize.call(this, offsetLine=1);
     this._helpWindow = null;
     // this.setHandler('ok', this.showHelpWindow.bind(this));
 };
@@ -154,12 +197,40 @@ Window_InventoryItems.prototype.initialize = function() {
 Window_InventoryItems.prototype.setActor = function(actor) {
     if (this._actor !== actor) {
         this._actor = actor;
-        // this._advancedCompsList = TEW.ADVANCED_COMPS.filter(comp => actor.hasComp(comp[0])); // TODO
-        // this._maxItems = TEW.BASE_COMPS.length + this._advancedCompsList.length;
+        this._items = TEW.ITEMS_ARRAY.filter(item => actor.hasItem(item[0])); // [<internal name>, {<item data>}]
+        this._maxItems = this._items.length;
         this.refresh();
     }
 };
 
+Window_InventoryItems.prototype.maxCols = () => 1;
+
+Window_InventoryItems.prototype.drawAllItems = function() {
+    var topIndex = this.topIndex();
+    for (var i = 0; i < this.maxPageItems(); i++) {
+        var index = topIndex + i;
+        if (index < this.maxItems()) {
+            this.drawItem(index);
+        }
+    }
+};
+
+Window_InventoryItems.prototype.drawItem = function(index) { // TODO
+    const normalizedIndex = index - this.topIndex();
+    const x = 48;
+    const y = normalizedIndex * TEW.MENU_LINE_HEIGHT;
+
+    const item = this.itemFromIndex(index);
+    
+    this.changeTextColor(this.systemColor());
+    this.drawText(item[1].name, x, y, 160);
+    this.resetTextColor();
+    this.drawText(this._actor.item(item[0]), x + 260, y, 60, 'right');
+};
+
+Window_InventoryItems.prototype.itemFromIndex = function(index) {
+    return this._items[index];
+};
 
 //-----------------------------------------------------------------------------
 // Window_InventoryCommand
@@ -176,7 +247,7 @@ Window_InventoryCommand.prototype.constructor = Window_InventoryCommand;
 // Initializing the command window
 Window_InventoryCommand.prototype.initialize = function(x, y, width) {
     this._windowWidth = width;
-    this._windowHeight = INVENTOTY_WINDOW_TOPBAR_HEIGHT;
+    this._windowHeight = INVENTORY_WINDOW_TOPBAR_HEIGHT;
     Window_HorzCommand.prototype.initialize.call(this, x, y);
 };
 
@@ -350,7 +421,7 @@ Scene_Equip.prototype.activateInventoryInfos = function() {
     this._infosWindow.refresh();
 };
 
-// Activating the competences window 
+// Activating the weapons window 
 Scene_Equip.prototype.activateInventoryWeapons = function() {
     this.hideAllWindows()
     this._weaponsWindow.show();
@@ -361,7 +432,7 @@ Scene_Equip.prototype.activateInventoryWeapons = function() {
     this._weaponsWindow.refresh();
 };
 
-// Activating the talents window 
+// Activating the armors window 
 Scene_Equip.prototype.activateInventoryArmors = function() {
     this.hideAllWindows();
     this._armorsWindow.show();
@@ -372,7 +443,7 @@ Scene_Equip.prototype.activateInventoryArmors = function() {
     this._armorsWindow.refresh();
 };
 
-// Activating the spells window 
+// Activating the items window 
 Scene_Equip.prototype.activateInventoryItems = function() {
     this.hideAllWindows();
     this._itemsWindow.show();

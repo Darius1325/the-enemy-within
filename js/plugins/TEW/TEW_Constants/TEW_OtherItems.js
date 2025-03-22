@@ -1,4 +1,4 @@
-TEW.OTHER_ITEMS = TEW.OTHER_ITEMS || {
+TEW.ITEMS = TEW.ITEMS || {
     AMULET: {
         name: "Amulet",
         group: "CLOTHES",
@@ -760,3 +760,6 @@ TEW.OTHER_ITEMS = TEW.OTHER_ITEMS || {
         availability: "RARE"
     }
 }
+
+TEW.ITEMS_IDS = Object.keys(TEW.ITEMS);
+TEW.ITEMS_ARRAY = Object.entries(TEW.ITEMS).sort((a, b) => a[0].localeCompare(b[0]));

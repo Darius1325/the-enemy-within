@@ -81,6 +81,9 @@ Game_BattlerBase.prototype.initialize = function() {
     this.competences = TEW.BASE_COMP_VALUES.slice();
     this.talents = [];
     this.spells = [];
+    this.weapons = [];
+    this.armors = [];
+    this.items = [];
     // temp
     this.competences[8] = 2;
     this.competences[9] = 2;
@@ -104,6 +107,12 @@ Game_BattlerBase.prototype.initialize = function() {
 
     // temp 3
     this.addSpell("AETHYRIC_ARMS");
+
+    // temp 4
+    this.addItem("AMULET");
+    this.addItem("BOOTS");
+    this.addItem("BOOTS");
+    console.log(this);
 };
 
 Object.defineProperties(Game_BattlerBase.prototype, {
@@ -194,6 +203,18 @@ Game_BattlerBase.prototype.addSpell = function(spellId) {
     }
 };
 
+// Items
+Game_BattlerBase.prototype.item = function(itemId) {
+    return this.items[itemId] || 0;
+};
+
+Game_BattlerBase.prototype.addItem = function(itemId) {
+    this.items[itemId] = this.item(itemId) + 1;
+}
+
+Game_BattlerBase.prototype.hasItem = function(itemId) {
+    return this.items[itemId] > 0;
+}
 
 // Game_Actor
 
