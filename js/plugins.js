@@ -8,7 +8,7 @@ var $plugins =
 {"name":"TEW/TEW_Constants/TEW_Talents","status":true,"description":"","parameters":{}},
 {"name":"TEW/TEW_Constants/TEW_Spells","status":true,"description":"","parameters":{}},
 {"name":"TEW/TEW_Constants/TEW_Npc","status":true,"description":"","parameters":{}},
-{"name":"TEW/TEW_Constants/TEW_OtherItems","status":true,"description":"","parameters":{}},
+{"name":"TEW/TEW_Constants/TEW_Items","status":true,"description":"","parameters":{}},
 {"name":"TEW/TEW_Constants/TEW_Weapons","status":true,"description":"","parameters":{}},
 {"name":"TEW/TEW_Constants/TEW_Armors","status":true,"description":"","parameters":{}},
 {"name":"TEW/TEW_Stats","status":true,"description":"","parameters":{}},

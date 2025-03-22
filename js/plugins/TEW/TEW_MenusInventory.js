@@ -17,6 +17,9 @@ TEW.COMMAND_NAMES[45] = "Items";
 
 TEW.MENU_LINE_HEIGHT = 36;
 
+// Icons ids
+TEW.ICON_ID_CLOTHES = 154;
+
 // TextManager
 // Override commands
 TextManager.command = function(commandId) {
@@ -69,13 +72,12 @@ function Window_Inventory() {
 Window_Inventory.prototype = Object.create(Window_Selectable.prototype);
 Window_Inventory.prototype.constructor = Window_Inventory;
 
-Window_Inventory.prototype.initialize = function(offsetLine) {
-    if (isNaN(offsetLine)){
-        offsetLine = 0;
-    }
+Window_Inventory.prototype.initialize = function(nbLineHeader = 0, nbLineFooter = 0) {
     Window_Selectable.prototype.initialize.call(this,
-        0, INVENTORY_WINDOW_TOPBAR_HEIGHT * (offsetLine + 1),
-        Graphics.boxWidth, Graphics.boxHeight - INVENTORY_WINDOW_TOPBAR_HEIGHT * (offsetLine + 1));
+        0,
+        INVENTORY_WINDOW_TOPBAR_HEIGHT * (nbLineHeader + 1),
+        Graphics.boxWidth,
+        Graphics.boxHeight - INVENTORY_WINDOW_TOPBAR_HEIGHT * (nbLineHeader + nbLineFooter +1));
     this._actor = null;
     this._maxItems = 0;
     this.activate();
@@ -189,9 +191,9 @@ Window_InventoryItems.prototype = Object.create(Window_Inventory.prototype);
 Window_InventoryItems.prototype.constructor = Window_InventoryItems;
 
 Window_InventoryItems.prototype.initialize = function() {
-    Window_Inventory.prototype.initialize.call(this, offsetLine=1);
+    Window_Inventory.prototype.initialize.call(this);
     this._helpWindow = null;
-    // this.setHandler('ok', this.showHelpWindow.bind(this));
+    this.setHandler('ok', this.showHelpWindow.bind(this));
 };
 
 Window_InventoryItems.prototype.setActor = function(actor) {
@@ -223,13 +225,120 @@ Window_InventoryItems.prototype.drawItem = function(index) { // TODO
     const item = this.itemFromIndex(index);
     
     this.changeTextColor(this.systemColor());
-    this.drawText(item[1].name, x, y, 160);
+    this.drawIcon(TEW.ICON_ID_CLOTHES, x, y)
+    this.drawText(item[1].name, x + 32, y, 160);
     this.resetTextColor();
-    this.drawText(this._actor.item(item[0]), x + 260, y, 60, 'right');
+    this.drawText(' (' + this._actor.item(item[0]) + ')', x + 32 + this.textWidth(item[1].name), y, 160);
 };
 
 Window_InventoryItems.prototype.itemFromIndex = function(index) {
     return this._items[index];
+};
+
+Window_InventoryItems.prototype.select = function(index) {
+    if (this._index !== index) {
+        this.hideHelpWindow();
+    }
+    this._index = index;
+    if (this._index >= 0) {
+        this._helpWindow.clear();
+        this.drawHelp(this._index);
+    }
+    this._stayCount = 0;
+    this.ensureCursorVisible();
+    this.updateCursor();
+    this.callUpdateHelp();
+};
+
+Window_InventoryItems.prototype.drawHelp = function(index) {
+    const item = this.itemFromIndex(index)
+    const lineHeight = this._helpWindow.lineHeight();
+    const group = 'Group : ' + item[1].group + '(';
+    this._helpWindow.addText(item[1].name, 0, 0);
+    this._helpWindow.addText(group, 0, lineHeight);
+    this._helpWindow.addIcon(TEW.ICON_ID_CLOTHES, this.textWidth(group), lineHeight)
+    this._helpWindow.addText(')', this.textWidth(group) + 32, lineHeight);
+}
+
+Window_InventoryItems.prototype.processOk = function() {
+    if (this.isCurrentItemEnabled()) {
+        this.playOkSound();
+        this.updateInputData();
+        this.callOkHandler();
+    } else {
+        this.playBuzzerSound();
+    }
+};
+
+Window_InventoryItems.prototype.isCurrentItemEnabled = function() {
+    return true; // TODO
+};
+
+Window_InventoryItems.prototype.showHelpWindow = function() {
+    if (this._helpWindow && this.active) {
+        this._helpWindow.show();
+        this._helpWindow.refresh();
+    }
+};
+
+Window_InventoryItems.prototype.updateHelp = () => {};
+
+//-----------------------------------------------------------------------------
+// Window_InventoryHelp
+//
+// The help window for the inventory pages
+
+function Window_InventoryHelp() {
+    this.initialize.apply(this, arguments);
+}
+
+Window_InventoryHelp.prototype = Object.create(Window_Help.prototype);
+Window_InventoryHelp.prototype.constructor = Window_InventoryHelp;
+
+// Initializing the help window
+Window_InventoryHelp.prototype.initialize = function(numLines = 2) {
+    Window_Help.prototype.initialize.call(this, numLines);
+    this._yStartPos = Graphics.height - (numLines + 1) * this.lineHeight();
+    this.move(0, this._yStartPos, Graphics.width, Graphics.height - this._yStartPos);
+    this._textArray = [];
+    this._iconsArray = [];
+};
+
+Window_InventoryHelp.prototype.clear = function (){
+    this.contents.clear();
+    this._textArray = [];
+    this._iconsArray = [];
+}
+
+Window_InventoryHelp.prototype.addText = function (text, x, y){
+    this._textArray.push({
+        desc:text,
+        x:x,
+        y:y
+    });
+}
+
+Window_InventoryHelp.prototype.addIcon = function(iconId, x, y){
+    this._iconsArray.push({
+        id:iconId,
+        x:x,
+        y:y
+    });
+}
+
+Window_InventoryHelp.prototype.refresh = function() {
+    this.contents.clear();
+    // Drawing the text
+    this._textArray.forEach(text => {
+        this.drawText(text.desc, text.x, text.y, Graphics.width, 'left');
+    });
+
+    // Drawing the icons
+    this._iconsArray.forEach(icon => {
+        this.drawIcon(icon.id, icon.x, icon.y);
+    });
+
+    // this.drawText(this._text, this.textPadding(), 0);
 };
 
 //-----------------------------------------------------------------------------
@@ -301,11 +410,11 @@ Scene_Equip.prototype.create = function() {
     this.createWeaponsWindow();
     this.createArmorsWindow();
     this.createItemsWindow();
-    // this.createHelpWindow(); // TODO
-    // this._helpWindow.hide();
-    // this._competencesWindow.setHelpWindow(this._helpWindow);
-    // this._talentsWindow.setHelpWindow(this._helpWindow);
-    // this._spellsWindow.setHelpWindow(this._helpWindow);
+    this.createHelpWindow();
+    this._helpWindow.hide();
+    // this._weaponsWindow.setHelpWindow(this._helpWindow);
+    // this._armorsWindow.setHelpWindow(this._helpWindow);
+    this._itemsWindow.setHelpWindow(this._helpWindow);
     // this.activateStatusStats(); // Desactivate all the windows, except the stats one
     this.refreshActor();
 };
@@ -318,6 +427,11 @@ Scene_Equip.prototype.refreshActor = function() {
     this._armorsWindow.setActor(actor);
     this._itemsWindow.setActor(actor);
 };
+
+Scene_Equip.prototype.createHelpWindow = function(){
+    this._helpWindow = new Window_InventoryHelp();
+    this.addWindow(this._helpWindow);
+}
 
 // Creating the commands for this scene
 Scene_Equip.prototype.createCommandWindow = function(){
@@ -449,7 +563,6 @@ Scene_Equip.prototype.activateInventoryItems = function() {
     this._itemsWindow.show();
     this._commandWindow.deactivate();
     this._itemsWindow.activate();
-    // this._helpWindow.move(0, 70, Graphics.width, Graphics.height - 70);
     this._itemsWindow.select(0);
     this._itemsWindow.refresh();
 };
