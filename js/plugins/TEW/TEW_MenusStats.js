@@ -1,6 +1,6 @@
 
 var Imported = Imported || {};
-Imported.TEW_Menus = true;
+Imported.TEW_MenusStats = true;
 var TEW = TEW || {};
 
 /*

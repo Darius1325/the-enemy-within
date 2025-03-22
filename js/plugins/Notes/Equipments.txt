@@ -1,0 +1,19 @@
+Equipments :
+
+- 4 Fenêtres
+- 1 CommandWindow pour changer de personnage + nom du perso
+- 1 CommandWindow pour changer de sous-menu
+
+Fenêtre Général 
+- Dessin avec PA / shield / Encombrement
+- Résumé des Armures équipées
+- Résumé des Armes
+
+Fenêtre Armes
+Symbole(Principale / Secondaire / rien) | Nom | Groupe | Encombrement | Portée | Dégâts | Atout/Défaut | Actions(Equiper / désequiper / donner à X1 / donner à X2 / donner à x3)
+
+Fenêtre Armures
+Symbole (Equiper / rien) | Nom | Loca | Enc | PA | Atout/Défaut | Forbidden With | Actions(Equiper / désequiper / donner à X1 / donner à X2 / donner à x3)
+
+Autres Items
+Nom | Nombre | Encombrement | Actions (Utiliser, Donner à[...])
