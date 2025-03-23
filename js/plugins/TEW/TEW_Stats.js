@@ -77,13 +77,13 @@ Object.defineProperties(Game_BattlerBase.prototype, {
 const battlerBaseInit = Game_BattlerBase.prototype.initialize;
 Game_BattlerBase.prototype.initialize = function() {
     battlerBaseInit.call(this);
-    this._paramBase = [1,999,0,0,0,0,0,0,0,0,0];
+    this._paramBase = [1,0,0,0,0,0,0,0,0,0,0];
     this.competences = TEW.BASE_COMP_VALUES.slice();
-    this.talents = [];
     this.spells = [];
-    this.weapons = [];
+    this.talents = {}; // ID: level
+    this.items = {}; // ID: quantity
+    this.weapons = []; // [{ id: id, isInMainHand: boolean, isInSecondHand: boolean, ammo: quantity, ammoType: id }]
     this.armors = [];
-    this.items = [];
     // temp
     this.competences[8] = 2;
     this.competences[9] = 2;
@@ -101,14 +101,14 @@ Game_BattlerBase.prototype.initialize = function() {
     this.competences[7] = 2;
     this.competences[14] = 2;
 
-    // temp 2
+    // temp Talents
     this.addTalent("ACCURATE_SHOT");
     this.addTalent("WEALTHY");
 
-    // temp 3
+    // temp Spells
     this.addSpell("AETHYRIC_ARMS");
 
-    // temp 4
+    // temp Items
     this.addItem("HEARTKILL");
     this.addItem("AMULET");
     this.addItem("BOOTS");
@@ -123,6 +123,15 @@ Game_BattlerBase.prototype.initialize = function() {
     this.addItem("LEAFLET");
     this.addItem("ROBES_STANDARD");
     this.addItem("WINE_GLASS");
+
+    // temp Weapons
+    this.addWeapon("AXE");
+    this.addWeapon("SHIELD");
+    this.addWeapon("CLUB");
+    this.equipMainHand(0);
+    this.equipSecondHand(2);
+
+    // temp Armor
 
     console.log(this);
 };
@@ -171,28 +180,30 @@ Game_BattlerBase.prototype.paramByName = function(paramName) {
     return this.param(TEW.STATS[paramName]);
 };
 
-Game_BattlerBase.prototype.compPlus = function(compName) {
-    const compValue = this.competences[TEW.COMPS_ARRAY.indexOf(compName)];
+// Competences
+Game_BattlerBase.prototype.compPlus = function(compId) {
+    const compValue = this.competences[TEW.COMPS_ARRAY.indexOf(compId)];
     return compValue === -1 ? 0 : compValue;
 };
 
-Game_BattlerBase.prototype.comp = function(compName) {
-    const associatedStat = TEW.COMPS[compName].stat;
-    return this.compPlus(compName) + this.paramByName(associatedStat);
+Game_BattlerBase.prototype.comp = function(compId) {
+    const associatedStat = TEW.COMPS[compId].stat;
+    return this.compPlus(compId) + this.paramByName(associatedStat);
 };
 
-Game_BattlerBase.prototype.hasComp = function(compName) {
-    if (TEW.COMPS[compName].isBase) {
+Game_BattlerBase.prototype.hasComp = function(compId) {
+    if (TEW.COMPS[compId].isBase) {
         return true;
     }
-    return this.competences[TEW.COMPS_ARRAY.indexOf(compName)] !== -1;
+    return this.competences[TEW.COMPS_ARRAY.indexOf(compId)] !== -1;
 };
 
-Game_BattlerBase.prototype.addComp = function(compName, value) {
-    this.competences[TEW.COMPS_ARRAY.indexOf(compName)] += value;
+Game_BattlerBase.prototype.addComp = function(compId, value) {
+    this.competences[TEW.COMPS_ARRAY.indexOf(compId)] += value;
     this.refresh();
 };
 
+// Talents
 Game_BattlerBase.prototype.talent = function(talentId) {
     return this.talents[talentId] || 0;
 };
@@ -209,6 +220,7 @@ Game_BattlerBase.prototype.addTalent = function(talentId) {
     this.talents[talentId] = this.talent(talentId) + 1;
 };
 
+// Spells
 Game_BattlerBase.prototype.hasSpell = function(spellId) {
     return this.spells.includes(spellId);
 };
@@ -224,12 +236,55 @@ Game_BattlerBase.prototype.item = function(itemId) {
     return this.items[itemId] || 0;
 };
 
-Game_BattlerBase.prototype.addItem = function(itemId) {
-    this.items[itemId] = this.item(itemId) + 1;
+Game_BattlerBase.prototype.addItem = function(itemId, quantity = 1) {
+    this.items[itemId] = this.item(itemId) + quantity;
 }
 
 Game_BattlerBase.prototype.hasItem = function(itemId) {
     return this.items[itemId] > 0;
+}
+
+// Weapons
+Game_BattlerBase.prototype.weapon = function(weaponId){
+    return this.weapons.find(weapon => weapon.id === weaponId);
+}
+
+Game_BattlerBase.prototype.mainHand = function(){
+    return this.weapons.find(weapon => weapon.isInMainHand);
+}
+
+Game_BattlerBase.prototype.secondHand = function(){
+    return this.weapons.find(weapon => weapon.isInSecondHand);
+}
+
+Game_BattlerBase.prototype.addWeapon = function(weaponId) {
+    this.weapons.push({
+        id: weaponId,
+        isInMainHand: false,
+        isInSecondHand: false,
+        ammo: 0,
+        ammoType: undefined // Ammo ID
+    });
+    this.weapons = this.weapons.sort((a, b) =>
+        TEW.WEAPON_IDS.indexOf(a.id) - TEW.WEAPON_IDS.indexOf(b.id));
+}
+
+Game_BattlerBase.prototype.hasWeaponTEW = function(weaponId) {
+    return this.weapons.some(weapon => weapon.id === weaponId);
+}
+
+Game_BattlerBase.prototype.equipMainHand = function(index) {
+    this.weapons.forEach(weapon => {
+        weapon.isInMainHand = false;
+    });
+    this.weapons[index].isInMainHand = true;
+}
+
+Game_BattlerBase.prototype.equipSecondHand = function(index) {
+    this.weapons.forEach(weapon => {
+        weapon.isInSecondHand = false;
+    });
+    this.weapons[index].isInSecondHand = true;
 }
 
 // Game_Actor

@@ -1214,3 +1214,6 @@ TEW.AMMUNITION = TEW.AMMUNITION || {
         qualities: ["IMPALE","IMPACT","PENETRATING"]
     }
 };
+
+TEW.WEAPON_IDS = Object.keys(TEW.MELEE_WEAPONS).sort((a, b) => a.localeCompare(b))
+        .concat(Object.keys(TEW.RANGED_WEAPONS).sort((a, b) => a.localeCompare(b)));

@@ -6,15 +6,79 @@ var TEW = TEW || {};
 // Utilities
 
 // Retrieving Weapon info
-TEW.getWeaponInfos = (weaponName) => {
+TEW.getWeaponQualityEffects = (weaponName) => {
+    const weapon = getWeaponFromName(weaponName);
+
+    let attackMod = 0;
+    let defenceMod = 0;
+    let slashLevel = 0;
+    let attackBonusDR = 0;
+    let defenceBonusDR = 0;
+    let bonusPA = 0;
+    let ignoredPA = 0;
+    let effects = {};
+    let ignoredArmorTypes = [];
+    weapon.qualities.forEach(quality => {
+        if (quality === 'IMPALE') {
+            effects.IMPALE = true;
+        } else if (quality === 'DAMAGING') {
+            effects.DAMAGING = true;
+        } else if (quality === 'UNDAMAGING') {
+            effects.UNDAMAGING = true;
+        } else if (quality.startsWith('SHIELD_')) {
+            bonusPA += quality.split('_')[1];
+        } else if (quality === 'DEFENSIVE') {
+            defenceMod += 10;
+        } else if (quality === 'HACK') {
+            ignoredPA += 1;
+        } else if (quality === 'PENETRATING') {
+            ignoredArmorTypes.push('CHAINMAIL');
+            ignoredArmorTypes.push('BREASTPLATE');
+            ignoredArmorTypes.push('PLATE');
+            ignoredPA += 1;
+        } else if (quality === 'PRECISE') {
+            attackBonusDR += 1;
+        } else if (quality === 'PUMMEL') {
+            effects.PUMMEL = true;
+        } else if (quality.startsWith('SLASH_')) {
+            slashLevel = quality.split('_')[1];
+        } else if (quality === 'UNBALANCED') {
+            defenceBonusDR -= 1;
+        } else if (quality === 'IMPACT') {
+            effects.IMPACT = true;
+        } else if (quality === 'FAST') {
+            attackBonusDR += 1;
+        } else if (quality === 'TRIP') {
+            effects.TRIP = true;
+        } else if (quality === 'ENTANGLE') {
+            effects.ENTANGLE = true;
+        } else if (quality === 'SLOW') {
+            attackBonusDR -= 1;
+        } else if (quality === 'WRAP') {
+            attackBonusDR += 1;
+        } else if (quality === 'IMPRECISE') {
+            attackBonusDR -= 1;
+        } else if (quality === 'TIRING') {
+            effects.TIRING = true;
+        } else if (quality === 'TRAP_BLADE') {
+            effects.TRAP_BLADE = true;
+        } else if (quality === 'DANGEROUS') {
+            effects.DANGEROUS = true;
+        } else if (quality === 'ACCURATE') {
+            attackMod += 10;
+        }
+    });
+
     return {
-        modifier : 20,
-        modifierDR : 1,
-        modifierPA : 2,
-        isDamaging : false,
-        isImpaling : false,
-        effects : [],
-        ignoredArmorType : []
+        attackMod,
+        defenceMod,
+        attackBonusDR,
+        defenceBonusDR,
+        bonusPA,
+        ignoredPA,
+        ignoredArmorTypes,
+        effects,
+        slashLevel
     };
 };
 
@@ -52,14 +116,6 @@ TEW.getArmorInfos = (armorNames) => {
     };
 };
 
-// Retrieving Talents Infos
-TEW.getTalentsInfos = (TalentNames) => {
-    return {
-        modifier : 0,
-        modifierDR : 0
-    };
-};
-
 // Melee or ranged weapon
 TEW.getWeaponCombatCategory = (weaponGroup) => {
     if (['BASIC', 'BRAWLING', 'CAVALRY', 'FENCING', 'FLAIL', 'PARRY', 'POLE_ARM', 'TWO_HANDED'].includes(weaponGroup)) {
@@ -86,18 +142,16 @@ TEW.getCombatCompOrDefault = (battler, weaponGroup) => {
     }
 };
 
-// Get weapon data defined in TEW_Weapons.js from EquipItem
-// Weapons should be registered in RPG Maker's database with a note containing only the weapon ID
-TEW.getWeaponFromEquipItem = (item) => {
-    const meleeWeapon = TEW.MELEE_WEAPONS[item.note];
-    if (meleeWeapon === undefined) {
-        const rangedWeapon = TEW.RANGED_WEAPONS[item.note];
-        if (rangedWeapon === undefined) {
-            throw new Error(item.note + ' is not a valid weapon ID');
+// Get weapon data defined in TEW_Weapons.js from its ID
+TEW.getWeaponFromName = (weaponName) => {
+    const weapon = TEW.MELEE_WEAPONS[weaponName];
+    if (weapon === undefined) {
+        weapon = TEW.RANGED_WEAPONS[weaponName];
+        if (weapon === undefined) {
+            throw new Error(weaponName + ' is not a valid weapon ID');
         }
-        return rangedWeapon;
     }
-    return meleeWeapon;
+    return weapon;
 };
 
 //-----------------------------------------------------------------------------
@@ -112,7 +166,6 @@ Game_Action.prototype.apply = function(target) {
     // Damage calc
     //
     // Choose weapon (elsewhere)
-    // Get weapon from attacker
     //   Get CC characteristic associated with weapon
     // Get (best) weapon from defender
     //   Get CC characteristic associated with weapon
@@ -121,6 +174,7 @@ Game_Action.prototype.apply = function(target) {
     // Check defender's talents for modifiers (make a list)
     // Check weapon effects on bonus (PRECISE)
     // Check sizes
+    // Check outnumberment
     // 
     // Roll dice
     //
