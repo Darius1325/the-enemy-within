@@ -109,9 +109,21 @@ Game_BattlerBase.prototype.initialize = function() {
     this.addSpell("AETHYRIC_ARMS");
 
     // temp 4
+    this.addItem("HEARTKILL");
     this.addItem("AMULET");
     this.addItem("BOOTS");
+    this.addItem("BROOM");
+    this.addItem("WINE_GLASS");
+    this.addItem("WINE_GLASS");
+    this.addItem("WINE_GLASS");
+    this.addItem("HEARTKILL");
     this.addItem("BOOTS");
+    this.addItem("LEAFLET");
+    this.addItem("BOOTS");
+    this.addItem("LEAFLET");
+    this.addItem("ROBES_STANDARD");
+    this.addItem("WINE_GLASS");
+
     console.log(this);
 };
 

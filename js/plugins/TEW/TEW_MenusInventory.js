@@ -17,9 +17,6 @@ TEW.COMMAND_NAMES[45] = "Items";
 
 TEW.MENU_LINE_HEIGHT = 36;
 
-// Icons ids
-TEW.ICON_ID_CLOTHES = 154;
-
 // TextManager
 // Override commands
 TextManager.command = function(commandId) {
@@ -205,7 +202,7 @@ Window_InventoryItems.prototype.setActor = function(actor) {
     }
 };
 
-Window_InventoryItems.prototype.maxCols = () => 1;
+Window_InventoryItems.prototype.maxCols = () => 2;
 
 Window_InventoryItems.prototype.drawAllItems = function() {
     var topIndex = this.topIndex();
@@ -219,16 +216,16 @@ Window_InventoryItems.prototype.drawAllItems = function() {
 
 Window_InventoryItems.prototype.drawItem = function(index) { // TODO
     const normalizedIndex = index - this.topIndex();
-    const x = 48;
-    const y = normalizedIndex * TEW.MENU_LINE_HEIGHT;
+    const x = index % 2 === 0 ? 48 : 432;
+    const y = Math.floor(normalizedIndex / 2) * TEW.MENU_LINE_HEIGHT;
 
     const item = this.itemFromIndex(index);
     
     this.changeTextColor(this.systemColor());
-    this.drawIcon(TEW.ICON_ID_CLOTHES, x, y)
-    this.drawText(item[1].name, x + 32, y, 160);
+    this.drawIcon(item[1].iconGroupId, x, y)
+    this.drawText(item[1].name, x + 32, y, Graphics.width / 2);
     this.resetTextColor();
-    this.drawText(' (' + this._actor.item(item[0]) + ')', x + 32 + this.textWidth(item[1].name), y, 160);
+    this.drawText(' (' + this._actor.item(item[0]) + ')', x + 32 + this.textWidth(item[1].name), y, Graphics.width / 2);
 };
 
 Window_InventoryItems.prototype.itemFromIndex = function(index) {
@@ -252,11 +249,12 @@ Window_InventoryItems.prototype.select = function(index) {
 
 Window_InventoryItems.prototype.drawHelp = function(index) {
     const item = this.itemFromIndex(index)
+    console.log(item);
     const lineHeight = this._helpWindow.lineHeight();
     const group = 'Group : ' + item[1].group + '(';
     this._helpWindow.addText(item[1].name, 0, 0);
     this._helpWindow.addText(group, 0, lineHeight);
-    this._helpWindow.addIcon(TEW.ICON_ID_CLOTHES, this.textWidth(group), lineHeight)
+    this._helpWindow.addIcon(item[1].iconGroupId, this.textWidth(group), lineHeight)
     this._helpWindow.addText(')', this.textWidth(group) + 32, lineHeight);
 }
 
@@ -337,8 +335,6 @@ Window_InventoryHelp.prototype.refresh = function() {
     this._iconsArray.forEach(icon => {
         this.drawIcon(icon.id, icon.x, icon.y);
     });
-
-    // this.drawText(this._text, this.textPadding(), 0);
 };
 
 //-----------------------------------------------------------------------------

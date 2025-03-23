@@ -1,3 +1,5 @@
+//#region JSON Items
+
 TEW.ITEMS = TEW.ITEMS || {
     AMULET: {
         name: "Amulet",
@@ -761,5 +763,31 @@ TEW.ITEMS = TEW.ITEMS || {
     }
 }
 
+//#endregion JSON Items
+
+// Icon Ids
+const ICON_ID_GROUP_CLOTHES = 154;
+const ICON_ID_GROUP_TOOLS = 216;
+const ICON_ID_GROUP_FOOD = 265;
+const ICON_ID_GROUP_BOOKS = 189;
+const ICON_ID_GROUP_DRUGS = 219;
+const ICON_ID_GROUP_DEFAULT = 0;
+
 TEW.ITEMS_IDS = Object.keys(TEW.ITEMS);
 TEW.ITEMS_ARRAY = Object.entries(TEW.ITEMS).sort((a, b) => a[0].localeCompare(b[0]));
+TEW.ITEMS_ARRAY.forEach(element => {
+    if (element[1].group == "CLOTHES"){
+        element[1].iconGroupId = ICON_ID_GROUP_CLOTHES;
+    } else if (element[1].group == "TOOLS") {
+        element[1].iconGroupId = ICON_ID_GROUP_TOOLS;
+    } else if (element[1].group == "FOOD") {
+        element[1].iconGroupId = ICON_ID_GROUP_FOOD;
+    } else if (element[1].group == "BOOKS") {
+        element[1].iconGroupId = ICON_ID_GROUP_BOOKS;
+    } else if (element[1].group == "DRUGS") {
+        element[1].iconGroupId = ICON_ID_GROUP_DRUGS;
+    } else {
+        element[1].iconGroupId = ICON_ID_GROUP_DEFAULT;
+    }
+});
+
