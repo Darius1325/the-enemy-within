@@ -459,7 +459,7 @@ TEW.MELEE_WEAPONS = TEW.MELEE_WEAPONS || {
         longReach: true,
         strBonus: true,
         damage: 4,
-        qualities: ["DEFENSIVE","HACK","TIRP"] //TODO Hack OR Trip
+        qualities: ["DEFENSIVE","HACK","TRIP"] //TODO Hack OR Trip
     },
     HALBERD: {
         name: "Halberd (2H)",

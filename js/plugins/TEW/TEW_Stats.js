@@ -197,6 +197,10 @@ Game_BattlerBase.prototype.talent = function(talentId) {
     return this.talents[talentId] || 0;
 };
 
+Game_BattlerBase.prototype.talents = function() {
+    return Object.keys(this.talents);
+};
+
 Game_BattlerBase.prototype.hasTalent = function(talentId) {
     return this.talents[talentId] > 0;
 };

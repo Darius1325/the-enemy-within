@@ -14,6 +14,8 @@ TEW.COMMAND_NAMES[42] = "Infos";
 TEW.COMMAND_NAMES[43] = "Weapons";
 TEW.COMMAND_NAMES[44] = "Armors";
 TEW.COMMAND_NAMES[45] = "Items";
+TEW.COMMAND_NAMES[46] = "Use";
+TEW.COMMAND_NAMES[47] = "Transfer";
 
 TEW.MENU_LINE_HEIGHT = 36;
 
@@ -26,6 +28,10 @@ TextManager.command = function(commandId) {
         return TEW.COMMAND_NAMES[commandId] || '';
     }
 };
+
+// A key
+Input.keyMapper[65] = "A_Key";
+Input.keyMapper[69] = "E_Key";
 
 
 // Windows
@@ -41,7 +47,9 @@ Object.defineProperties(TextManager, {
     inventoryInfos :            TextManager.getter('command', 42),
     inventoryWeapons :          TextManager.getter('command', 43),
     inventoryArmors :           TextManager.getter('command', 44),
-    inventoryItems :            TextManager.getter('command', 45)
+    inventoryItems :            TextManager.getter('command', 45),
+    inventoryItemUse :          TextManager.getter('command', 46),
+    inventoryItemTransfer :     TextManager.getter('command', 47)
 });
 
 
@@ -249,7 +257,6 @@ Window_InventoryItems.prototype.select = function(index) {
 
 Window_InventoryItems.prototype.drawHelp = function(index) {
     const item = this.itemFromIndex(index)
-    console.log(item);
     const lineHeight = this._helpWindow.lineHeight();
     const group = 'Group : ' + item[1].group + '(';
     this._helpWindow.addText(item[1].name, 0, 0);
@@ -265,6 +272,17 @@ Window_InventoryItems.prototype.processOk = function() {
         this.callOkHandler();
     } else {
         this.playBuzzerSound();
+    }
+};
+
+Window_InventoryItems.prototype.processHandling = function() {
+    Window_Selectable.prototype.processHandling.call(this);
+
+    // Custom handling
+    if (this.isOpenAndActive()) {
+        if (this.isHandled('E_Key') && Input.isTriggered('E_Key')){
+            this.callHandler('E_Key');
+        }
     }
 };
 
@@ -385,6 +403,38 @@ Window_InventoryCommand.prototype.cursorLeft = function(wrap) {
     this.callHandler('left');
 };
 
+//-----------------------------------------------------------------------------
+// Window_InventoryCommandItems
+//
+// The window for selecting a command on the items view.
+
+function Window_InventoryCommandItems() {
+    this.initialize.apply(this, arguments);
+}
+
+Window_InventoryCommandItems.prototype = Object.create(Window_Command.prototype);
+Window_InventoryCommandItems.prototype.constructor = Window_InventoryCommandItems;
+
+// Initializing the command window
+Window_InventoryCommandItems.prototype.initialize = function(x, y) {
+    this._windowWidth = 200;
+    this._windowHeight = 200;
+    Window_Command.prototype.initialize.call(
+        this,
+        (Graphics.boxWidth - this._windowWidth) / 2,
+        (Graphics.boxHeight - this._windowHeight) / 2);
+};
+
+// Window Width
+Window_InventoryCommandItems.prototype.windowWidth = function() {
+    return this._windowWidth;
+};
+
+// Making the 4 tabs
+Window_InventoryCommandItems.prototype.makeCommandList = function() {
+    this.addCommand(TextManager.inventoryItemUse, 'inventory_item_use');
+    this.addCommand(TextManager.inventoryItemTransfer, 'inventory_item_transfer');
+};
 
 // Scenes
 
@@ -406,6 +456,7 @@ Scene_Equip.prototype.create = function() {
     this.createWeaponsWindow();
     this.createArmorsWindow();
     this.createItemsWindow();
+    this.createItemsCommandWindow();
     this.createHelpWindow();
     this._helpWindow.hide();
     // this._weaponsWindow.setHelpWindow(this._helpWindow);
@@ -483,9 +534,26 @@ Scene_Equip.prototype.createItemsWindow = function(){
         this._commandWindow.activate();
         this._itemsWindow.deselect();
     });
+    this._itemsWindow.setHandler('E_Key', () => {
+        this.openCommandWindowItem();
+    });
     this._itemsWindow.hide();
     this.addWindow(this._itemsWindow);
 };
+
+Scene_Equip.prototype.createItemsCommandWindow = function(){
+    this._itemsCommandWindow = new Window_InventoryCommandItems();
+    this._itemsCommandWindow.setHandler('cancel', () => {
+        this._itemsCommandWindow.deactivate();
+        this._itemsCommandWindow.hide();
+        this.activateInventoryItems(this._itemsWindow.index());
+        this._itemsWindow._helpWindow.refresh();
+    });
+    this._itemsCommandWindow.setHandler('inventory_item_use', this.useItem.bind(this));
+    this._itemsCommandWindow.setHandler('inventory_item_transfer', this.transferItem.bind(this));
+    this._itemsCommandWindow.hide();
+    this.addWindow(this._itemsCommandWindow);
+}
 
 // Hiding all the windows
 Scene_Equip.prototype.hideAllWindows = function(){
@@ -554,11 +622,33 @@ Scene_Equip.prototype.activateInventoryArmors = function() {
 };
 
 // Activating the items window 
-Scene_Equip.prototype.activateInventoryItems = function() {
+Scene_Equip.prototype.activateInventoryItems = function(index = 0) {
     this.hideAllWindows();
     this._itemsWindow.show();
     this._commandWindow.deactivate();
     this._itemsWindow.activate();
-    this._itemsWindow.select(0);
+    this._itemsWindow.select(index);
     this._itemsWindow.refresh();
 };
+
+Scene_Equip.prototype.openCommandWindowItem = function(){
+    if (this._itemsWindow.isOpenAndActive() && this._itemsWindow.index() >= 0){
+        console.log("item selected : ", this._itemsWindow.index());
+        this._itemsWindow.deactivate();
+        this._itemsCommandWindow.show();
+        this._itemsCommandWindow.activate();
+        this._itemsCommandWindow.select(0);
+        this._itemsWindow._helpWindow.show();
+        this._itemsWindow._helpWindow.refresh();
+    }
+}
+
+Scene_Equip.prototype.useItem = function(){
+    console.log("Use item : ", this._itemsWindow.index());
+    this._itemsCommandWindow.callHandler('cancel');
+}
+
+Scene_Equip.prototype.transferItem = function(){
+    console.log("Transfer item", this._itemsWindow.index());
+    this._itemsCommandWindow.callHandler('cancel');
+}
