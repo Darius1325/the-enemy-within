@@ -766,23 +766,23 @@ TEW.ITEMS = TEW.ITEMS || {
 //#endregion JSON Items
 
 // Icon Ids
-const ICON_ID_GROUP_CLOTHES = 154;
-const ICON_ID_GROUP_TOOLS = 216;
-const ICON_ID_GROUP_FOOD = 265;
-const ICON_ID_GROUP_BOOKS = 189;
-const ICON_ID_GROUP_DRUGS = 219;
-const ICON_ID_GROUP_DEFAULT = 0;
+TEW.ICON_ID_GROUP_CLOTHES = 154;
+TEW.ICON_ID_GROUP_TOOLS = 216;
+TEW.ICON_ID_GROUP_FOOD = 265;
+TEW.ICON_ID_GROUP_BOOKS = 189;
+TEW.ICON_ID_GROUP_DRUGS = 219;
+TEW.ICON_ID_GROUP_DEFAULT = 0;
 
 TEW.ITEM_IDS = Object.keys(TEW.ITEMS);
 TEW.ITEMS_ARRAY = Object.entries(TEW.ITEMS).sort((a, b) => a[0].localeCompare(b[0]));
 TEW.ITEMS_ARRAY.forEach(element => {
    switch (element[1].group){
-    case "CLOTHES" :    element[1].iconGroupId = ICON_ID_GROUP_CLOTHES; break;
-    case "TOOLS" :      element[1].iconGroupId = ICON_ID_GROUP_TOOLS; break;
-    case "FOOD" :       element[1].iconGroupId = ICON_ID_GROUP_FOOD; break;
-    case "BOOKS" :      element[1].iconGroupId = ICON_ID_GROUP_BOOKS; break;
-    case "DRUGS" :      element[1].iconGroupId = ICON_ID_GROUP_DRUGS; break;
-    default :           element[1].iconGroupId = ICON_ID_GROUP_DEFAULT; break;
+    case "CLOTHES" :    element[1].iconGroupId = TEW.ICON_ID_GROUP_CLOTHES; break;
+    case "TOOLS" :      element[1].iconGroupId = TEW.ICON_ID_GROUP_TOOLS; break;
+    case "FOOD" :       element[1].iconGroupId = TEW.ICON_ID_GROUP_FOOD; break;
+    case "BOOKS" :      element[1].iconGroupId = TEW.ICON_ID_GROUP_BOOKS; break;
+    case "DRUGS" :      element[1].iconGroupId = TEW.ICON_ID_GROUP_DRUGS; break;
+    default :           element[1].iconGroupId = TEW.ICON_ID_GROUP_DEFAULT; break;
    }
 });
 

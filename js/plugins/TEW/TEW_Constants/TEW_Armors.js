@@ -275,3 +275,6 @@ TEW.ARMORS = TEW.ARMORS || {
         forbiddenWith: ["BREASTPLATE","BOILED_LEATHER","CHAINMAIL","BRIGANDINE"]
     }
 }
+
+// TODO order in inventory ?
+TEW.ARMOR_IDS = Object.keys(TEW.ARMORS).sort((a, b) => a.localeCompare(b));

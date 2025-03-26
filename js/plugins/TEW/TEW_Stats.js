@@ -84,6 +84,7 @@ Game_BattlerBase.prototype.initialize = function() {
     this.items = {}; // ID: quantity
     this.weapons = []; // [{ id: id, isInMainHand: boolean, isInSecondHand: boolean, ammo: quantity, ammoType: id }]
     this.armors = [];
+    this.equippedArmors = [];
     // temp
     this.competences[8] = 2;
     this.competences[9] = 2;
@@ -128,10 +129,19 @@ Game_BattlerBase.prototype.initialize = function() {
     this.addWeapon("AXE");
     this.addWeapon("SHIELD");
     this.addWeapon("CLUB");
-    this.equipMainHand(0);
+    this.addWeapon("CANE_PISTOL");
+    // this.equipMainHand(0);
     this.equipSecondHand(2);
 
     // temp Armor
+    this.addArmor("SOFT_KIT");
+    this.addArmor("SALLET");
+    this.addArmor("CHAINMAIL_COAT");
+    this.addArmor("BRACERS");
+    this.equipArmor("SOFT_KIT");
+    this.equipArmor("CHAINMAIL_COAT");
+
+    // temp Ammo
 
     console.log(this);
 };
@@ -181,6 +191,7 @@ Game_BattlerBase.prototype.paramByName = function(paramName) {
 };
 
 // Competences
+
 Game_BattlerBase.prototype.compPlus = function(compId) {
     const compValue = this.competences[TEW.COMPS_ARRAY.indexOf(compId)];
     return compValue === -1 ? 0 : compValue;
@@ -204,6 +215,7 @@ Game_BattlerBase.prototype.addComp = function(compId, value) {
 };
 
 // Talents
+
 Game_BattlerBase.prototype.talent = function(talentId) {
     return this.talents[talentId] || 0;
 };
@@ -221,6 +233,7 @@ Game_BattlerBase.prototype.addTalent = function(talentId) {
 };
 
 // Spells
+
 Game_BattlerBase.prototype.hasSpell = function(spellId) {
     return this.spells.includes(spellId);
 };
@@ -232,6 +245,7 @@ Game_BattlerBase.prototype.addSpell = function(spellId) {
 };
 
 // Items
+
 Game_BattlerBase.prototype.item = function(itemId) {
     return this.items[itemId] || 0;
 };
@@ -245,6 +259,7 @@ Game_BattlerBase.prototype.hasItem = function(itemId) {
 }
 
 // Weapons
+
 Game_BattlerBase.prototype.weapon = function(weaponId){
     return this.weapons.find(weapon => weapon.id === weaponId);
 }
@@ -285,6 +300,43 @@ Game_BattlerBase.prototype.equipSecondHand = function(index) {
         weapon.isInSecondHand = false;
     });
     this.weapons[index].isInSecondHand = true;
+}
+
+// Armors
+
+Game_BattlerBase.prototype.armor = function(armorId){
+    return this.armors.find(armor => armor.id === armorId);
+}
+
+Game_BattlerBase.prototype.addArmor = function(armorId) {
+    this.armors.push(armorId);
+    this.sortArmors();
+}
+
+Game_BattlerBase.prototype.hasArmorTEW = function(armorId) {
+    return this.armors.some(armor => armor.id === armorId);
+}
+
+Game_BattlerBase.prototype.equipArmor = function(armorId) {
+    this.equippedArmors.push(armorId);
+    this.armors.splice(this.armors.indexOf(armorId), 1);
+    this.sortEquippedArmors();
+}
+
+Game_BattlerBase.prototype.unequipArmor = function(armorId) {
+    this.armors.push(armorId);
+    this.equippedArmors.splice(this.equippedArmors.indexOf(armorId), 1);
+    this.sortArmors();
+}
+
+Game_BattlerBase.prototype.sortArmors = function() {
+    this.armors = this.armors.sort((a, b) =>
+        TEW.ARMOR_IDS.indexOf(a) - TEW.ARMOR_IDS.indexOf(b));
+}
+
+Game_BattlerBase.prototype.sortEquippedArmors = function() {
+    this.equippedArmors = this.equippedArmors.sort((a, b) =>
+        TEW.ARMOR_IDS.indexOf(a) - TEW.ARMOR_IDS.indexOf(b));
 }
 
 // Game_Actor
