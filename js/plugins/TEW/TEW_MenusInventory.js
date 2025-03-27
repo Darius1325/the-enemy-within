@@ -69,36 +69,43 @@ Window_Selectable.prototype.setTopRow = function(row) {
         this.updateCursor();
     }
 };
+// #region === Window_InventoryList ===
 //-----------------------------------------------------------------------------
 // Window_Inventory
 
-function Window_Inventory() {
+function Window_InventoryList() {
     this.initialize.apply(this, arguments);
 }
 
-Window_Inventory.prototype = Object.create(Window_Selectable.prototype);
-Window_Inventory.prototype.constructor = Window_Inventory;
+Window_InventoryList.prototype = Object.create(Window_Selectable.prototype);
+Window_InventoryList.prototype.constructor = Window_InventoryList;
 
-Window_Inventory.prototype.initialize = function(nbLineHeader = 0, nbLineFooter = 0) {
+Window_InventoryList.prototype.initialize = function() {
     Window_Selectable.prototype.initialize.call(this,
         0,
-        INVENTORY_WINDOW_TOPBAR_HEIGHT * (nbLineHeader + 1),
-        Graphics.boxWidth,
-        Graphics.boxHeight - INVENTORY_WINDOW_TOPBAR_HEIGHT * (nbLineHeader + nbLineFooter +1));
+        INVENTORY_WINDOW_TOPBAR_HEIGHT,
+        Graphics.boxWidth / 2,
+        Graphics.boxHeight - INVENTORY_WINDOW_TOPBAR_HEIGHT);
     this._actor = null;
     this._maxItems = 0;
+    this._leftPadding = 10;
+    this._rightColumnWidth = 20;
+    this._rightColumnPosition = Graphics.boxWidth / 2 - this._rightColumnWidth * 4;
+    console.log(Graphics.boxWidth);
+    console.log(this._rightColumnPosition);
+    this._iconPadding = 5;
     this.activate();
     this.refresh();
 };
 
-Window_Inventory.prototype.setActor = function(actor) {
+Window_InventoryList.prototype.setActor = function(actor) {
     if (this._actor !== actor) {
         this._actor = actor;
         this.refresh();
     }
 };
 
-Window_Inventory.prototype.refresh = function() {
+Window_InventoryList.prototype.refresh = function() {
     if (this.contents) {
         this.contents.clear();
     }
@@ -107,11 +114,59 @@ Window_Inventory.prototype.refresh = function() {
     }
 };
 
-Window_Inventory.prototype.maxItems = function() {
+Window_InventoryList.prototype.maxItems = function() {
     return this._maxItems;
 };
 
+Window_InventoryList.prototype.maxCols = () => 1;
+// #endregion === Window_InventoryList ===
+// === //
+// #region === Window_InventoryDetails ===
+function Window_InventoryDetails() {
+    this.initialize.apply(this, arguments);
+}
 
+Window_InventoryDetails.prototype = Object.create(Window_Base.prototype);
+Window_InventoryDetails.prototype.constructor = Window_InventoryDetails;
+
+Window_InventoryDetails.prototype.initialize = function() {
+    Window_Base.prototype.initialize.call(this,
+        Graphics.boxWidth / 2,
+        INVENTORY_WINDOW_TOPBAR_HEIGHT,
+        Graphics.boxWidth / 2,
+        Graphics.boxHeight - INVENTORY_WINDOW_TOPBAR_HEIGHT);
+    // this._actor = null;
+    // this._maxItems = 0;
+    // this._leftPadding = 10;
+    // this._rightColumnWidth = 20;
+    // this._rightColumnPosition = Graphics.boxWidth / 2 - this._rightColumnWidth * 4;
+    // console.log(Graphics.boxWidth);
+    // console.log(this._rightColumnPosition);
+    // this._iconPadding = 5;
+    this.activate();
+    this.refresh();
+};
+
+Window_InventoryDetails.prototype.setActor = function(actor) {
+    if (this._actor !== actor) {
+        this._actor = actor;
+        this.refresh();
+    }
+};
+
+Window_InventoryDetails.prototype.refresh = function() {
+    // this.drawText('TODO', 0, 0, 100);
+    // console.log('TODO - refresh detail');
+    // if (this.contents) {
+    //     this.contents.clear();
+    // }
+    // if (this._actor) {
+    //     this.drawAllItems();
+    // }
+};
+// #endregion === Window_InventoryDetails ===
+// === //
+// #region === Window_InventoryInfos ===
 //-----------------------------------------------------------------------------
 // Window_InventoryInfos
 
@@ -119,11 +174,11 @@ function Window_InventoryInfos() {
     this.initialize.apply(this, arguments);
 }
 
-Window_InventoryInfos.prototype = Object.create(Window_Inventory.prototype);
+Window_InventoryInfos.prototype = Object.create(Window_InventoryList.prototype);
 Window_InventoryInfos.prototype.constructor = Window_InventoryInfos;
 
 Window_InventoryInfos.prototype.initialize = function() {
-    Window_Inventory.prototype.initialize.call(this);
+    Window_InventoryList.prototype.initialize.call(this);
     this._helpWindow = null;
     // this.setHandler('ok', this.showHelpWindow.bind(this));
 };
@@ -136,7 +191,9 @@ Window_InventoryInfos.prototype.setActor = function(actor) {
         this.refresh();
     }
 };
-
+// #endregion === Window_InventoryInfos ===
+// === //
+// #region === Window_InventoryWeapons ===
 //-----------------------------------------------------------------------------
 // Window_InventoryWeapons
 
@@ -144,11 +201,11 @@ function Window_InventoryWeapons() {
     this.initialize.apply(this, arguments);
 }
 
-Window_InventoryWeapons.prototype = Object.create(Window_Inventory.prototype);
+Window_InventoryWeapons.prototype = Object.create(Window_InventoryList.prototype);
 Window_InventoryWeapons.prototype.constructor = Window_InventoryWeapons;
 
 Window_InventoryWeapons.prototype.initialize = function() {
-    Window_Inventory.prototype.initialize.call(this);
+    Window_InventoryList.prototype.initialize.call(this);
     this._helpWindow = null;
     this.setHandler('ok', this.showHelpWindow.bind(this));
 };
@@ -309,7 +366,9 @@ Window_InventoryWeapons.prototype.showHelpWindow = function() {
 };
 
 Window_InventoryWeapons.prototype.updateHelp = () => {};
-
+// #endregion === Window_InventoryWeapons ===
+// === //
+// #region === Window_InventoryArmors ===
 //-----------------------------------------------------------------------------
 // Window_InventoryArmors
 
@@ -317,11 +376,11 @@ function Window_InventoryArmors() {
     this.initialize.apply(this, arguments);
 }
 
-Window_InventoryArmors.prototype = Object.create(Window_Inventory.prototype);
+Window_InventoryArmors.prototype = Object.create(Window_InventoryList.prototype);
 Window_InventoryArmors.prototype.constructor = Window_InventoryArmors;
 
 Window_InventoryArmors.prototype.initialize = function() {
-    Window_Inventory.prototype.initialize.call(this);
+    Window_InventoryList.prototype.initialize.call(this);
     this._helpWindow = null;
     // this.setHandler('ok', this.showHelpWindow.bind(this));
 };
@@ -334,7 +393,9 @@ Window_InventoryArmors.prototype.setActor = function(actor) {
         this.refresh();
     }
 };
-
+// #endregion === Window_InventoryArmors ===
+// === //
+// #region === Window_InventoryItems ===
 //-----------------------------------------------------------------------------
 // Window_InventoryItems
 
@@ -342,13 +403,13 @@ function Window_InventoryItems() {
     this.initialize.apply(this, arguments);
 }
 
-Window_InventoryItems.prototype = Object.create(Window_Inventory.prototype);
+Window_InventoryItems.prototype = Object.create(Window_InventoryList.prototype);
 Window_InventoryItems.prototype.constructor = Window_InventoryItems;
 
 Window_InventoryItems.prototype.initialize = function() {
-    Window_Inventory.prototype.initialize.call(this);
+    Window_InventoryList.prototype.initialize.call(this);
     this._helpWindow = null;
-    this.setHandler('ok', this.showHelpWindow.bind(this));
+    // this.setHandler('ok', this.showHelpWindow.bind(this));
 };
 
 Window_InventoryItems.prototype.setActor = function(actor) {
@@ -360,8 +421,7 @@ Window_InventoryItems.prototype.setActor = function(actor) {
     }
 };
 
-Window_InventoryItems.prototype.maxCols = () => 2;
-
+// Drawing all the items
 Window_InventoryItems.prototype.drawAllItems = function() {
     var topIndex = this.topIndex();
     for (var i = 0; i < this.maxPageItems(); i++) {
@@ -372,20 +432,21 @@ Window_InventoryItems.prototype.drawAllItems = function() {
     }
 };
 
-Window_InventoryItems.prototype.drawItem = function(index) { // TODO
+// Drawing one item
+Window_InventoryItems.prototype.drawItem = function(index) {
     const normalizedIndex = index - this.topIndex();
-    const x = index % 2 === 0 ? 48 : 432;
-    const y = Math.floor(normalizedIndex / 2) * TEW.MENU_LINE_HEIGHT;
+    const x = this._leftPadding; // padding
+    const y = normalizedIndex  * TEW.MENU_LINE_HEIGHT;
 
     const item = this.itemFromIndex(index);
-    
     this.changeTextColor(this.systemColor());
     this.drawIcon(item[1].iconGroupId, x, y)
-    this.drawText(item[1].name, x + 32, y, Graphics.width / 2);
+    this.drawText(item[1].name, x + 32 + this._iconPadding, y, this._rightColumnPosition);
     this.resetTextColor();
-    this.drawText(' (' + this._actor.item(item[0]) + ')', x + 32 + this.textWidth(item[1].name), y, Graphics.width / 2);
+    this.drawText(this._actor.item(item[0]), this._rightColumnPosition, y, this._rightColumnWidth, 'right');
 };
 
+// Getting an item from its index
 Window_InventoryItems.prototype.itemFromIndex = function(index) {
     return this._items[index];
 };
@@ -396,8 +457,9 @@ Window_InventoryItems.prototype.select = function(index) {
     }
     this._index = index;
     if (this._index >= 0) {
-        this._helpWindow.clear();
-        this.drawHelp(this._index);
+        this.callHandler("show_item_details");
+        // this._helpWindow.clear();
+        // this.drawHelp(this._index);
     }
     this._stayCount = 0;
     this.ensureCursorVisible();
@@ -425,16 +487,16 @@ Window_InventoryItems.prototype.processOk = function() {
     }
 };
 
-Window_InventoryItems.prototype.processHandling = function() {
-    Window_Selectable.prototype.processHandling.call(this);
+// Window_InventoryItems.prototype.processHandling = function() {
+//     Window_Selectable.prototype.processHandling.call(this);
 
-    // Custom handling
-    if (this.isOpenAndActive()) {
-        if (this.isHandled('E_Key') && Input.isTriggered('E_Key')){
-            this.callHandler('E_Key');
-        }
-    }
-};
+//     // // Custom handling
+//     // if (this.isOpenAndActive()) {
+//     //     if (this.isHandled('E_Key') && Input.isTriggered('E_Key')){
+//     //         this.callHandler('E_Key');
+//     //     }
+//     // }
+// };
 
 Window_InventoryItems.prototype.isCurrentItemEnabled = function() {
     return true; // TODO
@@ -448,7 +510,42 @@ Window_InventoryItems.prototype.showHelpWindow = function() {
 };
 
 Window_InventoryItems.prototype.updateHelp = () => {};
+// #endregion === Window_InventoryItems ===
+// === //
+// #region === Window_InventoryDetailsItem ===
+function Window_InventoryDetailsItems() {
+    this.initialize.apply(this, arguments);
+}
 
+Window_InventoryDetailsItems.prototype = Object.create(Window_InventoryDetails.prototype);
+Window_InventoryDetailsItems.prototype.constructor = Window_InventoryDetailsItems;
+
+Window_InventoryDetailsItems.prototype.initialize = function() {
+    Window_InventoryDetails.prototype.initialize.call(this);
+    // this._helpWindow = null;
+    // this.setHandler('ok', this.showHelpWindow.bind(this));
+};
+
+Window_InventoryDetailsItems.prototype.drawDetails = function(item){
+    this.drawText(item[1].name, 0, 0);
+}
+Window_InventoryDetailsItems.prototype.refresh = function(item) {
+    this.contents.clear();
+    if (item){
+        this.drawDetails(item);
+    }
+    // this.drawText('TODO', 0, 0, 100);
+    // console.log('TODO - refresh detail');
+    // if (this.contents) {
+    //     this.contents.clear();
+    // }
+    // if (this._actor) {
+    //     this.drawAllItems();
+    // }
+};
+// #endregion === Window_InventoryDetailsItem ===
+// === //
+// #region === Window_InventoryHelp ===
 //-----------------------------------------------------------------------------
 // Window_InventoryHelp
 //
@@ -503,7 +600,7 @@ Window_InventoryHelp.prototype.refresh = function() {
     this.contents.clear();
     // Drawing the text
     this._textArray.forEach(text => {
-        this.drawText(text.desc, text.x, text.y, Graphics.width, 'left');
+        this.drawText(text.desc, text.x, text.y, Graphics.width, text.align || 'left');
     });
 
     // Drawing the icons
@@ -511,7 +608,9 @@ Window_InventoryHelp.prototype.refresh = function() {
         this.drawIcon(icon.id, icon.x, icon.y);
     });
 };
-
+// #endregion === Window_InventoryHelp ===
+// === //
+// #region === Window_InventoryCommand ===
 //-----------------------------------------------------------------------------
 // Window_InventoryCommand
 //
@@ -560,7 +659,9 @@ Window_InventoryCommand.prototype.cursorLeft = function(wrap) {
     Window_HorzCommand.prototype.cursorLeft.call(this, wrap);
     this.callHandler('left');
 };
-
+// #endregion === Window_InventoryCommand ===
+// === //  
+// #region === Window_InventoryCommandItems ===
 //-----------------------------------------------------------------------------
 // Window_InventoryCommandItems
 //
@@ -588,12 +689,14 @@ Window_InventoryCommandItems.prototype.windowWidth = function() {
     return this._windowWidth;
 };
 
-// Making the 4 tabs
+// Making the 2 tabs
 Window_InventoryCommandItems.prototype.makeCommandList = function() {
     this.addCommand(TextManager.inventoryItemUse, 'inventory_item_use');
     this.addCommand(TextManager.inventoryItemTransfer, 'inventory_item_transfer');
 };
-
+// #endregion === Window_InventoryCommandItems ===
+// === //  
+// #region === Window_InventoryAmmo
 //-----------------------------------------------------------------------------
 // Window_InventoryAmmo
 
@@ -601,11 +704,11 @@ function Window_InventoryAmmo() {
     this.initialize.apply(this, arguments);
 }
 
-Window_InventoryAmmo.prototype = Object.create(Window_Inventory.prototype);
+Window_InventoryAmmo.prototype = Object.create(Window_InventoryList.prototype);
 Window_InventoryAmmo.prototype.constructor = Window_InventoryAmmo;
 
 Window_InventoryAmmo.prototype.initialize = function() {
-    Window_Inventory.prototype.initialize.call(this);
+    Window_InventoryList.prototype.initialize.call(this);
     this._helpWindow = null;
     // this.setHandler('ok', this.showHelpWindow.bind(this));
 };
@@ -618,6 +721,9 @@ Window_InventoryAmmo.prototype.setActor = function(actor) {
         this.refresh();
     }
 };
+//#endregion === Window_InventoryAmmo
+// === //  
+// #region === Scene_Equip ===
 
 // Scenes
 
@@ -634,19 +740,35 @@ Scene_Equip.prototype.AMMO_WINDOW_INDEX = 4;
 
 // Creating the scene
 Scene_Equip.prototype.create = function() {
+    // Init
     Scene_MenuBase.prototype.create.call(this);
+
+    // Command window
     this.createCommandWindow();
+
+    // Info windows
     this.createInfosWindow();
+
+    // Weapons Windows
     this.createWeaponsWindow();
+
+    // Armors windows
     this.createArmorsWindow();
+
+    // Items windows
     this.createItemsWindow();
+    this.createItemsDetailsWindow();
     this.createItemsCommandWindow();
+
+    // Ammo Windows
     this.createAmmoWindow();
+
+    // Help window
     this.createHelpWindow();
     this._helpWindow.hide();
     this._weaponsWindow.setHelpWindow(this._helpWindow);
     this._armorsWindow.setHelpWindow(this._helpWindow);
-    this._itemsWindow.setHelpWindow(this._helpWindow);
+    // this._itemsWindow.setHelpWindow(this._helpWindow);
     this._ammoWindow.setHelpWindow(this._helpWindow);
     this.activateInventoryInfos(); // Deactivate all the windows, except the infos one
     this.refreshActor();
@@ -662,6 +784,7 @@ Scene_Equip.prototype.refreshActor = function() {
     this._ammoWindow.setActor(actor);
 };
 
+// Creating the help window
 Scene_Equip.prototype.createHelpWindow = function(){
     this._helpWindow = new Window_InventoryHelp();
     this.addWindow(this._helpWindow);
@@ -722,22 +845,25 @@ Scene_Equip.prototype.createItemsWindow = function(){
         this._commandWindow.activate();
         this._itemsWindow.deselect();
     });
-    this._itemsWindow.setHandler('E_Key', () => {
-        this.openCommandWindowItem();
-    });
+    // this._itemsWindow.setHandler('E_Key', () => {
+    //     this.openCommandWindowItem();
+    // });
     this._itemsWindow.hide();
     this.addWindow(this._itemsWindow);
 };
 
-// Creating the ammo Window for the scene
-Scene_Equip.prototype.createAmmoWindow = function(){
-    this._ammoWindow = new Window_InventoryAmmo();
-    this._ammoWindow.setHandler('cancel', () => {
-        this._commandWindow.activate();
-        this._ammoWindow.deselect();
+// Creating the items details Window for the scene
+Scene_Equip.prototype.createItemsDetailsWindow = function(){
+    this._itemsDetailsWindow = new Window_InventoryDetailsItems();
+    // this._itemsDetailsWindow.setHandler('cancel', () => {
+    //     this._commandWindow.activate();
+    //     this._itemsDetailsWindow.deselect();
+    // });
+    this._itemsWindow.setHandler('show_item_details', () => {
+        this.showItemDetails();
     });
-    this._ammoWindow.hide();
-    this.addWindow(this._ammoWindow);
+    this._itemsDetailsWindow.hide();
+    this.addWindow(this._itemsDetailsWindow);
 };
 
 Scene_Equip.prototype.createItemsCommandWindow = function(){
@@ -752,7 +878,20 @@ Scene_Equip.prototype.createItemsCommandWindow = function(){
     this._itemsCommandWindow.setHandler('inventory_item_transfer', this.transferItem.bind(this));
     this._itemsCommandWindow.hide();
     this.addWindow(this._itemsCommandWindow);
-}
+};
+
+// Creating the ammo Window for the scene
+Scene_Equip.prototype.createAmmoWindow = function(){
+    this._ammoWindow = new Window_InventoryAmmo();
+    this._ammoWindow.setHandler('cancel', () => {
+        this._commandWindow.activate();
+        this._ammoWindow.deselect();
+    });
+    this._ammoWindow.hide();
+    this.addWindow(this._ammoWindow);
+};
+
+
 
 // Hiding all the windows
 Scene_Equip.prototype.hideAllWindows = function(){
@@ -792,7 +931,9 @@ Scene_Equip.prototype.displayWindow = function(){
         this._armorsWindow.refresh();
     } else if (this._commandWindow.index() == this.ITEMS_WINDOW_INDEX){
         this._itemsWindow.show();
+        this._itemsDetailsWindow.show();
         this._itemsWindow.refresh();
+        this._itemsDetailsWindow.refresh();
     } else if (this._commandWindow.index() == this.AMMO_WINDOW_INDEX){
         this._ammoWindow.show();
         this._ammoWindow.refresh();
@@ -833,11 +974,13 @@ Scene_Equip.prototype.activateInventoryArmors = function() {
 Scene_Equip.prototype.activateInventoryItems = function(index = 0) {
     this.hideAllWindows();
     this._itemsWindow.show();
+    this._itemsDetailsWindow.show();
     this._commandWindow.deactivate();
     this._itemsWindow.activate();
-    this._helpWindow.reshape();
+    // this._helpWindow.reshape();
     this._itemsWindow.select(index);
     this._itemsWindow.refresh();
+    // this._itemsDetailsWindow.refresh();
 };
 
 // Activating the ammo window 
@@ -870,3 +1013,9 @@ Scene_Equip.prototype.transferItem = function(){
     console.log("Transfer item", this._itemsWindow.index());
     this._itemsCommandWindow.callHandler('cancel');
 }
+
+Scene_Equip.prototype.showItemDetails = function(){
+    console.log('showItemDetails');
+    this._itemsDetailsWindow.refresh(this._itemsWindow.itemFromIndex(this._itemsWindow.index()));
+}
+//#endregion === Scene_Equip === 
