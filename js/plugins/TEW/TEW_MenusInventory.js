@@ -145,6 +145,43 @@ Window_InventoryDetails.prototype.setActor = function(actor) {
 };
 
 Window_InventoryDetails.prototype.refresh = function() {};
+
+// Drawing an underlined Text
+Window_InventoryDetails.prototype.drawUnderlinedText = function(text, x, y, width, align) {
+    // Dessiner le texte
+    this.drawText(text, x, y, width, align);
+
+    // Calculer la position de la ligne
+    const textSize = this.contents.fontSize;
+    const textWidth = this.textWidth(text); // Largeur du texte
+    const lineY = y + textSize + 2; // Position de la ligne sous le texte
+
+    // Dessiner la ligne
+    this.contents.paintOpacity = 255; // Assurez-vous que l'opacité est pleine
+    this.contents.fillRect(
+        x + (align === "center" ? (width - textWidth) / 2 : align === "right" ? width - textWidth : 0),
+        lineY,
+        textWidth,
+        2, // Épaisseur de la ligne
+        this.normalColor()
+    );
+};
+
+Window_InventoryDetails.prototype.drawTable = function(x, y, width, rows, textArray) {
+    const cellWidthTh = width / 3; // Largeur d'une cellule
+    const cellWidthTd = width / 3 * 2; // Largeur d'une cellule
+    const cellHeight = this.lineHeight(); // Hauteur d'une cellule
+
+    for (let row = 0; row < rows; row++) {
+        const cellXTh = x;
+        const cellXTd = x + cellWidthTh;
+        const cellY = y + row * cellHeight
+
+        this.drawText(textArray[row][0], cellXTh + 5, cellY, cellWidthTh - 10 , "left");
+        this.drawText(textArray[row][1], cellXTd + 5, cellY, cellWidthTd - 10 , "left");
+    }
+};
+
 // #endregion === Window_InventoryDetails ===
 // === //
 // #region === Window_InventoryInfos ===
@@ -500,8 +537,18 @@ Window_InventoryDetailsItems.prototype.refresh = function(item) {
 };
 
 Window_InventoryDetailsItems.prototype.drawDetails = function(item){
-    this.drawText(item[1].name, 0, 0);
+    // Title
+    this.drawUnderlinedText(item[1].name, 0, 0, Graphics.boxWidth / 2, "center");
+
+    // Item's Icon
+    this.drawIcon(item[1].iconGroupId, 0, 0);
+
+    // Table
+    this.drawTable(0, 100, Graphics.boxWidth / 2, 3, [
+        ["Owned :", "x" + item[1].quantity], ["Group :", item[1].group], ["Enc. :", item[1].enc]
+    ]);
 }
+    
 // #endregion === Window_InventoryDetailsItem ===
 // === //
 // #region === Window_InventoryHelp ===
@@ -975,7 +1022,8 @@ Scene_Equip.prototype.transferItem = function(){
 }
 
 Scene_Equip.prototype.showItemDetails = function(){
-    console.log('showItemDetails');
-    this._itemsDetailsWindow.refresh(this._itemsWindow.itemFromIndex(this._itemsWindow.index()));
+    const item = this._itemsWindow.itemFromIndex(this._itemsWindow.index());
+    item[1].quantity = this._itemsWindow._actor.item(item[0]);
+    this._itemsDetailsWindow.refresh(item);
 }
 //#endregion === Scene_Equip === 
