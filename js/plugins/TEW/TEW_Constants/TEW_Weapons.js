@@ -5,6 +5,7 @@ var TEW = TEW || {};
 TEW.MELEE_WEAPONS = TEW.MELEE_WEAPONS || {
     AXE: {
         name: "Axe",
+        icon: TEW.ICONS_IDS.WEAPON_AXE,
         group: "BASIC",
         twoHanded: false,
         price: "0/10/0",
@@ -17,6 +18,7 @@ TEW.MELEE_WEAPONS = TEW.MELEE_WEAPONS || {
     },
     BALLOCK_KNIFE: {
         name: "Ballock Knife",
+        icon: TEW.ICONS_IDS.WEAPON_KNIFE,
         group: "BASIC",
         twoHanded: false,
         price: "0/16/0",
@@ -29,6 +31,7 @@ TEW.MELEE_WEAPONS = TEW.MELEE_WEAPONS || {
     },
     CLUB: {
         name: "Club",
+        icon: TEW.ICONS_IDS.WEAPON_MACE,
         group: "BASIC",
         twoHanded: false,
         price: "0/4/0",
@@ -41,6 +44,7 @@ TEW.MELEE_WEAPONS = TEW.MELEE_WEAPONS || {
     },
     DAGGER: {
         name: "Dagger",
+        icon: TEW.ICONS_IDS.WEAPON_KNIFE,
         group: "BASIC",
         twoHanded: false,
         price: "0/16/0",
@@ -53,6 +57,7 @@ TEW.MELEE_WEAPONS = TEW.MELEE_WEAPONS || {
     },
     IMPROVISED_WEAPON: {
         name: "Improvised Weapon",
+        icon: TEW.ICONS_IDS.WEAPON_PIPE,
         group: "BASIC",
         twoHanded: false,
         price: "0/0/0",
@@ -65,6 +70,7 @@ TEW.MELEE_WEAPONS = TEW.MELEE_WEAPONS || {
     },
     KNIFE: {
         name: "Knife",
+        icon: TEW.ICONS_IDS.WEAPON_KNIFE,
         group: "BASIC",
         twoHanded: false,
         price: "0/8/0",
@@ -77,6 +83,7 @@ TEW.MELEE_WEAPONS = TEW.MELEE_WEAPONS || {
     },
     MACE: {
         name: "Mace",
+        icon: TEW.ICONS_IDS.WEAPON_MACE,
         group: "BASIC",
         twoHanded: false,
         price: "0/15/0",
@@ -89,6 +96,7 @@ TEW.MELEE_WEAPONS = TEW.MELEE_WEAPONS || {
     },
     MILITARY_PICK: {
         name: "Military Pick",
+        icon: TEW.ICONS_IDS.WEAPON_MACE,
         group: "BASIC",
         twoHanded: false,
         price: "0/15/0",
@@ -101,6 +109,7 @@ TEW.MELEE_WEAPONS = TEW.MELEE_WEAPONS || {
     },
     SCIMITAR: {
         name: "Scimitar",
+        icon: TEW.ICONS_IDS.WEAPON_SABER,
         group: "BASIC",
         twoHanded: false,
         price: "1/0/0",
@@ -113,6 +122,7 @@ TEW.MELEE_WEAPONS = TEW.MELEE_WEAPONS || {
     },
     SWORD: {
         name: "Sword",
+        icon: TEW.ICONS_IDS.WEAPON_SWORD,
         group: "BASIC",
         twoHanded: false,
         price: "1/0/0",
@@ -125,6 +135,7 @@ TEW.MELEE_WEAPONS = TEW.MELEE_WEAPONS || {
     },
     WARHAMMER: {
         name: "Warhammer",
+        icon: TEW.ICONS_IDS.WEAPON_MACE,
         group: "BASIC",
         twoHanded: false,
         price: "1/0/0",
@@ -137,6 +148,7 @@ TEW.MELEE_WEAPONS = TEW.MELEE_WEAPONS || {
     },
     SHIELD_BUCKLER: {
         name: "Shield (Buckler)",
+        icon: TEW.ICONS_IDS.WEAPON_SHIELD,
         group: "BASIC",
         twoHanded: false,
         price: "0/18/2",
@@ -149,6 +161,7 @@ TEW.MELEE_WEAPONS = TEW.MELEE_WEAPONS || {
     },
     SHIELD: {
         name: "Shield",
+        icon: TEW.ICONS_IDS.WEAPON_SHIELD,
         group: "BASIC",
         twoHanded: false,
         price: "2/0/0",
@@ -161,6 +174,7 @@ TEW.MELEE_WEAPONS = TEW.MELEE_WEAPONS || {
     },
     SHIELD_LARGE: {
         name: "Shield (Large)",
+        icon: TEW.ICONS_IDS.WEAPON_SHIELD,
         group: "BASIC",
         twoHanded: false,
         price: "3/0/0",
@@ -173,6 +187,7 @@ TEW.MELEE_WEAPONS = TEW.MELEE_WEAPONS || {
     },
     PAVISE: {
         name: "Pavise",
+        icon: TEW.ICONS_IDS.WEAPON_SHIELD,
         group: "BASIC",
         twoHanded: false,
         price: "3/15/0",
@@ -185,6 +200,7 @@ TEW.MELEE_WEAPONS = TEW.MELEE_WEAPONS || {
     },
     CAVALRY_HAMMER: {
         name: "Cavalry Hammer (2H)",
+        icon: TEW.ICONS_IDS.WEAPON_MACE,
         group: "CAVALRY",
         twoHanded: true,
         price: "3/0/0",
@@ -197,6 +213,7 @@ TEW.MELEE_WEAPONS = TEW.MELEE_WEAPONS || {
     },
     DEMI_LANCE: {
         name: "Demi-Lance",
+        icon: TEW.ICONS_IDS.WEAPON_SPEAR,
         group: "CAVALRY",
         twoHanded: false,
         onlyCharge: true,
@@ -210,6 +227,7 @@ TEW.MELEE_WEAPONS = TEW.MELEE_WEAPONS || {
     },
     LANCE: {
         name: "Lance",
+        icon: TEW.ICONS_IDS.WEAPON_SPEAR,
         group: "CAVALRY",
         twoHanded: false,
         onlyCharge: true,
@@ -223,6 +241,7 @@ TEW.MELEE_WEAPONS = TEW.MELEE_WEAPONS || {
     },
     SABRE: {
         name: "Sabre",
+        icon: TEW.ICONS_IDS.WEAPON_SABER,
         group: "CAVALRY",
         twoHanded: false,
         price: "0/10/0",
@@ -235,6 +254,7 @@ TEW.MELEE_WEAPONS = TEW.MELEE_WEAPONS || {
     },
     FOIL: {
         name: "Foil",
+        icon: TEW.ICONS_IDS.WEAPON_FOIL,
         group: "FENCING",
         twoHanded: false,
         price: "5/0/0",
@@ -247,6 +267,7 @@ TEW.MELEE_WEAPONS = TEW.MELEE_WEAPONS || {
     },
     RAPIER: {
         name: "Rapier",
+        icon: TEW.ICONS_IDS.WEAPON_RAPIER,
         group: "FENCING",
         twoHanded: false,
         price: "5/0/0",
@@ -259,6 +280,7 @@ TEW.MELEE_WEAPONS = TEW.MELEE_WEAPONS || {
     },
     SMALLSWORD: {
         name: "Smallsword",
+        icon: TEW.ICONS_IDS.WEAPON_FOIL,
         group: "FENCING",
         twoHanded: false,
         price: "4/0/0",
@@ -271,6 +293,7 @@ TEW.MELEE_WEAPONS = TEW.MELEE_WEAPONS || {
     },
     SPIKED_GAUNTLET: {
         name: "Spiked Gauntlet",
+        icon: TEW.ICONS_IDS.WEAPON_GAUNTLET,
         group: "BRAWLING",
         twoHanded: false,
         price: "2/0/0",
@@ -283,6 +306,7 @@ TEW.MELEE_WEAPONS = TEW.MELEE_WEAPONS || {
     },
     BOAT_HOOK: {
         name: "Boat Hook",
+        icon: TEW.ICONS_IDS.WEAPON_SPEAR,
         group: "BRAWLING",
         twoHanded: false,
         price: "0/6/0",
@@ -295,6 +319,7 @@ TEW.MELEE_WEAPONS = TEW.MELEE_WEAPONS || {
     },
     GARROTE: {
         name: "Garrote (2H)",
+        icon: TEW.ICONS_IDS.WEAPON_CHAINS,
         group: "BRAWLING",
         twoHanded: true,
         price: "0/1/0",
@@ -307,6 +332,7 @@ TEW.MELEE_WEAPONS = TEW.MELEE_WEAPONS || {
     },
     UNARMED: {
         name: "Unarmed",
+        icon: TEW.ICONS_IDS.WEAPON_GAUNTLET,
         group: "BRAWLING",
         twoHanded: false,
         price: "0/0/0",
@@ -331,6 +357,7 @@ TEW.MELEE_WEAPONS = TEW.MELEE_WEAPONS || {
     },
     LOCKED_GAUNTLET: { //TODO
         name: "Locked Gauntlet",
+        icon: TEW.ICONS_IDS.WEAPON_CLAW,
         group: "BRAWLING",
         twoHanded: false,
         price: "1/0/0",
@@ -343,6 +370,7 @@ TEW.MELEE_WEAPONS = TEW.MELEE_WEAPONS || {
     },
     SAP: {
         name: "Sap",
+        icon: TEW.ICONS_IDS.WEAPON_GAUNTLET,
         group: "BRAWLING",
         twoHanded: false,
         price: "0/1/0",
@@ -355,6 +383,7 @@ TEW.MELEE_WEAPONS = TEW.MELEE_WEAPONS || {
     },
     GRAIN_FLAIL: {
         name: "Grain Flail",
+        icon: TEW.ICONS_IDS.WEAPON_FLAIL,
         group: "FLAIL",
         twoHanded: false,
         price: "0/10/0",
@@ -367,6 +396,7 @@ TEW.MELEE_WEAPONS = TEW.MELEE_WEAPONS || {
     },
     FLAIL: {
         name: "Flail",
+        icon: TEW.ICONS_IDS.WEAPON_FLAIL,
         group: "FLAIL",
         twoHanded: false,
         price: "2/0/0",
@@ -379,6 +409,7 @@ TEW.MELEE_WEAPONS = TEW.MELEE_WEAPONS || {
     },
     MILITARY_FLAIL: {
         name: "Military Flail (2H)",
+        icon: TEW.ICONS_IDS.WEAPON_FLAIL,
         group: "FLAIL",
         twoHanded: true,
         price: "3/0/0",
@@ -391,6 +422,7 @@ TEW.MELEE_WEAPONS = TEW.MELEE_WEAPONS || {
     },
     CLOAK: {
         name: "Cloak",
+        icon: TEW.ICONS_IDS.WEAPON_CHAINS,
         group: "PARRY",
         twoHanded: false,
         price: "0/10/0",
@@ -403,6 +435,7 @@ TEW.MELEE_WEAPONS = TEW.MELEE_WEAPONS || {
     },
     MAIN_GAUCHE: {
         name: "Main Gauche",
+        icon: TEW.ICONS_IDS.WEAPON_KNIFE,
         group: "PARRY",
         twoHanded: false,
         price: "1/0/0",
@@ -415,6 +448,7 @@ TEW.MELEE_WEAPONS = TEW.MELEE_WEAPONS || {
     },
     SWORDBREAKER: {
         name: "Swordbreaker",
+        icon: TEW.ICONS_IDS.WEAPON_BREAKER,
         group: "PARRY",
         twoHanded: false,
         price: "1/2/6",
@@ -427,6 +461,7 @@ TEW.MELEE_WEAPONS = TEW.MELEE_WEAPONS || {
     },
     WEIGHTED_NET: {
         name: "Weighted Net (2H)",
+        icon: TEW.ICONS_IDS.WEAPON_CHAINS,
         group: "PARRY",
         twoHanded: true,
         price: "0/10/0",
@@ -439,6 +474,7 @@ TEW.MELEE_WEAPONS = TEW.MELEE_WEAPONS || {
     },
     AHLSPIESS: {
         name: "Ahlspiess (2H)",
+        icon: TEW.ICONS_IDS.WEAPON_SPEAR,
         group: "POLE_ARM",
         twoHanded: true,
         price: "2/0/0",
@@ -452,6 +488,7 @@ TEW.MELEE_WEAPONS = TEW.MELEE_WEAPONS || {
     BILL: {
         name: "Bill (2H)",
         group: "POLE_ARM",
+        icon: TEW.ICONS_IDS.WEAPON_SPEAR,
         twoHanded: true,
         price: "2/0/0",
         enc: 3,
@@ -463,6 +500,7 @@ TEW.MELEE_WEAPONS = TEW.MELEE_WEAPONS || {
     },
     HALBERD: {
         name: "Halberd (2H)",
+        icon: TEW.ICONS_IDS.WEAPON_SPEAR,
         group: "POLE_ARM",
         twoHanded: true,
         price: "2/0/0",
@@ -475,6 +513,7 @@ TEW.MELEE_WEAPONS = TEW.MELEE_WEAPONS || {
     },
     MANCATCHER: {
         name: "Mancatcher (2H)",
+        icon: TEW.ICONS_IDS.WEAPON_SPEAR,
         group: "POLE_ARM",
         twoHanded: true,
         price: "2/0/0",
@@ -487,6 +526,7 @@ TEW.MELEE_WEAPONS = TEW.MELEE_WEAPONS || {
     },
     PARTIZAN: {
         name: "Partizan (2H)",
+        icon: TEW.ICONS_IDS.WEAPON_SPEAR,
         group: "POLE_ARM",
         twoHanded: true,
         price: "2/0/0",
@@ -499,6 +539,7 @@ TEW.MELEE_WEAPONS = TEW.MELEE_WEAPONS || {
     },
     POLLAXE: {
         name: "Pollaxe (2H)",
+        icon: TEW.ICONS_IDS.WEAPON_AXE,
         group: "POLE_ARM",
         twoHanded: true,
         price: "2/0/0",
@@ -511,6 +552,7 @@ TEW.MELEE_WEAPONS = TEW.MELEE_WEAPONS || {
     },
     SPEAR: {
         name: "Spear (2H)",
+        icon: TEW.ICONS_IDS.WEAPON_SPEAR,
         group: "POLE_ARM",
         twoHanded: true,
         price: "0/15/0",
@@ -523,6 +565,7 @@ TEW.MELEE_WEAPONS = TEW.MELEE_WEAPONS || {
     },
     PIKE: {
         name: "Pike (2H)",
+        icon: TEW.ICONS_IDS.WEAPON_SPEAR,
         group: "POLE_ARM",
         twoHanded: true,
         price: "0/18/0",
@@ -533,8 +576,9 @@ TEW.MELEE_WEAPONS = TEW.MELEE_WEAPONS || {
         damage: 4,
         qualities: ["IMPALE"]
     },
-    QUATERSTAFF: {
-        name: "Quaterstaff (2H)",
+    QUARTERSTAFF: {
+        name: "Quarterstaff (2H)",
+        icon: TEW.ICONS_IDS.WEAPON_STAFF,
         group: "POLE_ARM",
         twoHanded: true,
         price: "0/3/0",
@@ -547,6 +591,7 @@ TEW.MELEE_WEAPONS = TEW.MELEE_WEAPONS || {
     },
     ENCHANTED_STAFF: {
         name: "Enchanted Staff (2H)",
+        icon: TEW.ICONS_IDS.WEAPON_STAFF,
         group: "POLE_ARM",
         twoHanded: true,
         price: "15/0/0",
@@ -559,6 +604,7 @@ TEW.MELEE_WEAPONS = TEW.MELEE_WEAPONS || {
     },
     BASTARD_SWORD: {
         name: "Bastard Sword (2H)",
+        icon: TEW.ICONS_IDS.WEAPON_SWORD,
         group: "TWO_HANDED",
         twoHanded: true,
         price: "8/0/0",
@@ -571,6 +617,7 @@ TEW.MELEE_WEAPONS = TEW.MELEE_WEAPONS || {
     },
     GREAT_AXE: {
         name: "Great Axe (2H)",
+        icon: TEW.ICONS_IDS.WEAPON_AXE,
         group: "TWO_HANDED",
         twoHanded: true,
         price: "4/0/0",
@@ -583,6 +630,7 @@ TEW.MELEE_WEAPONS = TEW.MELEE_WEAPONS || {
     },
     FLAMBERGE_ZWEIHANDER: {
         name: "Flamberge Zweihander (2H)",
+        icon: TEW.ICONS_IDS.WEAPON_SWORD,
         group: "TWO_HANDED",
         twoHanded: true,
         price: "30/0/0",
@@ -595,6 +643,7 @@ TEW.MELEE_WEAPONS = TEW.MELEE_WEAPONS || {
     },
     PICK: {
         name: "Pick (2H)",
+        icon: TEW.ICONS_IDS.WEAPON_MACE,
         group: "TWO_HANDED",
         twoHanded: true,
         price: "0/9/0",
@@ -607,6 +656,7 @@ TEW.MELEE_WEAPONS = TEW.MELEE_WEAPONS || {
     },
     WARHAMMER_TH: {
         name: "Warhammer (2H)",
+        icon: TEW.ICONS_IDS.WEAPON_MACE,
         group: "TWO_HANDED",
         twoHanded: true,
         price: "3/0/0",
@@ -619,6 +669,7 @@ TEW.MELEE_WEAPONS = TEW.MELEE_WEAPONS || {
     },
     ZWEIHANDER: {
         name: "Zweihander (2H)",
+        icon: TEW.ICONS_IDS.WEAPON_SWORD,
         group: "TWO_HANDED",
         twoHanded: true,
         price: "10/0/0",
@@ -634,6 +685,7 @@ TEW.MELEE_WEAPONS = TEW.MELEE_WEAPONS || {
 TEW.RANGED_WEAPONS = TEW.RANGED_WEAPONS || {
     ELF_BOW: {
         name: "Elf Bow (2H)",
+        icon: TEW.ICONS_IDS.WEAPON_BOW,
         group: "BOW",
         twoHanded: true,
         price: "10/0/0",
@@ -646,6 +698,7 @@ TEW.RANGED_WEAPONS = TEW.RANGED_WEAPONS || {
     },
     LONGBOW: {
         name: "Longbow (2H)",
+        icon: TEW.ICONS_IDS.WEAPON_BOW,
         group: "BOW",
         twoHanded: true,
         price: "5/0/0",
@@ -658,6 +711,7 @@ TEW.RANGED_WEAPONS = TEW.RANGED_WEAPONS || {
     },
     BOW: {
         name: "Bow (2H)",
+        icon: TEW.ICONS_IDS.WEAPON_BOW,
         group: "BOW",
         twoHanded: true,
         price: "4/0/0",
@@ -670,6 +724,7 @@ TEW.RANGED_WEAPONS = TEW.RANGED_WEAPONS || {
     },
     SHORTBOW: {
         name: "Shortbow (2H)",
+        icon: TEW.ICONS_IDS.WEAPON_BOW,
         group: "BOW",
         twoHanded: true,
         price: "3/0/0",
@@ -682,6 +737,7 @@ TEW.RANGED_WEAPONS = TEW.RANGED_WEAPONS || {
     },
     CROSSBOW_PISTOL: {
         name: "Crossbow Pistol",
+        icon: TEW.ICONS_IDS.WEAPON_CROSSBOW,
         group: "CROSSBOW",
         twoHanded: false,
         price: "6/0/0",
@@ -694,6 +750,7 @@ TEW.RANGED_WEAPONS = TEW.RANGED_WEAPONS || {
     },
     HEAVY_CROSSBOW: {
         name: "Heavy Crossbow (2H)",
+        icon: TEW.ICONS_IDS.WEAPON_CROSSBOW,
         group: "CROSSBOW",
         twoHanded: true,
         price: "7/0/0",
@@ -706,6 +763,7 @@ TEW.RANGED_WEAPONS = TEW.RANGED_WEAPONS || {
     },
     CROSSBOW: {
         name: "Crossbow (2H)",
+        icon: TEW.ICONS_IDS.WEAPON_CROSSBOW,
         group: "CROSSBOW",
         twoHanded: true,
         price: "5/0/0",
@@ -718,6 +776,7 @@ TEW.RANGED_WEAPONS = TEW.RANGED_WEAPONS || {
     },
     LASSO: {
         name: "Lasso",
+        icon: TEW.ICONS_IDS.WEAPON_WHIP,
         group: "ENTANGLING",
         twoHanded: false,
         price: "0/6/0",
@@ -730,6 +789,7 @@ TEW.RANGED_WEAPONS = TEW.RANGED_WEAPONS || {
     },
     WHIP: {
         name: "Whip",
+        icon: TEW.ICONS_IDS.WEAPON_WHIP,
         group: "ENTANGLING",
         twoHanded: false,
         price: "0/5/0",
@@ -742,6 +802,7 @@ TEW.RANGED_WEAPONS = TEW.RANGED_WEAPONS || {
     },
     SLING: {
         name: "Sling",
+        icon: TEW.ICONS_IDS.WEAPON_SLING,
         group: "SLING",
         twoHanded: false,
         price: "0/1/0",
@@ -754,6 +815,7 @@ TEW.RANGED_WEAPONS = TEW.RANGED_WEAPONS || {
     },
     STAFF_SLING: {
         name: "Staff Sling (2H)",
+        icon: TEW.ICONS_IDS.WEAPON_SLING,
         group: "SLING",
         twoHanded: true,
         price: "0/4/0",
@@ -766,6 +828,7 @@ TEW.RANGED_WEAPONS = TEW.RANGED_WEAPONS || {
     },
     BOLAS: {
         name: "Bolas",
+        icon: TEW.ICONS_IDS.WEAPON_CHAINS,
         group: "THROWING",
         twoHanded: false,
         price: "0/1/0",
@@ -778,6 +841,7 @@ TEW.RANGED_WEAPONS = TEW.RANGED_WEAPONS || {
     },
     DART: {
         name: "Dart",
+        icon: TEW.ICONS_IDS.WEAPON_SLING,
         group: "THROWING",
         twoHanded: false,
         price: "0/2/0",
@@ -790,6 +854,7 @@ TEW.RANGED_WEAPONS = TEW.RANGED_WEAPONS || {
     },
     JAVELIN: {
         name: "Javelin",
+        icon: TEW.ICONS_IDS.WEAPON_SPEAR,
         group: "THROWING",
         twoHanded: false,
         price: "0/10/6",
@@ -802,6 +867,7 @@ TEW.RANGED_WEAPONS = TEW.RANGED_WEAPONS || {
     },
     ROCK: {
         name: "Rock",
+        icon: TEW.ICONS_IDS.WEAPON_GAUNTLET,
         group: "THROWING",
         twoHanded: false,
         price: "0/0/0",
@@ -814,6 +880,7 @@ TEW.RANGED_WEAPONS = TEW.RANGED_WEAPONS || {
     },
     THROWING_AXE: {
         name: "Throwing Axe",
+        icon: TEW.ICONS_IDS.WEAPON_AXE,
         group: "THROWING",
         twoHanded: false,
         price: "1/0/0",
@@ -826,6 +893,7 @@ TEW.RANGED_WEAPONS = TEW.RANGED_WEAPONS || {
     },
     THROWING_KNIFE: {
         name: "Throwing Knife",
+        icon: TEW.ICONS_IDS.WEAPON_KNIFE,
         group: "THROWING",
         twoHanded: false,
         price: "0/18/0",
@@ -838,6 +906,7 @@ TEW.RANGED_WEAPONS = TEW.RANGED_WEAPONS || {
     },
     BOMB: {
         name: "Bomb",
+        icon: TEW.ICONS_IDS.WEAPON_BOMB, // TODO SHT
         group: "EXPLOSIVES",
         twoHanded: false,
         price: "3/0/0",
@@ -850,6 +919,7 @@ TEW.RANGED_WEAPONS = TEW.RANGED_WEAPONS || {
     },
     INCENDIARY: {
         name: "Incendiary",
+        icon: TEW.ICONS_IDS.WEAPON_BOMB, // TODO SHT
         group: "EXPLOSIVES",
         twoHanded: false,
         price: "1/0/0",
@@ -862,6 +932,7 @@ TEW.RANGED_WEAPONS = TEW.RANGED_WEAPONS || {
     },
     BLUNDERBUSS: {
         name: "Blunderbuss (2H)",
+        icon: TEW.ICONS_IDS.WEAPON_SHOTGUN,
         group: "BLACKPOWDER",
         twoHanded: true,
         price: "2/0/0",
@@ -874,6 +945,7 @@ TEW.RANGED_WEAPONS = TEW.RANGED_WEAPONS || {
     },
     HOCHLAND_LONG_RIFLE: {
         name: "Hochland Long Rifle (2H)",
+        icon: TEW.ICONS_IDS.WEAPON_RIFLE,
         group: "BLACKPOWDER",
         twoHanded: true,
         price: "100/0/0",
@@ -886,6 +958,7 @@ TEW.RANGED_WEAPONS = TEW.RANGED_WEAPONS || {
     },
     HANDGUN: {
         name: "Handgun (2H)",
+        icon: TEW.ICONS_IDS.WEAPON_PISTOL,
         group: "BLACKPOWDER",
         twoHanded: true,
         price: "4/0/0",
@@ -898,6 +971,7 @@ TEW.RANGED_WEAPONS = TEW.RANGED_WEAPONS || {
     },
     PISTOL: {
         name: "Pistol",
+        icon: TEW.ICONS_IDS.WEAPON_PISTOL,
         group: "BLACKPOWDER",
         twoHanded: false,
         price: "8/0/0",
@@ -910,6 +984,7 @@ TEW.RANGED_WEAPONS = TEW.RANGED_WEAPONS || {
     },
     MATCHLOCK_HANDGUN: {
         name: "Matchlock Handgun (2H)",
+        icon: TEW.ICONS_IDS.WEAPON_PISTOL,
         group: "BLACKPOWDER",
         twoHanded: true,
         price: "2/0/0",
@@ -922,6 +997,7 @@ TEW.RANGED_WEAPONS = TEW.RANGED_WEAPONS || {
     },
     MATCHLOCK_BLUNDERBUSS: {
         name: "Matchlock Blunderbuss (2H)",
+        icon: TEW.ICONS_IDS.WEAPON_SHOTGUN,
         group: "BLACKPOWDER",
         twoHanded: true,
         price: "1/0/0",
@@ -934,6 +1010,7 @@ TEW.RANGED_WEAPONS = TEW.RANGED_WEAPONS || {
     },
     ARQUEBUS: {
         name: "Arquebus (2H)",
+        icon: TEW.ICONS_IDS.WEAPON_RIFLE,
         group: "BLACKPOWDER",
         twoHanded: true,
         price: "5/0/0",
@@ -946,6 +1023,7 @@ TEW.RANGED_WEAPONS = TEW.RANGED_WEAPONS || {
     },
     DOUBLE_BARRELLED_HANDGUN: {
         name: "Double-Barrelled Handgun (2H)",
+        icon: TEW.ICONS_IDS.WEAPON_PISTOL,
         group: "BLACKPOWDER",
         twoHanded: true,
         price: "7/0/0",
@@ -958,6 +1036,7 @@ TEW.RANGED_WEAPONS = TEW.RANGED_WEAPONS || {
     },
     GRIFFONSFOOT_PISTOL: {
         name: "Griffonsfoot Pistol",
+        icon: TEW.ICONS_IDS.WEAPON_PISTOL,
         group: "BLACKPOWDER",
         twoHanded: false,
         price: "10/0/0",
@@ -970,6 +1049,7 @@ TEW.RANGED_WEAPONS = TEW.RANGED_WEAPONS || {
     },
     GUN_AXE: {
         name: "GunAxe (2H)",
+        icon: TEW.ICONS_IDS.WEAPON_AXE,
         group: "BLACKPOWDER",
         twoHanded: true,
         price: "8/0/0",
@@ -982,6 +1062,7 @@ TEW.RANGED_WEAPONS = TEW.RANGED_WEAPONS || {
     },
     GUN_HALBERD: {
         name: "Gun Halberd (2H)",
+        icon: TEW.ICONS_IDS.WEAPON_SPEAR,
         group: "BLACKPOWDER",
         twoHanded: true,
         price: "10/0/0",
@@ -994,6 +1075,7 @@ TEW.RANGED_WEAPONS = TEW.RANGED_WEAPONS || {
     },
     REPEATER_HANDGUN: {
         name: "Repeater Handgun (2H)",
+        icon: TEW.ICONS_IDS.WEAPON_PISTOL,
         group: "ENGINEERING",
         twoHanded: true,
         price: "10/0/0",
@@ -1006,6 +1088,7 @@ TEW.RANGED_WEAPONS = TEW.RANGED_WEAPONS || {
     },
     REPEATER_PISTOL: {
         name: "Repeater Pistol",
+        icon: TEW.ICONS_IDS.WEAPON_PISTOL,
         group: "ENGINEERING",
         twoHanded: false,
         price: "15/0/0",
@@ -1018,6 +1101,7 @@ TEW.RANGED_WEAPONS = TEW.RANGED_WEAPONS || {
     },
     HAND_MORTAR: {
         name: "Hand Mortar (2H)",
+        icon: TEW.ICONS_IDS.WEAPON_PISTOL,
         group: "ENGINEERING",
         twoHanded: true,
         price: "50/0/0",
@@ -1030,6 +1114,7 @@ TEW.RANGED_WEAPONS = TEW.RANGED_WEAPONS || {
     },
     CANE_PISTOL: {
         name: "Cane Pistol",
+        icon: TEW.ICONS_IDS.WEAPON_PISTOL,
         group: "ENGINEERING",
         twoHanded: false,
         price: "15/0/0",
@@ -1214,48 +1299,8 @@ TEW.AMMUNITION = TEW.AMMUNITION || {
         qualities: ["IMPALE","IMPACT","PENETRATING"]
     }
 };
-// Icon Ids
-TEW.ICON_ID_GROUP_BASIC = 97;
-TEW.ICON_ID_GROUP_CAVALRY = 107;
-TEW.ICON_ID_GROUP_FENCING = 96;
-TEW.ICON_ID_GROUP_BRAWLING = 105;
-TEW.ICON_ID_GROUP_FLAIL = 98;
-TEW.ICON_ID_GROUP_PARRY = 111;
-TEW.ICON_ID_GROUP_POLE_ARM = 99;
-TEW.ICON_ID_GROUP_TWO_HANDED = 122;
-TEW.ICON_ID_GROUP_BOW = 102;
-TEW.ICON_ID_GROUP_CROSSBOW = 103;
-TEW.ICON_ID_GROUP_ENTANGLING = 100;
-TEW.ICON_ID_GROUP_SLING = 114;
-TEW.ICON_ID_GROUP_THROWING = 106;
-TEW.ICON_ID_GROUP_EXPLOSIVES = 118;
-TEW.ICON_ID_GROUP_BLACKPOWDER = 115;
-TEW.ICON_ID_GROUP_ENGINEERING = 117;
-TEW.ICON_ID_GROUP_DEFAULT = 0;
-
 
 TEW.WEAPON_IDS = Object.keys(TEW.MELEE_WEAPONS).sort((a, b) => a.localeCompare(b))
         .concat(Object.keys(TEW.RANGED_WEAPONS).sort((a, b) => a.localeCompare(b)));
 TEW.WEAPONS_ARRAY = Object.entries(TEW.MELEE_WEAPONS).sort((a, b) => a[0].localeCompare(b[0]))
         .concat(Object.entries(TEW.RANGED_WEAPONS).sort((a, b) => a[0].localeCompare(b[0])));
-TEW.WEAPONS_ARRAY.forEach(element => {
-    switch (element[1].group){
-    case "BASIC" :          element[1].iconGroupId = TEW.ICON_ID_GROUP_BASIC; break;
-    case "CAVALRY" :        element[1].iconGroupId = TEW.ICON_ID_GROUP_CAVALRY; break;
-    case "FENCING" :        element[1].iconGroupId = TEW.ICON_ID_GROUP_FENCING; break;
-    case "BRAWLING" :       element[1].iconGroupId = TEW.ICON_ID_GROUP_BRAWLING; break;
-    case "FLAIL" :          element[1].iconGroupId = TEW.ICON_ID_GROUP_FLAIL; break;
-    case "PARRY" :          element[1].iconGroupId = TEW.ICON_ID_GROUP_PARRY; break;
-    case "POLE_ARM" :       element[1].iconGroupId = TEW.ICON_ID_GROUP_POLE_ARM; break;
-    case "TWO_HANDED" :     element[1].iconGroupId = TEW.ICON_ID_GROUP_TWO_HANDED; break;
-    case "BOW" :            element[1].iconGroupId = TEW.ICON_ID_GROUP_BOW; break;
-    case "CROSSBOW" :       element[1].iconGroupId = TEW.ICON_ID_GROUP_CROSSBOW; break;
-    case "ENTANGLING" :     element[1].iconGroupId = TEW.ICON_ID_GROUP_ENTANGLING; break;
-    case "SLING" :          element[1].iconGroupId = TEW.ICON_ID_GROUP_SLING; break;
-    case "THROWING" :       element[1].iconGroupId = TEW.ICON_ID_GROUP_THROWING; break;
-    case "EXPLOSIVES" :     element[1].iconGroupId = TEW.ICON_ID_GROUP_EXPLOSIVES; break;
-    case "BLACKPOWDER" :    element[1].iconGroupId = TEW.ICON_ID_GROUP_BLACKPOWDER; break;
-    case "ENGINEERING" :    element[1].iconGroupId = TEW.ICON_ID_GROUP_ENGINEERING; break;
-    default :               element[1].iconGroupId = TEW.ICON_ID_GROUP_DEFAULT; break;
-    }
-});
