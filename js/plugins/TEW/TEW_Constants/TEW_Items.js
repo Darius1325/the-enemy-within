@@ -1,788 +1,1146 @@
-//#region JSON Items
-
 TEW.ITEMS = TEW.ITEMS || {
     AMULET: {
         name: "Amulet",
         group: "CLOTHES",
+        groupIcon: TEW.ICONS_IDS.ITEM_CLOTHES,
+        groupLabel: "Clothes",
         nb: 1,
         price: "0/0/2",
         enc: 0,
-        availability: "COMMON"
+        availability: "COMMON",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
+        description: "This intricate amulet is a testament to the skilled craftsmanship of a bygone era. Hanging from a delicate silver chain, the pendant itself is shaped like a teardrop, forged from lustrous obsidian that gleams faintly even in dim light. Carved into its polished surface are ancient runes, their purpose enigmatic but undeniably potent. A faint azure glow emanates from the amulet's core, suggesting an inner energy or enchantment still pulsing within."
     },
     BOOTS: {
         name: "Boots",
         group: "CLOTHES",
+        groupIcon: TEW.ICONS_IDS.ITEM_CLOTHES,
+        groupLabel: "Clothes",
         nb: 1,
         price: "0/5/0",
         enc: 1,
-        availability: "COMMON"
+        availability: "COMMON",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
+        description: "Small description test"
     },
     CLOTHING: {
         name: "Clothing",
         group: "CLOTHES",
+        groupIcon: TEW.ICONS_IDS.ITEM_CLOTHES,
+        groupLabel: "Clothes",
         nb: 1,
         price: "0/6/0",
         enc: 1,
-        availability: "COMMON"
+        availability: "COMMON",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
+        description: "Description has to be done"
     },
     COAT: {
         name: "Coat",
         group: "CLOTHES",
+        groupIcon: TEW.ICONS_IDS.ITEM_CLOTHES,
+        groupLabel: "Clothes",
         nb: 1,
         price: "0/18/0",
         enc: 1,
-        availability: "COMMON"
+        availability: "COMMON",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
+        description: "Description has to be done"
     },
     COSTUME: {
         name: "Costume",
         group: "CLOTHES",
+        groupIcon: TEW.ICONS_IDS.ITEM_CLOTHES,
+        groupLabel: "Clothes",
         nb: 1,
         price: "1/0/0",
         enc: 1,
-        availability: "SCARCE"
+        availability: "SCARCE",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_SCARCE,
+        description: "Description has to be done"
     },
     COURTLY_GARB: {
         name: "Courtly Garb",
         group: "CLOTHES",
+        groupIcon: TEW.ICONS_IDS.ITEM_CLOTHES,
+        groupLabel: "Clothes",
         nb: 1,
         price: "12/0/0",
         enc: 1,
-        availability: "SCARCE"
+        availability: "SCARCE",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_SCARCE,
+        description: "Description has to be done"
     },
     FACE_POWDER: {
         name: "Face Powder",
         group: "CLOTHES",
+        groupIcon: TEW.ICONS_IDS.ITEM_CLOTHES,
+        groupLabel: "Clothes",
         nb: 1,
         price: "0/10/0",
         enc: 0,
-        availability: "COMMON"
+        availability: "COMMON",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
+        description: "Description has to be done"
     },
     GLOVES: {
         name: "Gloves",
         group: "CLOTHES",
+        groupIcon: TEW.ICONS_IDS.ITEM_CLOTHES,
+        groupLabel: "Clothes",
         nb: 1,
         price: "0/4/0",
         enc: 0,
-        availability: "COMMON"
+        availability: "COMMON",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
+        description: "Description has to be done"
     },
     HAT: {
         name: "Hat",
         group: "CLOTHES",
+        groupIcon: TEW.ICONS_IDS.ITEM_CLOTHES,
+        groupLabel: "Clothes",
         nb: 1,
         price: "0/4/0",
         enc: 0,
-        availability: "COMMON"
+        availability: "COMMON",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
+        description: "Description has to be done"
     },
     HOOD: {
         name: "Hood",
         group: "CLOTHES",
+        groupIcon: TEW.ICONS_IDS.ITEM_CLOTHES,
+        groupLabel: "Clothes",
         nb: 1,
         price: "0/5/0",
         enc: 0,
-        availability: "COMMON"
+        availability: "COMMON",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
+        description: "Description has to be done"
     },
     JEWELLERY: {
         name: "Jewellery",
         group: "CLOTHES",
+        groupIcon: TEW.ICONS_IDS.ITEM_CLOTHES,
+        groupLabel: "Clothes",
         nb: 1,
         price: "8/0/0",
         enc: 0,
-        availability: "COMMON"
+        availability: "COMMON",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
+        description: "Description has to be done"
     },
     PERFUME: {
         name: "Perfume",
         group: "CLOTHES",
+        groupIcon: TEW.ICONS_IDS.ITEM_CLOTHES,
+        groupLabel: "Clothes",
         nb: 1,
         price: "0/10/0",
         enc: 0,
-        availability: "COMMON"
+        availability: "COMMON",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
+        description: "Description has to be done"
     },
     PINS: {
         name: "Pins",
         group: "CLOTHES",
+        groupIcon: TEW.ICONS_IDS.ITEM_CLOTHES,
+        groupLabel: "Clothes",
         nb: 6,
         price: "0/10/0",
         enc: 0,
-        availability: "SCARCE"
+        availability: "SCARCE",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_SCARCE,
+        description: "Description has to be done"
     },
     RELIGIOUS_SYMBOL: {
         name: "Religious Symbol",
         group: "CLOTHES",
+        groupIcon: TEW.ICONS_IDS.ITEM_CLOTHES,
+        groupLabel: "Clothes",
         nb: 1,
         price: "0/6/8",
         enc: 0,
-        availability: "COMMON"
+        availability: "COMMON",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
+        description: "Description has to be done"
     },
     ROBES_PRACTICAL: {
         name: "Practical Robes",
         group: "CLOTHES",
+        groupIcon: TEW.ICONS_IDS.ITEM_CLOTHES,
+        groupLabel: "Clothes",
         nb: 1,
         price: "1/0/0",
         enc: 1,
-        availability: "RARE"
+        availability: "RARE",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_RARE,
+        description: "Description has to be done"
     },
     ROBES_STANDARD: {
         name: "Standard Robes",
         group: "CLOTHES",
+        groupIcon: TEW.ICONS_IDS.ITEM_CLOTHES,
+        groupLabel: "Clothes",
         nb: 1,
         price: "8/0/0",
         enc: 2,
-        availability: "EXOTIC"
+        availability: "EXOTIC",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_EXOTIC,
+        description: "Description has to be done"
     },
     ROBES_ELABORATE: {
         name: "Elaborate Robes",
         group: "CLOTHES",
+        groupIcon: TEW.ICONS_IDS.ITEM_CLOTHES,
+        groupLabel: "Clothes",
         nb: 1,
         price: "30/0/0",
         enc: 4,
-        availability: "EXOTIC"
+        availability: "EXOTIC",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_EXOTIC,
+        description: "Description has to be done"
     },
     SCEPTRE: {
         name: "Sceptre",
         group: "CLOTHES",
+        groupIcon: TEW.ICONS_IDS.ITEM_CLOTHES,
+        groupLabel: "Clothes",
         nb: 1,
         price: "8/0/0",
         enc: 1,
-        availability: "RARE"
+        availability: "RARE",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_RARE,
+        description: "Description has to be done"
     },
     SHOES: {
         name: "Shoes",
         group: "CLOTHES",
+        groupIcon: TEW.ICONS_IDS.ITEM_CLOTHES,
+        groupLabel: "Clothes",
         nb: 1,
         price: "0/5/0",
         enc: 0,
-        availability: "COMMON"
+        availability: "COMMON",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
+        description: "Description has to be done"
     },
     SIGNET_RING: {
         name: "Signet Ring",
         group: "CLOTHES",
+        groupIcon: TEW.ICONS_IDS.ITEM_CLOTHES,
+        groupLabel: "Clothes",
         nb: 1,
         price: "5/0/0",
         enc: 0,
-        availability: "RARE"
+        availability: "RARE",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_RARE,
+        description: "Description has to be done"
     },
     TATOO: {
         name: "Tatoo",
         group: "CLOTHES",
+        groupIcon: TEW.ICONS_IDS.ITEM_CLOTHES,
+        groupLabel: "Clothes",
         nb: 1,
         price: "0/4/0",
         enc: 0,
-        availability: "SCARCE"
+        availability: "SCARCE",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_SCARCE,
+        description: "Description has to be done"
     },
     UNIFORM: {
         name: "Uniform",
         group: "CLOTHES",
+        groupIcon: TEW.ICONS_IDS.ITEM_CLOTHES,
+        groupLabel: "Clothes",
         nb: 1,
         price: "1/2/0",
         enc: 1,
-        availability: "SCARCE"
+        availability: "SCARCE",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_SCARCE,
+        description: "Description has to be done"
     },
     WALKING_CANE: {
         name: "Walking Cane",
         group: "CLOTHES",
+        groupIcon: TEW.ICONS_IDS.ITEM_CLOTHES,
+        groupLabel: "Clothes",
         nb: 1,
         price: "3/0/0",
         enc: 1,
-        availability: "COMMON"
+        availability: "COMMON",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
+        description: "Description has to be done"
     },
     ALE_PINT: {
         name: "Ale, pint",
         group: "FOOD",
+        groupIcon: TEW.ICONS_IDS.ITEM_FOOD,
+        groupLabel: "Food",
         nb: 1,
         price: "0/0/3",
         enc: 0,
-        availability: "COMMON"
+        availability: "COMMON",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
+        description: "Description has to be done"
     },
     ALE_KEG: {
         name: "Ale, keg",
         group: "FOOD",
+        groupIcon: TEW.ICONS_IDS.ITEM_FOOD,
+        groupLabel: "Food",
         nb: 1,
         price: "0/3/0",
         enc: 2,
-        availability: "COMMON"
+        availability: "COMMON",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
+        description: "Description has to be done"
     },
     BUGMANS_ALE_PINT: {
         name: "Bugman's Ale, pint",
         group: "FOOD",
+        groupIcon: TEW.ICONS_IDS.ITEM_FOOD,
+        groupLabel: "Food",
         nb: 1,
         price: "0/0/9",
         enc: 0,
-        availability: "EXOTIC"
+        availability: "EXOTIC",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_EXOTIC,
+        description: "Description has to be done"
     },
     FOOD_ONE_DAY: {
         name: "Food, Groceries/day",
         group: "FOOD",
+        groupIcon: TEW.ICONS_IDS.ITEM_FOOD,
+        groupLabel: "Food",
         nb: 1,
         price: "0/0/10",
         enc: 1,
-        availability: "COMMON"
+        availability: "COMMON",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
+        description: "Description has to be done"
     },
     MEAL_INN: {
         name: "Meal, inn",
         group: "FOOD",
+        groupIcon: TEW.ICONS_IDS.ITEM_FOOD,
+        groupLabel: "Food",
         nb: 1,
         price: "0/1/0",
         enc: 0,
-        availability: "COMMON"
+        availability: "COMMON",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
+        description: "Description has to be done"
     },
     RATIONS_ONE_DAY: {
         name: "Rations, one day",
         group: "FOOD",
+        groupIcon: TEW.ICONS_IDS.ITEM_FOOD,
+        groupLabel: "Food",
         nb: 1,
         price: "0/2/0",
         enc: 0,
-        availability: "COMMON"
+        availability: "COMMON",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
+        description: "Description has to be done"
     },
     ROOM_COMMON: {
         name: "Common Room/night",
         group: "FOOD",
+        groupIcon: TEW.ICONS_IDS.ITEM_FOOD,
+        groupLabel: "Food",
         nb: 1,
         price: "0/0/10",
         enc: 0,
-        availability: "COMMON"
+        availability: "COMMON",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
+        description: "Description has to be done"
     },
     ROOM_PRIVATE: {
         name: "Private Room/night",
         group: "FOOD",
+        groupIcon: TEW.ICONS_IDS.ITEM_FOOD,
+        groupLabel: "Food",
         nb: 1,
         price: "0/10/0",
         enc: 0,
-        availability: "COMMON"
+        availability: "COMMON",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
+        description: "Description has to be done"
     },
     SPIRITS_PINT: {
         name: "Spirits, pint",
         group: "FOOD",
+        groupIcon: TEW.ICONS_IDS.ITEM_FOOD,
+        groupLabel: "Food",
         nb: 1,
         price: "0/2/0",
         enc: 0,
-        availability: "COMMON"
+        availability: "COMMON",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
+        description: "Description has to be done"
     },
     STABLES_NIGHT: {
         name: "Stables/night",
         group: "FOOD",
+        groupIcon: TEW.ICONS_IDS.ITEM_FOOD,
+        groupLabel: "Food",
         nb: 1,
         price: "0/0/10",
         enc: 0,
-        availability: "COMMON"
+        availability: "COMMON",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
+        description: "Description has to be done"
     },
     WINE_BOTTLE: {
         name: "Wine Bottle",
         group: "FOOD",
+        groupIcon: TEW.ICONS_IDS.ITEM_FOOD,
+        groupLabel: "Food",
         nb: 1,
         price: "0/0/10",
         enc: 0,
-        availability: "COMMON"
+        availability: "COMMON",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
+        description: "Description has to be done"
     },
     WINE_GLASS: {
         name: "Wine Glass",
         group: "FOOD",
+        groupIcon: TEW.ICONS_IDS.ITEM_FOOD,
+        groupLabel: "Food",
         nb: 1,
         price: "0/0/4",
         enc: 0,
-        availability: "COMMON"
+        availability: "COMMON",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
+        description: "Description has to be done"
     },
     ABACUS: {
         name: "Abacus",
         group: "TOOLS",
+        groupIcon: TEW.ICONS_IDS.ITEM_TOOLS,
+        groupLabel: "Tools",
         nb: 1,
         price: "0/3/4",
         enc: 0,
-        availability: "SCARCE"
+        availability: "SCARCE",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_SCARCE,
+        description: "Description has to be done"
     },
     ANIMAL_TRAP: {
         name: "Animal Trap",
         group: "TOOLS",
+        groupIcon: TEW.ICONS_IDS.ITEM_TOOLS,
+        groupLabel: "Tools",
         nb: 1,
         price: "0/2/6",
         enc: 1,
-        availability: "COMMON"
+        availability: "COMMON",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
+        description: "Description has to be done"
     },
     ANTITOXIN_KIT: {
         name: "Antitoxin Kit",
         group: "TOOLS",
+        groupIcon: TEW.ICONS_IDS.ITEM_TOOLS,
+        groupLabel: "Tools",
         nb: 1,
         price: "3/0/0",
         enc: 0,
-        availability: "SCARCE"
+        availability: "SCARCE",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_SCARCE,
+        description: "Description has to be done"
     },
     BOAT_HOOK: {
-        name: "Abacus",
+        name: "Boat Hook",
         group: "TOOLS",
+        groupIcon: TEW.ICONS_IDS.ITEM_TOOLS,
+        groupLabel: "Tools",
         nb: 1,
         price: "0/5/0",
         enc: 1,
-        availability: "COMMON"
+        availability: "COMMON",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
+        description: "Description has to be done"
     },
     BROOM: {
         name: "Broom",
         group: "TOOLS",
+        groupIcon: TEW.ICONS_IDS.ITEM_TOOLS,
+        groupLabel: "Tools",
         nb: 1,
         price: "0/0/10",
         enc: 2,
-        availability: "COMMON"
+        availability: "COMMON",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
+        description: "A description which is a bit longer because it has between 50 and 100 chars."
     },
     BUCKET: {
         name: "Bucket",
         group: "TOOLS",
+        groupIcon: TEW.ICONS_IDS.ITEM_TOOLS,
+        groupLabel: "Tools",
         nb: 1,
         price: "0/2/6",
         enc: 1,
-        availability: "COMMON"
+        availability: "COMMON",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
+        description: "Description has to be done"
     },
     CHISEL: {
         name: "Chisel",
         group: "TOOLS",
+        groupIcon: TEW.ICONS_IDS.ITEM_TOOLS,
+        groupLabel: "Tools",
         nb: 1,
         price: "0/4/2",
         enc: 0,
-        availability: "COMMON"
+        availability: "COMMON",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
+        description: "Description has to be done"
     },
     COMB: {
         name: "Comb",
         group: "TOOLS",
+        groupIcon: TEW.ICONS_IDS.ITEM_TOOLS,
+        groupLabel: "Tools",
         nb: 1,
         price: "0/0/10",
         enc: 0,
-        availability: "COMMON"
+        availability: "COMMON",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
+        description: "Description has to be done"
     },
     CROWBAR: {
         name: "Crowbar",
         group: "TOOLS",
+        groupIcon: TEW.ICONS_IDS.ITEM_TOOLS,
+        groupLabel: "Tools",
         nb: 1,
         price: "0/2/6",
         enc: 1,
-        availability: "COMMON"
+        availability: "COMMON",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
+        description: "Description has to be done"
     },
     CRUTCH: {
         name: "Crutch",
         group: "TOOLS",
+        groupIcon: TEW.ICONS_IDS.ITEM_TOOLS,
+        groupLabel: "Tools",
         nb: 1,
         price: "0/3/0",
         enc: 2,
-        availability: "COMMON"
+        availability: "COMMON",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
+        description: "Description has to be done"
     },
     DISGUISE_KIT: {
         name: "Disguise Kit",
         group: "TOOLS",
+        groupIcon: TEW.ICONS_IDS.ITEM_TOOLS,
+        groupLabel: "Tools",
         nb: 1,
         price: "0/6/6",
         enc: 0,
-        availability: "SCARCE"
+        availability: "SCARCE",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_SCARCE,
+        description: "Description has to be done"
     },
     EAR_PICK: {
         name: "Ear Pick",
         group: "TOOLS",
+        groupIcon: TEW.ICONS_IDS.ITEM_TOOLS,
+        groupLabel: "Tools",
         nb: 1,
         price: "0/2/0",
         enc: 0,
-        availability: "SCARCE"
+        availability: "SCARCE",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_SCARCE,
+        description: "Description has to be done"
     },
     FISH_HOOKS: {
         name: "Fish Hooks",
         group: "TOOLS",
+        groupIcon: TEW.ICONS_IDS.ITEM_TOOLS,
+        groupLabel: "Tools",
         nb: 12,
         price: "0/1/0",
         enc: 0,
-        availability: "COMMON"
+        availability: "COMMON",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
+        description: "Description has to be done"
     },
     FLOOR_BRUSH: {
         name: "Floor Brush",
         group: "TOOLS",
+        groupIcon: TEW.ICONS_IDS.ITEM_TOOLS,
+        groupLabel: "Tools",
         nb: 1,
         price: "0/1/6",
         enc: 0,
-        availability: "COMMON"
+        availability: "COMMON",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
+        description: "Description has to be done"
     },
     GAVEL: {
         name: "Gavel",
         group: "TOOLS",
+        groupIcon: TEW.ICONS_IDS.ITEM_TOOLS,
+        groupLabel: "Tools",
         nb: 1,
         price: "1/0/0",
         enc: 0,
-        availability: "SCARCE"
+        availability: "SCARCE",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_SCARCE,
+        description: "Description has to be done"
     },
     HAMMER: {
         name: "Hammer",
         group: "TOOLS",
+        groupIcon: TEW.ICONS_IDS.ITEM_TOOLS,
+        groupLabel: "Tools",
         nb: 1,
         price: "0/3/0",
         enc: 0,
-        availability: "COMMON"
+        availability: "COMMON",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
+        description: "Description has to be done"
     },
     HAND_MIRROR: {
         name: "Hand Mirror",
         group: "TOOLS",
+        groupIcon: TEW.ICONS_IDS.ITEM_TOOLS,
+        groupLabel: "Tools",
         nb: 1,
         price: "1/1/6",
         enc: 0,
-        availability: "EXOTIC"
+        availability: "EXOTIC",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_EXOTIC,
+        description: "Description has to be done"
     },
     HOE: {
         name: "Hoe",
         group: "TOOLS",
+        groupIcon: TEW.ICONS_IDS.ITEM_TOOLS,
+        groupLabel: "Tools",
         nb: 1,
         price: "0/4/0",
         enc: 2,
-        availability: "COMMON"
+        availability: "COMMON",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
+        description: "Description has to be done"
     },
     KEY: {
         name: "Key",
         group: "TOOLS",
+        groupIcon: TEW.ICONS_IDS.ITEM_TOOLS,
+        groupLabel: "Tools",
         nb: 1,
         price: "0/1/0",
         enc: 0,
-        availability: "COMMON"
+        availability: "COMMON",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
+        description: "Description has to be done"
     },
     LOCK_PICK: {
         name: "Lock Pick",
         group: "TOOLS",
+        groupIcon: TEW.ICONS_IDS.ITEM_TOOLS,
+        groupLabel: "Tools",
         nb: 1,
         price: "0/15/0",
         enc: 0,
-        availability: "SCARCE"
+        availability: "SCARCE",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_SCARCE,
+        description: "Description has to be done"
     },
     MANACLES: {
         name: "Manacles",
         group: "TOOLS",
+        groupIcon: TEW.ICONS_IDS.ITEM_TOOLS,
+        groupLabel: "Tools",
         nb: 1,
         price: "0/18/0",
         enc: 0,
-        availability: "SCARCE"
+        availability: "SCARCE",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_SCARCE,
+        description: "Description has to be done"
     },
     MOP: {
         name: "Mop",
         group: "TOOLS",
+        groupIcon: TEW.ICONS_IDS.ITEM_TOOLS,
+        groupLabel: "Tools",
         nb: 1,
         price: "0/1/0",
         enc: 2,
-        availability: "COMMON"
+        availability: "COMMON",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
+        description: "Description has to be done"
     },
     NAILS: {
         name: "Nails",
         group: "TOOLS",
+        groupIcon: TEW.ICONS_IDS.ITEM_TOOLS,
+        groupLabel: "Tools",
         nb: 12,
         price: "0/0/2",
         enc: 0,
-        availability: "COMMON"
+        availability: "COMMON",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
+        description: "Description has to be done"
     },
     PAINT_BRUSH: {
         name: "Paint Brush",
         group: "TOOLS",
+        groupIcon: TEW.ICONS_IDS.ITEM_TOOLS,
+        groupLabel: "Tools",
         nb: 1,
         price: "0/4/0",
         enc: 0,
-        availability: "COMMON"
+        availability: "COMMON",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
+        description: "Description has to be done"
     },
     PESTLE_AND_MORTAR: {
         name: "Pestle and Mortar",
         group: "TOOLS",
+        groupIcon: TEW.ICONS_IDS.ITEM_TOOLS,
+        groupLabel: "Tools",
         nb: 1,
         price: "0/14/0",
         enc: 0,
-        availability: "COMMON"
+        availability: "COMMON",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
+        description: "Description has to be done"
     },
     PICK: {
         name: "Pick",
         group: "TOOLS",
+        groupIcon: TEW.ICONS_IDS.ITEM_TOOLS,
+        groupLabel: "Tools",
         nb: 1,
         price: "0/18/0",
         enc: 1,
-        availability: "COMMON"
+        availability: "COMMON",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
+        description: "Description has to be done"
     },
     POLE: {
         name: "Pole (3 yards)",
         group: "TOOLS",
+        groupIcon: TEW.ICONS_IDS.ITEM_TOOLS,
+        groupLabel: "Tools",
         nb: 1,
         price: "0/8/0",
         enc: 3,
-        availability: "COMMON"
+        availability: "COMMON",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
+        description: "Description has to be done"
     },
     QUILL_PEN: {
         name: "Quill Pen",
         group: "TOOLS",
+        groupIcon: TEW.ICONS_IDS.ITEM_TOOLS,
+        groupLabel: "Tools",
         nb: 1,
         price: "0/3/0",
         enc: 0,
-        availability: "COMMON"
+        availability: "COMMON",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
+        description: "Description has to be done"
     },
     RAKE: {
         name: "Rake",
         group: "TOOLS",
+        groupIcon: TEW.ICONS_IDS.ITEM_TOOLS,
+        groupLabel: "Tools",
         nb: 1,
         price: "0/4/6",
         enc: 2,
-        availability: "COMMON"
+        availability: "COMMON",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
+        description: "Description has to be done"
     },
     READING_LENS: {
         name: "Reading Lens",
         group: "TOOLS",
+        groupIcon: TEW.ICONS_IDS.ITEM_TOOLS,
+        groupLabel: "Tools",
         nb: 1,
         price: "3/0/0",
         enc: 0,
-        availability: "RARE"
+        availability: "RARE",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_RARE,
+        description: "Description has to be done"
     },
     SAW: {
         name: "Saw",
         group: "TOOLS",
+        groupIcon: TEW.ICONS_IDS.ITEM_TOOLS,
+        groupLabel: "Tools",
         nb: 1,
         price: "0/6/0",
         enc: 1,
-        availability: "COMMON"
+        availability: "COMMON",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
+        description: "Description has to be done"
     },
     SICKLE: {
         name: "Sickle",
         group: "TOOLS",
+        groupIcon: TEW.ICONS_IDS.ITEM_TOOLS,
+        groupLabel: "Tools",
         nb: 1,
         price: "1/0/0",
         enc: 1,
-        availability: "COMMON"
+        availability: "COMMON",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
+        description: "Description has to be done"
     },
     SPADE: {
         name: "Spade",
         group: "TOOLS",
+        groupIcon: TEW.ICONS_IDS.ITEM_TOOLS,
+        groupLabel: "Tools",
         nb: 1,
         price: "0/8/0",
         enc: 2,
-        availability: "COMMON"
+        availability: "COMMON",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
+        description: "Description has to be done"
     },
     SPIKE: {
         name: "Spike",
         group: "TOOLS",
+        groupIcon: TEW.ICONS_IDS.ITEM_TOOLS,
+        groupLabel: "Tools",
         nb: 1,
         price: "0/1/0",
         enc: 0,
-        availability: "COMMON"
+        availability: "COMMON",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
+        description: "Description has to be done"
     },
     STAMP: {
         name: "Stamp, engraved",
         group: "TOOLS",
+        groupIcon: TEW.ICONS_IDS.ITEM_TOOLS,
+        groupLabel: "Tools",
         nb: 1,
         price: "5/0/0",
         enc: 0,
-        availability: "SCARCE"
+        availability: "SCARCE",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_SCARCE,
+        description: "Description has to be done"
     },
     TONGS: {
         name: "Tongs, steel",
         group: "TOOLS",
+        groupIcon: TEW.ICONS_IDS.ITEM_TOOLS,
+        groupLabel: "Tools",
         nb: 1,
         price: "0/16/0",
         enc: 0,
-        availability: "COMMON"
+        availability: "COMMON",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
+        description: "Description has to be done"
     },
     TELESCOPE: {
         name: "Telescope",
         group: "TOOLS",
+        groupIcon: TEW.ICONS_IDS.ITEM_TOOLS,
+        groupLabel: "Tools",
         nb: 1,
         price: "5/0/0",
         enc: 0,
-        availability: "RARE"
+        availability: "RARE",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_RARE,
+        description: "Description has to be done"
     },
     TWEEZERS: {
         name: "Tweezers",
         group: "TOOLS",
+        groupIcon: TEW.ICONS_IDS.ITEM_TOOLS,
+        groupLabel: "Tools",
         nb: 1,
         price: "0/1/0",
         enc: 0,
-        availability: "SCARCE"
+        availability: "SCARCE",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_SCARCE,
+        description: "Description has to be done"
     },
     WRITING_KIT: {
         name: "Writing Kit",
         group: "TOOLS",
+        groupIcon: TEW.ICONS_IDS.ITEM_TOOLS,
+        groupLabel: "Tools",
         nb: 1,
         price: "2/0/0",
         enc: 0,
-        availability: "SCARCE"
+        availability: "SCARCE",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_SCARCE,
+        description: "Description has to be done"
     },
     APOTHECARY_BOOK: {
         name: "Apothecary Book",
         group: "BOOKS",
+        groupIcon: TEW.ICONS_IDS.ITEM_BOOKS,
+        groupLabel: "Books",
         nb: 1,
         price: "8/0/0",
         enc: 1,
-        availability: "SCARCE"
+        availability: "SCARCE",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_SCARCE,
+        description: "Description has to be done"
     },
     ART_BOOK: {
         name: "Art Book",
         group: "BOOKS",
+        groupIcon: TEW.ICONS_IDS.ITEM_BOOKS,
+        groupLabel: "Books",
         nb: 1,
         price: "5/0/0",
         enc: 1,
-        availability: "SCARCE"
+        availability: "SCARCE",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_SCARCE,
+        description: "Description has to be done"
     },
     ACRYPTOGRAPHY_BOOK: {
         name: "Cryptography Book",
         group: "BOOKS",
+        groupIcon: TEW.ICONS_IDS.ITEM_BOOKS,
+        groupLabel: "Books",
         nb: 1,
         price: "8/0/0",
         enc: 1,
-        availability: "EXOTIC"
+        availability: "EXOTIC",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_EXOTIC,
+        description: "Description has to be done"
     },
     ENGINEER_BOOK: {
         name: "Engineer Book",
         group: "BOOKS",
+        groupIcon: TEW.ICONS_IDS.ITEM_BOOKS,
+        groupLabel: "Books",
         nb: 1,
         price: "3/0/0",
         enc: 1,
-        availability: "SCARCE"
+        availability: "SCARCE",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_SCARCE,
+        description: "Description has to be done"
     },
     LAW_BOOK: {
         name: "Law Book",
         group: "BOOKS",
+        groupIcon: TEW.ICONS_IDS.ITEM_BOOKS,
+        groupLabel: "Books",
         nb: 1,
         price: "15/0/0",
         enc: 1,
-        availability: "RARE"
+        availability: "RARE",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_RARE,
+        description: "Description has to be done"
     },
     MAGIC_GRIMOIRE: {
         name: "Magic Grimoire",
         group: "BOOKS",
+        groupIcon: TEW.ICONS_IDS.ITEM_BOOKS,
+        groupLabel: "Books",
         nb: 1,
         price: "20/0/0",
         enc: 1,
-        availability: "EXOTIC"
+        availability: "EXOTIC",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_EXOTIC,
+        description: "Description has to be done"
     },
     MEDICINE_BOOK: {
         name: "Medicine Book",
         group: "BOOKS",
+        groupIcon: TEW.ICONS_IDS.ITEM_BOOKS,
+        groupLabel: "Books",
         nb: 1,
         price: "15/0/0",
         enc: 1,
-        availability: "RARE"
+        availability: "RARE",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_RARE,
+        description: "Description has to be done"
     },
     RELIGION_BOOK: {
         name: "Religion Book",
         group: "BOOKS",
+        groupIcon: TEW.ICONS_IDS.ITEM_BOOKS,
+        groupLabel: "Books",
         nb: 1,
         price: "1/0/0",
         enc: 1,
-        availability: "COMMON"
+        availability: "COMMON",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
+        description: "Description has to be done"
     },
     GUILD_LICENSE: {
-        name: "AGuild License",
+        name: "Guild License",
         group: "BOOKS",
+        groupIcon: TEW.ICONS_IDS.ITEM_BOOKS,
+        groupLabel: "Books",
         nb: 1,
         price: "0/0/0",
         enc: 0,
-        availability: "EXOTIC"
+        availability: "EXOTIC",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_EXOTIC,
+        description: "Description has to be done"
     },
     LEAFLET: {
         name: "Leaflet",
         group: "BOOKS",
+        groupIcon: TEW.ICONS_IDS.ITEM_BOOKS,
+        groupLabel: "Books",
         nb: 1,
         price: "0/1/0",
         enc: 0,
-        availability: "COMMON"
+        availability: "COMMON",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
+        description: "A description which is a definitly longer because it has between 150 and 200 chars. This time, im gonna tell you the story of it's previous owner. He was such an amazing mage..."
     },
     LEGAL_DOCUMENT: {
-        name: "Leagl Document",
+        name: "Legal Document",
         group: "BOOKS",
+        groupIcon: TEW.ICONS_IDS.ITEM_BOOKS,
+        groupLabel: "Books",
         nb: 1,
         price: "0/3/0",
         enc: 0,
-        availability: "COMMON"
+        availability: "COMMON",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
+        description: "Description has to be done"
     },
-    MAP: {// TODO more maps ?
+    MAP: {
         name: "Map",
         group: "BOOKS",
+        groupIcon: TEW.ICONS_IDS.ITEM_BOOKS,
+        groupLabel: "Books",
         nb: 1,
         price: "3/0/0",
         enc: 0,
-        availability: "SCARCE"
+        availability: "SCARCE",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_SCARCE,
+        description: "Description has to be done"
     },
     PARCHMENT: {
         name: "Parchment",
         group: "BOOKS",
+        groupIcon: TEW.ICONS_IDS.ITEM_BOOKS,
+        groupLabel: "Books",
         nb: 1,
         price: "0/1/0",
         enc: 0,
-        availability: "COMMON"
+        availability: "COMMON",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
+        description: "Description has to be done"
     },
     BLACK_LOTUS: {
         name: "Black Lotus",
         group: "DRUGS",
+        groupIcon: TEW.ICONS_IDS.ITEM_DRUGS,
+        groupLabel: "Drugs",
         nb: 1,
         price: "20/0/0",
         enc: 0,
-        availability: "EXOTIC"
+        availability: "EXOTIC",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_EXOTIC,
+        description: "Description has to be done"
     },
     HEARTKILL: {
         name: "Heartkill",
         group: "DRUGS",
+        groupIcon: TEW.ICONS_IDS.ITEM_DRUGS,
+        groupLabel: "Drugs",
         nb: 1,
         price: "40/0/0",
         enc: 0,
-        availability: "EXOTIC"
+        availability: "EXOTIC",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_EXOTIC,
+        description: "A description which is even longer because it has between 100 and 150 chars. Its not that hard, i have juste have to write down some words."
     },
     MAD_CAP_MUSHROOMS: {
         name: "Mad Cap Mushrooms",
         group: "DRUGS",
+        groupIcon: TEW.ICONS_IDS.ITEM_DRUGS,
+        groupLabel: "Drugs",
         nb: 1,
         price: "5/0/0",
         enc: 0,
-        availability: "EXOTIC"
+        availability: "EXOTIC",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_EXOTIC,
+        description: "Description has to be done"
     },
     MANDRAKE_ROOT: {
         name: "Mandrake Root",
         group: "DRUGS",
+        groupIcon: TEW.ICONS_IDS.ITEM_DRUGS,
+        groupLabel: "Drugs",
         nb: 1,
         price: "1/0/0",
         enc: 0,
-        availability: "RARE"
+        availability: "RARE",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_RARE,
+        description: "Description has to be done"
     },
     MOONFLOWER: {
         name: "Moonflower",
         group: "DRUGS",
+        groupIcon: TEW.ICONS_IDS.ITEM_DRUGS,
+        groupLabel: "Drugs",
         nb: 1,
         price: "5/0/0",
         enc: 0,
-        availability: "SCARCE"
+        availability: "SCARCE",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_SCARCE,
+        description: "Description has to be done"
     },
     RANALDS_DELIGHT: {
         name: "Ranald's Delight",
         group: "DRUGS",
+        groupIcon: TEW.ICONS_IDS.ITEM_DRUGS,
+        groupLabel: "Drugs",
         nb: 1,
         price: "0/18/0",
         enc: 0,
-        availability: "SCARCE"
+        availability: "SCARCE",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_SCARCE,
+        description: "Description has to be done"
     },
     SPIT: {
         name: "Spit",
         group: "DRUGS",
+        groupIcon: TEW.ICONS_IDS.ITEM_DRUGS,
+        groupLabel: "Drugs",
         nb: 1,
         price: "1/5/0",
         enc: 0,
-        availability: "RARE"
+        availability: "RARE",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_RARE,
+        description: "Description has to be done"
     },
     WEIRDROOT: {
         name: "Weirdroot",
         group: "DRUGS",
+        groupIcon: TEW.ICONS_IDS.ITEM_DRUGS,
+        groupLabel: "Drugs",
         nb: 1,
         price: "0/4/0",
         enc: 0,
-        availability: "RARE"
+        availability: "RARE",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_RARE,
+        description: "Description has to be done"
     }
-}
-
-//#endregion JSON Items
-
-// Icon Ids
-TEW.ICON_ID_GROUP_CLOTHES = 154;
-TEW.ICON_ID_GROUP_TOOLS = 216;
-TEW.ICON_ID_GROUP_FOOD = 265;
-TEW.ICON_ID_GROUP_BOOKS = 189;
-TEW.ICON_ID_GROUP_DRUGS = 219;
-TEW.ICON_ID_GROUP_DEFAULT = 0;
+};
 
 TEW.ITEM_IDS = Object.keys(TEW.ITEMS);
 TEW.ITEMS_ARRAY = Object.entries(TEW.ITEMS).sort((a, b) => a[0].localeCompare(b[0]));
-TEW.ITEMS_ARRAY.forEach(element => {
-   switch (element[1].group){
-    case "CLOTHES" :    element[1].iconGroupId = TEW.ICON_ID_GROUP_CLOTHES; break;
-    case "TOOLS" :      element[1].iconGroupId = TEW.ICON_ID_GROUP_TOOLS; break;
-    case "FOOD" :       element[1].iconGroupId = TEW.ICON_ID_GROUP_FOOD; break;
-    case "BOOKS" :      element[1].iconGroupId = TEW.ICON_ID_GROUP_BOOKS; break;
-    case "DRUGS" :      element[1].iconGroupId = TEW.ICON_ID_GROUP_DRUGS; break;
-    default :           element[1].iconGroupId = TEW.ICON_ID_GROUP_DEFAULT; break;
-   }
-});
 

@@ -36,7 +36,6 @@ Input.keyMapper[69] = "E_Key";
 
 
 // Windows
-
 const INVENTORY_WINDOW_TOPBAR_HEIGHT = 70;
 
 // The window for selecting a command on the inventory screen.
@@ -70,9 +69,6 @@ Window_Selectable.prototype.setTopRow = function(row) {
     }
 };
 // #region === Window_InventoryList ===
-//-----------------------------------------------------------------------------
-// Window_Inventory
-
 function Window_InventoryList() {
     this.initialize.apply(this, arguments);
 }
@@ -80,6 +76,7 @@ function Window_InventoryList() {
 Window_InventoryList.prototype = Object.create(Window_Selectable.prototype);
 Window_InventoryList.prototype.constructor = Window_InventoryList;
 
+// Inializing the window
 Window_InventoryList.prototype.initialize = function() {
     Window_Selectable.prototype.initialize.call(this,
         0,
@@ -96,6 +93,7 @@ Window_InventoryList.prototype.initialize = function() {
     this.refresh();
 };
 
+// Setting the actor
 Window_InventoryList.prototype.setActor = function(actor) {
     if (this._actor !== actor) {
         this._actor = actor;
@@ -103,6 +101,7 @@ Window_InventoryList.prototype.setActor = function(actor) {
     }
 };
 
+// Refreshing the window
 Window_InventoryList.prototype.refresh = function() {
     if (this.contents) {
         this.contents.clear();
@@ -112,10 +111,12 @@ Window_InventoryList.prototype.refresh = function() {
     }
 };
 
+// Returning max Items
 Window_InventoryList.prototype.maxItems = function() {
     return this._maxItems;
 };
 
+// Returning max Columns
 Window_InventoryList.prototype.maxCols = () => 1;
 // #endregion === Window_InventoryList ===
 // === //
@@ -127,12 +128,14 @@ function Window_InventoryDetails() {
 Window_InventoryDetails.prototype = Object.create(Window_Base.prototype);
 Window_InventoryDetails.prototype.constructor = Window_InventoryDetails;
 
+// Initalizing the window
 Window_InventoryDetails.prototype.initialize = function(commandWindowHeight) {
     Window_Base.prototype.initialize.call(this,
         Graphics.boxWidth / 2,
         INVENTORY_WINDOW_TOPBAR_HEIGHT,
         Graphics.boxWidth / 2,
         Graphics.boxHeight - INVENTORY_WINDOW_TOPBAR_HEIGHT - commandWindowHeight);
+    this.width = Graphics.boxWidth / 2;
     this.activate();
     this.refresh();
 };
@@ -144,8 +147,6 @@ Window_InventoryDetails.prototype.setActor = function(actor) {
     }
 };
 
-Window_InventoryDetails.prototype.refresh = function() {};
-
 // Drawing an underlined Text
 Window_InventoryDetails.prototype.drawUnderlinedText = function(text, x, y, width, align) {
     // Dessiner le texte
@@ -153,11 +154,11 @@ Window_InventoryDetails.prototype.drawUnderlinedText = function(text, x, y, widt
 
     // Calculer la position de la ligne
     const textSize = this.contents.fontSize;
-    const textWidth = this.textWidth(text); // Largeur du texte
-    const lineY = y + textSize + 2; // Position de la ligne sous le texte
+    const textWidth = this.textWidth(text); 
+    const lineY = y + textSize + 2; 
 
     // Dessiner la ligne
-    this.contents.paintOpacity = 255; // Assurez-vous que l'opacité est pleine
+    this.contents.paintOpacity = 255;
     this.contents.fillRect(
         x + (align === "center" ? (width - textWidth) / 2 : align === "right" ? width - textWidth : 0),
         lineY,
@@ -167,27 +168,56 @@ Window_InventoryDetails.prototype.drawUnderlinedText = function(text, x, y, widt
     );
 };
 
-Window_InventoryDetails.prototype.drawTable = function(x, y, width, rows, textArray) {
-    const cellWidthTh = width / 3; // Largeur d'une cellule
-    const cellWidthTd = width / 3 * 2; // Largeur d'une cellule
-    const cellHeight = this.lineHeight(); // Hauteur d'une cellule
+// Drawing a table with 2 columns
+Window_InventoryDetails.prototype.drawTable2Columns = function(x, y, width, rows, textArray) {
+    const cellWidthFirstRow = width / 3;
+    const cellWidthSecondRow = width / 3 * 2;
+    const cellHeight = this.lineHeight();
 
     for (let row = 0; row < rows; row++) {
         const cellXTh = x;
-        const cellXTd = x + cellWidthTh;
+        const cellXTd = x + cellWidthFirstRow;
         const cellY = y + row * cellHeight
 
-        this.drawText(textArray[row][0], cellXTh + 5, cellY, cellWidthTh - 10 , "left");
-        this.drawText(textArray[row][1], cellXTd + 5, cellY, cellWidthTd - 10 , "left");
+        this.drawText(textArray[row][0], cellXTh + 5, cellY, cellWidthFirstRow - 10 , "left");
+        this.drawText(textArray[row][1], cellXTd + 5, cellY, cellWidthSecondRow - 10 , "left");
     }
 };
 
+// Drawing a wrapped text - used to draw to description
+Window_InventoryDetails.prototype.drawWrappedTextManually = function(text, x, y, fontSize) {
+
+    const words = text.split(" ");
+    const maxWidth = this.contentsWidth() - x;
+
+    if (text.length <= 50){ this.contents.fontSize = 28; }
+    else if (text.length <= 150){ this.contents.fontSize = 20; }
+    else if (text.length <= 200) { this.contents.fontSize = 16; }
+    else { this.contents.fontSize = 12; }
+
+    const spaceWidth = this.textWidth(" ");
+    const lineHeight = fontSize * 1.2;
+    let currentX = x;
+    let currentY = y;
+
+    words.forEach(word => {
+        const wordWidth = this.textWidth(word);
+
+        // If the word is too long, drawing it on the next line
+        if (currentX + wordWidth > maxWidth) {
+            currentX = x; // begining of the line
+            currentY += lineHeight; // next line
+        }
+
+        // drawing it on the current line
+        this.drawText(word, currentX, currentY, wordWidth, 'left');
+        currentX += wordWidth + spaceWidth;
+    });
+    this.resetFontSettings();
+}
 // #endregion === Window_InventoryDetails ===
 // === //
 // #region === Window_InventoryInfos ===
-//-----------------------------------------------------------------------------
-// Window_InventoryInfos
-
 function Window_InventoryInfos() {
     this.initialize.apply(this, arguments);
 }
@@ -212,9 +242,6 @@ Window_InventoryInfos.prototype.setActor = function(actor) {
 // #endregion === Window_InventoryInfos ===
 // === //
 // #region === Window_InventoryWeapons ===
-//-----------------------------------------------------------------------------
-// Window_InventoryWeapons
-
 function Window_InventoryWeapons() {
     this.initialize.apply(this, arguments);
 }
@@ -414,9 +441,6 @@ Window_InventoryArmors.prototype.setActor = function(actor) {
 // #endregion === Window_InventoryArmors ===
 // === //
 // #region === Window_InventoryItems ===
-//-----------------------------------------------------------------------------
-// Window_InventoryItems
-
 function Window_InventoryItems() {
     this.initialize.apply(this, arguments);
 }
@@ -458,7 +482,7 @@ Window_InventoryItems.prototype.drawItem = function(index) {
 
     const item = this.itemFromIndex(index);
     this.changeTextColor(this.systemColor());
-    this.drawIcon(item[1].iconGroupId, x, y)
+    this.drawIcon(item[1].groupIcon, x, y)
     this.drawText(item[1].name, x + 32 + this._iconPadding, y, this._rightColumnPosition);
     this.resetTextColor();
     this.drawText(this._actor.item(item[0]), this._rightColumnPosition, y, this._rightColumnWidth, 'right');
@@ -469,6 +493,7 @@ Window_InventoryItems.prototype.itemFromIndex = function(index) {
     return this._items[index];
 };
 
+// Selecting an item
 Window_InventoryItems.prototype.select = function(index) {
     if (this._index !== index) {
         this.hideHelpWindow();
@@ -476,8 +501,6 @@ Window_InventoryItems.prototype.select = function(index) {
     this._index = index;
     if (this._index >= 0) {
         this.callHandler("show_item_details");
-        // this._helpWindow.clear();
-        // this.drawHelp(this._index);
     }
     this._stayCount = 0;
     this.ensureCursorVisible();
@@ -485,18 +508,9 @@ Window_InventoryItems.prototype.select = function(index) {
     this.callUpdateHelp();
 };
 
-Window_InventoryItems.prototype.drawHelp = function(index) {
-    const item = this.itemFromIndex(index)
-    const lineHeight = this._helpWindow.lineHeight();
-    const group = 'Group : ' + item[1].group + '(';
-    this._helpWindow.addText(item[1].name, 0, 0);
-    this._helpWindow.addText(group, 0, lineHeight);
-    this._helpWindow.addIcon(item[1].iconGroupId, this.textWidth(group), lineHeight)
-    this._helpWindow.addText(')', this.textWidth(group) + 32, lineHeight);
-}
-
+// handling process OK
 Window_InventoryItems.prototype.processOk = function() {
-    if (this.isCurrentItemEnabled()) { // TODO
+    if (this.isCurrentItemEnabled()) {
         this.playOkSound();
         this.updateInputData();
         this.callOkHandler();
@@ -504,15 +518,6 @@ Window_InventoryItems.prototype.processOk = function() {
         this.playBuzzerSound();
     }
 };
-
-// Window_InventoryItems.prototype.showHelpWindow = function() {
-//     if (this._helpWindow && this.active) {
-//         this._helpWindow.show();
-//         this._helpWindow.refresh();
-//     }
-// };
-
-// Window_InventoryItems.prototype.updateHelp = () => {};
 // #endregion === Window_InventoryItems ===
 // === //
 // #region === Window_InventoryDetailsItem ===
@@ -525,30 +530,39 @@ Window_InventoryDetailsItems.prototype.constructor = Window_InventoryDetailsItem
 
 Window_InventoryDetailsItems.prototype.initialize = function(commandWindowHeight = 0) {
     Window_InventoryDetails.prototype.initialize.call(this, commandWindowHeight);
-    // this._helpWindow = null;
-    // this.setHandler('ok', this.showHelpWindow.bind(this));
+    this._item = null;
 };
 
-Window_InventoryDetailsItems.prototype.refresh = function(item) {
+// Refreshing the window
+Window_InventoryDetailsItems.prototype.refresh = function() {
     this.contents.clear();
-    if (item){
-        this.drawDetails(item);
+    if (this._item){
+        this.drawDetails(this._item);
     }
 };
 
+// Drawing the details
 Window_InventoryDetailsItems.prototype.drawDetails = function(item){
     // Title
-    this.drawUnderlinedText(item[1].name, 0, 0, Graphics.boxWidth / 2, "center");
+    this.drawUnderlinedText(item[1].name, 0, 0, this.contentsWidth(), "center");
 
     // Item's Icon
-    this.drawIcon(item[1].iconGroupId, 0, 0);
+    this.drawIcon(item[1].groupIcon, 0, 0);
+
+    // Availability Icon
+    this.drawIcon(item[1].availabilityIcon, this.contentsWidth() - 32, 0)
 
     // Table
-    this.drawTable(0, 100, Graphics.boxWidth / 2, 3, [
-        ["Owned :", "x" + item[1].quantity], ["Group :", item[1].group], ["Enc. :", item[1].enc]
+    this.drawTable2Columns(0, 80, this.contentsWidth(), 3, [
+        ["Owned :", "x" + item[1].quantity],
+        ["Group :", item[1].groupLabel],
+        ["Enc. :", item[1].enc]
     ]);
-}
+
+    // Description
+    this.drawWrappedTextManually(item[1].description, 0, 220, 24);
     
+};  
 // #endregion === Window_InventoryDetailsItem ===
 // === //
 // #region === Window_InventoryHelp ===
@@ -617,9 +631,6 @@ Window_InventoryHelp.prototype.refresh = function() {
 // #endregion === Window_InventoryHelp ===
 // === //
 // #region === Window_InventoryCommand ===
-//-----------------------------------------------------------------------------
-// Window_InventoryCommand
-//
 // The window for selecting a command on the inventory screen.
 
 function Window_InventoryCommand() {
@@ -668,9 +679,6 @@ Window_InventoryCommand.prototype.cursorLeft = function(wrap) {
 // #endregion === Window_InventoryCommand ===
 // === //  
 // #region === Window_InventoryCommandItems ===
-//-----------------------------------------------------------------------------
-// Window_InventoryCommandItems
-//
 // The window for selecting a command on the items view.
 
 function Window_InventoryCommandItems() {
@@ -696,7 +704,7 @@ Window_InventoryCommandItems.prototype.windowWidth = function() {
     return this._windowWidth;
 };
 
-// Making the 2 tabs
+// Making the 2 lines
 Window_InventoryCommandItems.prototype.makeCommandList = function() {
     this.addCommand(TextManager.inventoryItemUse, 'inventory_item_use');
     this.addCommand(TextManager.inventoryItemTransfer, 'inventory_item_transfer');
@@ -731,12 +739,6 @@ Window_InventoryAmmo.prototype.setActor = function(actor) {
 //#endregion === Window_InventoryAmmo
 // === //  
 // #region === Scene_Equip ===
-
-// Scenes
-
-//-----------------------------------------------------------------------------
-// Scene_Equip
-//
 // Customizing the inventory scene
 
 Scene_Equip.prototype.INFOS_WINDOW_INDEX = 0;
@@ -889,10 +891,6 @@ Scene_Equip.prototype.createItemsDetailsWindow = function(){
     this._itemsDetailsWindow = new Window_InventoryDetailsItems(
         this._itemsCommandWindow.fittingHeight(this._itemsCommandWindow._actionsNumber)
     );
-    // this._itemsDetailsWindow.setHandler('cancel', () => {
-    //     this._commandWindow.activate();
-    //     this._itemsDetailsWindow.deselect();
-    // });
     this._itemsWindow.setHandler('show_item_details', () => {
         this.showItemDetails();
     });
@@ -913,6 +911,9 @@ Scene_Equip.prototype.hideAllWindows = function(){
     
     this._itemsWindow.hide();
     this._itemsWindow.deactivate();
+
+    this._itemsDetailsWindow.hide();
+    this._itemsDetailsWindow.deactivate();
 
     this._itemsCommandWindow.hide();
     this._itemsCommandWindow.deactivate();
@@ -984,10 +985,8 @@ Scene_Equip.prototype.activateInventoryItems = function(index = 0) {
     this._itemsDetailsWindow.show();
     this._commandWindow.deactivate();
     this._itemsWindow.activate();
-    // this._helpWindow.reshape();
     this._itemsWindow.select(index);
     this._itemsWindow.refresh();
-    // this._itemsDetailsWindow.refresh();
 };
 
 // Activating the ammo window 
@@ -1006,24 +1005,27 @@ Scene_Equip.prototype.activateCommandWindowItem = function(){
         this._itemsCommandWindow.show();
         this._itemsCommandWindow.activate();
         this._itemsCommandWindow.select(0);
-        // this._itemsWindow._helpWindow.show();
-        // this._itemsWindow._helpWindow.refresh();
     }
 }
 
+
+// Using an item - Triggered on the items window
 Scene_Equip.prototype.useItem = function(){
     console.log("Use item : ", this._itemsWindow.index());
     this._itemsCommandWindow.callHandler('cancel');
 }
 
+// Transfering an item - Triggered on the items window
 Scene_Equip.prototype.transferItem = function(){
     console.log("Transfer item", this._itemsWindow.index());
     this._itemsCommandWindow.callHandler('cancel');
 }
 
+// Showing the item details - Triggered on the items window
 Scene_Equip.prototype.showItemDetails = function(){
     const item = this._itemsWindow.itemFromIndex(this._itemsWindow.index());
     item[1].quantity = this._itemsWindow._actor.item(item[0]);
-    this._itemsDetailsWindow.refresh(item);
+    this._itemsDetailsWindow._item = item;
+    this._itemsDetailsWindow.refresh();
 }
 //#endregion === Scene_Equip === 
