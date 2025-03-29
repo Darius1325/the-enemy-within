@@ -124,12 +124,15 @@ Game_BattlerBase.prototype.initialize = function() {
     this.addItem("LEAFLET");
     this.addItem("ROBES_STANDARD");
     this.addItem("WINE_GLASS");
+    this.addItem("ROBES_ELABORATE");
 
     // temp Weapons
     this.addWeapon("AXE");
     this.addWeapon("SHIELD");
     this.addWeapon("CLUB");
     this.addWeapon("CANE_PISTOL");
+    this.addWeapon("CANE_PISTOL");
+    this.addWeapon("HOCHLAND_LONG_RIFLE");
     // this.equipMainHand(0);
     this.equipSecondHand(2);
 
@@ -137,6 +140,7 @@ Game_BattlerBase.prototype.initialize = function() {
     this.addArmor("SOFT_KIT");
     this.addArmor("SALLET");
     this.addArmor("CHAINMAIL_COAT");
+    this.addArmor("BRACERS");
     this.addArmor("BRACERS");
     this.equipArmor("SOFT_KIT");
     this.equipArmor("CHAINMAIL_COAT");
@@ -314,7 +318,11 @@ Game_BattlerBase.prototype.addArmor = function(armorId) {
 }
 
 Game_BattlerBase.prototype.hasArmorTEW = function(armorId) {
-    return this.armors.some(armor => armor.id === armorId);
+    return this.armors.some(armor => armor === armorId);
+}
+
+Game_BattlerBase.prototype.hasArmorEquippedTEW = function(armorId) {
+    return this.equippedArmors.some(armor => armor === armorId);
 }
 
 Game_BattlerBase.prototype.equipArmor = function(armorId) {

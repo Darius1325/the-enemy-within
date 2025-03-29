@@ -190,10 +190,10 @@ Window_InventoryDetails.prototype.drawWrappedTextManually = function(text, x, y,
     const words = text.split(" ");
     const maxWidth = this.contentsWidth() - x;
 
-    if (text.length <= 50){ this.contents.fontSize = 28; }
-    else if (text.length <= 150){ this.contents.fontSize = 20; }
-    else if (text.length <= 200) { this.contents.fontSize = 16; }
-    else { this.contents.fontSize = 12; }
+    if (text.length <= 100){ this.contents.fontSize = 28; }
+    else if (text.length <= 200){ this.contents.fontSize = 20; }
+    // else if (text.length <= 200) { this.contents.fontSize = 16; }
+    else { this.contents.fontSize = 16; }
 
     const spaceWidth = this.textWidth(" ");
     const lineHeight = fontSize * 1.2;
@@ -214,7 +214,19 @@ Window_InventoryDetails.prototype.drawWrappedTextManually = function(text, x, y,
         currentX += wordWidth + spaceWidth;
     });
     this.resetFontSettings();
-}
+};
+
+Window_InventoryDetails.prototype.drawLine = function(y) {
+    const lineWidth = 40;
+    const lineSize = 2;
+    this.contents.fillRect(
+        (this.contentsWidth() - lineWidth) / 2,
+        y,
+        lineWidth,
+        lineSize,
+        this.normalColor()
+    );
+};
 // #endregion === Window_InventoryDetails ===
 // === //
 // #region === Window_InventoryInfos ===
@@ -336,9 +348,6 @@ Window_InventoryWeapons.prototype.weaponFromIndex = function(index) {
 };
 
 Window_InventoryWeapons.prototype.select = function(index) {
-    if (this._index !== index) {
-        this.hideHelpWindow();
-    }
     this._index = index;
     if (this._index >= 0) {
         // this._helpWindow.clear();
@@ -414,18 +423,84 @@ Window_InventoryArmors.prototype.constructor = Window_InventoryArmors;
 
 Window_InventoryArmors.prototype.initialize = function() {
     Window_InventoryList.prototype.initialize.call(this);
-    this._helpWindow = null;
-    // this.setHandler('ok', this.showHelpWindow.bind(this));
 };
 
 Window_InventoryArmors.prototype.setActor = function(actor) {
     if (this._actor !== actor) {
         this._actor = actor;
-        // this._advancedCompsList = TEW.ADVANCED_COMPS.filter(comp => actor.hasComp(comp[0])); // TODO
-        // this._maxItems = TEW.BASE_COMPS.length + this._advancedCompsList.length;
+        this._armors = [];        
+
+        // const unequippedArmors = TEW.ARMORS_ARRAY.filter(armor => actor.hasArmorTEW(armor[0]));
+        // const equippedArmors = TEW.ARMORS_ARRAY.filter(armor => actor.hasArmorEquippedTEW(armor[0]));
+
+        actor.equippedArmors.forEach(armor => {
+            this._armors.push(TEW.ARMORS_ARRAY.find(a => a[0] === armor));
+        });
+        actor.armors.forEach(armor => {
+            this._armors.push(TEW.ARMORS_ARRAY.find(a => a[0] === armor));
+        });
+        this._maxItems = this._armors.length;
         this.refresh();
     }
 };
+
+Window_InventoryArmors.prototype.drawAllItems = function() {
+    var topIndex = this.topIndex();
+    for (var i = 0; i < this.maxPageItems(); i++) {
+        var index = topIndex + i;
+        if (index < this.maxItems()) {
+            this.drawItem(index);
+        }
+    }
+};
+
+Window_InventoryArmors.prototype.drawItem = function(index) {
+    const normalizedIndex = index - this.topIndex();
+    const x = 48;
+    const y = normalizedIndex * TEW.MENU_LINE_HEIGHT;
+
+    const armor = this.armorFromIndex(index);
+    
+    if (armor) {
+        const iconEquipped = this._actor.hasArmorEquippedTEW(armor[0])
+            ? TEW.ICONS_IDS.EQUIPPED_ARMOR
+            : 0;
+        this.changeTextColor(this.systemColor());
+        this.drawIcon(iconEquipped, x - 32, y)
+        this.drawIcon(armor[1].icon, x , y)
+        this.drawText(armor[1].name, x + 32 + this._iconPadding, y, this.contentsWidth() - (x + 32 + this._iconPadding));
+        this.resetTextColor();
+    }
+};
+
+// Getting an item from its index
+Window_InventoryArmors.prototype.armorFromIndex = function(index) {
+    return this._armors[index];
+};
+
+Window_InventoryArmors.prototype.select = function(index) {
+    this._index = index;
+    if (this._index >= 0) {
+        // this._helpWindow.clear();
+        // this.drawHelp(this._index);
+    }
+    this._stayCount = 0;
+    this.ensureCursorVisible();
+    this.updateCursor();
+    this.callUpdateHelp();
+};
+
+Window_InventoryArmors.prototype.processOk = function() {
+    if (this.isCurrentItemEnabled()) {
+        this.playOkSound();
+        this.updateInputData();
+        this.callOkHandler();
+    } else {
+        this.playBuzzerSound();
+    }
+};
+
+
 // #endregion === Window_InventoryArmors ===
 // === //
 // #region === Window_InventoryItems ===
@@ -544,6 +619,8 @@ Window_InventoryDetailsItems.prototype.drawDetails = function(item){
         ["Group :", item[1].groupLabel],
         ["Enc. :", item[1].enc]
     ]);
+
+    this.drawLine(200);
 
     // Description
     this.drawWrappedTextManually(item[1].description, 0, 220, 24);
