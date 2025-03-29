@@ -273,7 +273,7 @@ TEW.ARMORS = TEW.ARMORS || {
         ap: 3,
         qualities: ["IMPENETRABLE", "WEAKPOINTS"],
         forbiddenWith: ["BOILED_LEATHER", "CHAINMAIL", "BRIGANDINE"],
-        description: "Description has to be done."
+        description: "The Great Helm is the archetypal form of a fully enclosed metal helmet. They are considered old fashioned in Tilea and the Empire but are still common in Bretonnia. Early examples of these helmets had a square top. Later designs tend to have a conical top which lessens the impact of hammers and swords."
     },
     BASCINET: {
         name: "Bascinet",
@@ -289,7 +289,7 @@ TEW.ARMORS = TEW.ARMORS || {
         ap: 3,
         qualities: ["IMPENETRABLE", "VISOR", "WEAKPOINTS"],
         forbiddenWith: ["BOILED_LEATHER", "CHAINMAIL", "BRIGANDINE"],
-        description: "Description has to be done."
+        description: "The Bascinet typically incorporates a conical visor, leading it to be known as a ‘pigs-snout’ helmet by many soldiers. This design provides additional protection against missile fire, as slingshots and arrows are deflected by the conical visor. If missile fire strikes the wearer of a Bascinet, and originates from in front of the wearer, then the helmet provides 4 APs rather than 3."
     },
     ARMET: {
         name: "Armet",
@@ -305,7 +305,7 @@ TEW.ARMORS = TEW.ARMORS || {
         ap: 3,
         qualities: ["IMPENETRABLE", "VISOR", "WEAKPOINTS"],
         forbiddenWith: ["BOILED_LEATHER", "CHAINMAIL", "BRIGANDINE"],
-        description: "Description has to be done."
+        description: "The Armet is a Tilean design which fits closely on the head, being narrower around the neck. To facilitate the snug fit the helmet has an integral mechanism that must be worked to open and close it. The exacting design of the Armet means that it can withstand blows that might damage other helmets. Every time the helmet might lose a point of AP, roll on the Armet Damage table."
     }, 
     SALLET: {
         name: "Sallet",
@@ -322,7 +322,7 @@ TEW.ARMORS = TEW.ARMORS || {
         ap: 3,
         qualities: ["IMPENETRABLE","VISOR","WEAKPOINTS"],
         forbiddenWith: ["BOILED_LEATHER","CHAINMAIL","BRIGANDINE"],
-        description: "Description has to be done."
+        description: "The Sallet is typified by having heavy plates projecting over the neck to the back, and being combined with separate pieces, either a gorget or bevor, to provide protection to the throat, chin, and face. A wearer of a Sallet who takes a Critical Hit to the head will take 1 less Wound from the Critical Hit than they otherwise would."
     }
 };
 
