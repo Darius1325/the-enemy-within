@@ -1,280 +1,331 @@
+var Imported = Imported || {};
+Imported.TEW_Constants = true;
+var TEW = TEW || {};
+
 TEW.ARMORS = TEW.ARMORS || {
     SOFT_KIT: {
         name: "Soft Kit",
+        icon: TEW.ICONS_IDS.ARMOR_LIGHT_BODY_SLOT,
         group: "SOFT_KIT",
+        groupLabel: "Soft kit",
         price: "0/18/0",
         enc: 1,
         availability: "SCARCE",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_SCARCE,
         penalty: [],
-        locations: ["ARMS","BODY","LEGS"],
+        locations: ["ARMS", "BODY", "LEGS"],
         ap: 0,
         qualities: [],
-        forbiddenWith: []
+        forbiddenWith: [],
+        description: "Description has to be done."
     },
     REINFORCED_SOFT_KIT: {
         name: "Reinforced Soft Kit",
+        icon: TEW.ICONS_IDS.ARMOR_HEAVY_BODY_SLOT,
         group: "SOFT_KIT",
+        groupLabel: "Soft kit",
         price: "2/0/0",
         enc: 1,
         availability: "SCARCE",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_SCARCE,
         penalty: [],
-        locations: ["ARMS","BODY","LEGS"],
+        locations: ["ARMS", "BODY", "LEGS"],
         ap: 1,
-        qualities: ["PARTIAL","REINFORCED"],
-        forbiddenWith: []
+        qualities: ["PARTIAL", "REINFORCED"],
+        forbiddenWith: [],
+        description: "Description has to be done."
     },
     LEATHER_JACK: {
         name: "Leather Jack",
+        icon: TEW.ICONS_IDS.ARMOR_LIGHT_BODY_SLOT,
         group: "BOILED_LEATHER",
+        groupLabel: "Boiled leather",
         price: "0/12/0",
         enc: 1,
         availability: "COMMON",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
         penalty: [],
-        locations: ["ARMS","BODY"],
+        locations: ["ARMS", "BODY"],
         ap: 1,
         qualities: [],
-        forbiddenWith: ["CHAINMAIL","PLATE"]
+        forbiddenWith: ["CHAINMAIL", "PLATE"],
+        description: "Description has to be done."
     },
     LEATHER_JERKIN: {
         name: "Leather Jerkin",
+        icon: TEW.ICONS_IDS.ARMOR_LIGHT_BODY_SLOT,
         group: "BOILED_LEATHER",
+        groupLabel: "Boiled leather",
         price: "0/10/0",
         enc: 1,
         availability: "COMMON",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
         penalty: [],
         locations: ["BODY"],
         ap: 1,
         qualities: [],
-        forbiddenWith: ["CHAINMAIL","PLATE"]
+        forbiddenWith: ["CHAINMAIL", "PLATE"],
+        description: "Description has to be done."
     },
-    LEATHER_JACK: {
+    LEATHER_LEGGINGS: {
         name: "Leather Leggings",
+        icon: TEW.ICONS_IDS.ARMOR_LIGHT_LEGS_SLOT,
         group: "BOILED_LEATHER",
+        groupLabel: "Boiled leather",
         price: "0/14/0",
         enc: 1,
         availability: "COMMON",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
         penalty: [],
         locations: ["LEGS"],
         ap: 1,
         qualities: [],
-        forbiddenWith: ["CHAINMAIL","PLATE"]
+        forbiddenWith: ["CHAINMAIL", "PLATE"],
+        description: "Description has to be done."
     },
     LEATHER_SKULLCAP: {
         name: "Leather Skullcap",
+        icon: TEW.ICONS_IDS.ARMOR_LIGHT_HEAD_SLOT,
         group: "BOILED_LEATHER",
+        groupLabel: "Boiled leather",
         price: "0/8/0",
         enc: 0,
         availability: "COMMON",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
         penalty: [],
         locations: ["HEAD"],
         ap: 1,
         qualities: [],
-        forbiddenWith: ["CHAINMAIL","PLATE"]
+        forbiddenWith: ["CHAINMAIL", "PLATE"],
+        description: "Description has to be done."
     },
     CHAINMAIL_CHAUSSES: {
         name: "Chainmail Chausses",
+        icon: TEW.ICONS_IDS.ARMOR_HEAVY_LEGS_SLOT,
         group: "CHAINMAIL",
+        groupLabel: "Chainmail",
         price: "2/0/0",
         enc: 3,
         availability: "SCARCE",
-        penalty: [{
-            STEALTH: "-10"
-        }],
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_SCARCE,
+        penalty: [{ STEALTH: "-10" }],
         locations: ["LEGS"],
         ap: 2,
         qualities: [],
-        forbiddenWith: ["BOILED_LEATHER","PLATE"]
+        forbiddenWith: ["BOILED_LEATHER", "PLATE"],
+        description: "Description has to be done."
     },
     CHAINMAIL_COAT: {
         name: "Chainmail Coat",
+        icon: TEW.ICONS_IDS.ARMOR_HEAVY_BODY_SLOT,
         group: "CHAINMAIL",
+        groupLabel: "Chainmail",
         price: "3/0/0",
         enc: 4,
         availability: "COMMON",
-        penalty: [{
-            STEALTH: "-10"
-        }],
-        locations: ["ARMS","BODY"],
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
+        penalty: [{ STEALTH: "-10" }],
+        locations: ["ARMS", "BODY"],
         ap: 2,
         qualities: [],
-        forbiddenWith: ["BOILED_LEATHER","PLATE"]
+        forbiddenWith: ["BOILED_LEATHER", "PLATE"],
+        description: "Description has to be done."
     },
     CHAINMAIL_COIF: {
         name: "Chainmail Coif",
+        icon: TEW.ICONS_IDS.ARMOR_HEAVY_HEAD_SLOT,
         group: "CHAINMAIL",
+        groupLabel: "Chainmail",
         price: "1/0/0",
         enc: 2,
         availability: "SCARCE",
-        penalty: [{
-            PERCEPTION: "-10",
-            STEALTH: "-10"
-        }],
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_SCARCE,
+        penalty: [{ PERCEPTION: "-10", STEALTH: "-10" }],
         locations: ["HEAD"],
         ap: 2,
         qualities: ["PARTIAL"],
-        forbiddenWith: ["BOILED_LEATHER","PLATE"]
+        forbiddenWith: ["BOILED_LEATHER", "PLATE"],
+        description: "Description has to be done."
     },
     CHAINMAIL_SHIRT: {
         name: "Chainmail Shirt",
+        icon: TEW.ICONS_IDS.ARMOR_HEAVY_BODY_SLOT,
         group: "CHAINMAIL",
+        groupLabel: "Chainmail",
         price: "2/0/0",
         enc: 3,
         availability: "SCARCE",
-        penalty: [{
-            STEALTH: "-10"
-        }],
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_SCARCE,
+        penalty: [{ STEALTH: "-10" }],
         locations: ["BODY"],
         ap: 2,
         qualities: [],
-        forbiddenWith: ["BOILED_LEATHER","PLATE"]
-    },
-    CHAINMAIL_COAT: {
-        name: "Chainmail Coat",
-        group: "CHAINMAIL",
-        price: "3/0/0",
-        enc: 4,
-        availability: "COMMON",
-        penalty: [{
-            STEALTH: "-10"
-        }],
-        locations: ["ARMS","BODY"],
-        ap: 2,
-        qualities: [],
-        forbiddenWith: ["BOILED_LEATHER","PLATE"]
+        forbiddenWith: ["BOILED_LEATHER", "PLATE"],
+        description: "Description has to be done."
     },
     BRIGANDINE_JACK: {
         name: "Brigandine Jack",
+        icon: TEW.ICONS_IDS.ARMOR_LIGHT_BODY_SLOT,
         group: "BRIGANDINE",
+        groupLabel: "Brigandine",
         price: "3/0/0",
         enc: 3,
         availability: "SCARCE",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_SCARCE,
         penalty: [],
-        locations: ["ARMS","BODY"],
+        locations: ["ARMS", "BODY"],
         ap: 2,
         qualities: ["OVERCOAT"],
-        forbiddenWith: ["PLATE"]
+        forbiddenWith: ["PLATE"],
+        description: "Description has to be done."
     },
     BRIGANDINE_JERKIN: {
         name: "Brigandine Jerkin",
+        icon: TEW.ICONS_IDS.ARMOR_LIGHT_BODY_SLOT,
         group: "BRIGANDINE",
+        groupLabel: "Brigandine",
         price: "2/0/0",
         enc: 2,
         availability: "SCARCE",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_SCARCE,
         penalty: [],
         locations: ["BODY"],
         ap: 2,
         qualities: ["OVERCOAT"],
-        forbiddenWith: ["PLATE"]
+        forbiddenWith: ["PLATE"],
+        description: "Description has to be done."
     },
     BREASTPLATE: {
         name: "Breastplate",
+        icon: TEW.ICONS_IDS.ARMOR_HEAVY_BODY_SLOT,
         group: "BREASTPLATE",
+        groupLabel: "Breastplate",
         price: "10/0/0",
         enc: 3,
         availability: "SCARCE",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_SCARCE,
         penalty: [],
         locations: ["BODY"],
         ap: 3,
-        qualities: ["IMPENETRABLE","OVERCOAT","WEAKPOINTS"],
-        forbiddenWith: ["PLATE"]
+        qualities: ["IMPENETRABLE", "OVERCOAT", "WEAKPOINTS"],
+        forbiddenWith: ["PLATE"],
+        description: "Description has to be done."
     },
     BRACERS: {
         name: "Bracers",
+        icon: TEW.ICONS_IDS.ARMOR_HEAVY_ARMS_SLOT,
         group: "PLATE",
+        groupLabel: "Plate",
         price: "8/0/0",
         enc: 3,
         availability: "RARE",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_RARE,
         penalty: [],
         locations: ["ARMS"],
         ap: 3,
-        qualities: ["IMPENETRABLE","REQUIRES_KIT","WEAKPOINTS"],
-        forbiddenWith: ["BREASTPLATE","BOILED_LEATHER","CHAINMAIL","BRIGANDINE"]
+        qualities: ["IMPENETRABLE", "REQUIRES_KIT", "WEAKPOINTS"],
+        forbiddenWith: ["BOILED_LEATHER", "CHAINMAIL", "BRIGANDINE"],
+        description: "Description has to be done."
     },
     OPEN_HELM: {
         name: "Open Helm",
+        icon: TEW.ICONS_IDS.ARMOR_HEAVY_HEAD_SLOT,
         group: "PLATE",
+        groupLabel: "Plate",
         price: "2/0/0",
         enc: 1,
         availability: "COMMON",
-        penalty: [{
-            PERCEPTION: "-10"
-        }],
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
+        penalty: [{ PERCEPTION: "-10" }],
         locations: ["HEAD"],
         ap: 3,
         qualities: ["PARTIAL"],
-        forbiddenWith: ["BREASTPLATE","BOILED_LEATHER","CHAINMAIL","BRIGANDINE"]
+        forbiddenWith: ["BOILED_LEATHER", "CHAINMAIL", "BRIGANDINE"],
+        description: "Description has to be done."
     },
     PLATE_LEGGINGS: {
         name: "Plate Leggings",
+        icon: TEW.ICONS_IDS.ARMOR_HEAVY_LEGS_SLOT,
         group: "PLATE",
+        groupLabel: "Plate",
         price: "10/0/0",
         enc: 3,
         availability: "RARE",
-        penalty: [{
-            STEALTH: "-10"
-        }],
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_RARE,
+        penalty: [{ STEALTH: "-10" }],
         locations: ["LEGS"],
         ap: 3,
-        qualities: ["IMPENETRABLE","REQUIRES_KIT","WEAKPOINTS"],
-        forbiddenWith: ["BREASTPLATE","BOILED_LEATHER","CHAINMAIL","BRIGANDINE"]
+        qualities: ["IMPENETRABLE", "REQUIRES_KIT", "WEAKPOINTS"],
+        forbiddenWith: ["BOILED_LEATHER", "CHAINMAIL", "BRIGANDINE"],
+        description: "Description has to be done."
     },
     GREAT_HELM: {
         name: "Great Helm",
+        icon: TEW.ICONS_IDS.ARMOR_HEAVY_HEAD_SLOT,
         group: "PLATE",
+        groupLabel: "Plate",
         price: "2/0/0",
         enc: 2,
         availability: "RARE",
-        penalty: [{
-            PERCEPTION: "-20"
-        }],
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_RARE,
+        penalty: [{ PERCEPTION: "-20" }],
         locations: ["HEAD"],
         ap: 3,
-        qualities: ["IMPENETRABLE","WEAKPOINTS"],
-        forbiddenWith: ["BREASTPLATE","BOILED_LEATHER","CHAINMAIL","BRIGANDINE"]
+        qualities: ["IMPENETRABLE", "WEAKPOINTS"],
+        forbiddenWith: ["BOILED_LEATHER", "CHAINMAIL", "BRIGANDINE"],
+        description: "Description has to be done."
     },
-    BASCINET: { //TODO types de casques ?
+    BASCINET: {
         name: "Bascinet",
+        icon: TEW.ICONS_IDS.ARMOR_HEAVY_HEAD_SLOT,
         group: "PLATE",
+        groupLabel: "Plate",
         price: "3/0/0",
         enc: 2,
         availability: "RARE",
-        penalty: [{
-            PERCEPTION: "-20"
-        }],
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_RARE,
+        penalty: [{ PERCEPTION: "-20" }],
         locations: ["HEAD"],
         ap: 3,
-        qualities: ["IMPENETRABLE","VISOR","WEAKPOINTS"],
-        forbiddenWith: ["BREASTPLATE","BOILED_LEATHER","CHAINMAIL","BRIGANDINE"]
+        qualities: ["IMPENETRABLE", "VISOR", "WEAKPOINTS"],
+        forbiddenWith: ["BOILED_LEATHER", "CHAINMAIL", "BRIGANDINE"],
+        description: "Description has to be done."
     },
     ARMET: {
         name: "Armet",
+        icon: TEW.ICONS_IDS.ARMOR_HEAVY_HEAD_SLOT,
         group: "PLATE",
+        groupLabel: "Plate",
         price: "3/0/0",
         enc: 2,
         availability: "RARE",
-        penalty: [{
-            PERCEPTION: "-20"
-        }],
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_RARE,
+        penalty: [{ PERCEPTION: "-20" }],
         locations: ["HEAD"],
         ap: 3,
-        qualities: ["IMPENETRABLE","VISOR","WEAKPOINTS"],
-        forbiddenWith: ["BREASTPLATE","BOILED_LEATHER","CHAINMAIL","BRIGANDINE"]
-    },
+        qualities: ["IMPENETRABLE", "VISOR", "WEAKPOINTS"],
+        forbiddenWith: ["BOILED_LEATHER", "CHAINMAIL", "BRIGANDINE"],
+        description: "Description has to be done."
+    }, 
     SALLET: {
         name: "Sallet",
+        icon: TEW.ICONS_IDS.ARMOR_HEAVY_HEAD_SLOT,
         group: "PLATE",
         price: "4/0/0",
         enc: 2,
         availability: "RARE",
+        availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_RARE,
         penalty: [{
             PERCEPTION: "-20"
         }],
         locations: ["HEAD"],
         ap: 3,
         qualities: ["IMPENETRABLE","VISOR","WEAKPOINTS"],
-        forbiddenWith: ["BREASTPLATE","BOILED_LEATHER","CHAINMAIL","BRIGANDINE"]
+        forbiddenWith: ["BOILED_LEATHER","CHAINMAIL","BRIGANDINE"],
+        description: "Description has to be done."
     }
-}
+};
 
 // TODO order in inventory ?
 TEW.ARMOR_IDS = Object.keys(TEW.ARMORS).sort((a, b) => a.localeCompare(b));
+TEW.ARMORS_ARRAY = Object.entries(TEW.ARMORS).sort((a, b) => a[0].localeCompare(b[0]));
