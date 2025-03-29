@@ -85,6 +85,7 @@ Game_BattlerBase.prototype.initialize = function() {
     this.weapons = []; // [{ id: id, isInMainHand: boolean, isInSecondHand: boolean, ammo: quantity, ammoType: id }]
     this.armors = [];
     this.equippedArmors = [];
+    this.ammo = []; // ID: quantity
     // temp
     this.competences[8] = 2;
     this.competences[9] = 2;
@@ -133,7 +134,7 @@ Game_BattlerBase.prototype.initialize = function() {
     this.addWeapon("CANE_PISTOL");
     this.addWeapon("CANE_PISTOL");
     this.addWeapon("HOCHLAND_LONG_RIFLE");
-    // this.equipMainHand(0);
+    this.equipMainHand(0);
     this.equipSecondHand(2);
 
     // temp Armor
@@ -146,6 +147,9 @@ Game_BattlerBase.prototype.initialize = function() {
     this.equipArmor("CHAINMAIL_COAT");
 
     // temp Ammo
+    this.addAmmo("ARROW", 64);
+    this.addAmmo("LEAD_BULLET", 98);
+    this.addAmmo("BULLET_AND_POWDER", 50);
 
     console.log(this);
 };
@@ -345,6 +349,19 @@ Game_BattlerBase.prototype.sortArmors = function() {
 Game_BattlerBase.prototype.sortEquippedArmors = function() {
     this.equippedArmors = this.equippedArmors.sort((a, b) =>
         TEW.ARMOR_IDS.indexOf(a) - TEW.ARMOR_IDS.indexOf(b));
+}
+
+// Ammo
+Game_BattlerBase.prototype.ammoType = function(ammoId) {
+    return this.ammo[ammoId] || 0;
+};
+
+Game_BattlerBase.prototype.addAmmo = function(ammoId, quantity = 1) {
+    this.ammo[ammoId] = this.ammoType(ammoId) + quantity;
+}
+
+Game_BattlerBase.prototype.hasAmmo = function(ammoId) {
+    return this.ammo[ammoId] > 0;
 }
 
 // Game_Actor
