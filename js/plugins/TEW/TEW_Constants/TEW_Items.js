@@ -9,7 +9,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 0,
         availability: "COMMON",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
-        description: "This intricate amulet is a testament to the skilled craftsmanship of a bygone era. Hanging from a delicate silver chain, the pendant itself is shaped like a teardrop, forged from lustrous obsidian that gleams faintly even in dim light. Carved into its polished surface are ancient runes, their purpose enigmatic but undeniably potent. A faint azure glow emanates from the amulet's core, suggesting an inner energy or enchantment still pulsing within."
+        description: "A brass amulent representing Sigmar."
     },
     BOOTS: {
         name: "Boots",
@@ -21,7 +21,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 1,
         availability: "COMMON",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
-        description: "Small description test"
+        description: "Sturdy boots to keep your feet dry."
     },
     CLOTHING: {
         name: "Clothing",
@@ -33,7 +33,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 1,
         availability: "COMMON",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
-        description: "Description has to be done"
+        description: "Common clothes."
     },
     COAT: {
         name: "Coat",
@@ -45,7 +45,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 1,
         availability: "COMMON",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
-        description: "Description has to be done"
+        description: "Protects you against the elements."
     },
     COSTUME: {
         name: "Costume",
@@ -57,7 +57,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 1,
         availability: "SCARCE",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_SCARCE,
-        description: "Description has to be done"
+        description: "Expensive clothes to shine in society."
     },
     COURTLY_GARB: {
         name: "Courtly Garb",
@@ -69,7 +69,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 1,
         availability: "SCARCE",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_SCARCE,
-        description: "Description has to be done"
+        description: "Nobles’ garb features embellishments such as lace cuffs & collars, excessive high-quality fabric and pointed shoes."
     },
     FACE_POWDER: {
         name: "Face Powder",
@@ -81,7 +81,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 0,
         availability: "COMMON",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
-        description: "Description has to be done"
+        description: "Stylish makeup for the noblefolk."
     },
     GLOVES: {
         name: "Gloves",
@@ -93,7 +93,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 0,
         availability: "COMMON",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
-        description: "Description has to be done"
+        description: "To keep your hands dry and warm."
     },
     HAT: {
         name: "Hat",
@@ -105,7 +105,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 0,
         availability: "COMMON",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
-        description: "Description has to be done"
+        description: "Fine quality hats are status symbols in the Empire's towns and cities. The more flamboyant the hat, the better."
     },
     HOOD: {
         name: "Hood",
@@ -117,7 +117,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 0,
         availability: "COMMON",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
-        description: "Description has to be done"
+        description: "Usefull to keep your head dry, or to hide it."
     },
     JEWELLERY: {
         name: "Jewellery",
@@ -129,7 +129,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 0,
         availability: "COMMON",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
-        description: "Description has to be done"
+        description: "Nice jewels with various gemstones."
     },
     PERFUME: {
         name: "Perfume",
@@ -141,7 +141,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 0,
         availability: "COMMON",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
-        description: "Description has to be done"
+        description: "Smells nicer than most people."
     },
     PINS: {
         name: "Pins",
@@ -153,7 +153,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 0,
         availability: "SCARCE",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_SCARCE,
-        description: "Description has to be done"
+        description: "Small silver pins."
     },
     RELIGIOUS_SYMBOL: {
         name: "Religious Symbol",
@@ -165,7 +165,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 0,
         availability: "COMMON",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
-        description: "Description has to be done"
+        description: "Small silver symbol representing a god."
     },
     ROBES_PRACTICAL: {
         name: "Practical Robes",
@@ -177,7 +177,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 1,
         availability: "RARE",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_RARE,
-        description: "Description has to be done"
+        description: "These costumes are inexpensive, comfortable, and relatively plain. A wizard wearing practical robes may even go unrecognised in many situations. Gives +1 SL to any Channeling test."
     },
     ROBES_STANDARD: {
         name: "Standard Robes",
@@ -189,7 +189,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 2,
         availability: "EXOTIC",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_EXOTIC,
-        description: "Description has to be done"
+        description: "These costumes are complex and typically include heavy coats or cloaks and distinctive headwear. Gives +2 SL to any Channeling test."
     },
     ROBES_ELABORATE: {
         name: "Elaborate Robes",
@@ -201,7 +201,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 4,
         availability: "EXOTIC",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_EXOTIC,
-        description: "Description has to be done"
+        description: "These costumes are heavy and impractical, often incorporating bulky accessories and reams of cloth woven from magically infused thread. Anyone wearing these robes will be instantly recognised as a wizard. Gives +3 SL to any Channeling test."
     },
     SCEPTRE: {
         name: "Sceptre",
@@ -213,7 +213,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 1,
         availability: "RARE",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_RARE,
-        description: "Description has to be done"
+        description: "The highest-ranking legal officials carry sceptres to indicate their status."
     },
     SHOES: {
         name: "Shoes",
@@ -225,7 +225,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 0,
         availability: "COMMON",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
-        description: "Description has to be done"
+        description: "Nice shoes to keep your feet dry."
     },
     SIGNET_RING: {
         name: "Signet Ring",
@@ -237,7 +237,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 0,
         availability: "RARE",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_RARE,
-        description: "Description has to be done"
+        description: "Gold ring with engraved stamp."
     },
     TATOO: {
         name: "Tatoo",
@@ -249,7 +249,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 0,
         availability: "SCARCE",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_SCARCE,
-        description: "Description has to be done"
+        description: "Definitive mark made with totally clean tools."
     },
     UNIFORM: {
         name: "Uniform",
@@ -261,7 +261,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 1,
         availability: "SCARCE",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_SCARCE,
-        description: "Description has to be done"
+        description: "Outfit with the city's coat of arms."
     },
     WALKING_CANE: {
         name: "Walking Cane",
@@ -273,7 +273,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 1,
         availability: "COMMON",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
-        description: "Description has to be done"
+        description: "Polished wooden canes with metal caps are status symbols amongst wealthier townsfolk."
     },
     ALE_PINT: {
         name: "Ale, pint",
@@ -285,7 +285,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 0,
         availability: "COMMON",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
-        description: "Description has to be done"
+        description: "Pint of the finest ale you can find, not really good though."
     },
     ALE_KEG: {
         name: "Ale, keg",
@@ -297,10 +297,10 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 2,
         availability: "COMMON",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
-        description: "Description has to be done"
+        description: "Keg full of the finest ale you can find, not really good though."
     },
     BUGMANS_ALE_PINT: {
-        name: "Bugman's Ale, pint",
+        name: "Bugman's XXXXXX Ale, pint",
         group: "FOOD",
         groupIcon: TEW.ICONS_IDS.ITEM_FOOD,
         groupLabel: "Food",
@@ -309,7 +309,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 0,
         availability: "EXOTIC",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_EXOTIC,
-        description: "Description has to be done"
+        description: "Merchants travel across the Old World to purchase this potent Dwarfen ale from the famous brewery founded by Josef Bugman."
     },
     FOOD_ONE_DAY: {
         name: "Food, Groceries/day",
@@ -321,7 +321,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 1,
         availability: "COMMON",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
-        description: "Description has to be done"
+        description: "Enough food to feed one person for one day. Needs to be prepared."
     },
     MEAL_INN: {
         name: "Meal, inn",
@@ -333,7 +333,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 0,
         availability: "COMMON",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
-        description: "Description has to be done"
+        description: "Hot meal served in a wooden plate."
     },
     RATIONS_ONE_DAY: {
         name: "Rations, one day",
@@ -345,7 +345,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 0,
         availability: "COMMON",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
-        description: "Description has to be done"
+        description: "Food to go for one person for one day."
     },
     ROOM_COMMON: {
         name: "Common Room/night",
@@ -357,7 +357,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 0,
         availability: "COMMON",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
-        description: "Description has to be done"
+        description: "One night in the common room for one person. Guests sleeping in common rooms should be wary of thieves."
     },
     ROOM_PRIVATE: {
         name: "Private Room/night",
@@ -369,7 +369,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 0,
         availability: "COMMON",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
-        description: "Description has to be done"
+        description: "One night in a private room. Accommodates 2 guests."
     },
     SPIRITS_PINT: {
         name: "Spirits, pint",
@@ -381,7 +381,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 0,
         availability: "COMMON",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
-        description: "Description has to be done"
+        description: "One pint of fine spirits."
     },
     STABLES_NIGHT: {
         name: "Stables/night",
@@ -393,7 +393,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 0,
         availability: "COMMON",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
-        description: "Description has to be done"
+        description: "Room for one horse in the stables fon one night."
     },
     WINE_BOTTLE: {
         name: "Wine Bottle",
@@ -405,7 +405,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 0,
         availability: "COMMON",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
-        description: "Description has to be done"
+        description: "A bottle of fine wine."
     },
     WINE_GLASS: {
         name: "Wine Glass",
@@ -417,7 +417,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 0,
         availability: "COMMON",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
-        description: "Description has to be done"
+        description: "A glass of fine wine."
     },
     ABACUS: {
         name: "Abacus",
@@ -429,7 +429,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 0,
         availability: "SCARCE",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_SCARCE,
-        description: "Description has to be done"
+        description: "Mechanical tool facilitating calculus."
     },
     ANIMAL_TRAP: {
         name: "Animal Trap",
@@ -441,7 +441,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 1,
         availability: "COMMON",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
-        description: "Description has to be done"
+        description: "Used to catch animals like wolves or rabbits."
     },
     ANTITOXIN_KIT: {
         name: "Antitoxin Kit",
@@ -453,7 +453,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 0,
         availability: "SCARCE",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_SCARCE,
-        description: "Description has to be done"
+        description: "Contains a small knife, herbs, and a jar of leeches. A successful Heal Test with an antitoxin kit removes all Poisoned Conditions. Treatment takes at least two Rounds."
     },
     BOAT_HOOK: {
         name: "Boat Hook",
@@ -465,7 +465,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 1,
         availability: "COMMON",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
-        description: "Description has to be done"
+        description: "Tool used to catch boats from shore."
     },
     BROOM: {
         name: "Broom",
@@ -477,7 +477,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 2,
         availability: "COMMON",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
-        description: "A description which is a bit longer because it has between 50 and 100 chars."
+        description: "It's a broom, nothing more."
     },
     BUCKET: {
         name: "Bucket",
@@ -489,7 +489,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 1,
         availability: "COMMON",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
-        description: "Description has to be done"
+        description: "Can be used to move liquids."
     },
     CHISEL: {
         name: "Chisel",
@@ -501,7 +501,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 0,
         availability: "COMMON",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
-        description: "Description has to be done"
+        description: "Little tool used to scult stone."
     },
     COMB: {
         name: "Comb",
@@ -513,7 +513,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 0,
         availability: "COMMON",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
-        description: "Description has to be done"
+        description: "Used to brush your hair."
     },
     CROWBAR: {
         name: "Crowbar",
@@ -525,7 +525,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 1,
         availability: "COMMON",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
-        description: "Description has to be done"
+        description: "Metal bar that can be used as an improvised weapon."
     },
     CRUTCH: {
         name: "Crutch",
@@ -537,7 +537,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 2,
         availability: "COMMON",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
-        description: "Description has to be done"
+        description: "Helps you walk."
     },
     DISGUISE_KIT: {
         name: "Disguise Kit",
@@ -549,7 +549,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 0,
         availability: "SCARCE",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_SCARCE,
-        description: "Description has to be done"
+        description: "Contains enough props for four disguises and also materials for changing your appearance used by those with the Entertain (Acting) Skill."
     },
     EAR_PICK: {
         name: "Ear Pick",
@@ -561,7 +561,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 0,
         availability: "SCARCE",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_SCARCE,
-        description: "Description has to be done"
+        description: "To clean your ears."
     },
     FISH_HOOKS: {
         name: "Fish Hooks",
@@ -573,7 +573,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 0,
         availability: "COMMON",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
-        description: "Description has to be done"
+        description: "Can be used to catch fish."
     },
     FLOOR_BRUSH: {
         name: "Floor Brush",
@@ -585,7 +585,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 0,
         availability: "COMMON",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
-        description: "Description has to be done"
+        description: "Little brush, often used in rich houses."
     },
     GAVEL: {
         name: "Gavel",
@@ -597,7 +597,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 0,
         availability: "SCARCE",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_SCARCE,
-        description: "Description has to be done"
+        description: "Little hammer used by judges and magistrates."
     },
     HAMMER: {
         name: "Hammer",
@@ -609,7 +609,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 0,
         availability: "COMMON",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
-        description: "Description has to be done"
+        description: "Tool used to punch nails."
     },
     HAND_MIRROR: {
         name: "Hand Mirror",
@@ -621,7 +621,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 0,
         availability: "EXOTIC",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_EXOTIC,
-        description: "Description has to be done"
+        description: "Little mirror used by nobles."
     },
     HOE: {
         name: "Hoe",
@@ -633,7 +633,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 2,
         availability: "COMMON",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
-        description: "Description has to be done"
+        description: "Farming tool."
     },
     KEY: {
         name: "Key",
@@ -645,7 +645,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 0,
         availability: "COMMON",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
-        description: "Description has to be done"
+        description: "No idea what it opens."
     },
     LOCK_PICK: {
         name: "Lock Pick",
@@ -657,7 +657,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 0,
         availability: "SCARCE",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_SCARCE,
-        description: "Description has to be done"
+        description: "An assortment of small, variously-shaped tools needed to use the Pick Lock Skill without penalty."
     },
     MANACLES: {
         name: "Manacles",
@@ -669,7 +669,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 0,
         availability: "SCARCE",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_SCARCE,
-        description: "Description has to be done"
+        description: "Prisoners trying to break out of manacles suffer 1 Wound and must pass a Very Hard (-30) Strength Test."
     },
     MOP: {
         name: "Mop",
@@ -681,7 +681,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 2,
         availability: "COMMON",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
-        description: "Description has to be done"
+        description: "Used to clean the floor."
     },
     NAILS: {
         name: "Nails",
@@ -693,7 +693,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 0,
         availability: "COMMON",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
-        description: "Description has to be done"
+        description: "Cna be punched by a hammer."
     },
     PAINT_BRUSH: {
         name: "Paint Brush",
@@ -705,7 +705,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 0,
         availability: "COMMON",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
-        description: "Description has to be done"
+        description: "Brush used by artists to paint on canvas."
     },
     PESTLE_AND_MORTAR: {
         name: "Pestle and Mortar",
@@ -717,7 +717,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 0,
         availability: "COMMON",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
-        description: "Description has to be done"
+        description: "Tools used by an apothecary."
     },
     PICK: {
         name: "Pick",
@@ -729,7 +729,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 1,
         availability: "COMMON",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
-        description: "Description has to be done"
+        description: "Tool used by minors."
     },
     POLE: {
         name: "Pole (3 yards)",
@@ -741,7 +741,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 3,
         availability: "COMMON",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
-        description: "Description has to be done"
+        description: "A long pole used for barging; counts as an Improvised Weapon."
     },
     QUILL_PEN: {
         name: "Quill Pen",
@@ -753,7 +753,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 0,
         availability: "COMMON",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
-        description: "Description has to be done"
+        description: "Expensive writing tool."
     },
     RAKE: {
         name: "Rake",
@@ -765,7 +765,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 2,
         availability: "COMMON",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
-        description: "Description has to be done"
+        description: "Usefull to removes leaves from your garden."
     },
     READING_LENS: {
         name: "Reading Lens",
@@ -777,7 +777,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 0,
         availability: "RARE",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_RARE,
-        description: "Description has to be done"
+        description: "Glass lenses with handles provide a +20 bonus to Read/Write Tests for deciphering tiny or unintelligible writing. Perception Tests to search for fine details such as secret doors or compartments also receive a +20 bonus."
     },
     SAW: {
         name: "Saw",
@@ -789,7 +789,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 1,
         availability: "COMMON",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
-        description: "Description has to be done"
+        description: "Tool used to cut wood."
     },
     SICKLE: {
         name: "Sickle",
@@ -801,7 +801,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 1,
         availability: "COMMON",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
-        description: "Description has to be done"
+        description: "Tool used by herborists to collect herbs."
     },
     SPADE: {
         name: "Spade",
@@ -813,7 +813,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 2,
         availability: "COMMON",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
-        description: "Description has to be done"
+        description: "Farming tool."
     },
     SPIKE: {
         name: "Spike",
@@ -825,7 +825,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 0,
         availability: "COMMON",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
-        description: "Description has to be done"
+        description: "Great spike."
     },
     STAMP: {
         name: "Stamp, engraved",
@@ -837,7 +837,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 0,
         availability: "SCARCE",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_SCARCE,
-        description: "Description has to be done"
+        description: "Stamp engraved with heraldry."
     },
     TONGS: {
         name: "Tongs, steel",
@@ -849,7 +849,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 0,
         availability: "COMMON",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
-        description: "Description has to be done"
+        description: "Usefull to spread laundry."
     },
     TELESCOPE: {
         name: "Telescope",
@@ -861,7 +861,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 0,
         availability: "RARE",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_RARE,
-        description: "Description has to be done"
+        description: "Tool used to watch the stars."
     },
     TWEEZERS: {
         name: "Tweezers",
@@ -873,7 +873,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 0,
         availability: "SCARCE",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_SCARCE,
-        description: "Description has to be done"
+        description: "Usefull."
     },
     WRITING_KIT: {
         name: "Writing Kit",
@@ -885,7 +885,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 0,
         availability: "SCARCE",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_SCARCE,
-        description: "Description has to be done"
+        description: "Contains a quill pen, inkpot, and ink blotter."
     },
     APOTHECARY_BOOK: {
         name: "Apothecary Book",
@@ -897,7 +897,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 1,
         availability: "SCARCE",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_SCARCE,
-        description: "Description has to be done"
+        description: "Apothecary books are usually hand-written. A basic apothecary book contains ingredient descriptions and diagrammed instructions for brewing processes. Formulas for Digestive Tonics, Healing Draughts, and Vitality Draughts are usually included. Advanced texts contain formulas for more exotic draughts."
     },
     ART_BOOK: {
         name: "Art Book",
@@ -909,9 +909,9 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 1,
         availability: "SCARCE",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_SCARCE,
-        description: "Description has to be done"
+        description: "Plays, poems, and ballads or perhaps musical arrangements scribbled on loose parchment, Art books come inmany forms. They also include treatises on perspective, form, and style, often written by famous painters or sculptors — such as Leonardo da Miragliano — for mass printing."
     },
-    ACRYPTOGRAPHY_BOOK: {
+    CRYPTOGRAPHY_BOOK: {
         name: "Cryptography Book",
         group: "BOOKS",
         groupIcon: TEW.ICONS_IDS.ITEM_BOOKS,
@@ -921,7 +921,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 1,
         availability: "EXOTIC",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_EXOTIC,
-        description: "Description has to be done"
+        description: "Where individual ciphers and encryption keys can be written on a single page or two, Cryptography books are often hand-scribed codices dealing with mathematics, numerology, and polyalphabetic encryption."
     },
     ENGINEER_BOOK: {
         name: "Engineer Book",
@@ -933,7 +933,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 1,
         availability: "SCARCE",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_SCARCE,
-        description: "Description has to be done"
+        description: "The majority of engineering books are pressprinted. Engineering is an advanced science in the Empire, largely due to the Imperial Engineers’ School in Altdorf and the Dwarf Engineers’ Guild. Because of this, Engineering texts are often authored, co-authored, or edited by Dwarfs."
     },
     LAW_BOOK: {
         name: "Law Book",
@@ -945,7 +945,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 1,
         availability: "RARE",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_RARE,
-        description: "Description has to be done"
+        description: "Laws vary considerably from one region to the next. Cities with printing presses compile legislation in bound volumes, whereas judges in smaller towns often rely on documents handwritten centuries ago. Law books used by travelling lawyers or judges often combine printed and written pages from different towns across the Empire, collated and bound together within the same cover."
     },
     MAGIC_GRIMOIRE: {
         name: "Magic Grimoire",
@@ -957,7 +957,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 1,
         availability: "EXOTIC",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_EXOTIC,
-        description: "Description has to be done"
+        description: "Spell grimoires are usually scribed by wizards, and their covers are often secured with locks. Sometimes grimoires are even protected by magical alarms or wards. Carrying a spell grimoire is punishable as heresy unless the owning wizard is licensed by the Colleges of Magic."
     },
     MEDICINE_BOOK: {
         name: "Medicine Book",
@@ -969,7 +969,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 1,
         availability: "RARE",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_RARE,
-        description: "Description has to be done"
+        description: "Medical texts can either be scribed or pressprinted, depending on the authoring physician’s prestige. Illuminations are common, and usually include detailed autopsy drawings and procedural diagrams."
     },
     RELIGION_BOOK: {
         name: "Religion Book",
@@ -981,7 +981,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 1,
         availability: "COMMON",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
-        description: "Description has to be done"
+        description: "Religions books come in all forms in the Empire, a realm renowned for its religious observances. There is a eager market for the most popular texts, most of which are cheaply produced by printing presses."
     },
     GUILD_LICENSE: {
         name: "Guild License",
@@ -993,7 +993,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 0,
         availability: "EXOTIC",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_EXOTIC,
-        description: "Description has to be done"
+        description: "Guild licenses are usually printed on single sheets of parchment, stamped with an official seal, and signed by the local guild master. Guild licenses are not purchased; instead, they are granted to guild members according to each guild’s traditions and laws."
     },
     LEAFLET: {
         name: "Leaflet",
@@ -1005,7 +1005,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 0,
         availability: "COMMON",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
-        description: "A description which is a definitly longer because it has between 150 and 200 chars. This time, im gonna tell you the story of it's previous owner. He was such an amazing mage..."
+        description: "Leaflets contain usefull information about the local city and customs."
     },
     LEGAL_DOCUMENT: {
         name: "Legal Document",
@@ -1017,7 +1017,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 0,
         availability: "COMMON",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
-        description: "Description has to be done"
+        description: "A simple legal document such as a will, IOU or letter of intent."
     },
     MAP: {
         name: "Map",
@@ -1029,7 +1029,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 0,
         availability: "SCARCE",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_SCARCE,
-        description: "Description has to be done"
+        description: "A map of the surronding lands."
     },
     PARCHMENT: {
         name: "Parchment",
@@ -1041,7 +1041,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 0,
         availability: "COMMON",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_COMMON,
-        description: "Description has to be done"
+        description: "A piece of parchment."
     },
     BLACK_LOTUS: {
         name: "Black Lotus",
@@ -1053,7 +1053,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 0,
         availability: "EXOTIC",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_EXOTIC,
-        description: "Description has to be done"
+        description: "This deadly plant grows in Southland jungles and is used for blade venom. Victims who suffer at least 1 Wound from a sap-coated blade immediately take 2 Poisoned Conditions. Resisted with a Difficult (–10) Endurance Test."
     },
     HEARTKILL: {
         name: "Heartkill",
@@ -1065,7 +1065,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 0,
         availability: "EXOTIC",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_EXOTIC,
-        description: "A description which is even longer because it has between 100 and 150 chars. Its not that hard, i have juste have to write down some words."
+        description: "Combining the venoms from an Amphisbaena (a rare, two-headed serpent) and a Jabberslythe produces an odourless, colourless poison. When ingested, the deadly mixture inflicts 4 Poisoned Conditions. Resisted with a Difficult (–10) Endurance Test."
     },
     MAD_CAP_MUSHROOMS: {
         name: "Mad Cap Mushrooms",
@@ -1077,7 +1077,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 0,
         availability: "EXOTIC",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_EXOTIC,
-        description: "Description has to be done"
+        description: "These hallucinogenic mushrooms are eaten by Goblin fanatics before battle. They induce a berserker rage, adding +10 Strength, +4 Wounds, and the Frenzy Talent. When the effect wears off, the user loses 1d10 Wounds. Non- Greenskins must also pass a Challenging (+0) Endurance Test or contract a Minor Infection. Duration: Active when chewed plus an additional 2d10 minutes."
     },
     MANDRAKE_ROOT: {
         name: "Mandrake Root",
@@ -1089,7 +1089,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 0,
         availability: "RARE",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_RARE,
-        description: "Description has to be done"
+        description: "This highly-addictive deliriant grows under gallows, and is chewed to keep an unquiet mind still. Users must pass a Willpower Test every Round to perform an Action or a Move (choose one); further, Movement is halved. However, Cool Tests receive a bonus of +20. Duration: Active when chewed plus an additional 1d10×10 minutes."
     },
     MOONFLOWER: {
         name: "Moonflower",
@@ -1101,7 +1101,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 0,
         availability: "SCARCE",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_SCARCE,
-        description: "Description has to be done"
+        description: "This tranquilliser is a dried moss which grows only on leaves in the Laurelorn forest. Elves use Moonflower to treat Black Plague, granting a bonus of +30 to any associated Tests for Elves to resist the disease, otherwise it has no effect on their species. Others can inhale vapours from boiling the moss and if they fail a Very Hard (–30) Willpower Test will gain an Unconscious Condition; if passed, they receive a bonus of +20 to Cool Tests and gain a Fatigued Condition. Moonflower is used by the most expensive Physicians as an anesthetic. Duration: 1d10+5 hours."
     },
     RANALDS_DELIGHT: {
         name: "Ranald's Delight",
@@ -1113,7 +1113,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 0,
         availability: "SCARCE",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_SCARCE,
-        description: "Description has to be done"
+        description: "This highly-addictive stimulant is a synthetic compound made from sulphur, mercury and other elements. Inhaling the powder provides a bonus of +1 to Movement, and +10 to WS, S, T, and Agi. This last for 3 hours, after which the user suffers a penalty of –2 Movement and –20 on Weapon Skill, Strength, Toughness, and Agility. Duration: 1 day."
     },
     SPIT: {
         name: "Spit",
@@ -1125,7 +1125,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 0,
         availability: "RARE",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_RARE,
-        description: "Description has to be done"
+        description: "Extracted from Chameleoleeches found in the marshes of the Empire, this extraordinarily powerful hallucinogen brings visions of something deeply desired, such as a lost lover, a dead friend, or a missing child. Called Spit on the streets, it’s popular with those lost to despair. Upon exposure, you must pass a Very Hard (–30) Toughness Test or be lost to a fully real fantasy, which is a matter for the GM to handle. Duration: 1d10 minutes."
     },
     WEIRDROOT: {
         name: "Weirdroot",
@@ -1137,7 +1137,7 @@ TEW.ITEMS = TEW.ITEMS || {
         enc: 0,
         availability: "RARE",
         availabilityIcon: TEW.ICONS_IDS.AVAILABILITY_RARE,
-        description: "Description has to be done"
+        description: "One of the most common street-drugs in the Empire, Weirdroot is chewed, bringing a sense of euphoria and pleasant hallucinations, which some suggest may be connected to the Winds of Magic. The drug gives a +10 bonus to Toughness and Willpower Tests, but a penalty of –10 to Agility, Initiative, and Intelligence Tests. Duration: Active when chewed plus an additional 1d10×10 minutes."
     }
 };
 
