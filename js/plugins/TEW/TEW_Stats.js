@@ -281,10 +281,15 @@ Game_BattlerBase.prototype.secondHand = function(){
 }
 
 Game_BattlerBase.prototype.addWeapon = function(weaponId) {
+    const rangedWeapon = TEW.RANGED_WEAPONS[weaponId];
     this.weapons.push({
         id: weaponId,
         isInMainHand: false,
         isInSecondHand: false,
+        isReloadable: rangedWeapon && (
+            rangedWeapon.group === 'BLACKPOWDER' ||
+            rangedWeapon.group === 'ENGINEERING' ||
+            rangedWeapon.group === 'CROSSBOW'),
         ammo: 0,
         ammoType: undefined // Ammo ID
     });
@@ -325,7 +330,7 @@ Game_BattlerBase.prototype.hasArmorTEW = function(armorId) {
     return this.armors.some(armor => armor === armorId);
 }
 
-Game_BattlerBase.prototype.hasArmorEquippedTEW = function(armorId) {
+Game_BattlerBase.prototype.hasArmorEquipped = function(armorId) {
     return this.equippedArmors.some(armor => armor === armorId);
 }
 

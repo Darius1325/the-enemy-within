@@ -17,6 +17,13 @@ TEW.COMMAND_NAMES[45] = "Items";
 TEW.COMMAND_NAMES[46] = "Ammo";
 TEW.COMMAND_NAMES[47] = "Use";
 TEW.COMMAND_NAMES[48] = "Transfer";
+TEW.COMMAND_NAMES[49] = "Equip";
+TEW.COMMAND_NAMES[50] = "Unequip";
+TEW.COMMAND_NAMES[51] = "Transfer";
+TEW.COMMAND_NAMES[52] = "Reload";
+TEW.COMMAND_NAMES[53] = "Equip";
+TEW.COMMAND_NAMES[54] = "Unequip";
+TEW.COMMAND_NAMES[55] = "Transfer";
 
 TEW.MENU_LINE_HEIGHT = 36;
 
@@ -50,7 +57,14 @@ Object.defineProperties(TextManager, {
     inventoryItems :            TextManager.getter('command', 45),
     inventoryAmmo :             TextManager.getter('command', 46),
     inventoryItemUse :          TextManager.getter('command', 47),
-    inventoryItemTransfer :     TextManager.getter('command', 48)
+    inventoryItemTransfer :     TextManager.getter('command', 48),
+    inventoryWeaponEquip :      TextManager.getter('command', 49),
+    inventoryWeaponUnequip :    TextManager.getter('command', 50),
+    inventoryWeaponTransfer :   TextManager.getter('command', 51),
+    inventoryWeaponReload :     TextManager.getter('command', 52),
+    inventoryArmorEquip :       TextManager.getter('command', 53),
+    inventoryArmorUnequip :     TextManager.getter('command', 54),
+    inventoryArmorTransfer :    TextManager.getter('command', 55)
 });
 
 
@@ -149,21 +163,21 @@ Window_InventoryDetails.prototype.setActor = function(actor) {
 
 // Drawing an underlined Text
 Window_InventoryDetails.prototype.drawUnderlinedText = function(text, x, y, width, align) {
-    // Dessiner le texte
+    // Draw text
     this.drawText(text, x, y, width, align);
 
-    // Calculer la position de la ligne
+    // Getting position of the line
     const textSize = this.contents.fontSize;
     const textWidth = this.textWidth(text); 
     const lineY = y + textSize + 2; 
 
-    // Dessiner la ligne
+    // Drawing the line
     this.contents.paintOpacity = 255;
     this.contents.fillRect(
         x + (align === "center" ? (width - textWidth) / 2 : align === "right" ? width - textWidth : 0),
         lineY,
         textWidth,
-        2, // Épaisseur de la ligne
+        2, // Thickness
         this.normalColor()
     );
 };
@@ -229,7 +243,38 @@ Window_InventoryDetails.prototype.drawLine = function(y) {
 };
 // #endregion === Window_InventoryDetails ===
 // === //
+// #region === Window_InventoryDetailsCommand ===
+function Window_InventoryDetailsCommand() {
+    this.initialize.apply(this, arguments);
+}
+
+Window_InventoryDetailsCommand.prototype = Object.create(Window_Command.prototype);
+Window_InventoryDetailsCommand.prototype.constructor = Window_InventoryDetailsCommand;
+
+// Initializing the command window
+Window_InventoryDetailsCommand.prototype.initialize = function(actionsNumber = 2) {
+    this._actionsNumber = actionsNumber;
+    this._windowWidth = Graphics.boxWidth / 2;
+    this._windowHeight = this.fittingHeight(this._actionsNumber);
+    Window_Command.prototype.initialize.call(
+        this,
+        Graphics.boxWidth / 2,
+        Graphics.boxHeight - this._windowHeight);
+};
+    
+// Window Width
+Window_InventoryDetailsCommand.prototype.windowWidth = function() {
+    return this._windowWidth;
+};
+
+Window_InventoryDetailsCommand.prototype.addCommand = function(name, symbol, enabled = true, ext = null) {
+    this._list.push({ name: name, symbol: symbol, enabled: enabled, ext: ext});
+};
+    
+// #endregion === Window_InventoryDetailsCommand ===
+// === //  
 // #region === Window_InventoryInfos ===
+
 function Window_InventoryInfos() {
     this.initialize.apply(this, arguments);
 }
@@ -251,9 +296,11 @@ Window_InventoryInfos.prototype.setActor = function(actor) {
         this.refresh();
     }
 };
+
 // #endregion === Window_InventoryInfos ===
 // === //
 // #region === Window_InventoryWeapons ===
+
 function Window_InventoryWeapons() {
     this.initialize.apply(this, arguments);
 }
@@ -350,8 +397,7 @@ Window_InventoryWeapons.prototype.weaponFromIndex = function(index) {
 Window_InventoryWeapons.prototype.select = function(index) {
     this._index = index;
     if (this._index >= 0) {
-        // this._helpWindow.clear();
-        // this.drawHelp(this._index);
+        this.callHandler("show_weapon_details");
     }
     this._stayCount = 0;
     this.ensureCursorVisible();
@@ -410,6 +456,96 @@ Window_InventoryWeapons.prototype.processOk = function() {
 Window_InventoryWeapons.prototype.updateHelp = () => {};
 // #endregion === Window_InventoryWeapons ===
 // === //
+// #region === Window_InventoryDetailsWeapon ===
+function Window_InventoryDetailsWeapon() {
+    this.initialize.apply(this, arguments);
+}
+
+Window_InventoryDetailsWeapon.prototype = Object.create(Window_InventoryDetails.prototype);
+Window_InventoryDetailsWeapon.prototype.constructor = Window_InventoryDetailsWeapon;
+
+Window_InventoryDetailsWeapon.prototype.initialize = function(commandWindowHeight = 0) {
+    Window_InventoryDetails.prototype.initialize.call(this, commandWindowHeight);
+    this._weapon = null;
+};
+
+// Refreshing the window
+Window_InventoryDetailsWeapon.prototype.refresh = function() {
+    this.contents.clear();
+    if (this._weapon){
+        this.drawDetails(this._weapon);
+    }
+};
+
+// Drawing the details
+Window_InventoryDetailsWeapon.prototype.drawDetails = function(weapon){
+    // Title
+    this.drawUnderlinedText(weapon[1].name, 0, 0, this.contentsWidth(), "center");
+
+    // Item's Icon
+    this.drawIcon(weapon[1].icon, 0, 0);
+
+    // Availability Icon
+    this.drawIcon(weapon[1].availabilityIcon, this.contentsWidth() - 32, 0)
+
+    // Table
+    this.drawTable2Columns(0, 80, this.contentsWidth(), 2, [
+        // ["Owned :", "x" + item[1].quantity],
+        ["Group :", weapon[1].groupLabel],
+        ["Enc. :", weapon[1].enc]
+    ]);
+
+    this.drawLine(200);
+
+    // Description
+    this.drawWrappedTextManually(weapon[1].description, 0, 220, 24);
+};
+
+// #endregion === Window_InventoryDetailsWeapon ===
+// === //
+// #region === Window_InventoryWeaponsCommand ===
+
+function Window_InventoryWeaponsCommand() {
+    this.initialize.apply(this, arguments);
+}
+
+Window_InventoryWeaponsCommand.prototype = Object.create(Window_InventoryDetailsCommand.prototype);
+Window_InventoryWeaponsCommand.prototype.constructor = Window_InventoryWeaponsCommand;
+
+// Initializing the command window
+Window_InventoryWeaponsCommand.prototype.initialize = function() {
+    Window_InventoryDetailsCommand.prototype.initialize.call(this, 3);
+};
+
+// Making the 3 lines
+Window_InventoryWeaponsCommand.prototype.makeCommandList = function() {
+    this.addCommand(TextManager.inventoryWeaponEquip, 'inventory_weapon_equip');
+    this.addCommand(TextManager.inventoryWeaponTransfer, 'inventory_weapon_transfer');
+    this.addCommand(TextManager.inventoryWeaponReload, 'inventory_weapon_reload');
+};
+
+Window_InventoryWeaponsCommand.prototype.refreshCommand = function(actor, weaponId = 0){
+    if (actor){
+        const weapon = actor.weapon(weaponId);
+        this.clearCommandList();
+        if (weapon.isInMainHand || weapon.isInSecondHand){
+            this.addCommand(TextManager.inventoryWeaponUnequip, 'inventory_weapon_unequip');
+        } else {
+            this.addCommand(TextManager.inventoryWeaponEquip, 'inventory_weapon_equip');
+        }
+        this.addCommand(TextManager.inventoryWeaponTransfer, 'inventory_weapon_transfer');
+        if (weapon.isReloadable){
+            this.addCommand(TextManager.inventoryWeaponReload, 'inventory_weapon_reload');
+        } else {
+            this.addCommand(TextManager.inventoryWeaponReload, 'inventory_weapon_reload', false);
+        }
+        this.createContents();
+        Window_Selectable.prototype.refresh.call(this);
+    }
+};
+
+// #endregion === Window_InventoryItemsCommand ===
+// === //
 // #region === Window_InventoryArmors ===
 //-----------------------------------------------------------------------------
 // Window_InventoryArmors
@@ -431,7 +567,7 @@ Window_InventoryArmors.prototype.setActor = function(actor) {
         this._armors = [];        
 
         // const unequippedArmors = TEW.ARMORS_ARRAY.filter(armor => actor.hasArmorTEW(armor[0]));
-        // const equippedArmors = TEW.ARMORS_ARRAY.filter(armor => actor.hasArmorEquippedTEW(armor[0]));
+        // const equippedArmors = TEW.ARMORS_ARRAY.filter(armor => actor.hasArmorEquipped(armor[0]));
 
         actor.equippedArmors.forEach(armor => {
             this._armors.push(TEW.ARMORS_ARRAY.find(a => a[0] === armor));
@@ -462,7 +598,7 @@ Window_InventoryArmors.prototype.drawItem = function(index) {
     const armor = this.armorFromIndex(index);
     
     if (armor) {
-        const iconEquipped = this._actor.hasArmorEquippedTEW(armor[0])
+        const iconEquipped = this._actor.hasArmorEquipped(armor[0])
             ? TEW.ICONS_IDS.EQUIPPED_ARMOR
             : 0;
         this.changeTextColor(this.systemColor());
@@ -481,8 +617,7 @@ Window_InventoryArmors.prototype.armorFromIndex = function(index) {
 Window_InventoryArmors.prototype.select = function(index) {
     this._index = index;
     if (this._index >= 0) {
-        // this._helpWindow.clear();
-        // this.drawHelp(this._index);
+        this.callHandler("show_armor_details");
     }
     this._stayCount = 0;
     this.ensureCursorVisible();
@@ -502,6 +637,89 @@ Window_InventoryArmors.prototype.processOk = function() {
 
 
 // #endregion === Window_InventoryArmors ===
+// === //
+// #region === Window_InventoryDetailsArmor ===
+function Window_InventoryDetailsArmor() {
+    this.initialize.apply(this, arguments);
+}
+
+Window_InventoryDetailsArmor.prototype = Object.create(Window_InventoryDetails.prototype);
+Window_InventoryDetailsArmor.prototype.constructor = Window_InventoryDetailsArmor;
+
+Window_InventoryDetailsArmor.prototype.initialize = function(commandWindowHeight = 0) {
+    Window_InventoryDetails.prototype.initialize.call(this, commandWindowHeight);
+    this._armor = null;
+};
+
+// Refreshing the window
+Window_InventoryDetailsArmor.prototype.refresh = function() {
+    this.contents.clear();
+    if (this._armor){
+        this.drawDetails(this._armor);
+    }
+};
+
+// Drawing the details
+Window_InventoryDetailsArmor.prototype.drawDetails = function(armor){
+    // Title
+    this.drawUnderlinedText(armor[1].name, 0, 0, this.contentsWidth(), "center");
+
+    // Item's Icon
+    this.drawIcon(armor[1].icon, 0, 0);
+
+    // Availability Icon
+    this.drawIcon(armor[1].availabilityIcon, this.contentsWidth() - 32, 0)
+
+    // Table
+    this.drawTable2Columns(0, 80, this.contentsWidth(), 2, [
+        // ["Owned :", "x" + item[1].quantity],
+        ["Group :", armor[1].groupLabel],
+        ["Enc. :", armor[1].enc]
+    ]);
+
+    this.drawLine(200);
+
+    // Description
+    this.drawWrappedTextManually(armor[1].description, 0, 220, 24);
+};
+
+// #endregion === Window_InventoryDetailsArmor ===
+// === //
+// #region === Window_InventoryArmorsCommand ===
+
+function Window_InventoryArmorsCommand() {
+    this.initialize.apply(this, arguments);
+}
+
+Window_InventoryArmorsCommand.prototype = Object.create(Window_InventoryDetailsCommand.prototype);
+Window_InventoryArmorsCommand.prototype.constructor = Window_InventoryArmorsCommand;
+
+// Initializing the command window
+Window_InventoryArmorsCommand.prototype.initialize = function() {
+    Window_InventoryDetailsCommand.prototype.initialize.call(this, 2);
+};
+
+// Making the 2 lines
+Window_InventoryArmorsCommand.prototype.makeCommandList = function() {
+    this.addCommand(TextManager.inventoryWeaponEquip, 'inventory_armor_equip');
+    this.addCommand(TextManager.inventoryWeaponTransfer, 'inventory_armor_transfer');
+};
+
+Window_InventoryArmorsCommand.prototype.refreshCommand = function(actor, armorId = 0){
+    if (actor){
+        this.clearCommandList();
+        if (actor.hasArmorEquipped(armorId)){
+            this.addCommand(TextManager.inventoryArmorUnequip, 'inventory_armor_unequip');
+        } else {
+            this.addCommand(TextManager.inventoryArmorEquip, 'inventory_armor_equip');
+        }
+        this.addCommand(TextManager.inventoryArmorTransfer, 'inventory_armor_transfer');
+        this.createContents();
+        Window_Selectable.prototype.refresh.call(this);
+    }
+};
+
+// #endregion === Window_InventoryItemsCommand ===
 // === //
 // #region === Window_InventoryItems ===
 function Window_InventoryItems() {
@@ -579,9 +797,11 @@ Window_InventoryItems.prototype.processOk = function() {
         this.playBuzzerSound();
     }
 };
+
 // #endregion === Window_InventoryItems ===
 // === //
 // #region === Window_InventoryDetailsItem ===
+
 function Window_InventoryDetailsItems() {
     this.initialize.apply(this, arguments);
 }
@@ -624,10 +844,33 @@ Window_InventoryDetailsItems.prototype.drawDetails = function(item){
 
     // Description
     this.drawWrappedTextManually(item[1].description, 0, 220, 24);
-    
-};  
+};
+
 // #endregion === Window_InventoryDetailsItem ===
 // === //
+// #region === Window_InventoryItemsCommand ===
+// The window for selecting a command on the items view.
+
+function Window_InventoryItemsCommand() {
+    this.initialize.apply(this, arguments);
+}
+
+Window_InventoryItemsCommand.prototype = Object.create(Window_InventoryDetailsCommand.prototype);
+Window_InventoryItemsCommand.prototype.constructor = Window_InventoryItemsCommand;
+
+// Initializing the command window
+Window_InventoryItemsCommand.prototype.initialize = function() {
+    Window_InventoryDetailsCommand.prototype.initialize.call(this, 2);
+};
+
+// Making the 2 lines
+Window_InventoryItemsCommand.prototype.makeCommandList = function() {
+    this.addCommand(TextManager.inventoryItemUse, 'inventory_item_use');
+    this.addCommand(TextManager.inventoryItemTransfer, 'inventory_item_transfer');
+};
+
+// #endregion === Window_InventoryItemsCommand ===
+// === //  
 // #region === Window_InventoryHelp ===
 //-----------------------------------------------------------------------------
 // Window_InventoryHelp
@@ -691,6 +934,7 @@ Window_InventoryHelp.prototype.refresh = function() {
         this.drawIcon(icon.id, icon.x, icon.y);
     });
 };
+
 // #endregion === Window_InventoryHelp ===
 // === //
 // #region === Window_InventoryCommand ===
@@ -739,41 +983,9 @@ Window_InventoryCommand.prototype.cursorLeft = function(wrap) {
     Window_HorzCommand.prototype.cursorLeft.call(this, wrap);
     this.callHandler('left');
 };
+
 // #endregion === Window_InventoryCommand ===
-// === //  
-// #region === Window_InventoryCommandItems ===
-// The window for selecting a command on the items view.
-
-function Window_InventoryCommandItems() {
-    this.initialize.apply(this, arguments);
-}
-
-Window_InventoryCommandItems.prototype = Object.create(Window_Command.prototype);
-Window_InventoryCommandItems.prototype.constructor = Window_InventoryCommandItems;
-
-// Initializing the command window
-Window_InventoryCommandItems.prototype.initialize = function() {
-    this._actionsNumber = 2;
-    this._windowWidth = Graphics.boxWidth / 2;
-    this._windowHeight = this.fittingHeight(this._actionsNumber);
-    Window_Command.prototype.initialize.call(
-        this,
-        Graphics.boxWidth / 2,
-        Graphics.boxHeight - this._windowHeight);
-};
-
-// Window Width
-Window_InventoryCommandItems.prototype.windowWidth = function() {
-    return this._windowWidth;
-};
-
-// Making the 2 lines
-Window_InventoryCommandItems.prototype.makeCommandList = function() {
-    this.addCommand(TextManager.inventoryItemUse, 'inventory_item_use');
-    this.addCommand(TextManager.inventoryItemTransfer, 'inventory_item_transfer');
-};
-// #endregion === Window_InventoryCommandItems ===
-// === //  
+// === //
 // #region === Window_InventoryAmmo
 //-----------------------------------------------------------------------------
 // Window_InventoryAmmo
@@ -799,6 +1011,7 @@ Window_InventoryAmmo.prototype.setActor = function(actor) {
         this.refresh();
     }
 };
+
 //#endregion === Window_InventoryAmmo
 // === //  
 // #region === Scene_Equip ===
@@ -823,9 +1036,13 @@ Scene_Equip.prototype.create = function() {
 
     // Weapons Windows
     this.createWeaponsWindow();
+    this.createWeaponsCommandWindow();
+    this.createWeaponsDetailsWindow();
 
     // Armors windows
     this.createArmorsWindow();
+    this.createArmorsCommandWindow();
+    this.createArmorsDetailsWindow();
 
     // Items windows
     this.createItemsWindow();
@@ -895,6 +1112,9 @@ Scene_Equip.prototype.createWeaponsWindow = function(){
         this._commandWindow.activate();
         this._weaponsWindow.deselect();
     });
+    this._weaponsWindow.setHandler('ok', () => {
+        this.activateCommandWindowWeapon();
+    });
     this._weaponsWindow.hide();
     this.addWindow(this._weaponsWindow);
 };
@@ -905,6 +1125,9 @@ Scene_Equip.prototype.createArmorsWindow = function(){
     this._armorsWindow.setHandler('cancel', () => {
         this._commandWindow.activate();
         this._armorsWindow.deselect();
+    });
+    this._armorsWindow.setHandler('ok', () => {
+        this.activateCommandWindowArmor();
     });
     this._armorsWindow.hide();
     this.addWindow(this._armorsWindow);
@@ -925,17 +1148,48 @@ Scene_Equip.prototype.createItemsWindow = function(){
 };
 
 Scene_Equip.prototype.createItemsCommandWindow = function(){
-    this._itemsCommandWindow = new Window_InventoryCommandItems();
+    this._itemsCommandWindow = new Window_InventoryItemsCommand();
     this._itemsCommandWindow.setHandler('cancel', () => {
         this._itemsCommandWindow.deactivate();
-        this._itemsCommandWindow.hide();
+        this._itemsCommandWindow.deselect();
         this.activateInventoryItems(this._itemsWindow.index());
-        // this._itemsWindow._helpWindow.refresh();
     });
     this._itemsCommandWindow.setHandler('inventory_item_use', this.useItem.bind(this));
     this._itemsCommandWindow.setHandler('inventory_item_transfer', this.transferItem.bind(this));
     this._itemsCommandWindow.hide();
+    this._itemsCommandWindow.deselect();
     this.addWindow(this._itemsCommandWindow);
+};
+
+Scene_Equip.prototype.createWeaponsCommandWindow = function(){
+    this._weaponsCommandWindow = new Window_InventoryWeaponsCommand();
+    this._weaponsCommandWindow.setHandler('cancel', () => {
+        this._weaponsCommandWindow.deactivate();
+        this._weaponsCommandWindow.deselect();
+        this.activateInventoryWeapons(this._weaponsWindow.index());
+    });
+    this._weaponsCommandWindow.setHandler('inventory_weapon_equip', this.equipWeapon.bind(this));
+    this._weaponsCommandWindow.setHandler('inventory_weapon_unequip', this.unequipWeapon.bind(this));
+    this._weaponsCommandWindow.setHandler('inventory_weapon_transfer', this.transferWeapon.bind(this));
+    this._weaponsCommandWindow.setHandler('inventory_weapon_reload', this.reloadWeapon.bind(this));
+    this._weaponsCommandWindow.hide();
+    this._weaponsCommandWindow.deselect();
+    this.addWindow(this._weaponsCommandWindow);
+};
+
+Scene_Equip.prototype.createArmorsCommandWindow = function(){
+    this._armorsCommandWindow = new Window_InventoryArmorsCommand();
+    this._armorsCommandWindow.setHandler('cancel', () => {
+        this._armorsCommandWindow.deactivate();
+        this._armorsCommandWindow.deselect();
+        this.activateInventoryArmors(this._armorsWindow.index());
+    });
+    this._armorsCommandWindow.setHandler('inventory_armor_equip', this.equipArmor.bind(this));
+    this._armorsCommandWindow.setHandler('inventory_armor_unequip', this.unequipArmor.bind(this));
+    this._armorsCommandWindow.setHandler('inventory_armor_transfer', this.transferArmor.bind(this));
+    this._armorsCommandWindow.hide();
+    this._armorsCommandWindow.deselect();
+    this.addWindow(this._armorsCommandWindow);
 };
 
 // Creating the ammo Window for the scene
@@ -961,6 +1215,30 @@ Scene_Equip.prototype.createItemsDetailsWindow = function(){
     this.addWindow(this._itemsDetailsWindow);
 };
 
+// Creating the weapons details Window for the scene
+Scene_Equip.prototype.createWeaponsDetailsWindow = function(){
+    this._weaponsDetailsWindow = new Window_InventoryDetailsWeapon(
+        this._weaponsCommandWindow.fittingHeight(this._weaponsCommandWindow._actionsNumber)
+    );
+    this._weaponsWindow.setHandler('show_weapon_details', () => {
+        this.showWeaponDetails();
+    });
+    this._weaponsDetailsWindow.hide();
+    this.addWindow(this._weaponsDetailsWindow);
+};
+
+// Creating the armors details Window for the scene
+Scene_Equip.prototype.createArmorsDetailsWindow = function(){
+    this._armorsDetailsWindow = new Window_InventoryDetailsArmor(
+        this._armorsCommandWindow.fittingHeight(this._armorsCommandWindow._actionsNumber)
+    );
+    this._armorsWindow.setHandler('show_armor_details', () => {
+        this.showArmorDetails();
+    });
+    this._armorsDetailsWindow.hide();
+    this.addWindow(this._armorsDetailsWindow);
+};
+
 // Hiding all the windows
 Scene_Equip.prototype.hideAllWindows = function(){
     this._infosWindow.hide();
@@ -969,8 +1247,20 @@ Scene_Equip.prototype.hideAllWindows = function(){
     this._weaponsWindow.hide();
     this._weaponsWindow.deactivate();
 
+    this._weaponsDetailsWindow.hide();
+    this._weaponsDetailsWindow.deactivate();
+
+    this._weaponsCommandWindow.hide();
+    this._weaponsCommandWindow.deactivate();
+
     this._armorsWindow.hide();
     this._armorsWindow.deactivate();
+
+    this._armorsDetailsWindow.hide();
+    this._armorsDetailsWindow.deactivate();
+
+    this._armorsCommandWindow.hide();
+    this._armorsCommandWindow.deactivate();
     
     this._itemsWindow.hide();
     this._itemsWindow.deactivate();
@@ -996,15 +1286,25 @@ Scene_Equip.prototype.displayWindow = function(){
         this._infosWindow.refresh();
     } else if (this._commandWindow.index() == this.WEAPONS_WINDOW_INDEX){
         this._weaponsWindow.show();
+        this._weaponsDetailsWindow.show();
+        this._weaponsCommandWindow.show();
         this._weaponsWindow.refresh();
+        this._weaponsDetailsWindow.refresh();
+        this._weaponsCommandWindow.refresh();
     } else if (this._commandWindow.index() == this.ARMORS_WINDOW_INDEX){
         this._armorsWindow.show();
+        this._armorsDetailsWindow.show();
+        this._armorsCommandWindow.show();
         this._armorsWindow.refresh();
+        this._armorsDetailsWindow.refresh();
+        this._armorsCommandWindow.refresh();
     } else if (this._commandWindow.index() == this.ITEMS_WINDOW_INDEX){
         this._itemsWindow.show();
         this._itemsDetailsWindow.show();
+        this._itemsCommandWindow.show();
         this._itemsWindow.refresh();
         this._itemsDetailsWindow.refresh();
+        this._itemsCommandWindow.refresh();
     } else if (this._commandWindow.index() == this.AMMO_WINDOW_INDEX){
         this._ammoWindow.show();
         this._ammoWindow.refresh();
@@ -1020,24 +1320,26 @@ Scene_Equip.prototype.activateInventoryInfos = function() {
 };
 
 // Activating the weapons window 
-Scene_Equip.prototype.activateInventoryWeapons = function() {
+Scene_Equip.prototype.activateInventoryWeapons = function(index = 0) {
     this.hideAllWindows()
     this._weaponsWindow.show();
     this._commandWindow.deactivate();
     this._weaponsWindow.activate();
-    this._helpWindow.reshape(5);
-    this._weaponsWindow.select(0);
+    this._weaponsDetailsWindow.show();
+    this._weaponsCommandWindow.show();
+    this._weaponsWindow.select(index);
     this._weaponsWindow.refresh();
 };
 
 // Activating the armors window 
-Scene_Equip.prototype.activateInventoryArmors = function() {
+Scene_Equip.prototype.activateInventoryArmors = function(index = 0) {
     this.hideAllWindows();
     this._armorsWindow.show();
     this._commandWindow.deactivate();
     this._armorsWindow.activate();
-    // this._helpWindow.move(0, 70, Graphics.width, Graphics.height - 70);
-    this._armorsWindow.select(0);
+    this._armorsDetailsWindow.show();
+    this._armorsCommandWindow.show();
+    this._armorsWindow.select(index);
     this._armorsWindow.refresh();
 };
 
@@ -1046,6 +1348,7 @@ Scene_Equip.prototype.activateInventoryItems = function(index = 0) {
     this.hideAllWindows();
     this._itemsWindow.show();
     this._itemsDetailsWindow.show();
+    this._itemsCommandWindow.show();
     this._commandWindow.deactivate();
     this._itemsWindow.activate();
     this._itemsWindow.select(index);
@@ -1071,6 +1374,45 @@ Scene_Equip.prototype.activateCommandWindowItem = function(){
     }
 }
 
+Scene_Equip.prototype.activateCommandWindowWeapon = function(){
+    if (this._weaponsWindow.isOpenAndActive() && this._weaponsWindow.index() >= 0){
+        this._weaponsWindow.deactivate();
+        this._weaponsCommandWindow.show();
+        this._weaponsCommandWindow.activate();
+        this._weaponsCommandWindow.select(0);
+    }
+}
+
+Scene_Equip.prototype.activateCommandWindowArmor = function(){
+    if (this._armorsWindow.isOpenAndActive() && this._armorsWindow.index() >= 0){
+        this._armorsWindow.deactivate();
+        this._armorsCommandWindow.show();
+        this._armorsCommandWindow.activate();
+        this._armorsCommandWindow.select(0);
+    }
+}
+
+// Showing the item details - Triggered on the items window
+Scene_Equip.prototype.showItemDetails = function(){
+    const item = this._itemsWindow.itemFromIndex(this._itemsWindow.index());
+    item[1].quantity = this._itemsWindow._actor.item(item[0]);
+    this._itemsDetailsWindow._item = item;
+    this._itemsDetailsWindow.refresh();
+}
+
+Scene_Equip.prototype.showWeaponDetails = function(){
+    const weapon = this._weaponsWindow.weaponFromIndex(this._weaponsWindow.index());
+    this._weaponsDetailsWindow._weapon = weapon;
+    this._weaponsCommandWindow.refreshCommand(this._actor, weapon[0]);
+    this._weaponsDetailsWindow.refresh();
+}
+
+Scene_Equip.prototype.showArmorDetails = function(){
+    const armor = this._armorsWindow.armorFromIndex(this._armorsWindow.index());
+    this._armorsDetailsWindow._armor = armor;
+    this._armorsCommandWindow.refreshCommand(this._actor, armor[0]);
+    this._armorsDetailsWindow.refresh();
+}
 
 // Using an item - Triggered on the items window
 Scene_Equip.prototype.useItem = function(){
@@ -1084,11 +1426,46 @@ Scene_Equip.prototype.transferItem = function(){
     this._itemsCommandWindow.callHandler('cancel');
 }
 
-// Showing the item details - Triggered on the items window
-Scene_Equip.prototype.showItemDetails = function(){
-    const item = this._itemsWindow.itemFromIndex(this._itemsWindow.index());
-    item[1].quantity = this._itemsWindow._actor.item(item[0]);
-    this._itemsDetailsWindow._item = item;
-    this._itemsDetailsWindow.refresh();
+// Equipping a weapon - Triggered on the weapons window
+Scene_Equip.prototype.equipWeapon = function(){
+    console.log("Equip weapon : ", this._weaponsWindow.index());
+    this._weaponsCommandWindow.callHandler('cancel');
 }
-//#endregion === Scene_Equip === 
+
+// Unequipping a weapon - Triggered on the weapons window
+Scene_Equip.prototype.unequipWeapon = function(){
+    console.log("Unequip weapon : ", this._weaponsWindow.index());
+    this._weaponsCommandWindow.callHandler('cancel');
+}
+
+// Transfering a weapon - Triggered on the weapons window
+Scene_Equip.prototype.transferWeapon = function(){
+    console.log("Transfer weapon", this._weaponsWindow.index());
+    this._weaponsCommandWindow.callHandler('cancel');
+}
+
+// Reloading a weapon - Triggered on the weapons window
+Scene_Equip.prototype.reloadWeapon = function(){
+    console.log("Reload weapon : ", this._weaponsWindow.index());
+    this._weaponsCommandWindow.callHandler('cancel');
+}
+
+// Equipping a weapon - Triggered on the weapons window
+Scene_Equip.prototype.equipArmor = function(){
+    console.log("Equip armor : ", this._armorsWindow.index());
+    this._armorsCommandWindow.callHandler('cancel');
+}
+
+// Unequipping a weapon - Triggered on the weapons window
+Scene_Equip.prototype.unequipArmor = function(){
+    console.log("Unequip armor : ", this._armorsWindow.index());
+    this._armorsCommandWindow.callHandler('cancel');
+}
+
+// Transfering a weapon - Triggered on the weapons window
+Scene_Equip.prototype.transferArmor = function(){
+    console.log("Transfer armor", this._armorsWindow.index());
+    this._armorsCommandWindow.callHandler('cancel');
+}
+
+//#endregion === Scene_Equip ===
