@@ -1,7 +1,5 @@
-var Imported = Imported || {};
-Imported.TEW_Constants = true;
-var TEW = TEW || {};
-
+// $PluginCompiler TEW_Constants.js
+// $StartCompilation
 TEW.SPELLS = TEW.SPELLS || {
     AETHYRIC_ARMOUR: {
         name: "Aethyric Armour",

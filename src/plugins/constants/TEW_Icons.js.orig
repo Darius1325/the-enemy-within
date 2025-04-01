@@ -1,7 +1,12 @@
+<<<<<<< HEAD:js/plugins/TEW/TEW_Constants/TEW_Icons.js
 var Imported = Imported || {};
 Imported.TEW_Constants = true;
 var TEW = TEW || {};
 
+=======
+// $PluginCompiler TEW_Constants.js 1
+// $StartCompilation
+>>>>>>> c08380c (compile multifile JS plugins):src/plugins/constants/TEW_Icons.js
 TEW.ICONS_IDS = {
     // Item groups
     ITEM_CLOTHES : 154,

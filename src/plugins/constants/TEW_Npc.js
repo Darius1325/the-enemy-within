@@ -1,3 +1,5 @@
+// $PluginCompiler TEW_Constants.js
+// $StartCompilation
 TEW.NPCs = TEW.NPCs || {
     GUSTAV_FONDLEBURGER: {
         name: "Gustav Fondleburger",

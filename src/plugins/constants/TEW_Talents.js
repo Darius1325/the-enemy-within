@@ -1,7 +1,5 @@
-var Imported = Imported || {};
-Imported.TEW_Constants = true;
-var TEW = TEW || {};
-
+// $PluginCompiler TEW_Constants.js
+// $StartCompilation
 TEW.TALENTS = TEW.TALENTS || {
     ACCURATE_SHOT : {
         name: "Accurate Shot",

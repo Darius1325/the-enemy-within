@@ -1,8 +1,5 @@
-
-var Imported = Imported || {};
-Imported.TEW_Constants = true;
-var TEW = TEW || {};
-
+// $PluginCompiler TEW_Constants.js
+// $StartCompilation
 TEW.COMPS = TEW.COMPS || { 
     ANIMAL_CARE: {
         name: "Animal Care",
@@ -676,8 +673,6 @@ TEW.COMPS = TEW.COMPS || {
     },
 };
 
-
 TEW.COMPS_ARRAY = Object.keys(TEW.COMPS);
 TEW.BASE_COMPS = Object.entries(TEW.COMPS).filter((comp) => comp[1].isBase).sort((a, b) => a[0].localeCompare(b[0]));
 TEW.ADVANCED_COMPS = Object.entries(TEW.COMPS).filter((comp) => !comp[1].isBase).sort((a, b) => a[0].localeCompare(b[0]));
-
