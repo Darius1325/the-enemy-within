@@ -67,6 +67,44 @@ TEW.ICONS_IDS = {
     ARMOR_LIGHT_ARMS_SLOT: 366,
     ARMOR_HEAVY_ARMS_SLOT: 367,
 }
+
+//---------------------------------------
+// Window_Dice
+//
+// The window for displaying a dice roll.
+
+function Window_Dice() {
+    this.initialize.apply(this, arguments);
+}
+
+Window_Dice.prototype = Object.create(Window_Base.prototype);
+Window_Dice.prototype.constructor = Window_Dice;
+
+Window_Dice.prototype.initialize = function(x, y, tens, units) {
+    Window_Base.prototype.initialize.call(this, x, y, 240, 110); // temp !!
+    this._tens = tens;
+    this._units = units;
+    this.refresh();
+};
+
+Window_Dice.prototype.windowWidth = function() {
+    return 340;
+};
+
+Window_Dice.prototype.windowHeight = function() {
+    return 100;
+};
+
+Window_Dice.prototype.refresh = function() {
+    this.contents.clear();
+    this.contents.drawDie(0, 1, this._tens, 'black', 'lightblue');
+    this.contents.drawDie(100, 1, this._units, 'black', 'lightblue');
+};
+
+Window_Dice.prototype.open = function() {
+    this.refresh();
+    Window_Base.prototype.open.call(this);
+};
 TEW.ARMORS = TEW.ARMORS || {
     SOFT_KIT: {
         name: "Soft Kit",
@@ -371,7 +409,7 @@ TEW.ARMORS = TEW.ARMORS || {
         qualities: ["IMPENETRABLE", "VISOR", "WEAKPOINTS"],
         forbiddenWith: ["BOILED_LEATHER", "CHAINMAIL", "BRIGANDINE"],
         description: "The Armet is a Tilean design which fits closely on the head, being narrower around the neck. To facilitate the snug fit the helmet has an integral mechanism that must be worked to open and close it. The exacting design of the Armet means that it can withstand blows that might damage other helmets. Every time the helmet might lose a point of AP, roll on the Armet Damage table."
-    }, 
+    },
     SALLET: {
         name: "Sallet",
         icon: TEW.ICONS_IDS.ARMOR_HEAVY_HEAD_SLOT,
@@ -5701,7 +5739,7 @@ TEW.AMMUNITION = TEW.AMMUNITION || {
 };
 
 TEW.WEAPON_IDS = Object.keys(TEW.MELEE_WEAPONS).sort((a, b) => a.localeCompare(b))
-        .concat(Object.keys(TEW.RANGED_WEAPONS).sort((a, b) => a.localeCompare(b)));
+    .concat(Object.keys(TEW.RANGED_WEAPONS).sort((a, b) => a.localeCompare(b)));
 TEW.WEAPONS_ARRAY = Object.entries(TEW.MELEE_WEAPONS).sort((a, b) => a[0].localeCompare(b[0]))
-        .concat(Object.entries(TEW.RANGED_WEAPONS).sort((a, b) => a[0].localeCompare(b[0])));
+    .concat(Object.entries(TEW.RANGED_WEAPONS).sort((a, b) => a[0].localeCompare(b[0])));
 

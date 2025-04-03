@@ -1571,6 +1571,6 @@ TEW.AMMUNITION = TEW.AMMUNITION || {
 };
 
 TEW.WEAPON_IDS = Object.keys(TEW.MELEE_WEAPONS).sort((a, b) => a.localeCompare(b))
-        .concat(Object.keys(TEW.RANGED_WEAPONS).sort((a, b) => a.localeCompare(b)));
+    .concat(Object.keys(TEW.RANGED_WEAPONS).sort((a, b) => a.localeCompare(b)));
 TEW.WEAPONS_ARRAY = Object.entries(TEW.MELEE_WEAPONS).sort((a, b) => a[0].localeCompare(b[0]))
-        .concat(Object.entries(TEW.RANGED_WEAPONS).sort((a, b) => a[0].localeCompare(b[0])));
+    .concat(Object.entries(TEW.RANGED_WEAPONS).sort((a, b) => a[0].localeCompare(b[0])));

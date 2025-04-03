@@ -1,11 +1,5 @@
-
-var Imported = Imported || {};
-Imported.TEW_DiceRolls = true;
-var TEW = TEW || {};
-
-/*
-* This plugin contains interpreter commands to simulate dice rolls.
-*/
+// $PluginCompiler TEW_Base.js
+// $StartCompilation
 
 // Game_Interpreter
 
@@ -62,7 +56,7 @@ Game_Interpreter.prototype.opposedSkillTest = function(skillNamePlayer, modifier
     const maxPartySkill = Math.max(...actorSkillBaseValues) + modifierPlayer;
 
     const rollPlayer = TEW.displayDiceRoll();
-    const rollNPC = TEW.rollD100(); 
+    const rollNPC = TEW.rollD100();
 
     let drPlayer = Math.floor(maxPartySkill / 10) - Math.floor(rollPlayer / 10);
     let drNPC = Math.floor(skillValueNPC / 10) - Math.floor(rollNPC / 10);
@@ -111,108 +105,6 @@ Game_Interpreter.prototype.opposedSkillTest = function(skillNamePlayer, modifier
 
 // Combat opposed test
 
-
-
-//---------------------------------------
-// Window_Dice
-//
-// The window for displaying a dice roll.
-
-function Window_Dice() {
-    this.initialize.apply(this, arguments);
-}
-
-Window_Dice.prototype = Object.create(Window_Base.prototype);
-Window_Dice.prototype.constructor = Window_Dice;
-
-Window_Dice.prototype.initialize = function(x, y, tens, units) {
-    Window_Base.prototype.initialize.call(this, x, y, 240, 110); // temp !!
-    this._tens = tens;
-    this._units = units;
-    this.refresh();
-};
-
-Window_Dice.prototype.windowWidth = function() {
-    return 340;
-};
-
-Window_Dice.prototype.windowHeight = function() {
-    return 100;
-};
-
-Window_Dice.prototype.refresh = function() {
-    this.contents.clear();
-    this.contents.drawDie(0, 1, this._tens, 'black', 'lightblue');
-    this.contents.drawDie(100, 1, this._units, 'black', 'lightblue');
-};
-
-Window_Dice.prototype.open = function() {
-    this.refresh();
-    Window_Base.prototype.open.call(this);
-};
-
-
-// Bitmap
-
-TEW.DIE_10_POINTS = [
-    [0, 22],
-    [0, 45],
-    [38, 67],
-    [42, 67],
-    [80, 45],
-    [80, 22],
-    [40, 0],
-    [16, 50],
-    [40, 63],
-    [40, 67],
-    [64, 50]
-];
-
-TEW.drawLine = function(context, start, end) {
-    context.moveTo(start[0], start[1]);
-    context.lineTo(end[0], end[1]);
-};
-
-Bitmap.prototype.drawDie = function(x, size, value, edgeColor, fillColor) {
-    const points = [];
-    for (let i = 0; i < TEW.DIE_10_POINTS.length; i++) {
-        points.push([TEW.DIE_10_POINTS[i][0] + x, TEW.DIE_10_POINTS[i][1]]);
-    }
-
-    var context = this._context;
-    context.save();
-
-    context.strokeStyle = edgeColor;
-    context.fillStyle = fillColor;
-
-    context.beginPath();
-    context.moveTo(...points[0]);
-    context.lineTo(...points[1]);
-    context.lineTo(...points[2]);
-    context.lineTo(...points[3]);
-    context.lineTo(...points[4]);
-    context.lineTo(...points[5]);
-    context.lineTo(...points[6]);
-    context.closePath();
-
-    context.fill();
-    context.stroke();
-
-    TEW.drawLine(context, points[7], points[1]);
-    TEW.drawLine(context, points[7], points[6]);
-    TEW.drawLine(context, points[7], points[8]);
-    TEW.drawLine(context, points[10], points[8]);
-    TEW.drawLine(context, points[10], points[6]);
-    TEW.drawLine(context, points[10], points[4]);
-    TEW.drawLine(context, points[9], points[8]);
-
-    context.stroke();
-
-    this.drawText(value, 33 + x, 27, 16, 25, 'left');
-
-    context.restore();
-    this._setDirty();
-}
 
 // Scene_Dice
 

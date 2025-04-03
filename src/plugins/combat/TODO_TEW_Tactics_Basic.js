@@ -1,3 +1,5 @@
+// $PluginCompiler TEW_Combat.js
+
 //=============================================================================
 // TEW_Tactics_Basic.js v1.0.0
 //=============================================================================
@@ -317,7 +319,10 @@ var TacticsSystem = TacticsSystem || {};
 TacticsSystem.Parameters = PluginManager.parameters('TEW_Tactics_Basic');
 TacticsSystem.clearAll = true; // in game system
 
- /**
+
+// $StartCompilation
+
+/**
  * Converts a boolean string.
  *
  * @method String.prototype.toBoolean
@@ -326,10 +331,10 @@ TacticsSystem.clearAll = true; // in game system
 String.prototype.toBoolean = function(){
     var s = String(this);
     switch (s) {
-    case 'false':
-        return false;
-    default:
-        return true;
+        case 'false':
+            return false;
+        default:
+            return true;
     }
 };
 
@@ -376,45 +381,45 @@ TacticsSystem.Game_Interpreter_pluginCommand = Game_Interpreter.prototype.plugin
 Game_Interpreter.prototype.pluginCommand = function(command, args) {
     TacticsSystem.Game_Interpreter_pluginCommand.call(this, command, args);
     switch(command) {
-    case 'TacticsSystem.BattleProcessing':
-        this.battleProcessing(args[0]);
-        break;
-    case 'TacticsSystem.ProcessVictory':
-        this.processVictory();
-        break;
-    case 'TacticsSystem.ProcessDefeat':
-        this.processDefeat();
-        break;
-    case 'TacticsSystem.ClearAll':
-        this.clearAll(args[0]);
-        break;
-    case 'TacticsSystem.SelectorActive':
-        this.selectorActive(args[0]);
-        break;
-    case 'TacticsSystem.SelectorTransfer':
-        this.selectorTransfer(args[0], args[1]);
-        break;
-    case 'TacticsSystem.SelectorMoveTo':
-        this.selectorMoveTo(args[0], args[1]);
-        break;
-    case 'TacticsSystem.SelectorEvent':
-        this.selectorEvent(args[0]);
-        break;
-    case 'TacticsSystem.SelectorSave':
-        this.selectorSave();
-        break;
-    case 'TacticsSystem.SelectorRestore':
-        this.selectorRestore();
-        break;
-    case 'TacticsSystem.BattlerEndAction':
-        this.battlerEndAction();
-        break;
-    case 'TacticsSystem.WindowCloseCommand':
-        this.windowCloseCommand();
-        break;
-    case 'TacticsSystem.MapClearTiles':
-        this.mapClearTiles();
-        break;
+        case 'TacticsSystem.BattleProcessing':
+            this.battleProcessing(args[0]);
+            break;
+        case 'TacticsSystem.ProcessVictory':
+            this.processVictory();
+            break;
+        case 'TacticsSystem.ProcessDefeat':
+            this.processDefeat();
+            break;
+        case 'TacticsSystem.ClearAll':
+            this.clearAll(args[0]);
+            break;
+        case 'TacticsSystem.SelectorActive':
+            this.selectorActive(args[0]);
+            break;
+        case 'TacticsSystem.SelectorTransfer':
+            this.selectorTransfer(args[0], args[1]);
+            break;
+        case 'TacticsSystem.SelectorMoveTo':
+            this.selectorMoveTo(args[0], args[1]);
+            break;
+        case 'TacticsSystem.SelectorEvent':
+            this.selectorEvent(args[0]);
+            break;
+        case 'TacticsSystem.SelectorSave':
+            this.selectorSave();
+            break;
+        case 'TacticsSystem.SelectorRestore':
+            this.selectorRestore();
+            break;
+        case 'TacticsSystem.BattlerEndAction':
+            this.battlerEndAction();
+            break;
+        case 'TacticsSystem.WindowCloseCommand':
+            this.windowCloseCommand();
+            break;
+        case 'TacticsSystem.MapClearTiles':
+            this.mapClearTiles();
+            break;
     }
 };
 
@@ -440,7 +445,7 @@ Game_Interpreter.prototype.processDefeat = function() {
 
 // Selector Active
 Game_Interpreter.prototype.selectorActive = function(active) {
-     if (active.toLowerCase() === 'off') {
+    if (active.toLowerCase() === 'off') {
         $gameSelector.deactivate();
     } else {
         $gameSelector.activate();
@@ -785,7 +790,7 @@ Scene_Battle.prototype.updateCallMenu = function() {
             SoundManager.playOk();
             this.callMenu();
         }
-         if (this.isMenuCalled() && BattleManager.isExploring()) {
+        if (this.isMenuCalled() && BattleManager.isExploring()) {
             this.menuCalling = true;
         }
     } else {
@@ -839,15 +844,15 @@ Scene_Battle.prototype.updateBattleProcess = function() {
 
 Scene_Battle.prototype.isBusy = function() {
     return ((this._messageWindow && this._messageWindow.isClosing()) ||
-             Scene_Base.prototype.isBusy.call(this) || $gameSelector.isBusy());
+        Scene_Base.prototype.isBusy.call(this) || $gameSelector.isBusy());
 };
 
 Scene_Battle.prototype.isAnyInputWindowActive = function() {
     return (this._tacticsCommandWindow.active ||
-            this._skillWindow.active ||
-            this._itemWindow.active ||
-            this._mapWindow.active ||
-            this._statusWindow.active);
+        this._skillWindow.active ||
+        this._itemWindow.active ||
+        this._mapWindow.active ||
+        this._statusWindow.active);
 };
 
 Scene_Battle.prototype.startActorCommandSelection = function() {
@@ -905,15 +910,15 @@ Scene_Battle.prototype.commandWait = function() {
 Scene_Battle.prototype.onPersonalOk = function() {
     $gameSelector.setTransparent(false);
     switch (this._mapWindow.currentSymbol()) {
-    case 'skill':
-        SceneManager.push(Scene_Skill);
-        break;
-    case 'equip':
-        SceneManager.push(Scene_Equip);
-        break;
-    case 'status':
-        SceneManager.push(Scene_Status);
-        break;
+        case 'skill':
+            SceneManager.push(Scene_Skill);
+            break;
+        case 'equip':
+            SceneManager.push(Scene_Equip);
+            break;
+        case 'status':
+            SceneManager.push(Scene_Status);
+            break;
     }
 };
 
@@ -989,7 +994,7 @@ Scene_Battle.prototype.stop = function() {
 
 Scene_Battle.prototype.needsSlowFadeOut = function() {
     return (SceneManager.isNextScene(Scene_Title) ||
-            SceneManager.isNextScene(Scene_Gameover));
+        SceneManager.isNextScene(Scene_Gameover));
 };
 
 Scene_Battle.prototype.terminate = function() {
@@ -1131,10 +1136,10 @@ BattleManager.startBattle = function() {
 BattleManager.isActive = function() {
     if (!this._logWindow.isBusy()) {
         switch (this._battlePhase) {
-        case 'explore':
-        case 'select':
-        case 'target':
-            return true;
+            case 'explore':
+            case 'select':
+            case 'target':
+                return true;
         }
     }
     return false;
@@ -1147,59 +1152,59 @@ BattleManager.makeEscapeRatio = function() {
 BattleManager.update = function() {
     if (!this.isBusy() && !this.updateEvent()) {
         switch (this._phase) {
-        case 'startPhase':
-            this.updateStartPhase();
-            break;
-        case 'playerPhase':
-            this.updatePlayerPhase();
-            break;
-        case 'enemyPhase':
-            this.updatePhase();
-            break;
-        case 'battleEnd':
-            this.updateBattleEnd();
-            break;
+            case 'startPhase':
+                this.updateStartPhase();
+                break;
+            case 'playerPhase':
+                this.updatePlayerPhase();
+                break;
+            case 'enemyPhase':
+                this.updatePhase();
+                break;
+            case 'battleEnd':
+                this.updateBattleEnd();
+                break;
         }
     }
 };
 
 BattleManager.updatePlayerPhase = function() {
     switch (this._battlePhase) {
-    case 'explore':
-        this.updateExplore();
-        break;
-    case 'select':
-        this.updateSelect();
-        break;
-    case 'target':
-        this.updateTarget();
-        break;
-    default:
-        this.updatePhase();
-        break;
+        case 'explore':
+            this.updateExplore();
+            break;
+        case 'select':
+            this.updateSelect();
+            break;
+        case 'target':
+            this.updateTarget();
+            break;
+        default:
+            this.updatePhase();
+            break;
     }
 };
 
 BattleManager.updatePhase = function() {
     switch (this._battlePhase) {
-    case 'start':
-        this.updateStart();
-        break;
-    case 'move':
-        this.updateMove();
-        break;
-    case 'open':
-        this.processAction();
-        break;
-    case 'action':
-        this.updateAction();
-        break;
-    case 'close':
-        this.updateClose();
-        break;
-    case 'turnEnd':
-        this.updateTurnEnd();
-        break;
+        case 'start':
+            this.updateStart();
+            break;
+        case 'move':
+            this.updateMove();
+            break;
+        case 'open':
+            this.processAction();
+            break;
+        case 'action':
+            this.updateAction();
+            break;
+        case 'close':
+            this.updateClose();
+            break;
+        case 'turnEnd':
+            this.updateTurnEnd();
+            break;
     }
 };
 
@@ -1210,17 +1215,17 @@ BattleManager.isBusy = function() {
 
 BattleManager.updateEvent = function() {
     switch (this._phase) {
-    case 'startPhase':
-    case 'playerPhase':
-    case 'enemyPhase':
-        $gameSwitches.update();
-        $gameVariables.update();
-        if (this.isActionForced()) {
-            this.processForcedAction();
-            return true;
-        } else {
-            return this.updateEventMain();
-        }
+        case 'startPhase':
+        case 'playerPhase':
+        case 'enemyPhase':
+            $gameSwitches.update();
+            $gameVariables.update();
+            if (this.isActionForced()) {
+                this.processForcedAction();
+                return true;
+            } else {
+                return this.updateEventMain();
+            }
     }
 };
 
@@ -2048,12 +2053,12 @@ Game_Switches.prototype.updatePhase = function() {
     this.setValue(TacticsSystem.playerPhaseId, false);
     this.setValue(TacticsSystem.enemyPhaseId, false);
     switch (BattleManager.phase()) {
-    case 'playerPhase':
-        this.setValue(TacticsSystem.playerPhaseId, true);
-        break;
-    case 'enemyPhase':
-        this.setValue(TacticsSystem.enemyPhaseId, true);
-        break
+        case 'playerPhase':
+            this.setValue(TacticsSystem.playerPhaseId, true);
+            break;
+        case 'enemyPhase':
+            this.setValue(TacticsSystem.enemyPhaseId, true);
+            break
     }
 };
 
@@ -2071,61 +2076,61 @@ Game_Variables.prototype.update = function() {
 
 Game_Variables.prototype.updatePhase = function() {
     switch (BattleManager.phase()) {
-    case 'startPhase':
-        var value = 1;
-        break;
-    case 'playerPhase':
-        var value = 2;
-        break;
-    case 'enemyPhase':
-        var value = 3;
-        break
-    // can't to be used
-    case 'battleEnd':
-        var value = 4;
-        break;
-    default:
-        var value = 0;
-        break;
+        case 'startPhase':
+            var value = 1;
+            break;
+        case 'playerPhase':
+            var value = 2;
+            break;
+        case 'enemyPhase':
+            var value = 3;
+            break
+        // can't to be used
+        case 'battleEnd':
+            var value = 4;
+            break;
+        default:
+            var value = 0;
+            break;
     }
     this.setValue(TacticsSystem.phaseVarId, value);
 };
 
 Game_Variables.prototype.updatePlayerPhase = function() {
     switch (BattleManager.battlePhase()) {
-    case 'explore':
-        var value = 1;
-        break;
-    case 'select':
-        var value = 2;
-        break;
-    case 'target':
-        var value = 3;
-        break
-    default:
-        var value = 0;
-        break;
+        case 'explore':
+            var value = 1;
+            break;
+        case 'select':
+            var value = 2;
+            break;
+        case 'target':
+            var value = 3;
+            break
+        default:
+            var value = 0;
+            break;
     }
     this.setValue(TacticsSystem.playerPhaseVarId, value);
 };
 
 Game_Variables.prototype.updateBattlePhase = function() {
     switch (BattleManager.battlePhase()) {
-    case 'start':
-        var value = 1;
-        break;
-    case 'move':
-        var value = 2;
-        break;
-    case 'action':
-        var value = 3;
-        break
-    case 'turnEnd':
-        var value = 4;
-        break;
-    default:
-        var value = 0;
-        break;
+        case 'start':
+            var value = 1;
+            break;
+        case 'move':
+            var value = 2;
+            break;
+        case 'action':
+            var value = 3;
+            break
+        case 'turnEnd':
+            var value = 4;
+            break;
+        default:
+            var value = 0;
+            break;
     }
     this.setValue(TacticsSystem.battlePhaseVarId, value);
 };
@@ -2191,7 +2196,7 @@ Game_Action.prototype.updateRange = function(item, x, y) {
         data[1] = data[0];
         data[0] = 0;
     }
-    // range: 
+    // range:
     if (data[2] === undefined) {
         data[2] = 'diamond';
     }
@@ -2212,19 +2217,19 @@ Game_Action.prototype.createRange = function(d1, d2, x, y, shape) {
         for (var j = y - d2; j <= y + d2; j++) {
             if (Math.abs(i - x) + Math.abs(j - y) > d1) {
                 switch (shape) {
-                case 'diamond':
-                    if (Math.abs(i - x) + Math.abs(j - y) <= d2) {
-                       range.push([i, j]);
-                    }
-                    break;
-                case 'rectangle':
-                    range.push([i, j]);
-                    break;
-                case 'line':
-                    if (i === x || j === y) {
+                    case 'diamond':
+                        if (Math.abs(i - x) + Math.abs(j - y) <= d2) {
+                            range.push([i, j]);
+                        }
+                        break;
+                    case 'rectangle':
                         range.push([i, j]);
-                    }
-                    break;
+                        break;
+                    case 'line':
+                        if (i === x || j === y) {
+                            range.push([i, j]);
+                        }
+                        break;
                 }
             }
         }
@@ -2336,7 +2341,7 @@ Game_BattlerBase.TPARAM  = {
 
 Game_BattlerBase.prototype.move = function() {
     return Math.max((Number(this.tparam('Move')) || TacticsSystem.mvp) +
-            this.traitsSum(Game_BattlerBase.TRAIT_TPARAM, 0), 1);
+        this.traitsSum(Game_BattlerBase.TRAIT_TPARAM, 0), 1);
 };
 
 Game_BattlerBase.prototype.tparamCode = function(tparam) {
@@ -2546,7 +2551,7 @@ Game_Battler.prototype.nextAction = function() {
 TacticsSystem.Game_Battler_currentAction = Game_Battler.prototype.currentAction;
 Game_Battler.prototype.currentAction = function() {
     if ($gamePartyTs.inBattle()) {
-         return this._actions[this._actionIndex];
+        return this._actions[this._actionIndex];
     } else {
         return TacticsSystem.Game_Battler_currentAction.call(this);
     }
@@ -2661,13 +2666,13 @@ Game_Battler.prototype.makeConfusionMove = function() {
 
 Game_Battler.prototype.isConfusedRangeOk = function(action) {
     switch (this.confusionLevel()) {
-    case 1:
-        return action.combatOpponentsUnit(this).length > 0;
-    case 2:
-        return action.combatOpponentsUnit(this).length > 0 ||
-            action.combatFriendsUnit(this).length > 1;  // don't count self
-    default:
-        return action.combatFriendsUnit(this).length > 1;
+        case 1:
+            return action.combatOpponentsUnit(this).length > 0;
+        case 2:
+            return action.combatOpponentsUnit(this).length > 0 ||
+                action.combatFriendsUnit(this).length > 1;  // don't count self
+        default:
+            return action.combatFriendsUnit(this).length > 1;
     }
 };
 
@@ -3130,7 +3135,7 @@ Game_Map.prototype.makeRange = function(distance, event, through) {
     var level = [];
     var tiles = [];
     var startTile = this.tile(event.x, event.y)
-    
+
     this.clearTiles();
     queue.push(startTile);
     level[startTile] = 0;
@@ -3209,7 +3214,7 @@ Game_CharacterBase.prototype.isCollidedWithEvents = function(x, y) {
             return event.isNormalPriority() && !event.isActor();
         });
     } else {
-         return TacticsSystem.Game_CharacterBase_isCollidedWithEvents.call(this, x, y);
+        return TacticsSystem.Game_CharacterBase_isCollidedWithEvents.call(this, x, y);
     }
 };
 
@@ -3271,7 +3276,7 @@ Game_Event.prototype.isCollidedWithEvents = function(x, y) {
     if (this.isActor() || this.isEnemy()) {
         return Game_Character.prototype.isCollidedWithEvents.call(this, x, y)
     } else {
-         return TacticsSystem.Game_Event_isCollidedWithEvents.call(this, x, y);
+        return TacticsSystem.Game_Event_isCollidedWithEvents.call(this, x, y);
     }
 };
 
@@ -3633,14 +3638,14 @@ TacticsSystem.Game_Interpreter_updateWaitMode = Game_Interpreter.prototype.updat
 Game_Interpreter.prototype.updateWaitMode = function() {
     var waiting = false;
     switch (this._waitMode) {
-    case 'TacticsSystem.battle':
-        waiting = SceneManager.isCurrentScene(Scene_Battle) || SceneManager.isSceneChanging();
-        break;
-    case 'TacticsSystem.selector':
-        waiting = $gameSelector.isBusy();
-        break;
-    default:
-        return TacticsSystem.Game_Interpreter_updateWaitMode.call(this);
+        case 'TacticsSystem.battle':
+            waiting = SceneManager.isCurrentScene(Scene_Battle) || SceneManager.isSceneChanging();
+            break;
+        case 'TacticsSystem.selector':
+            waiting = $gameSelector.isBusy();
+            break;
+        default:
+            return TacticsSystem.Game_Interpreter_updateWaitMode.call(this);
     }
     if (!waiting) {
         if (this._waitMode === 'TacticsSystem.battle') {
@@ -3893,7 +3898,7 @@ Scene_Map.prototype.launchBattle = function() {
 };
 
 Scene_Map.prototype.updateEncounterEffect = function() {
-     if (this._encounterEffectDuration > 0) {
+    if (this._encounterEffectDuration > 0) {
         this._encounterEffectDuration--;
         var timer = this._encounterEffectDuration;
         var startTimer = this.encounterEffectSpeed();
@@ -4289,27 +4294,27 @@ Sprite_BattlerTs.prototype.setupEffect = function() {
 Sprite_BattlerTs.prototype.startEffect = function(effectType) {
     this._effectType = effectType;
     switch (this._effectType) {
-    case 'appear':
-        this.startAppear();
-        break;
-    case 'disappear':
-        this.startDisappear();
-        break;
-    case 'whiten':
-        this.startWhiten();
-        break;
-    case 'blink':
-        this.startBlink();
-        break;
-    case 'collapse':
-        this.startCollapse();
-        break;
-    case 'bossCollapse':
-        this.startBossCollapse();
-        break;
-    case 'instantCollapse':
-        this.startInstantCollapse();
-        break;
+        case 'appear':
+            this.startAppear();
+            break;
+        case 'disappear':
+            this.startDisappear();
+            break;
+        case 'whiten':
+            this.startWhiten();
+            break;
+        case 'blink':
+            this.startBlink();
+            break;
+        case 'collapse':
+            this.startCollapse();
+            break;
+        case 'bossCollapse':
+            this.startBossCollapse();
+            break;
+        case 'instantCollapse':
+            this.startInstantCollapse();
+            break;
     }
     this.revertToNormal();
 };
@@ -4352,27 +4357,27 @@ Sprite_BattlerTs.prototype.updateEffect = function() {
     if (this._effectDuration > 0) {
         this._effectDuration--;
         switch (this._effectType) {
-        case 'whiten':
-            this.updateWhiten();
-            break;
-        case 'blink':
-            this.updateBlink();
-            break;
-        case 'appear':
-            this.updateAppear();
-            break;
-        case 'disappear':
-            this.updateDisappear();
-            break;
-        case 'collapse':
-            this.updateCollapse();
-            break;
-        case 'bossCollapse':
-            this.updateBossCollapse();
-            break;
-        case 'instantCollapse':
-            this.updateInstantCollapse();
-            break;
+            case 'whiten':
+                this.updateWhiten();
+                break;
+            case 'blink':
+                this.updateBlink();
+                break;
+            case 'appear':
+                this.updateAppear();
+                break;
+            case 'disappear':
+                this.updateDisappear();
+                break;
+            case 'collapse':
+                this.updateCollapse();
+                break;
+            case 'bossCollapse':
+                this.updateBossCollapse();
+                break;
+            case 'instantCollapse':
+                this.updateInstantCollapse();
+                break;
         }
         if (this._effectDuration === 0) {
             this._effectType = null;
@@ -4687,7 +4692,7 @@ Window_TacticsStatus.prototype.drawBattlerStatus = function() {
 };
 
 Window_TacticsStatus.prototype.drawActorFrame = function() {
-     if (TacticsSystem.showFaceUnit) {
+    if (TacticsSystem.showFaceUnit) {
         this.drawActorFace(this._battler, 0, 0, Window_Base._faceWidth, Window_Base._faceHeight);
     } else {
         this.drawActorCharacter(this._battler, 48+24, 48*2);

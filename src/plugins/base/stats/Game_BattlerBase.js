@@ -1,10 +1,8 @@
-
-var Imported = Imported || {};
-Imported.TEW_Stats = true;
-var TEW = TEW || {};
+// $PluginCompiler TEW_Base.js
+// $StartCompilation
 
 /*
-* This plugin replaces the eight defaut character stats of RPG Maker with the eleven stats of Warhammer Fantasy.
+* Replaces the eight defaut character stats of RPG Maker with the eleven stats of Warhammer Fantasy.
 * Max Wounds : mhp
 * Weapon Skill : weas
 * Ballistic Skill : bals
@@ -17,48 +15,6 @@ var TEW = TEW || {};
 * Willpower : will
 * Fellowship : felw
 */
-
-TEW.CHARACTERS = TEW.CHARACTERS || {
-    Cecile: 1,
-    Cheplu: 2,
-    Ciara: 3,
-    Elja: 4,
-    Gala: 5,
-    Wanda: 6
-};
-
-TEW.STATS = TEW.STATS || {
-    mhp: 0,
-    weas: 1,
-    bals: 2,
-    strg: 3,
-    toug: 4,
-    init: 5,
-    agil: 6,
-    dext: 7,
-    intl: 8,
-    will: 9,
-    felw: 10
-};
-TEW.STATS_VERBOSE = [
-    'Max Wounds',
-    'Weapon skill',
-    'Ballistic skill',
-    'Strength',
-    'Toughness',
-    'Initiative',
-    'Agility',
-    'Dexterity',
-    'Intelligence',
-    'Willpower',
-    'Fellowship'
-];
-
-// 0 for base skills, -1 for acquired
-TEW.BASE_COMP_VALUES = TEW.COMPS_ARRAY.reduce((acc, compName) => {
-    acc.push(TEW.COMPS[compName].isBase ? 0 : -1);
-    return acc;
-}, []);
 
 // Game_BattlerBase
 Object.defineProperties(Game_BattlerBase.prototype, {
@@ -368,45 +324,3 @@ Game_BattlerBase.prototype.addAmmo = function(ammoId, quantity = 1) {
 Game_BattlerBase.prototype.hasAmmo = function(ammoId) {
     return this.ammo[ammoId] > 0;
 }
-
-// Game_Actor
-
-Game_Actor.prototype.paramBase = function(paramId) {
-    return this._paramBase[paramId];
-};
-
-Game_Actor.prototype.paramPlus = function(paramId) {
-    return Game_Battler.prototype.paramPlus.call(this, paramId);
-};
-
-
-// Game_Interpreter
-
-Game_Interpreter.prototype.setBaseStat = function(playerName, statName, value) {
-    const player = $gameActors._data[TEW.CHARACTERS[playerName]];
-    console.log(playerName);
-    console.log(TEW.CHARACTERS[playerName]);
-    player._paramBase[TEW.STATS[statName]] = value;
-};
-
-
-// Text
-
-TextManager.param = function(paramId) {
-    return TEW.STATS_VERBOSE[paramId];
-};
-
-
-// Replacing HP
-
-// TODO
-Game_BattlerBase.prototype.die = function() {
-    this._hp = 0;
-};
-
-// TODO
-Game_BattlerBase.prototype.revive = function() {
-    if (this._hp === 0) {
-        this._hp = 1;
-    }
-};

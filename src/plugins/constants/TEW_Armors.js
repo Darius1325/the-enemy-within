@@ -304,7 +304,7 @@ TEW.ARMORS = TEW.ARMORS || {
         qualities: ["IMPENETRABLE", "VISOR", "WEAKPOINTS"],
         forbiddenWith: ["BOILED_LEATHER", "CHAINMAIL", "BRIGANDINE"],
         description: "The Armet is a Tilean design which fits closely on the head, being narrower around the neck. To facilitate the snug fit the helmet has an integral mechanism that must be worked to open and close it. The exacting design of the Armet means that it can withstand blows that might damage other helmets. Every time the helmet might lose a point of AP, roll on the Armet Damage table."
-    }, 
+    },
     SALLET: {
         name: "Sallet",
         icon: TEW.ICONS_IDS.ARMOR_HEAVY_HEAD_SLOT,
