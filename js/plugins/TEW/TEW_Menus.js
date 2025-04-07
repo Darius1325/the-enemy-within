@@ -97,38 +97,6 @@ Object.defineProperties(TextManager, {
 //-----------------------------------------------------------------------------
 // Window_InventoryDetails
 //
-// Super object to manage individual item command windows
-
-function Window_InventoryDetailsCommand() {
-    this.initialize.apply(this, arguments);
-}
-
-Window_InventoryDetailsCommand.prototype = Object.create(Window_Command.prototype);
-Window_InventoryDetailsCommand.prototype.constructor = Window_InventoryDetailsCommand;
-
-// Initializing the command window
-Window_InventoryDetailsCommand.prototype.initialize = function(actionsNumber = 2) {
-    this._actionsNumber = actionsNumber;
-    this._windowWidth = Graphics.boxWidth / 2;
-    this._windowHeight = this.fittingHeight(this._actionsNumber);
-    Window_Command.prototype.initialize.call(
-        this,
-        Graphics.boxWidth / 2,
-        Graphics.boxHeight - this._windowHeight);
-};
-
-// Window Width
-Window_InventoryDetailsCommand.prototype.windowWidth = function() {
-    return this._windowWidth;
-};
-
-Window_InventoryDetailsCommand.prototype.addCommand = function(name, symbol, enabled = true, ext = null) {
-    this._list.push({ name: name, symbol: symbol, enabled: enabled, ext: ext});
-};
-
-//-----------------------------------------------------------------------------
-// Window_InventoryDetails
-//
 // Super object to manage all item details windows
 
 function Window_InventoryDetails() {
@@ -236,6 +204,38 @@ Window_InventoryDetails.prototype.drawLine = function(y) {
         lineSize,
         this.normalColor()
     );
+};
+
+//-----------------------------------------------------------------------------
+// Window_InventoryDetails
+//
+// Super object to manage individual item command windows
+
+function Window_InventoryDetailsCommand() {
+    this.initialize.apply(this, arguments);
+}
+
+Window_InventoryDetailsCommand.prototype = Object.create(Window_Command.prototype);
+Window_InventoryDetailsCommand.prototype.constructor = Window_InventoryDetailsCommand;
+
+// Initializing the command window
+Window_InventoryDetailsCommand.prototype.initialize = function(actionsNumber = 2) {
+    this._actionsNumber = actionsNumber;
+    this._windowWidth = Graphics.boxWidth / 2;
+    this._windowHeight = this.fittingHeight(this._actionsNumber);
+    Window_Command.prototype.initialize.call(
+        this,
+        Graphics.boxWidth / 2,
+        Graphics.boxHeight - this._windowHeight);
+};
+
+// Window Width
+Window_InventoryDetailsCommand.prototype.windowWidth = function() {
+    return this._windowWidth;
+};
+
+Window_InventoryDetailsCommand.prototype.addCommand = function(name, symbol, enabled = true, ext = null) {
+    this._list.push({ name: name, symbol: symbol, enabled: enabled, ext: ext});
 };
 
 //-----------------------------------------------------------------------------
@@ -1211,6 +1211,44 @@ Scene_Status.prototype.activateStatusSpells = function() {
     this._spellsWindow.refresh();
 };
 
+// -----------------------------------------------------------------------------
+// Window_Status (override)
+//
+// Character info, stats, competences (skills), talents and spells window
+
+Window_Status.BASE_COMPETENCE_LINE_COUNT = Math.ceil(TEW.BASE_COMPS.length / 2);
+Window_Status.BASE_COMPETENCE_WINDOW_HEIGHT = (Window_Status.BASE_COMPETENCE_LINE_COUNT + 1) * TEW.MENU_LINE_HEIGHT;
+
+Window_Status.prototype.initialize = function() {
+    Window_Selectable.prototype.initialize.call(this,
+        0, STATUS_WINDOW_TOPBAR_HEIGHT,
+        Graphics.boxWidth, Graphics.boxHeight - STATUS_WINDOW_TOPBAR_HEIGHT);
+    this._actor = null;
+    this._maxItems = 0;
+    this.activate();
+    this.refresh();
+};
+
+Window_Status.prototype.setActor = function(actor) {
+    if (this._actor !== actor) {
+        this._actor = actor;
+        this.refresh();
+    }
+};
+
+Window_Status.prototype.refresh = function() {
+    if (this.contents) {
+        this.contents.clear();
+    }
+    if (this._actor) {
+        this.drawAllItems();
+    }
+};
+
+Window_Status.prototype.maxItems = function() {
+    return this._maxItems;
+};
+
 //-----------------------------------------------------------------------------
 // Window_StatusCommand
 //
@@ -1358,44 +1396,6 @@ Window_StatusCompetences.prototype.showHelpWindow = function() {
         this._helpWindow.show();
         this._helpWindow.refresh();
     }
-};
-
-// -----------------------------------------------------------------------------
-// Window_Status (override)
-//
-// Character info, stats, competences (skills), talents and spells window
-
-Window_Status.BASE_COMPETENCE_LINE_COUNT = Math.ceil(TEW.BASE_COMPS.length / 2);
-Window_Status.BASE_COMPETENCE_WINDOW_HEIGHT = (Window_Status.BASE_COMPETENCE_LINE_COUNT + 1) * TEW.MENU_LINE_HEIGHT;
-
-Window_Status.prototype.initialize = function() {
-    Window_Selectable.prototype.initialize.call(this,
-        0, STATUS_WINDOW_TOPBAR_HEIGHT,
-        Graphics.boxWidth, Graphics.boxHeight - STATUS_WINDOW_TOPBAR_HEIGHT);
-    this._actor = null;
-    this._maxItems = 0;
-    this.activate();
-    this.refresh();
-};
-
-Window_Status.prototype.setActor = function(actor) {
-    if (this._actor !== actor) {
-        this._actor = actor;
-        this.refresh();
-    }
-};
-
-Window_Status.prototype.refresh = function() {
-    if (this.contents) {
-        this.contents.clear();
-    }
-    if (this._actor) {
-        this.drawAllItems();
-    }
-};
-
-Window_Status.prototype.maxItems = function() {
-    return this._maxItems;
 };
 
 // -----------------------------------------------------------------------------

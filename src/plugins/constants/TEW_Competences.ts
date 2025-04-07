@@ -1,678 +1,689 @@
 // $PluginCompiler TEW_Constants.js
+
+import { Competence } from "../types/competence";
+import { Stat } from "../types/enum";
+import TEW from "../types/enum";
+
 // $StartCompilation
 TEW.COMPS = TEW.COMPS || { 
     ANIMAL_CARE: {
         name: "Animal Care",
-        stat: "intl",
+        stat: Stat.INTL,
         isBase: false
     },
     ANIMAL_TRAINING: {
         name: "Animal Training",
-        stat: "intl",
+        stat: Stat.INTL,
         isBase: false
     },
     ART_CARTOGRAPHY: {
         name: "Art (Cartography)",
-        stat: "dext",
+        stat: Stat.DEXT,
         isBase: false
     },
     ART_ENGRAVING: {
         name: "Art (Engraving)",
-        stat: "dext",
+        stat: Stat.DEXT,
         isBase: false
     },
     ART_MOSAICS: {
         name: "Art (Mosaics)",
-        stat: "dext",
+        stat: Stat.DEXT,
         isBase: false
     },
     ART_SCULPTURE: {
         name: "Art (Sculpture)",
-        stat: "dext",
+        stat: Stat.DEXT,
         isBase: false
     },
     ART_TATTOO: {
         name: "Art (Tattoo)",
-        stat: "dext",
+        stat: Stat.DEXT,
         isBase: false
     },
     ART_WEAVING: {
         name: "Art (Weaving)",
-        stat: "dext",
+        stat: Stat.DEXT,
         isBase: false
     },
     ATHLETICS: {
         name: "Athletics",
-        stat: "agil",
+        stat: Stat.AGIL,
         isBase: true
     },
     BRIBERY: {
         name: "Bribery",
-        stat: "felw",
+        stat: Stat.FELW,
         isBase: true
     },
     CHANNELLING_AQSHY: {
         name: "Channelling (Aqshy)",
-        stat: "will",
+        stat: Stat.WILL,
         isBase: false
     },
     CHANNELLING_AZYR: {
         name: "Channelling (Azyr)",
-        stat: "will",
+        stat: Stat.WILL,
         isBase: false
     },
     CHANNELLING_CHAMON: {
         name: "Channelling (Chamon)",
-        stat: "will",
+        stat: Stat.WILL,
         isBase: false
     },
     CHANNELLING_DHAR: {
         name: "Channelling (Dhar)",
-        stat: "will",
+        stat: Stat.WILL,
         isBase: false
     },
     CHANNELLING_GHUR: {
         name: "Channelling (Ghur)",
-        stat: "will",
+        stat: Stat.WILL,
         isBase: false
     },
     CHANNELLING_GHYRAN: {
         name: "Channelling (Ghyran)",
-        stat: "will",
+        stat: Stat.WILL,
         isBase: false
     },
     CHANNELLING_HYSH: {
         name: "Channelling (Hysh)",
-        stat: "will",
+        stat: Stat.WILL,
         isBase: false
     },
     CHANNELLING_SHYISH: {
         name: "Channelling (Shyish)",
-        stat: "will",
+        stat: Stat.WILL,
         isBase: false
     },
     CHANNELLING_ULGU: {
         name: "Channelling (Ulgu)",
-        stat: "will",
+        stat: Stat.WILL,
         isBase: false
     },
     CHARM: {
         name: "Charm",
-        stat: "felw",
+        stat: Stat.FELW,
         isBase: true
     },
     CHARM_ANIMAL: {
         name: "Charm Animal",
-        stat: "will",
+        stat: Stat.WILL,
         isBase: true
     },
     CLIMB: {
         name: "Climb",
-        stat: "strg",
+        stat: Stat.STRG,
         isBase: true
     },
     CONSUME_ALCOHOL: {
         name: "Consume Alcohol",
-        stat: "toug",
+        stat: Stat.TOUG,
         isBase: true
     },
     COOL: {
         name: "Cool",
-        stat: "will",
+        stat: Stat.WILL,
         isBase: true
     },
     DODGE: {
         name: "Dodge",
-        stat: "agil",
+        stat: Stat.AGIL,
         isBase: true
     },
     DRIVE: {
         name: "Drive",
-        stat: "agil",
+        stat: Stat.AGIL,
         isBase: true
     },
     ENDURANCE: {
         name: "Endurance",
-        stat: "toug",
+        stat: Stat.TOUG,
         isBase: true
     },
     ENTERTAIN_ACTING: {
         name: "Entertain (Acting)",
-        stat: "felw",
+        stat: Stat.FELW,
         isBase: false
     },
     ENTERTAIN_COMEDY: {
         name: "Entertain (Comedy)",
-        stat: "felw",
+        stat: Stat.FELW,
         isBase: false
     },
     ENTERTAIN_SINGING: {
         name: "Entertain (Singing)",
-        stat: "felw",
+        stat: Stat.FELW,
         isBase: false
     },
     ENTERTAIN_STORYTELLING: {
         name: "Entertain (Storytelling)",
-        stat: "felw",
+        stat: Stat.FELW,
         isBase: false
     },
     EVALUATE: {
         name: "Evaluate",
-        stat: "intl",
+        stat: Stat.INTL,
         isBase: false
     },
     GAMBLE: {
         name: "Gamble",
-        stat: "intl",
+        stat: Stat.INTL,
         isBase: true
     },
     GOSSIP: {
         name: "Gossip",
-        stat: "felw",
+        stat: Stat.FELW,
         isBase: true
     },
     HAGGLE: {
         name: "Haggle",
-        stat: "felw",
+        stat: Stat.FELW,
         isBase: true
     },
     HEAL: {
         name: "Heal",
-        stat: "intl",
+        stat: Stat.INTL,
         isBase: false
     },
     INTIMIDATE: {
         name: "Intimidate",
-        stat: "strg",
+        stat: Stat.STRG,
         isBase: true
     },
     INTUITION: {
         name: "Intuition",
-        stat: "init",
+        stat: Stat.INIT,
         isBase: true
     },
     LANGUAGE_BATTLE: {
         name: "Language (Battle Tongue)",
-        stat: "intl",
+        stat: Stat.INTL,
         isBase: false
     },
     LANGUAGE_BRETONNIAN: {
         name: "Language (Bretonnian)",
-        stat: "intl",
+        stat: Stat.INTL,
         isBase: false
     },
     LANGUAGE_CLASSICAL: {
         name: "Language (Classical)",
-        stat: "intl",
+        stat: Stat.INTL,
         isBase: false
     },
     LANGUAGE_ELTHARIN: {
         name: "Language (Eltharin)",
-        stat: "intl",
+        stat: Stat.INTL,
         isBase: false
     },
     LANGUAGE_GUILDER: {
         name: "Language (Guilder)",
-        stat: "intl",
+        stat: Stat.INTL,
         isBase: false
     },
     LANGUAGE_KHAZALID: {
         name: "Language (Khazalid)",
-        stat: "intl",
+        stat: Stat.INTL,
         isBase: false
     },
     LANGUAGE_MAGICK: {
         name: "Language (Magick)",
-        stat: "intl",
+        stat: Stat.INTL,
         isBase: false
     },
     LANGUAGE_MIDDENLANDER: {
         name: "Language (Middenlander)",
-        stat: "intl",
+        stat: Stat.INTL,
         isBase: false
     },
     LANGUAGE_WASTELANDER: {
         name: "Language (Wastelander)",
-        stat: "intl",
+        stat: Stat.INTL,
         isBase: false
     },
     LEADERSHIP: {
         name: "Leadership",
-        stat: "felw",
+        stat: Stat.FELW,
         isBase: true
     },
     LORE_BEASTS: {
         name: "Lore (Beasts)",
-        stat: "intl",
+        stat: Stat.INTL,
         isBase: false
     },
     LORE_CHEMISTRY: {
         name: "Lore (Chemistry)",
-        stat: "intl",
+        stat: Stat.INTL,
         isBase: false
     },
     LORE_DEMONOLOGY: {
         name: "Lore (Demonology)",
-        stat: "intl",
+        stat: Stat.INTL,
         isBase: false
     },
     LORE_EMPIRE: {
         name: "Lore (Empire)",
-        stat: "intl",
+        stat: Stat.INTL,
         isBase: false
     },
     LORE_ENGINEERING: {
         name: "Lore (Engineering)",
-        stat: "intl",
+        stat: Stat.INTL,
         isBase: false
     },
     LORE_HERALDRY: {
         name: "Lore (Heraldry)",
-        stat: "intl",
+        stat: Stat.INTL,
         isBase: false
     },
     LORE_HERBS: {
         name: "Lore (Herbs)",
-        stat: "intl",
+        stat: Stat.INTL,
         isBase: false
     },
     LORE_HISTORY: {
         name: "Lore (History)",
-        stat: "intl",
+        stat: Stat.INTL,
         isBase: false
     },
     LORE_LAW: {
         name: "Lore (Law)",
-        stat: "intl",
+        stat: Stat.INTL,
         isBase: false
     },
     LORE_MAGIC: {
         name: "Lore (Magic)",
-        stat: "intl",
+        stat: Stat.INTL,
         isBase: false
     },
     LORE_MEDICINE: {
         name: "Lore (Medicine)",
-        stat: "intl",
+        stat: Stat.INTL,
         isBase: false
     },
     LORE_MIDDENHEIM: {
         name: "Lore (Middenheim)",
-        stat: "intl",
+        stat: Stat.INTL,
         isBase: false
     },
     LORE_MIDDENLAND: {
         name: "Lore (Middenland)",
-        stat: "intl",
+        stat: Stat.INTL,
         isBase: false
     },
     LORE_MYRMIDIA: {
         name: "Lore (Myrmidia)",
-        stat: "intl",
+        stat: Stat.INTL,
         isBase: false
     },
     LORE_NECROMANCY: {
         name: "Lore (Necromancy)",
-        stat: "intl",
+        stat: Stat.INTL,
         isBase: false
     },
     LORE_NOBILITY: {
         name: "Lore (Nobility)",
-        stat: "intl",
+        stat: Stat.INTL,
         isBase: false
     },
     LORE_REIKLAND: {
         name: "Lore (Reikland)",
-        stat: "intl",
+        stat: Stat.INTL,
         isBase: false
     },
     LORE_SCIENCE: {
         name: "Lore (Science)",
-        stat: "intl",
+        stat: Stat.INTL,
         isBase: false
     },
     LORE_SIGMAR: {
         name: "Lore (Sigmar)",
-        stat: "intl",
+        stat: Stat.INTL,
         isBase: false
     },
     LORE_THEOLOGY: {
         name: "Lore (Theology)",
-        stat: "intl",
+        stat: Stat.INTL,
         isBase: false
     },
     LORE_ULRIC: {
         name: "Lore (Ulric)",
-        stat: "intl",
+        stat: Stat.INTL,
         isBase: false
     },
     LORE_WAR: {
         name: "Lore (War)",
-        stat: "intl",
+        stat: Stat.INTL,
         isBase: false
     },
     MELEE_BASIC: {
         name: "Melee (Basic)",
-        stat: "weas",
+        stat: Stat.WEAS,
         isBase: true
     },
     MELEE_BRAWLING: {
         name: "Melee (Brawling)",
-        stat: "weas",
+        stat: Stat.WEAS,
         isBase: false
     },
     MELEE_CAVALRY: {
         name: "Melee (Cavalry)",
-        stat: "weas",
+        stat: Stat.WEAS,
         isBase: false
     },
     MELEE_FENCING: {
         name: "Melee (Fencing)",
-        stat: "weas",
+        stat: Stat.WEAS,
         isBase: false
     },
     MELEE_FLAIL: {
         name: "Melee (Flail)",
-        stat: "weas",
+        stat: Stat.WEAS,
         isBase: false
     },
     MELEE_PARRY: {
         name: "Melee (Parry)",
-        stat: "weas",
+        stat: Stat.WEAS,
         isBase: false
     },
     MELEE_POLE_ARM: {
         name: "Melee (Pole-Arm)",
-        stat: "weas",
+        stat: Stat.WEAS,
         isBase: false
     },
     MELEE_TWO_HANDED: {
         name: "Melee (Two-Handed)",
-        stat: "weas",
+        stat: Stat.WEAS,
         isBase: false
     },
     NAVIGATION: {
         name: "Navigation",
-        stat: "init",
+        stat: Stat.INIT,
         isBase: true
     },
     OUTDOOR_SURVIVAL: {
         name: "Outdoor Survival",
-        stat: "intl",
+        stat: Stat.INTL,
         isBase: true
     },
     PERCEPTION: {
         name: "Perception",
-        stat: "init",
+        stat: Stat.INIT,
         isBase: true
     },
     PERFORM_ACROBATICS: {
         name: "Perform (Acrobatics)",
-        stat: "agil",
+        stat: Stat.AGIL,
         isBase: false
     },
     PERFORM_CLOWNING: {
         name: "Perform (Clowning)",
-        stat: "agil",
+        stat: Stat.AGIL,
         isBase: false
     },
     PERFORM_DANCING: {
         name: "Perform (Dancing)",
-        stat: "agil",
+        stat: Stat.AGIL,
         isBase: false
     },
     PERFORM_FIREBREATHING: {
         name: "Perform (Firebreathing)",
-        stat: "agil",
+        stat: Stat.AGIL,
         isBase: false
     },
     PERFORM_JUGGLING: {
         name: "Perform (Juggling)",
-        stat: "agil",
+        stat: Stat.AGIL,
         isBase: false
     },
     PERFORM_MIMING: {
         name: "Perform (Miming)",
-        stat: "agil",
+        stat: Stat.AGIL,
         isBase: false
     },
     PERFORM_ROPE_WALKING: {
         name: "Perform (Rope Walking)",
-        stat: "agil",
+        stat: Stat.AGIL,
         isBase: false
     },
     PICK_LOCK: {
         name: "Pick Lock",
-        stat: "dext",
+        stat: Stat.DEXT,
         isBase: false
     },
     PLAY_BAGPIPE: {
         name: "Play (Bagpipe)",
-        stat: "dext",
+        stat: Stat.DEXT,
         isBase: false
     },
     PLAY_DRUM: {
         name: "Play (Drum)",
-        stat: "dext",
+        stat: Stat.DEXT,
         isBase: false
     },
     PLAY_FLUTE: {
         name: "Play (Flute)",
-        stat: "dext",
+        stat: Stat.DEXT,
         isBase: false
     },
     PLAY_LUTE: {
         name: "Play (Lute)",
-        stat: "dext",
+        stat: Stat.DEXT,
         isBase: false
     },
     PLAY_HARPSICHORD: {
         name: "Play (Harpsichord)",
-        stat: "dext",
+        stat: Stat.DEXT,
         isBase: false
     },
     PLAY_HORN: {
         name: "Play (Horn)",
-        stat: "dext",
+        stat: Stat.DEXT,
         isBase: false
     },
     PLAY_VIOLIN: {
         name: "Play (Violin)",
-        stat: "dext",
+        stat: Stat.DEXT,
         isBase: false
     },
     PREY: {
         name: "Prey",
-        stat: "felw",
+        stat: Stat.FELW,
         isBase: false
     },
     RANGED_BLACKPOWDER: {
         name: "Ranged (Blackpowder)",
-        stat: "bals",
+        stat: Stat.BALS,
         isBase: false
     },
     RANGED_BOW: {
         name: "Ranged (Bow)",
-        stat: "bals",
+        stat: Stat.BALS,
         isBase: false
     },
     RANGED_CROSSBOW: {
         name: "Ranged (Crossbow)",
-        stat: "bals",
+        stat: Stat.BALS,
         isBase: false
     },
     RANGED_ENGINEERING: {
         name: "Ranged (Engineering)",
-        stat: "bals",
+        stat: Stat.BALS,
         isBase: false
     },
     RANGED_ENTANGLING: {
         name: "Ranged (Entangling)",
-        stat: "bals",
+        stat: Stat.BALS,
         isBase: false
     },
     RANGED_EXPLOSIVES: {
         name: "Ranged (Explosives)",
-        stat: "bals",
+        stat: Stat.BALS,
         isBase: false
     },
     RANGED_SLING: {
         name: "Ranged (Sling)",
-        stat: "bals",
+        stat: Stat.BALS,
         isBase: false
     },
     RANGED_THROWING: {
         name: "Ranged (Throwing)",
-        stat: "bals",
+        stat: Stat.BALS,
         isBase: false
     },
     RESEARCH: {
         name: "Research",
-        stat: "intl",
+        stat: Stat.INTL,
         isBase: false
     },
     RIDE_BADGER: {
         name: "Ride (Badger)",
-        stat: "agil",
+        stat: Stat.AGIL,
         isBase: false
     },
     RIDE_HORSE: {
         name: "Ride (Horse)",
-        stat: "agil",
+        stat: Stat.AGIL,
         isBase: false
     },
     ROW: {
         name: "Row",
-        stat: "strg",
+        stat: Stat.STRG,
         isBase: true
     },
     SAIL: {
         name: "Sail",
-        stat: "agil",
+        stat: Stat.AGIL,
         isBase: false
     },
     SECRET_SIGNS_GUILD: {
         name: "Secret Signs (Guild)",
-        stat: "intl",
+        stat: Stat.INTL,
         isBase: false
     },
     SECRET_SIGNS_RANGER: {
         name: "Secret Signs (Ranger)",
-        stat: "intl",
+        stat: Stat.INTL,
         isBase: false
     },
     SECRET_SIGNS_SCOUT: {
         name: "Secret Signs (Scout)",
-        stat: "intl",
+        stat: Stat.INTL,
         isBase: false
     },
     SECRET_SIGNS_THIEF: {
         name: "Secret Signs (Thief)",
-        stat: "intl",
+        stat: Stat.INTL,
         isBase: false
     },
     SET_TRAP: {
         name: "Set Trap",
-        stat: "dext",
+        stat: Stat.DEXT,
         isBase: false
     },
     SLEIGHT_OF_HAND: {
         name: "Sleight Of Hand",
-        stat: "dext",
+        stat: Stat.DEXT,
         isBase: false
     },
     STEALTH: {
         name: "Stealth",
-        stat: "agil",
+        stat: Stat.AGIL,
         isBase: true
     },
     STEALTH_RURAL: {
         name: "Stealth (Rural)",
-        stat: "agil",
+        stat: Stat.AGIL,
         isBase: false
     },
     STEALTH_UNDERGROUND: {
         name: "Stealth (Underground)",
-        stat: "agil",
+        stat: Stat.AGIL,
         isBase: false
     },
     STEALTH_URBAN: {
         name: "Stealth (Urban)",
-        stat: "agil",
+        stat: Stat.AGIL,
         isBase: false
     },
     TRACK: {
         name: "Track",
-        stat: "init",
+        stat: Stat.INIT,
         isBase: false
     },
     TRADE_ALCHEMIST: {
         name: "Trade (Alchemist)",
-        stat: "dext",
+        stat: Stat.DEXT,
         isBase: false
     },
     TRADE_APOTHECARY: {
         name: "Trade (Apothecary)",
-        stat: "dext",
+        stat: Stat.DEXT,
         isBase: false
     },
     TRADE_BLACKSMITH: {
         name: "Trade (Blacksmith)",
-        stat: "dext",
+        stat: Stat.DEXT,
         isBase: false
     },
     TRADE_BREWING: {
         name: "Trade (Brewing)",
-        stat: "dext",
+        stat: Stat.DEXT,
         isBase: false
     },
     TRADE_CALLIGRAPHER: {
         name: "Trade (Calligrapher)",
-        stat: "dext",
+        stat: Stat.DEXT,
         isBase: false
     },
     TRADE_CHANDLER: {
         name: "Trade (Chandler)",
-        stat: "dext",
+        stat: Stat.DEXT,
         isBase: false
     },
     TRADE_CARPENTER: {
         name: "Trade (Carpenter)",
-        stat: "dext",
+        stat: Stat.DEXT,
         isBase: false
     },
     TRADE_COOK: {
         name: "Trade (Cook)",
-        stat: "dext",
+        stat: Stat.DEXT,
         isBase: false
     },
     TRADE_EMBALMER: {
         name: "Trade (Embalmer)",
-        stat: "dext",
+        stat: Stat.DEXT,
         isBase: false
     },
     TRADE_ENGINEER: {
         name: "Trade (Engineer)",
-        stat: "dext",
+        stat: Stat.DEXT,
         isBase: false
     },
     TRADE_FLETCHER: {
         name: "Trade (Fletcher)",
-        stat: "dext",
+        stat: Stat.DEXT,
         isBase: false
     },
     TRADE_GOLDSMITH: {
         name: "Trade (Goldsmith)",
-        stat: "dext",
+        stat: Stat.DEXT,
         isBase: false
     },
     TRADE_TANNER: {
         name: "Trade (Tanner)",
-        stat: "dext",
+        stat: Stat.DEXT,
         isBase: false
     },
-};
+} as Record<string, Competence>;
 
-TEW.COMPS_ARRAY = Object.keys(TEW.COMPS);
-TEW.BASE_COMPS = Object.entries(TEW.COMPS).filter((comp) => comp[1].isBase).sort((a, b) => a[0].localeCompare(b[0]));
-TEW.ADVANCED_COMPS = Object.entries(TEW.COMPS).filter((comp) => !comp[1].isBase).sort((a, b) => a[0].localeCompare(b[0]));
+TEW.COMP_IDS = Object.keys(TEW.COMPS);
+TEW.BASE_COMPS = Object.keys(TEW.COMPS)
+        .filter((comp) => TEW.COMPS[comp].isBase)
+        .sort((a, b) => a.localeCompare(b))
+        .map(comp => [comp, TEW.COMPS[comp]]);
+TEW.ADVANCED_COMPS = Object.keys(TEW.COMPS)
+        .filter((comp) => !TEW.COMPS[comp].isBase)
+        .sort((a, b) => a.localeCompare(b))
+        .map(comp => [comp, TEW.COMPS[comp]]);

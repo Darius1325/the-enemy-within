@@ -5,6 +5,9 @@ declare -A file_list
 declare -A collected_content
 regex='\$PluginCompiler ([^ ]+\.js)( [0-9]+)?'
 
+# Translating Ts to Js
+tsc --project ./tsconfig.json
+
 # Read the $PluginCompiler tag from the first line of each file
 for file in $(find plugins/$1 -name "*.js"); do
     read -r first_line < "$file"
