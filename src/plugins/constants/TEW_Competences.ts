@@ -2,10 +2,10 @@
 
 import { Competence } from "../types/competence";
 import { Stat } from "../types/enum";
-import TEW from "../types/enum";
+import TEW from "../types/TEW";
 
 // $StartCompilation
-TEW.COMPS = TEW.COMPS || { 
+TEW.DATABASE.COMPS.SET = { 
     ANIMAL_CARE: {
         name: "Animal Care",
         stat: Stat.INTL,
@@ -676,14 +676,14 @@ TEW.COMPS = TEW.COMPS || {
         stat: Stat.DEXT,
         isBase: false
     },
-} as Record<string, Competence>;
+}
 
-TEW.COMP_IDS = Object.keys(TEW.COMPS);
-TEW.BASE_COMPS = Object.keys(TEW.COMPS)
-        .filter((comp) => TEW.COMPS[comp].isBase)
+TEW.DATABASE.COMPS.IDS = Object.keys(TEW.DATABASE.COMPS.SET);
+TEW.DATABASE.COMPS.BASE_ARRAY = Object.keys(TEW.DATABASE.COMPS.SET)
+        .filter((comp) => TEW.DATABASE.COMPS.SET[comp].isBase)
         .sort((a, b) => a.localeCompare(b))
-        .map(comp => [comp, TEW.COMPS[comp]]);
-TEW.ADVANCED_COMPS = Object.keys(TEW.COMPS)
-        .filter((comp) => !TEW.COMPS[comp].isBase)
+        .map(comp => [comp, TEW.DATABASE.COMPS.SET[comp]]);
+TEW.DATABASE.COMPS.ADVANCED_ARRAY = Object.keys(TEW.DATABASE.COMPS.SET)
+        .filter((comp) => !TEW.DATABASE.COMPS.SET[comp].isBase)
         .sort((a, b) => a.localeCompare(b))
-        .map(comp => [comp, TEW.COMPS[comp]]);
+        .map(comp => [comp, TEW.DATABASE.COMPS.SET[comp]]);

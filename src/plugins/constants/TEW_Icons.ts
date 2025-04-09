@@ -1,6 +1,9 @@
 // $PluginCompiler TEW_Constants.js 1
+
+import TEW from "../types/TEW";
+
 // $StartCompilation
-TEW.ICONS_IDS = {
+TEW.DATABASE.ICONS.SET = {
     // Item groups
     ITEM_CLOTHES : 154,
     ITEM_FOOD : 265,
@@ -65,4 +68,4 @@ TEW.ICONS_IDS = {
     ARMOR_HEAVY_LEGS_SLOT: 365,
     ARMOR_LIGHT_ARMS_SLOT: 366,
     ARMOR_HEAVY_ARMS_SLOT: 367,
-} as Record<string, number>;
+}

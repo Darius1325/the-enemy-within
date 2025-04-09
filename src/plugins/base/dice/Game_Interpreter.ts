@@ -1,29 +1,33 @@
 // $PluginCompiler TEW_Base.js
+
+import TEW from "../../types/TEW";
+import Window_Dice from "./Window_Dice";
+
 // $StartCompilation
 
 // Game_Interpreter
 
-TEW.rollD100 = function() {
+TEW.DICE.rollD100 = function() {
     return Math.floor(Math.random() * 99) + 1;
 };
 
-TEW.displayDiceRoll = function() {
+TEW.DICE.displayDiceRoll = function() {
     const result = this.rollD100();
     SceneManager._scene.addWindow(new Window_Dice(0, 0, Math.floor(result / 10), result % 10));
     return result;
 }
 
-Game_Interpreter.prototype.partySkillTest = function(skillName, modifier) {
+Game_Interpreter.prototype.partySkillTest = function(compId: string, modifier: number) {
     const actorSkillBaseValues = [];
     // Select the best character for the job
     for (let i = 0; i < $gameActors._data.length; i++) {
         if ($gameActors._data[i]) {
-            actorSkillBaseValues.push($gameActors._data[i][skillName]);
+            actorSkillBaseValues.push($gameActors._data[i][compId]);
         }
     }
     const maxPartySkill = Math.max(...actorSkillBaseValues) + modifier;
 
-    const roll = TEW.displayDiceRoll();
+    const roll = TEW.DICE.displayDiceRoll();
     let success = maxPartySkill >= roll;
 
     let dr = Math.floor(maxPartySkill / 10) - Math.floor(roll / 10);
@@ -46,23 +50,23 @@ Game_Interpreter.prototype.partySkillTest = function(skillName, modifier) {
 
 // Opposed skill tests
 
-Game_Interpreter.prototype.opposedSkillTest = function(skillNamePlayer, modifierPlayer, skillValueNPC) {
+Game_Interpreter.prototype.opposedSkillTest = function(compIdPlayer: string, modifierPlayer: number, skillValueNPC: number) {
     const actorSkillBaseValues = [];
     for (let i = 0; i < $gameActors._data.length; i++) {
         if ($gameActors._data[i]) {
-            actorSkillBaseValues.push($gameActors._data[i][skillNamePlayer]);
+            actorSkillBaseValues.push($gameActors._data[i][compIdPlayer]);
         }
     }
     const maxPartySkill = Math.max(...actorSkillBaseValues) + modifierPlayer;
 
-    const rollPlayer = TEW.displayDiceRoll();
-    const rollNPC = TEW.rollD100();
+    const rollPlayer = TEW.DICE.displayDiceRoll();
+    const rollNPC = TEW.DICE.rollD100();
 
     let drPlayer = Math.floor(maxPartySkill / 10) - Math.floor(rollPlayer / 10);
     let drNPC = Math.floor(skillValueNPC / 10) - Math.floor(rollNPC / 10);
 
-    let successRollPlayer = maxPartySkill >= roll;
-    let successRollNpc = skillValueNPC >= roll;
+    let successRollPlayer = maxPartySkill >= rollPlayer;
+    let successRollNpc = skillValueNPC >= rollNPC;
 
     if (rollPlayer <= 5) {
         successRollPlayer = true;

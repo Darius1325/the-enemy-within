@@ -1,4 +1,7 @@
 // $PluginCompiler TEW_Menus.js
+
+import TEW from "../../types/TEW";
+
 // $StartCompilation
 
 // -----------------------------------------------------------------------------
@@ -11,15 +14,15 @@ Window_Status.BASE_COMPETENCE_WINDOW_HEIGHT = (Window_Status.BASE_COMPETENCE_LIN
 
 Window_Status.prototype.initialize = function() {
     Window_Selectable.prototype.initialize.call(this,
-        0, STATUS_WINDOW_TOPBAR_HEIGHT,
-        Graphics.boxWidth, Graphics.boxHeight - STATUS_WINDOW_TOPBAR_HEIGHT);
+        0, TEW.STATUS_WINDOW_TOPBAR_HEIGHT,
+        Graphics.boxWidth, Graphics.boxHeight - TEW.STATUS_WINDOW_TOPBAR_HEIGHT);
     this._actor = null;
     this._maxItems = 0;
     this.activate();
     this.refresh();
 };
 
-Window_Status.prototype.setActor = function(actor) {
+Window_Status.prototype.setActor = function(actor: any) {
     if (this._actor !== actor) {
         this._actor = actor;
         this.refresh();

@@ -2,4 +2,3 @@
 // $StartCompilation
 var Imported = Imported || {};
 Imported.TEW_Base = true;
-var TEW = TEW || {};

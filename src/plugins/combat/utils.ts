@@ -1,69 +1,83 @@
 // $PluginCompiler TEW_Combat.js 2
+
+import { ArmorGroup, WeaponGroup, WeaponQuality } from "../types/enum";
+import TEW from "../types/TEW";
+
 // $StartCompilation
 
 //-----------------------------------------------------------------------------
 // Utilities
 
 // Retrieving Weapon info
-TEW.getWeaponQualityEffects = (weaponName) => {
-    const weapon = getWeaponFromName(weaponName);
+TEW.COMBAT.getWeaponQualityEffects = (weaponId: string) => {
+    const weapon = TEW.COMBAT.getWeaponFromId(weaponId);
 
-    let attackMod = 0;
-    let defenceMod = 0;
-    let slashLevel = 0;
-    let attackBonusDR = 0;
-    let defenceBonusDR = 0;
-    let bonusPA = 0;
-    let ignoredPA = 0;
-    let effects = {};
-    let ignoredArmorTypes = [];
+    let attackMod: number = 0;
+    let defenceMod: number = 0;
+    let slashLevel: number = 0;
+    let attackBonusDR: number = 0;
+    let defenceBonusDR: number = 0;
+    let bonusPA: number = 0;
+    let ignoredPA: number = 0;
+    let effects: Partial<Record<keyof typeof WeaponQuality, boolean>> = {};
+    let ignoredArmorTypes: ArmorGroup[] = [];
     weapon.qualities.forEach(quality => {
-        if (quality === 'IMPALE') {
+        if (quality === WeaponQuality.IMPALE) {
             effects.IMPALE = true;
-        } else if (quality === 'DAMAGING') {
+        } else if (quality === WeaponQuality.DAMAGING) {
             effects.DAMAGING = true;
-        } else if (quality === 'UNDAMAGING') {
+        } else if (quality === WeaponQuality.UNDAMAGING) {
             effects.UNDAMAGING = true;
-        } else if (quality.startsWith('SHIELD_')) {
-            bonusPA += quality.split('_')[1];
-        } else if (quality === 'DEFENSIVE') {
+        } else if (quality === WeaponQuality.SHIELD_1) {
+            bonusPA += 1;
+        } else if (quality === WeaponQuality.SHIELD_2) {
+            bonusPA += 2;
+        } else if (quality === WeaponQuality.SHIELD_3) {
+            bonusPA += 3;
+        } else if (quality === WeaponQuality.SHIELD_4) {
+            bonusPA += 4;
+        } else if (quality === WeaponQuality.SHIELD_5) {
+            bonusPA += 5;
+        } else if (quality === WeaponQuality.DEFENSIVE) {
             defenceMod += 10;
-        } else if (quality === 'HACK') {
+        } else if (quality === WeaponQuality.HACK) {
             ignoredPA += 1;
-        } else if (quality === 'PENETRATING') {
-            ignoredArmorTypes.push('CHAINMAIL');
-            ignoredArmorTypes.push('BREASTPLATE');
-            ignoredArmorTypes.push('PLATE');
+        } else if (quality === WeaponQuality.PENETRATING) {
+            ignoredArmorTypes.push(ArmorGroup.CHAINMAIL);
+            ignoredArmorTypes.push(ArmorGroup.BREASTPLATE);
+            ignoredArmorTypes.push(ArmorGroup.PLATE);
             ignoredPA += 1;
-        } else if (quality === 'PRECISE') {
+        } else if (quality === WeaponQuality.PRECISE) {
             attackBonusDR += 1;
-        } else if (quality === 'PUMMEL') {
+        } else if (quality === WeaponQuality.PUMMEL) {
             effects.PUMMEL = true;
-        } else if (quality.startsWith('SLASH_')) {
-            slashLevel = quality.split('_')[1];
-        } else if (quality === 'UNBALANCED') {
+        } else if (quality === WeaponQuality.SLASH_1) {
+            slashLevel = 1;
+        } else if (quality === WeaponQuality.SLASH_2) {
+            slashLevel = 2;
+        } else if (quality === WeaponQuality.UNBALANCED) {
             defenceBonusDR -= 1;
-        } else if (quality === 'IMPACT') {
+        } else if (quality === WeaponQuality.IMPACT) {
             effects.IMPACT = true;
-        } else if (quality === 'FAST') {
+        } else if (quality === WeaponQuality.FAST) {
             attackBonusDR += 1;
-        } else if (quality === 'TRIP') {
+        } else if (quality === WeaponQuality.TRIP) {
             effects.TRIP = true;
-        } else if (quality === 'ENTANGLE') {
+        } else if (quality === WeaponQuality.ENTANGLE) {
             effects.ENTANGLE = true;
-        } else if (quality === 'SLOW') {
+        } else if (quality === WeaponQuality.SLOW) {
             attackBonusDR -= 1;
-        } else if (quality === 'WRAP') {
+        } else if (quality === WeaponQuality.WRAP) {
             attackBonusDR += 1;
-        } else if (quality === 'IMPRECISE') {
+        } else if (quality === WeaponQuality.IMPRECISE) {
             attackBonusDR -= 1;
-        } else if (quality === 'TIRING') {
+        } else if (quality === WeaponQuality.TIRING) {
             effects.TIRING = true;
-        } else if (quality === 'TRAP_BLADE') {
+        } else if (quality === WeaponQuality.TRAP_BLADE) {
             effects.TRAP_BLADE = true;
-        } else if (quality === 'DANGEROUS') {
+        } else if (quality === WeaponQuality.DANGEROUS) {
             effects.DANGEROUS = true;
-        } else if (quality === 'ACCURATE') {
+        } else if (quality === WeaponQuality.ACCURATE) {
             attackMod += 10;
         }
     });
@@ -82,52 +96,42 @@ TEW.getWeaponQualityEffects = (weaponName) => {
 };
 
 // Retrieving Armor infos
-TEW.getArmorInfos = (armorNames) => {
+TEW.COMBAT.getArmorInfos = (armorIds: string[]) => {
     return {
-        headModifiers : [{
-            type : 'PLATE', // CHAINMAIL, PLATE, BREASTPLATE
+        headModifier : [{
+            type : ArmorGroup.PLATE, // CHAINMAIL, PLATE, BREASTPLATE
             modifier : 2
         }, {
-            type : 'CHAINMAIL',
+            type : ArmorGroup.CHAINMAIL,
             modifier : 2
         }],
         bodyModifier : [{
-            type : 'PLATE', // CHAINMAIL, PLATE, BREASTPLATE
+            type : ArmorGroup.PLATE, // CHAINMAIL, PLATE, BREASTPLATE
             modifier : 2
         }, {
-            type : 'CHAINMAIL',
+            type : ArmorGroup.CHAINMAIL,
             modifier : 2
         }],
         armsModifier : [{
-            type : 'PLATE', // CHAINMAIL, PLATE, BREASTPLATE
+            type : ArmorGroup.PLATE, // CHAINMAIL, PLATE, BREASTPLATE
             modifier : 2
         }, {
-            type : 'CHAINMAIL',
+            type : ArmorGroup.CHAINMAIL,
             modifier : 2
         }],
         legsModifier : [{
-            type : 'PLATE', // CHAINMAIL, PLATE, BREASTPLATE
+            type : ArmorGroup.PLATE, // CHAINMAIL, PLATE, BREASTPLATE
             modifier : 2
         }, {
-            type : 'CHAINMAIL',
+            type : ArmorGroup.CHAINMAIL,
             modifier : 2
         }]
     };
 };
 
-// Melee or ranged weapon
-TEW.getWeaponCombatCategory = (weaponGroup) => {
-    if (['BASIC', 'BRAWLING', 'CAVALRY', 'FENCING', 'FLAIL', 'PARRY', 'POLE_ARM', 'TWO_HANDED'].includes(weaponGroup)) {
-        return 'MELEE';
-    } else {
-        return 'RANGED';
-    }
-};
-
 // Get battler's stat value for combat depending on the wielded weapon's group
-TEW.getCombatCompOrDefault = (battler, weaponGroup) => {
-    const category = TEW.getWeaponCombatCategory(weaponGroup);
-    const compName = category + '_' + weaponGroup;
+TEW.COMBAT.getCombatCompOrDefault = (battler, weaponGroup: WeaponGroup, isMelee: boolean) => {
+    const compName = isMelee ? 'MELEE' : 'RANGED' + '_' + TEW.DATABASE.WEAPONS.GROUP_IDS[weaponGroup];
     if (battler.hasComp(compName)) {
         return {
             match: true,
@@ -136,19 +140,20 @@ TEW.getCombatCompOrDefault = (battler, weaponGroup) => {
     } else {
         return {
             match: false,
-            value: category === 'MELEE' ? battler.weas : battler.bals
+            value: isMelee ? battler.weas : battler.bals
         };
     }
 };
 
 // Get weapon data defined in TEW_Weapons.js from its ID
-TEW.getWeaponFromName = (weaponName) => {
-    const weapon = TEW.MELEE_WEAPONS[weaponName];
-    if (weapon === undefined) {
-        weapon = TEW.RANGED_WEAPONS[weaponName];
-        if (weapon === undefined) {
-            throw new Error(weaponName + ' is not a valid weapon ID');
+TEW.COMBAT.getWeaponFromId = (weaponId: string) => {
+    const meleeWeapon = TEW.DATABASE.WEAPONS.MELEE_SET[weaponId];
+    if (meleeWeapon === undefined) {
+        const rangedWeapon = TEW.DATABASE.WEAPONS.RANGED_SET[weaponId];
+        if (rangedWeapon === undefined) {
+            throw new Error(weaponId + ' is not a valid weapon ID');
         }
+        return rangedWeapon;
     }
-    return weapon;
+    return meleeWeapon;
 };

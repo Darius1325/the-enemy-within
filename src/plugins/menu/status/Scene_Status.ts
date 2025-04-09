@@ -1,6 +1,12 @@
 // $PluginCompiler TEW_Menus.js
 // $StartCompilation
 
+import Window_StatusCommand from "./Window_StatusCommand";
+import Window_StatusCompetences from "./Window_StatusCompetences";
+import Window_StatusSpells from "./Window_StatusSpells";
+import Window_StatusStats from "./Window_StatusStats";
+import Window_StatusTalents from "./Window_StatusTalents";
+
 //-----------------------------------------------------------------------------
 // Scene_Status (override)
 //
@@ -38,7 +44,7 @@ Scene_Status.prototype.refreshActor = function() {
 };
 
 // Creating the commands for this scene
-Scene_Status.prototype.createCommandWindow = function(){
+Scene_Status.prototype.createCommandWindow = function() {
     var wx = 0;
     var wy = 0;
     var ww = Graphics.boxWidth;
@@ -56,14 +62,14 @@ Scene_Status.prototype.createCommandWindow = function(){
 };
 
 // Creating the stats Window for the scene
-Scene_Status.prototype.createStatsWindow = function(){
+Scene_Status.prototype.createStatsWindow = function() {
     this._statsWindow = new Window_StatusStats();
     this._statsWindow.reserveFaceImages();
     this.addWindow(this._statsWindow);
 };
 
 // Creating the competences Window for the scene
-Scene_Status.prototype.createCompsWindow = function(){
+Scene_Status.prototype.createCompsWindow = function() {
     this._competencesWindow = new Window_StatusCompetences();
     this._competencesWindow.setHandler('cancel', () => {
         this._commandWindow.activate();
@@ -74,7 +80,7 @@ Scene_Status.prototype.createCompsWindow = function(){
 };
 
 // Creating the talents Window for the scene
-Scene_Status.prototype.createTalentsWindow = function(){
+Scene_Status.prototype.createTalentsWindow = function() {
     this._talentsWindow = new Window_StatusTalents();
     this._talentsWindow.setHandler('cancel', () => {
         this._commandWindow.activate();
@@ -85,7 +91,7 @@ Scene_Status.prototype.createTalentsWindow = function(){
 };
 
 // Creating the spells Window for the scene
-Scene_Status.prototype.createSpellWindow = function(){
+Scene_Status.prototype.createSpellWindow = function() {
     this._spellsWindow = new Window_StatusSpells();
     this._spellsWindow.setHandler('cancel', () => {
         this._commandWindow.activate();
@@ -96,7 +102,7 @@ Scene_Status.prototype.createSpellWindow = function(){
 };
 
 // Hiding all the windows
-Scene_Status.prototype.hideAllWindows = function(){
+Scene_Status.prototype.hideAllWindows = function() {
     this._statsWindow.hide();
     this._statsWindow.deactivate();
 
@@ -111,7 +117,7 @@ Scene_Status.prototype.hideAllWindows = function(){
 };
 
 // Showing the corresponding window according to the current command window index
-Scene_Status.prototype.displayWindow = function(){
+Scene_Status.prototype.displayWindow = function() {
     // hide all
     this.hideAllWindows();
 

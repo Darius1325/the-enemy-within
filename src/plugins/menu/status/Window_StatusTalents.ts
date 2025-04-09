@@ -1,4 +1,7 @@
 // $PluginCompiler TEW_Menus.js
+
+import TEW from "../../types/TEW";
+
 // $StartCompilation
 
 // -----------------------------------------------------------------------------
@@ -10,7 +13,7 @@ function Window_StatusTalents() {
     this.initialize.apply(this, arguments);
 }
 
-Window_StatusTalents.prototype = Object.create(Window_Status.prototype);
+export default Window_StatusTalents.prototype = Object.create(Window_Status.prototype);
 Window_StatusTalents.prototype.constructor = Window_StatusTalents;
 
 Window_StatusTalents.prototype.initialize = function() {
@@ -22,7 +25,7 @@ Window_StatusTalents.prototype.initialize = function() {
 Window_StatusTalents.prototype.setActor = function(actor) {
     if (this._actor !== actor) {
         this._actor = actor;
-        this._talents = TEW.TALENTS_ARRAY.filter(talent => actor.hasTalent(talent[0]));   // [<internal name>, {<talent data>}]
+        this._talents = TEW.DATABASE.TALENTS.ARRAY.filter(talent => actor.hasTalent(talent[0]));   // [<internal name>, {<talent data>}]
         this._maxItems = this._talents.length;
         this.refresh();
     }
@@ -43,7 +46,7 @@ Window_StatusTalents.prototype.drawAllItems = function() {
 Window_StatusTalents.prototype.drawItem = function(index) { // TODO
     const normalizedIndex = index - this.topIndex();
     const x = index % 2 === 0 ? 48 : 432;
-    const y = Math.floor(normalizedIndex / 2) * TEW.MENU_LINE_HEIGHT;
+    const y = Math.floor(normalizedIndex / 2) * TEW.MENU.MENU_LINE_HEIGHT;
 
     const talent = this.talentFromIndex(index);
 

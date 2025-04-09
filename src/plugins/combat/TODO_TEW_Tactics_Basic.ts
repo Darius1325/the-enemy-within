@@ -1,5 +1,10 @@
 // $PluginCompiler TEW_Combat.js
 
+import Sprite_BattlerTs from "./sprite/Sprite_BattlerTs";
+import Window_TacticsItem from "./Window_TacticsItem";
+import Window_TacticsMap from "./Window_TacticsMap";
+import Window_TacticsSkill from "./Window_TacticsSkill";
+
 //=============================================================================
 // TEW_Tactics_Basic.js v1.0.0
 //=============================================================================
@@ -328,7 +333,7 @@ TacticsSystem.clearAll = true; // in game system
  * @method String.prototype.toBoolean
  * @return {Boolean} A boolean of string
  */
-String.prototype.toBoolean = function(){
+String.prototype.toBoolean = function() {
     var s = String(this);
     switch (s) {
         case 'false':
@@ -2659,7 +2664,8 @@ Game_Battler.prototype.makeConfusionMove = function() {
         }
     }
     $gameMap.clearTiles();
-    var target = targets[Math.randomInt(targets.length)];
+    var target = targets[Math.floor(Math.random() * targets.length)]
+    //var target = targets[Math.randomInt(targets.length)];
     this._tx = target['x'];
     this._ty = target['y'];
 };
@@ -3081,11 +3087,11 @@ Game_Map.prototype.color = function() {
     return this._color;
 };
 
-Game_Map.prototype.performScroll = function(x, y) {
-    var x = Math.floor(Math.min(x, $gameMap.width() - this.screenTileX() / 2));
-    var y = Math.floor(Math.min(y, $gameMap.height() - this.screenTileY() / 2));
-    this._destinationX = Math.round(Math.max(x - this.screenTileX() / 2, 0));
-    this._destinationY = Math.round(Math.max(y - this.screenTileY() / 2, 0));
+Game_Map.prototype.performScroll = function(x:number, y:number) {
+    var x2 = Math.floor(Math.min(x, $gameMap.width() - this.screenTileX() / 2));
+    var y2 = Math.floor(Math.min(y, $gameMap.height() - this.screenTileY() / 2));
+    this._destinationX = Math.round(Math.max(x2 - this.screenTileX() / 2, 0));
+    this._destinationY = Math.round(Math.max(y2 - this.screenTileY() / 2, 0));
     this._scrollSpeed = 5;
 };
 
@@ -3133,7 +3139,7 @@ Game_Map.prototype.makeRange = function(distance, event, through) {
     }
     var queue = [];
     var level = [];
-    var tiles = [];
+    var tiles: number[] = [];
     var startTile = this.tile(event.x, event.y)
 
     this.clearTiles();
@@ -3150,7 +3156,7 @@ Game_Map.prototype.makeRange = function(distance, event, through) {
                 var x2 = this.roundXWithDirection(x, d);
                 var y2 = this.roundYWithDirection(y, d);
                 var tile = this.tile(x2, y2);
-                if (!tiles.contains(tile)) {
+                if (!tiles.includes(tile)) {
                     queue.push(tile);
                     level[tile] = level[start] + 1;
                     tiles.push(tile)
@@ -3425,7 +3431,7 @@ Game_Selector.prototype.moveByDestination = function() {
     if (this.canMove() && !this.isWaiting() && $gameTemp.isDestinationValid()) {
         var x = $gameTemp.destinationX();
         var y = $gameTemp.destinationY();
-        direction = this.findDirectionTo(x, y);
+        var direction = this.findDirectionTo(x, y);
         if (direction > 0) {
             x = $gameMap.roundXWithDirection(this.x, direction);
             y = $gameMap.roundYWithDirection(this.y, direction);
@@ -4104,7 +4110,7 @@ Spriteset_Tactics.prototype.createCharacters = function() {
 
 Spriteset_Tactics.prototype.createEnemies = function() {
     this._enemySprites = [];
-    this._characters.forEach(function(event) {
+    this._characters.forEach(function(sprite) {
         if (sprite.isEnemy()) {
             this._enemySprites.push(sprite);
         }
@@ -4158,349 +4164,6 @@ Spriteset_Tactics.prototype.isEffecting = function() {
     return this.battlerSprites().some(function(sprite) {
         return sprite.isEffecting();
     });
-};
-
-//-----------------------------------------------------------------------------
-// Sprite_BattlerTs
-//
-// The sprite for displaying a battler.
-
-function Sprite_BattlerTs() {
-    this.initialize.apply(this, arguments);
-};
-
-Sprite_BattlerTs.prototype = Object.create(Sprite_Character.prototype);
-Sprite_BattlerTs.prototype.constructor = Sprite_BattlerTs;
-
-Sprite_BattlerTs.prototype.initialize = function(character) {
-    Sprite_Character.prototype.initialize.call(this, character);
-    this._damages = [];
-    this._appeared = false;
-    this._shake = 0;  // unused
-    this._effectType = null;
-    this._effectDuration = 0;
-    this._battler = character.battler();
-    this.createStateIconSprite();
-    if (TacticsSystem.showStateIcon) {
-        this.createStateIconSprite();
-    }
-    if (TacticsSystem.showHpGauge) {
-        this.createHpGaugeSprite();
-    }
-    // if the battler's dead and back on the tactical scene.
-    if (!character.battler().isAlive()) {
-        this.opacity = 0;
-    }
-};
-
-Sprite_BattlerTs.prototype.createStateIconSprite = function() {
-    this._stateIconSprite = new Sprite_StateIcon();
-    this._stateIconSprite.setup(this._battler);
-    this._stateIconSprite.y = -5;
-    this._stateIconSprite.x = 15;
-    this._stateIconSprite.z = this.z;
-    this._stateIconSprite.scale.x = 0.6;
-    this._stateIconSprite.scale.y = 0.6;
-    this.addChild(this._stateIconSprite);
-};
-
-Sprite_BattlerTs.prototype.createHpGaugeSprite = function() {
-    this._hpGaugeSprite = new Sprite_HpGauge(this._battler);
-    this._hpGaugeSprite.z = this.z;
-    this.addChild(this._hpGaugeSprite);
-};
-
-Sprite_BattlerTs.prototype.initVisibility = function() {
-    this._appeared = this._battler.isAlive();
-    if (!this._appeared) {
-        this.opacity = 0;
-    }
-};
-
-Sprite_BattlerTs.prototype.isActor = function() {
-    return this._character.isActor();
-};
-
-Sprite_BattlerTs.prototype.isEnemy = function() {
-    return this._character.isEnemy();
-};
-
-Sprite_BattlerTs.prototype.update = function() {
-    Sprite_Character.prototype.update.call(this);
-    this.updateDamagePopup();
-    this.updateColor();
-    this.updateEffect();
-};
-
-Sprite_BattlerTs.prototype.updateDamagePopup = function() {
-    this.setupDamagePopup();
-    if (this._damages.length > 0) {
-        for (var i = 0; i < this._damages.length; i++) {
-            this._damages[i].update();
-        }
-        if (!this._damages[0].isPlaying()) {
-            this.parent.removeChild(this._damages[0]);
-            this._damages.shift();
-        }
-    }
-};
-
-Sprite_BattlerTs.prototype.setupDamagePopup = function() {
-    if (this._battler.isDamagePopupRequested()) {
-        var sprite = new Sprite_Damage();
-        sprite.x = this.x + this.damageOffsetX();
-        sprite.y = this.y + this.damageOffsetY();
-        sprite.z = this.z + 1;
-        sprite.setup(this._battler);
-        this._damages.push(sprite);
-        this.parent.addChild(sprite);
-        this._battler.clearDamagePopup();
-        this._battler.clearResult();
-    }
-};
-
-Sprite_BattlerTs.prototype.damageOffsetX = function() {
-    return 24;
-};
-
-Sprite_BattlerTs.prototype.damageOffsetY = function() {
-    return 24;
-};
-
-Sprite_BattlerTs.prototype.isChangeColor = function() {
-    return this._battler.isActor && this._battler.canAction() && !this._battler.isRestricted();
-};
-
-Sprite_BattlerTs.prototype.updateColor = function() {
-    if (this.isChangeColor()) {
-        this.setColorTone([0, 0, 0, 0]);
-    } else {
-        this.setColorTone([0, 0, 0, 255]);
-    }
-};
-
-Sprite_BattlerTs.prototype.setupEffect = function() {
-    if (this._appeared && this._battler.isEffectRequested()) {
-        this.startEffect(this._battler.effectType());
-        this._battler.clearEffect();
-    }
-    if (!this._appeared && this._battler.isAlive()) {
-        this.startEffect('appear');
-    } else if (this._appeared && this._battler.isHidden()) {
-        this.startEffect('disappear');
-    }
-};
-
-Sprite_BattlerTs.prototype.startEffect = function(effectType) {
-    this._effectType = effectType;
-    switch (this._effectType) {
-        case 'appear':
-            this.startAppear();
-            break;
-        case 'disappear':
-            this.startDisappear();
-            break;
-        case 'whiten':
-            this.startWhiten();
-            break;
-        case 'blink':
-            this.startBlink();
-            break;
-        case 'collapse':
-            this.startCollapse();
-            break;
-        case 'bossCollapse':
-            this.startBossCollapse();
-            break;
-        case 'instantCollapse':
-            this.startInstantCollapse();
-            break;
-    }
-    this.revertToNormal();
-};
-
-Sprite_BattlerTs.prototype.startAppear = function() {
-    this._effectDuration = 16;
-    this._appeared = true;
-};
-
-Sprite_BattlerTs.prototype.startDisappear = function() {
-    this._effectDuration = 32;
-    this._appeared = false;
-};
-
-Sprite_BattlerTs.prototype.startWhiten = function() {
-    this._effectDuration = 16;
-};
-
-Sprite_BattlerTs.prototype.startBlink = function() {
-    this._effectDuration = 20;
-};
-
-Sprite_BattlerTs.prototype.startCollapse = function() {
-    this._effectDuration = 32;
-    this._appeared = false;
-};
-
-Sprite_BattlerTs.prototype.startBossCollapse = function() {
-    this._effectDuration = 60;
-    this._appeared = false;
-};
-
-Sprite_BattlerTs.prototype.startInstantCollapse = function() {
-    this._effectDuration = 16;
-    this._appeared = false;
-};
-
-Sprite_BattlerTs.prototype.updateEffect = function() {
-    this.setupEffect();
-    if (this._effectDuration > 0) {
-        this._effectDuration--;
-        switch (this._effectType) {
-            case 'whiten':
-                this.updateWhiten();
-                break;
-            case 'blink':
-                this.updateBlink();
-                break;
-            case 'appear':
-                this.updateAppear();
-                break;
-            case 'disappear':
-                this.updateDisappear();
-                break;
-            case 'collapse':
-                this.updateCollapse();
-                break;
-            case 'bossCollapse':
-                this.updateBossCollapse();
-                break;
-            case 'instantCollapse':
-                this.updateInstantCollapse();
-                break;
-        }
-        if (this._effectDuration === 0) {
-            this._effectType = null;
-        }
-    }
-};
-
-Sprite_BattlerTs.prototype.isEffecting = function() {
-    return this._effectType !== null;
-};
-
-Sprite_BattlerTs.prototype.revertToNormal = function() {
-    this._shake = 0;
-    this.blendMode = 0;
-    this.opacity = 255;
-    this.setBlendColor([0, 0, 0, 0]);
-};
-
-Sprite_BattlerTs.prototype.updateWhiten = function() {
-    var alpha = 128 - (16 - this._effectDuration) * 10;
-    this.setBlendColor([255, 255, 255, alpha]);
-};
-
-Sprite_BattlerTs.prototype.updateBlink = function() {
-    this.opacity = (this._effectDuration % 10 < 5) ? 255 : 0;
-};
-
-Sprite_BattlerTs.prototype.updateAppear = function() {
-    this.opacity = (16 - this._effectDuration) * 16;
-};
-
-Sprite_BattlerTs.prototype.updateDisappear = function() {
-    this.opacity = 256 - (32 - this._effectDuration) * 10;
-};
-
-Sprite_BattlerTs.prototype.updateCollapse = function() {
-    this.blendMode = Graphics.BLEND_ADD;
-    this.setBlendColor([255, 128, 128, 128]);
-    this.opacity *= this._effectDuration / (this._effectDuration + 1);
-};
-
-Sprite_BattlerTs.prototype.updateBossCollapse = function() {
-    this._shake = this._effectDuration % 2 * 4 - 2;
-    this.blendMode = Graphics.BLEND_ADD;
-    this.opacity *= this._effectDuration / (this._effectDuration + 1);
-    this.setBlendColor([255, 255, 255, 255 - this.opacity]);
-    if (this._effectDuration % 20 === 19) {
-        SoundManager.playBossCollapse2();
-    }
-};
-
-Sprite_BattlerTs.prototype.updateInstantCollapse = function() {
-    this.opacity = 0;
-};
-
-Sprite_BattlerTs.prototype.isEffecting = function() {
-    return this._effectType !== null;
-};
-
-Sprite_BattlerTs.prototype.updateOther = function() {
-    if (this._battler.isAlive()) {
-        Sprite_Character.prototype.updateOther.call(this);
-    }
-};
-
-//-----------------------------------------------------------------------------
-// Sprite_HpGauge
-//
-// The sprite for displaying the hp gauge.
-
-function Sprite_HpGauge() {
-    this.initialize.apply(this, arguments);
-};
-
-Sprite_HpGauge.prototype = Object.create(Sprite_Base.prototype);
-Sprite_HpGauge.prototype.constructor = Sprite_HpGauge;
-
-Sprite_HpGauge.prototype.initialize = function(battler) {
-    Sprite_Base.prototype.initialize.call(this);
-    this.bitmap = new Bitmap(40, 4);
-    this.windowskin = ImageManager.loadSystem('Window');
-    this.anchor.x = 0.5;
-    this.anchor.y = 0;
-    this._battler = battler;
-};
-
-Sprite_HpGauge.prototype.gaugeBackColor = function() {
-    return this.textColor(19);
-};
-
-Sprite_HpGauge.prototype.hpGaugeColor1 = function() {
-    return this.textColor(20);
-};
-
-Sprite_HpGauge.prototype.hpGaugeColor2 = function() {
-    return this.textColor(21);
-};
-
-Sprite_HpGauge.prototype.textColor = function(n) {
-    var px = 96 + (n % 8) * 12 + 6;
-    var py = 144 + Math.floor (n / 8) * 12 + 6;
-    return this.windowskin.getPixel(px, py);
-};
-
-Sprite_HpGauge.prototype.update = function(battler) {
-    Sprite_Base.prototype.update.call(this);
-    this.bitmap.clear();
-    if (this._battler.isAlive()) {
-        this.drawBattlerHP();
-    }
-};
-
-Sprite_HpGauge.prototype.drawBattlerHP = function() {
-    var width = 40;
-    var color1 = this.hpGaugeColor1();
-    var color2 = this.hpGaugeColor2();
-    this.drawGauge(0, 0, width, this._battler.hpRate(), color1, color2)
-};
-
-Sprite_HpGauge.prototype.drawGauge = function(x, y, width, rate, color1, color2) {
-    var fillW = Math.floor(width * rate);
-    this.bitmap.fillRect(x, y, width, 4, this.gaugeBackColor());
-    this.bitmap.gradientFillRect(x, y, fillW, 4, color1, color2);
 };
 
 //-----------------------------------------------------------------------------
@@ -4736,78 +4399,6 @@ Window_TacticsStatus.prototype.drawEnemySimpleStatus = function(enemy, x, y, wid
 };
 
 //-----------------------------------------------------------------------------
-// Window_TacticsSkill
-//
-// The window for selecting a skill to use on the tactics screen.
-
-function Window_TacticsSkill() {
-    this.initialize.apply(this, arguments);
-}
-
-Window_TacticsSkill.prototype = Object.create(Window_BattleSkill.prototype);
-Window_TacticsSkill.prototype.constructor = Window_TacticsSkill;
-
-Window_TacticsSkill.prototype.processCursorMove = function() {
-    var lastIndex = this.index();
-    Window_BattleSkill.prototype.processCursorMove.call(this);
-    if (this.index() !== lastIndex) {
-        this.refreshRedCells();
-    }
-};
-
-Window_TacticsSkill.prototype.show = function() {
-    Window_BattleSkill.prototype.show.call(this);
-    if (this.item()) {
-        this.refreshRedCells();
-    }
-};
-
-Window_TacticsSkill.prototype.onTouch = function(triggered) {
-    var lastIndex = this.index();
-    Window_BattleSkill.prototype.onTouch.call(this, triggered);
-    if (this.index() !== lastIndex) {
-        this.refreshRedCells();
-    }
-};
-
-Window_TacticsSkill.prototype.refreshRedCells = function() {
-    var action = BattleManager.inputtingAction();
-    action.setSkill(this.item().id);
-    BattleManager.refreshRedCells(action);
-};
-
-//-----------------------------------------------------------------------------
-// Window_TacticsItem
-//
-// The window for selecting a item to use on the tactics screen.
-
-function Window_TacticsItem() {
-    this.initialize.apply(this, arguments);
-}
-
-Window_TacticsItem.prototype = Object.create(Window_BattleItem.prototype);
-Window_TacticsItem.prototype.constructor = Window_TacticsItem;
-
-Window_TacticsItem.prototype.processCursorMove = function() {
-    var lastIndex = this.index();
-    Window_BattleItem.prototype.processCursorMove.call(this);
-    if (this.index() !== lastIndex) {
-        var action = BattleManager.inputtingAction();
-        action.setItem(this.item().id);
-        BattleManager.refreshRedCells(action);
-    }
-};
-
-Window_TacticsItem.prototype.show = function() {
-    Window_BattleItem.prototype.show.call(this);
-    if (this.item()) {
-        var action = BattleManager.inputtingAction();
-        action.setItem(this.item().id);
-        BattleManager.refreshRedCells(action);
-    }
-};
-
-//-----------------------------------------------------------------------------
 // Window_TacticsInfo
 //
 // The window for displaying the combat information on the battle screen.
@@ -4901,70 +4492,13 @@ Window_TacticsInfo.prototype.drawCri = function(actor, x, y) {
 };
 
 //-----------------------------------------------------------------------------
-// Window_TacticsMap
-//
-// The window for displaying essential commands for progressing in tactics screen.
-
-function Window_TacticsMap() {
-    this.initialize.apply(this, arguments);
-}
-
-Window_TacticsMap.prototype = Object.create(Window_MenuCommand.prototype);
-Window_TacticsMap.prototype.constructor = Window_TacticsMap;
-
-Window_TacticsMap.prototype.initialize = function(x, y) {
-    Window_MenuCommand.prototype.initialize.call(this, x, y);
-    this.selectLast();
-    this.hide();
-    this.deactivate();
-};
-
-Window_TacticsMap._lastCommandSymbol = null;
-
-Window_TacticsMap.initCommandPosition = function() {
-    this._lastCommandSymbol = null;
-};
-
-Window_TacticsMap.prototype.windowWidth = function() {
-    return 240;
-};
-
-Window_TacticsMap.prototype.numVisibleRows = function() {
-    return this.maxItems();
-};
-
-Window_TacticsMap.prototype.addMainCommands = function() {
-    var enabled = this.areMainCommandsEnabled();
-    this.addCommand(TacticsSystem.endTurnTerm, 'endTurn');
-    if (this.needsCommand('equip')) {
-        this.addCommand(TextManager.equip, 'equip', enabled);
-    }
-    if (this.needsCommand('status')) {
-        this.addCommand(TextManager.status, 'status', enabled);
-    }
-};
-
-Window_TacticsMap.prototype.addOriginalCommands = function() {
-};
-
-Window_TacticsMap.prototype.addSaveCommand = function() {
-};
-
-Window_TacticsMap.prototype.addFormationCommand = function() {
-};
-
-Window_TacticsMap.prototype.selectLast = function() {
-    this.selectSymbol(Window_TacticsMap._lastCommandSymbol);
-};
-
-//-----------------------------------------------------------------------------
 // Window_Base
 //
 // The superclass of all windows within the game.
 
 Window_Base.prototype.drawEnemyImage = function(battler, x, y) {
-    width = Window_Base._faceWidth;
-    height = Window_Base._faceHeight;
+    var width = Window_Base._faceWidth;
+    var height = Window_Base._faceHeight;
     var bitmap = ImageManager.loadEnemy(battler.battlerName());
     var pw = bitmap.width;
     var ph = bitmap.height;

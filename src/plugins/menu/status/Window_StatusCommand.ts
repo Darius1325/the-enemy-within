@@ -1,4 +1,7 @@
 // $PluginCompiler TEW_Menus.js
+
+import TEW from "../../types/TEW";
+
 // $StartCompilation
 
 //-----------------------------------------------------------------------------
@@ -10,13 +13,13 @@ function Window_StatusCommand() {
     this.initialize.apply(this, arguments);
 }
 
-Window_StatusCommand.prototype = Object.create(Window_HorzCommand.prototype);
+export default Window_StatusCommand.prototype = Object.create(Window_HorzCommand.prototype);
 Window_StatusCommand.prototype.constructor = Window_StatusCommand;
 
 // Initializing the command window
-Window_StatusCommand.prototype.initialize = function(x, y, width) {
+Window_StatusCommand.prototype.initialize = function(x: number, y: number, width: number) {
     this._windowWidth = width;
-    this._windowHeight = STATUS_WINDOW_TOPBAR_HEIGHT;
+    this._windowHeight = TEW.MENU.STATUS_WINDOW_TOPBAR_HEIGHT;
     Window_HorzCommand.prototype.initialize.call(this, x, y);
 };
 
@@ -39,12 +42,12 @@ Window_StatusCommand.prototype.makeCommandList = function() {
 };
 
 
-Window_StatusCommand.prototype.cursorRight = function(wrap) {
+Window_StatusCommand.prototype.cursorRight = function(wrap: boolean) {
     Window_HorzCommand.prototype.cursorRight.call(this, wrap);
     this.callHandler('right');
 };
 
-Window_StatusCommand.prototype.cursorLeft = function(wrap) {
+Window_StatusCommand.prototype.cursorLeft = function(wrap: boolean) {
     Window_HorzCommand.prototype.cursorLeft.call(this, wrap);
     this.callHandler('left');
 };

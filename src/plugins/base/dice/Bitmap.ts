@@ -1,9 +1,12 @@
 // $PluginCompiler TEW_Base.js
+
+import TEW from "../../types/TEW";
+
 // $StartCompilation
 
 // Bitmap
 
-TEW.DIE_10_POINTS = [
+TEW.DICE.DIE_10_POINTS = [
     [0, 22],
     [0, 45],
     [38, 67],
@@ -17,15 +20,15 @@ TEW.DIE_10_POINTS = [
     [64, 50]
 ];
 
-TEW.drawLine = function(context, start, end) {
+TEW.DICE.drawLine = function(context: any, start: [number, number], end: [number, number]) {
     context.moveTo(start[0], start[1]);
     context.lineTo(end[0], end[1]);
 };
 
-Bitmap.prototype.drawDie = function(x, size, value, edgeColor, fillColor) {
+Bitmap.prototype.drawDie = function(x: number, size: number, value: number, edgeColor: string, fillColor: string) {
     const points = [];
-    for (let i = 0; i < TEW.DIE_10_POINTS.length; i++) {
-        points.push([TEW.DIE_10_POINTS[i][0] + x, TEW.DIE_10_POINTS[i][1]]);
+    for (let i = 0; i < TEW.DICE.DIE_10_POINTS.length; i++) {
+        points.push([TEW.DICE.DIE_10_POINTS[i][0] + x, TEW.DICE.DIE_10_POINTS[i][1]]);
     }
 
     var context = this._context;
@@ -47,13 +50,13 @@ Bitmap.prototype.drawDie = function(x, size, value, edgeColor, fillColor) {
     context.fill();
     context.stroke();
 
-    TEW.drawLine(context, points[7], points[1]);
-    TEW.drawLine(context, points[7], points[6]);
-    TEW.drawLine(context, points[7], points[8]);
-    TEW.drawLine(context, points[10], points[8]);
-    TEW.drawLine(context, points[10], points[6]);
-    TEW.drawLine(context, points[10], points[4]);
-    TEW.drawLine(context, points[9], points[8]);
+    TEW.DICE.drawLine(context, points[7], points[1]);
+    TEW.DICE.drawLine(context, points[7], points[6]);
+    TEW.DICE.drawLine(context, points[7], points[8]);
+    TEW.DICE.drawLine(context, points[10], points[8]);
+    TEW.DICE.drawLine(context, points[10], points[6]);
+    TEW.DICE.drawLine(context, points[10], points[4]);
+    TEW.DICE.drawLine(context, points[9], points[8]);
 
     context.stroke();
 

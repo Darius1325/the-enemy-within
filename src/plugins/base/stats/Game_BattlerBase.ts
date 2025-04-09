@@ -1,4 +1,8 @@
 // $PluginCompiler TEW_Base.js
+
+import { WeaponGroup } from "../../types/enum";
+import TEW from "../../types/TEW";
+
 // $StartCompilation
 
 /*
@@ -34,7 +38,7 @@ const battlerBaseInit = Game_BattlerBase.prototype.initialize;
 Game_BattlerBase.prototype.initialize = function() {
     battlerBaseInit.call(this);
     this._paramBase = [1,0,0,0,0,0,0,0,0,0,0];
-    this.competences = TEW.BASE_COMP_VALUES.slice();
+    this.competences = TEW.DATABASE.CHARACTERS.BASE_COMP_VALUES.slice();
     this.spells = [];
     this.talents = {}; // ID: level
     this.items = {}; // ID: quantity
@@ -145,42 +149,42 @@ Game_BattlerBase.prototype.clearParamPlus = function() {
     this._paramPlus = [0,0,0,0,0,0,0,0,0,0,0];
 };
 
-Game_BattlerBase.prototype.param = function(paramId) {
+Game_BattlerBase.prototype.param = function(paramId: number) {
     var value = this.paramBase(paramId) + this.paramPlus(paramId);
     return Math.round(value < 0 ? 0 : value);
 };
 
-Game_BattlerBase.prototype.paramByName = function(paramName) {
-    return this.param(TEW.STATS[paramName]);
+Game_BattlerBase.prototype.paramByName = function(paramName: string) {
+    return this.param(TEW.DATABASE.CHARACTERS.STATS[paramName]);
 };
 
 // Competences
 
-Game_BattlerBase.prototype.compPlus = function(compId) {
-    const compValue = this.competences[TEW.COMPS_ARRAY.indexOf(compId)];
+Game_BattlerBase.prototype.compPlus = function(compId: string) {
+    const compValue = this.competences[TEW.DATABASE.COMPS.IDS.indexOf(compId)];
     return compValue === -1 ? 0 : compValue;
 };
 
-Game_BattlerBase.prototype.comp = function(compId) {
-    const associatedStat = TEW.COMPS[compId].stat;
+Game_BattlerBase.prototype.comp = function(compId: string) {
+    const associatedStat = TEW.DATABASE.COMPS.SET[compId].stat;
     return this.compPlus(compId) + this.paramByName(associatedStat);
 };
 
-Game_BattlerBase.prototype.hasComp = function(compId) {
-    if (TEW.COMPS[compId].isBase) {
+Game_BattlerBase.prototype.hasComp = function(compId: string) {
+    if (TEW.DATABASE.COMPS.SET[compId].isBase) {
         return true;
     }
-    return this.competences[TEW.COMPS_ARRAY.indexOf(compId)] !== -1;
+    return this.competences[TEW.DATABASE.COMPS.IDS.indexOf(compId)] !== -1;
 };
 
-Game_BattlerBase.prototype.addComp = function(compId, value) {
-    this.competences[TEW.COMPS_ARRAY.indexOf(compId)] += value;
+Game_BattlerBase.prototype.addComp = function(compId: string, value: number) {
+    this.competences[TEW.DATABASE.COMPS.IDS.indexOf(compId)] += value;
     this.refresh();
 };
 
 // Talents
 
-Game_BattlerBase.prototype.talent = function(talentId) {
+Game_BattlerBase.prototype.talent = function(talentId: string) {
     return this.talents[talentId] || 0;
 };
 
@@ -188,21 +192,21 @@ Game_BattlerBase.prototype.talents = function() {
     return Object.keys(this.talents);
 };
 
-Game_BattlerBase.prototype.hasTalent = function(talentId) {
+Game_BattlerBase.prototype.hasTalent = function(talentId: string) {
     return this.talents[talentId] > 0;
 };
 
-Game_BattlerBase.prototype.addTalent = function(talentId) {
+Game_BattlerBase.prototype.addTalent = function(talentId: string) {
     this.talents[talentId] = this.talent(talentId) + 1;
 };
 
 // Spells
 
-Game_BattlerBase.prototype.hasSpell = function(spellId) {
+Game_BattlerBase.prototype.hasSpell = function(spellId: string) {
     return this.spells.includes(spellId);
 };
 
-Game_BattlerBase.prototype.addSpell = function(spellId) {
+Game_BattlerBase.prototype.addSpell = function(spellId: string) {
     if (!this.hasSpell(spellId)) {
         this.spells.push(spellId);
     }
@@ -210,61 +214,61 @@ Game_BattlerBase.prototype.addSpell = function(spellId) {
 
 // Items
 
-Game_BattlerBase.prototype.item = function(itemId) {
+Game_BattlerBase.prototype.item = function(itemId: string) {
     return this.items[itemId] || 0;
 };
 
-Game_BattlerBase.prototype.addItem = function(itemId, quantity = 1) {
+Game_BattlerBase.prototype.addItem = function(itemId: string, quantity = 1) {
     this.items[itemId] = this.item(itemId) + quantity;
 }
 
-Game_BattlerBase.prototype.hasItem = function(itemId) {
+Game_BattlerBase.prototype.hasItem = function(itemId: string) {
     return this.items[itemId] > 0;
 }
 
 // Weapons
 
-Game_BattlerBase.prototype.weapon = function(weaponId){
+Game_BattlerBase.prototype.weapon = function(weaponId: string) {
     return this.weapons.find(weapon => weapon.id === weaponId);
 }
 
-Game_BattlerBase.prototype.mainHand = function(){
+Game_BattlerBase.prototype.mainHand = function() {
     return this.weapons.find(weapon => weapon.isInMainHand);
 }
 
-Game_BattlerBase.prototype.secondHand = function(){
+Game_BattlerBase.prototype.secondHand = function() {
     return this.weapons.find(weapon => weapon.isInSecondHand);
 }
 
-Game_BattlerBase.prototype.addWeapon = function(weaponId) {
-    const rangedWeapon = TEW.RANGED_WEAPONS[weaponId];
+Game_BattlerBase.prototype.addWeapon = function(weaponId: string) {
+    const rangedWeapon = TEW.DATABASE.WEAPONS.RANGED_SET[weaponId];
     this.weapons.push({
         id: weaponId,
         isInMainHand: false,
         isInSecondHand: false,
         isReloadable: rangedWeapon && (
-            rangedWeapon.group === 'BLACKPOWDER' ||
-            rangedWeapon.group === 'ENGINEERING' ||
-            rangedWeapon.group === 'CROSSBOW'),
+            rangedWeapon.group === WeaponGroup.BLACKPOWDER ||
+            rangedWeapon.group === WeaponGroup.ENGINEERING ||
+            rangedWeapon.group === WeaponGroup.CROSSBOW),
         ammo: 0,
         ammoType: undefined // Ammo ID
     });
     this.weapons = this.weapons.sort((a, b) =>
-        TEW.WEAPON_IDS.indexOf(a.id) - TEW.WEAPON_IDS.indexOf(b.id));
+        TEW.DATABASE.WEAPONS.IDS.indexOf(a.id) - TEW.DATABASE.WEAPONS.IDS.indexOf(b.id));
 }
 
-Game_BattlerBase.prototype.hasWeaponTEW = function(weaponId) {
+Game_BattlerBase.prototype.hasWeaponTEW = function(weaponId: string) {
     return this.weapons.some(weapon => weapon.id === weaponId);
 }
 
-Game_BattlerBase.prototype.equipMainHand = function(index) {
+Game_BattlerBase.prototype.equipMainHand = function(index: number) {
     this.weapons.forEach(weapon => {
         weapon.isInMainHand = false;
     });
     this.weapons[index].isInMainHand = true;
 }
 
-Game_BattlerBase.prototype.equipSecondHand = function(index) {
+Game_BattlerBase.prototype.equipSecondHand = function(index: number) {
     this.weapons.forEach(weapon => {
         weapon.isInSecondHand = false;
     });
@@ -273,30 +277,30 @@ Game_BattlerBase.prototype.equipSecondHand = function(index) {
 
 // Armors
 
-Game_BattlerBase.prototype.armor = function(armorId){
+Game_BattlerBase.prototype.armor = function(armorId: string){
     return this.armors.find(armor => armor.id === armorId);
 }
 
-Game_BattlerBase.prototype.addArmor = function(armorId) {
+Game_BattlerBase.prototype.addArmor = function(armorId: string) {
     this.armors.push(armorId);
     this.sortArmors();
 }
 
-Game_BattlerBase.prototype.hasArmorTEW = function(armorId) {
+Game_BattlerBase.prototype.hasArmorTEW = function(armorId: string) {
     return this.armors.some(armor => armor === armorId);
 }
 
-Game_BattlerBase.prototype.hasArmorEquipped = function(armorId) {
+Game_BattlerBase.prototype.hasArmorEquipped = function(armorId: string) {
     return this.equippedArmors.some(armor => armor === armorId);
 }
 
-Game_BattlerBase.prototype.equipArmor = function(armorId) {
+Game_BattlerBase.prototype.equipArmor = function(armorId: string) {
     this.equippedArmors.push(armorId);
     this.armors.splice(this.armors.indexOf(armorId), 1);
     this.sortEquippedArmors();
 }
 
-Game_BattlerBase.prototype.unequipArmor = function(armorId) {
+Game_BattlerBase.prototype.unequipArmor = function(armorId: string) {
     this.armors.push(armorId);
     this.equippedArmors.splice(this.equippedArmors.indexOf(armorId), 1);
     this.sortArmors();
@@ -304,23 +308,23 @@ Game_BattlerBase.prototype.unequipArmor = function(armorId) {
 
 Game_BattlerBase.prototype.sortArmors = function() {
     this.armors = this.armors.sort((a, b) =>
-        TEW.ARMOR_IDS.indexOf(a) - TEW.ARMOR_IDS.indexOf(b));
+        TEW.DATABASE.ARMORS.IDS.indexOf(a) - TEW.DATABASE.ARMORS.IDS.indexOf(b));
 }
 
 Game_BattlerBase.prototype.sortEquippedArmors = function() {
     this.equippedArmors = this.equippedArmors.sort((a, b) =>
-        TEW.ARMOR_IDS.indexOf(a) - TEW.ARMOR_IDS.indexOf(b));
+        TEW.DATABASE.ARMORS.IDS.indexOf(a) - TEW.DATABASE.ARMORS.IDS.indexOf(b));
 }
 
 // Ammo
-Game_BattlerBase.prototype.ammoType = function(ammoId) {
+Game_BattlerBase.prototype.ammoType = function(ammoId : string) {
     return this.ammo[ammoId] || 0;
 };
 
-Game_BattlerBase.prototype.addAmmo = function(ammoId, quantity = 1) {
+Game_BattlerBase.prototype.addAmmo = function(ammoId : string, quantity = 1) {
     this.ammo[ammoId] = this.ammoType(ammoId) + quantity;
 }
 
-Game_BattlerBase.prototype.hasAmmo = function(ammoId) {
+Game_BattlerBase.prototype.hasAmmo = function(ammoId : string) {
     return this.ammo[ammoId] > 0;
 }

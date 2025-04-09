@@ -1,4 +1,7 @@
 // $PluginCompiler TEW_Menus.js
+
+import TEW from "../../types/TEW";
+
 // $StartCompilation
 
 // -----------------------------------------------------------------------------
@@ -10,8 +13,8 @@ function Window_StatusSpells() {
     this.initialize.apply(this, arguments);
 }
 
-Window_StatusSpells.prototype = Object.create(Window_Status.prototype);
-Window_StatusSpells.prototype.constructor = Window_StatusTalents;
+export default Window_StatusSpells.prototype = Object.create(Window_Status.prototype);
+Window_StatusSpells.prototype.constructor = Window_StatusSpells;
 
 Window_StatusSpells.prototype.initialize = function() {
     Window_Status.prototype.initialize.call(this);
@@ -19,10 +22,10 @@ Window_StatusSpells.prototype.initialize = function() {
     this.setHandler('ok', this.showHelpWindow.bind(this));
 };
 
-Window_StatusSpells.prototype.setActor = function(actor) {
+Window_StatusSpells.prototype.setActor = function(actor: any) {
     if (this._actor !== actor) {
         this._actor = actor;
-        this._spells = TEW.SPELLS_ARRAY.filter(spell => actor.hasSpell(spell[0]));   // [<internal name>, {<talent data>}] // TODO
+        this._spells = TEW.DATABASE.SPELLS.ARRAY.filter(spell => actor.hasSpell(spell[0]));   // [<internal name>, {<talent data>}] // TODO
         this._maxItems = this._spells.length;
         this.refresh();
     }
@@ -40,10 +43,10 @@ Window_StatusSpells.prototype.drawAllItems = function() {
     }
 };
 
-Window_StatusSpells.prototype.drawItem = function(index) {
+Window_StatusSpells.prototype.drawItem = function(index: number) {
     const normalizedIndex = index - this.topIndex();
     const x = index % 2 === 0 ? 48 : 432;
-    const y = Math.floor(normalizedIndex / 2) * TEW.MENU_LINE_HEIGHT;
+    const y = Math.floor(normalizedIndex / 2) * TEW.MENU.MENU_LINE_HEIGHT;
 
     const spell = this.spellFromIndex(index);
 
@@ -52,7 +55,7 @@ Window_StatusSpells.prototype.drawItem = function(index) {
     this.resetTextColor();
 };
 
-Window_StatusSpells.prototype.spellFromIndex = function(index) {
+Window_StatusSpells.prototype.spellFromIndex = function(index: number) {
     return this._spells[index];
 };
 
@@ -61,7 +64,7 @@ Window_StatusSpells.prototype.item = function() {
     return spell[1].name + ': ' + spell[1].desc;
 };
 
-Window_StatusSpells.prototype.select = function(index) {
+Window_StatusSpells.prototype.select = function(index: number) {
     if (this._index !== index) {
         this.hideHelpWindow();
     }

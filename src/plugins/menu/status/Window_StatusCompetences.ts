@@ -1,4 +1,7 @@
 // $PluginCompiler TEW_Menus.js
+
+import TEW from "../../types/TEW";
+
 // $StartCompilation
 
 // -----------------------------------------------------------------------------
@@ -10,7 +13,7 @@ function Window_StatusCompetences() {
     this.initialize.apply(this, arguments);
 }
 
-Window_StatusCompetences.prototype = Object.create(Window_Status.prototype);
+export default Window_StatusCompetences.prototype = Object.create(Window_Status.prototype);
 Window_StatusCompetences.prototype.constructor = Window_StatusCompetences;
 
 Window_StatusCompetences.prototype.initialize = function() {
@@ -19,11 +22,11 @@ Window_StatusCompetences.prototype.initialize = function() {
     this.setHandler('ok', this.showHelpWindow.bind(this));
 };
 
-Window_StatusCompetences.prototype.setActor = function(actor) {
+Window_StatusCompetences.prototype.setActor = function(actor: any) {
     if (this._actor !== actor) {
         this._actor = actor;
-        this._advancedCompsList = TEW.ADVANCED_COMPS.filter(comp => actor.hasComp(comp[0]));
-        this._maxItems = TEW.BASE_COMPS.length + this._advancedCompsList.length;
+        this._advancedCompsList = TEW.DATABASE.COMPS.ADVANCED_ARRAY.filter(comp => actor.hasComp(comp[0]));
+        this._maxItems = TEW.DATABASE.COMPS.BASE_ARRAY.length + this._advancedCompsList.length;
         this.refresh();
     }
 };
@@ -40,10 +43,10 @@ Window_StatusCompetences.prototype.drawAllItems = function() {
     }
 };
 
-Window_StatusCompetences.prototype.drawItem = function(index) {
+Window_StatusCompetences.prototype.drawItem = function(index: number) {
     const normalizedIndex = index - this.topIndex();
     const x = index % 2 === 0 ? 48 : 432;
-    const y = Math.floor(normalizedIndex / 2) * TEW.MENU_LINE_HEIGHT;
+    const y = Math.floor(normalizedIndex / 2) * TEW.MENU.MENU_LINE_HEIGHT;
 
     const comp = this.competenceFromIndex(index);
 
@@ -53,19 +56,19 @@ Window_StatusCompetences.prototype.drawItem = function(index) {
     this.drawText(this._actor.comp(comp[0]) + '(' + this._actor.compPlus(comp[0]) + ')', x + 260, y, 60, 'right');
 };
 
-Window_StatusCompetences.prototype.competenceFromIndex = function(index) {
-    return index < TEW.BASE_COMPS.length  // [<internal name>, {<competence data>}]
-        ? TEW.BASE_COMPS[index]
-        : this._advancedCompsList[index - TEW.BASE_COMPS.length];
+Window_StatusCompetences.prototype.competenceFromIndex = function(index: number) {
+    return index < TEW.DATABASE.COMPS.BASE_ARRAY.length  // [<internal name>, {<competence data>}]
+        ? TEW.DATABASE.COMPS.BASE_ARRAY[index]
+        : this._advancedCompsList[index - TEW.DATABASE.COMPS.BASE_ARRAY.length];
 };
 
 Window_StatusCompetences.prototype.item = function() {
-    return 'Depends on ' + TEW.STATS_VERBOSE[TEW.STATS[
+    return 'Depends on ' + TEW.DATABASE.CHARACTERS.STATS_VERBOSE[TEW.DATABASE.CHARACTERS.STATS[
         this.competenceFromIndex(this._index)[1].stat
-        ]];
+    ]];
 };
 
-Window_StatusCompetences.prototype.select = function(index) {
+Window_StatusCompetences.prototype.select = function(index: number) {
     if (this._index !== index) {
         this.hideHelpWindow();
     }

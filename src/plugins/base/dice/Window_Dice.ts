@@ -10,10 +10,10 @@ function Window_Dice() {
     this.initialize.apply(this, arguments);
 }
 
-Window_Dice.prototype = Object.create(Window_Base.prototype);
+export default Window_Dice.prototype = Object.create(Window_Base.prototype);
 Window_Dice.prototype.constructor = Window_Dice;
 
-Window_Dice.prototype.initialize = function(x, y, tens, units) {
+Window_Dice.prototype.initialize = function(x: number, y: number, tens: number, units: number) {
     Window_Base.prototype.initialize.call(this, x, y, 240, 110); // temp !!
     this._tens = tens;
     this._units = units;

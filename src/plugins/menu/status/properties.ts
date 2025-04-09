@@ -1,14 +1,16 @@
 // $PluginCompiler TEW_Menus.js 1
+
+import TEW from "../../types/TEW";
+
 // $StartCompilation
 
 // Init COMMAND_NAMES
-TEW.COMMAND_NAMES = TEW.COMMAND_NAMES || {};
-TEW.COMMAND_NAMES[30] = "Stats";
-TEW.COMMAND_NAMES[31] = "Skills";
-TEW.COMMAND_NAMES[32] = "Talents";
-TEW.COMMAND_NAMES[33] = "Spells";
+TEW.MENU.COMMAND_NAMES[30] = "Stats";
+TEW.MENU.COMMAND_NAMES[31] = "Skills";
+TEW.MENU.COMMAND_NAMES[32] = "Talents";
+TEW.MENU.COMMAND_NAMES[33] = "Spells";
 
-TEW.MENU_LINE_HEIGHT = 36;
+TEW.MENU.MENU_LINE_HEIGHT = 36;
 
 // TextManager
 // Override commands
@@ -16,11 +18,11 @@ TextManager.command = function(commandId) {
     if (commandId <= 25) {
         return $dataSystem.terms.commands[commandId] || '';
     } else {
-        return TEW.COMMAND_NAMES[commandId] || '';
+        return TEW.MENU.COMMAND_NAMES[commandId] || '';
     }
 };
 
-const STATUS_WINDOW_TOPBAR_HEIGHT = 70;
+TEW.MENU.STATUS_WINDOW_TOPBAR_HEIGHT = 70;
 
 // The window for selecting a command on the status screen.
 // Adding new Commands Entries

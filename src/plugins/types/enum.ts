@@ -1,33 +1,10 @@
 // $PluginCompiler TEW_Constants.js 0
-import { Armor } from "./armor";
-import { Item } from "./item";
-import { Competence } from "./competence";
-
-const TEW: {
-    ICONS_IDS?: Record<string, number>;
-    
-    ARMORS?: Record<string, Armor>;
-    ARMOR_IDS?: string[];
-    ARMORS_ARRAY?: [string, Armor][]
-
-    COMPS?: Record<string, Competence>;
-    COMP_IDS?: string[];
-    BASE_COMPS?: [string, Competence][];
-    ADVANCED_COMPS?: [string, Competence][];
-
-    ITEMS?: Record<string, Item>;
-    ITEM_IDS?: string[];
-    ITEMS_ARRAY?: [string, Item][];
-} = {};
-export default TEW;
-
 // $StartCompilation
 var Imported = Imported || {};
 Imported.TEW_Constants = true;
-// var TEW = TEW || {};
 
 //
-export enum Stat {
+export const enum Stat {
     MHP = 'mhp',
     WEAS = 'weas',
     BALS = 'bals',
@@ -39,50 +16,50 @@ export enum Stat {
     INTL = 'intl',
     FELW = 'felw',
     WILL = 'will',
-};
+}
 
 /**
  * Armor types
  */
-export enum ArmorGroup {
+export const enum ArmorGroup {
     SOFT_KIT,
     BOILED_LEATHER,
     PLATE,
     BREASTPLATE,
     CHAINMAIL, 
     BRIGANDINE
-};
+}
 
 /**
  * Armor types for display
  */
-export enum ArmorGroupLabel {
+export const enum ArmorGroupLabel {
     SOFT_KIT = "Soft Kit", 
     BOILED_LEATHER = "Boiled Leather",
     PLATE = "Plate",
     BREASTPLATE = "Breastplate",
     CHAINMAIL = "Chainmail",
     BRIGANDINE = "Brigandine"
-} ;
+}
 
 /**
  * Availibility of Armor, Weapon or Item
  */
-export enum Availability {
+export const enum Availability {
     COMMON,
     RARE,
     EXOTIC,
     SCARCE
-};
+}
 
-export enum BodyLocation {
+export const enum BodyLocation {
     ARMS, 
     LEGS,
     HEAD,
     BODY
-};
+}
 
-export enum ArmorQuality {
+export const enum ArmorQuality {
     PARTIAL,
     REINFORCED,
     IMPENETRABLE,
@@ -90,10 +67,94 @@ export enum ArmorQuality {
     VISOR,
     WEAKPOINTS,
     REQUIRES_KIT
-};
+}
 
+export const enum WeaponGroup {
+    BASIC,
+    CAVALRY,
+    FENCING,
+    BRAWLING,
+    FLAIL,
+    PARRY,
+    POLE_ARM,
+    TWO_HANDED,
+    BOW,
+    CROSSBOW,
+    ENTANGLING,
+    SLING,
+    THROWING,
+    EXPLOSIVES,
+    BLACKPOWDER,
+    ENGINEERING
+}
 
-export enum ItemGroup {
+export const enum WeaponGroupLabel {
+    BASIC = "Basic",
+    CAVALRY = "Cavalry",
+    FENCING = "Fencing",
+    BRAWLING = "Brawling",
+    FLAIL = "Flail",
+    PARRY = "Parry",
+    POLE_ARM = "Pole arm",
+    TWO_HANDED = "Two-Handed",
+    BOW = "Bow",
+    CROSSBOW = "Crossbow",
+    ENTANGLING = "Entangling",
+    SLING = "Sling",
+    THROWING = "Throwing",
+    EXPLOSIVES = "Explosives",
+    BLACKPOWDER = "Blackpowder",
+    ENGINEERING = "Engineering"
+}
+
+export const enum WeaponQuality {
+    HACK,
+    UNBALANCED,
+    IMPALE,
+    PENETRATING,
+    PRECISE,
+    DAMAGING,
+    UNDAMAGING,
+    PUMMEL,
+    SLASH_1,
+    SLASH_2,
+    SHIELD_1,
+    SHIELD_2,
+    SHIELD_3,
+    SHIELD_4,
+    SHIELD_5,
+    DEFENSIVE,
+    IMPACT,
+    FAST,
+    TRIP,
+    ENTANGLE,
+    SLOW,
+    DISTRACT,
+    WRAP,
+    TIRING,
+    TRAP_BLADE,
+    DANGEROUS,
+    IMPRECISE,
+    RELOAD_1,
+    RELOAD_2,
+    RELOAD_3,
+    RELOAD_4,
+    RELOAD_5,
+    RELOAD_6,
+    FASTER_RELOAD,
+    PISTOL,
+    REPEATER,
+    REPEATER_2,
+    REPEATER_4,
+    SPREAD_3,
+    SPREAD_5,
+    ACCURATE,
+    BLAST_4,
+    BLAST_5,
+    INFECTED
+}
+
+export const enum ItemGroup {
     CLOTHES,
     FOOD,
     TOOLS,
@@ -101,7 +162,7 @@ export enum ItemGroup {
     DRUGS
 }
 
-export enum ItemGroupLabel {
+export const enum ItemGroupLabel {
     CLOTHES = "Clothes",
     FOOD = "Food",
     TOOLS = "Tools",
@@ -109,7 +170,7 @@ export enum ItemGroupLabel {
     DRUGS = "Drugs"
 }
 
-export enum Status {
+export const enum Status {
     BRASS_1,
     BRASS_2,
     BRASS_3,
@@ -119,4 +180,45 @@ export enum Status {
     GOLD_1,
     GOLD_2,
     GOLD_3
+}
+
+// Spell Specifications
+
+export const enum SpellType {
+    SPELL,
+    CANTRIP
+}
+
+export const enum SpellDomain {
+    ARCANE,
+    FIRE,
+    PETTY
+}
+
+export const enum SpellTarget {
+    SELF,
+    ONE,
+    AOE,
+    SPECIAL
+}
+
+export const enum SpellTargetRadius {
+    WILL_BONUS,
+    SPECIAL
+}
+
+export const enum SpellRange {
+    SELF,
+    WILL,
+    TOUCH,
+    ONE
+}
+
+export const enum SpellDuration {
+    INSTANT,
+    WILL_BONUS,
+    SPECIAL,
+    NUMBER,
+    INIT_BONUS,
+    WILL
 }
