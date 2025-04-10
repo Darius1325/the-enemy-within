@@ -1,4 +1,7 @@
 // $PluginCompiler TEW_Menus.js
+
+import TEW from "../../types/TEW";
+
 // $StartCompilation
 
 //-----------------------------------------------------------------------------
@@ -10,13 +13,13 @@ function Window_InventoryCommand() {
     this.initialize.apply(this, arguments);
 }
 
-Window_InventoryCommand.prototype = Object.create(Window_HorzCommand.prototype);
+export default Window_InventoryCommand.prototype = Object.create(Window_HorzCommand.prototype);
 Window_InventoryCommand.prototype.constructor = Window_InventoryCommand;
 
 // Initializing the command window
-Window_InventoryCommand.prototype.initialize = function(x, y, width) {
+Window_InventoryCommand.prototype.initialize = function(x: number, y: number, width: number) {
     this._windowWidth = width;
-    this._windowHeight = INVENTORY_WINDOW_TOPBAR_HEIGHT;
+    this._windowHeight = TEW.MENU.INVENTORY_WINDOW_TOPBAR_HEIGHT;
     Window_HorzCommand.prototype.initialize.call(this, x, y);
 };
 
@@ -40,12 +43,12 @@ Window_InventoryCommand.prototype.makeCommandList = function() {
 };
 
 
-Window_InventoryCommand.prototype.cursorRight = function(wrap) {
+Window_InventoryCommand.prototype.cursorRight = function(wrap: boolean) {
     Window_HorzCommand.prototype.cursorRight.call(this, wrap);
     this.callHandler('right');
 };
 
-Window_InventoryCommand.prototype.cursorLeft = function(wrap) {
+Window_InventoryCommand.prototype.cursorLeft = function(wrap: boolean) {
     Window_HorzCommand.prototype.cursorLeft.call(this, wrap);
     this.callHandler('left');
 };

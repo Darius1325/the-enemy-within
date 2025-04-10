@@ -1,4 +1,7 @@
 // $PluginCompiler TEW_Menus.js
+
+import Window_InventoryDetailsCommand from "../Window_InventoryDetailsCommand";
+
 // $StartCompilation
 
 //-----------------------------------------------------------------------------
@@ -10,7 +13,7 @@ function Window_InventoryArmorCommand() {
     this.initialize.apply(this, arguments);
 }
 
-Window_InventoryArmorCommand.prototype = Object.create(Window_InventoryDetailsCommand.prototype);
+export default Window_InventoryArmorCommand.prototype = Object.create(Window_InventoryDetailsCommand.prototype);
 Window_InventoryArmorCommand.prototype.constructor = Window_InventoryArmorCommand;
 
 // Initializing the command window
@@ -24,10 +27,10 @@ Window_InventoryArmorCommand.prototype.makeCommandList = function() {
     this.addCommand(TextManager.inventoryWeaponTransfer, 'inventory_armor_transfer');
 };
 
-Window_InventoryArmorCommand.prototype.refreshCommand = function(actor, armorId = 0){
-    if (actor){
+Window_InventoryArmorCommand.prototype.refreshCommand = function(actor: any, armorId = 0){
+    if (actor) {
         this.clearCommandList();
-        if (actor.hasArmorEquipped(armorId)){
+        if (actor.hasArmorEquipped(armorId)) {
             this.addCommand(TextManager.inventoryArmorUnequip, 'inventory_armor_unequip');
         } else {
             this.addCommand(TextManager.inventoryArmorEquip, 'inventory_armor_equip');

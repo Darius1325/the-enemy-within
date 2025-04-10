@@ -75,6 +75,7 @@ const TEW: {
     
         MENU_LINE_HEIGHT?: number;
         STATUS_WINDOW_TOPBAR_HEIGHT?: number;
+        INVENTORY_WINDOW_TOPBAR_HEIGHT?: number;
     }
 
     // Dice

@@ -1,4 +1,7 @@
 // $PluginCompiler TEW_Menus.js
+
+import Window_InventoryList from "../Window_InventoryList";
+
 // $StartCompilation
 
 //-----------------------------------------------------------------------------
@@ -10,7 +13,7 @@ function Window_InventoryAmmo() {
     this.initialize.apply(this, arguments);
 }
 
-Window_InventoryAmmo.prototype = Object.create(Window_InventoryList.prototype);
+export default Window_InventoryAmmo.prototype = Object.create(Window_InventoryList.prototype);
 Window_InventoryAmmo.prototype.constructor = Window_InventoryAmmo;
 
 Window_InventoryAmmo.prototype.initialize = function() {
@@ -19,7 +22,7 @@ Window_InventoryAmmo.prototype.initialize = function() {
     // this.setHandler('ok', this.showHelpWindow.bind(this));
 };
 
-Window_InventoryAmmo.prototype.setActor = function(actor) {
+Window_InventoryAmmo.prototype.setActor = function(actor: any) {
     if (this._actor !== actor) {
         this._actor = actor;
         // this._advancedCompsList = TEW.ADVANCED_COMPS.filter(comp => actor.hasComp(comp[0])); // TODO

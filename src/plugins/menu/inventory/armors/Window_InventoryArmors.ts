@@ -1,4 +1,8 @@
 // $PluginCompiler TEW_Menus.js
+
+import TEW from "../../../types/TEW";
+import Window_InventoryList from "../Window_InventoryList";
+
 // $StartCompilation
 
 //-----------------------------------------------------------------------------
@@ -10,26 +14,23 @@ function Window_InventoryArmors() {
     this.initialize.apply(this, arguments);
 }
 
-Window_InventoryArmors.prototype = Object.create(Window_InventoryList.prototype);
+export default Window_InventoryArmors.prototype = Object.create(Window_InventoryList.prototype);
 Window_InventoryArmors.prototype.constructor = Window_InventoryArmors;
 
 Window_InventoryArmors.prototype.initialize = function() {
     Window_InventoryList.prototype.initialize.call(this);
 };
 
-Window_InventoryArmors.prototype.setActor = function(actor) {
+Window_InventoryArmors.prototype.setActor = function(actor: any) {
     if (this._actor !== actor) {
         this._actor = actor;
         this._armors = [];
 
-        // const unequippedArmors = TEW.ARMORS_ARRAY.filter(armor => actor.hasArmorTEW(armor[0]));
-        // const equippedArmors = TEW.ARMORS_ARRAY.filter(armor => actor.hasArmorEquipped(armor[0]));
-
-        actor.equippedArmors.forEach(armor => {
-            this._armors.push(TEW.ARMORS_ARRAY.find(a => a[0] === armor));
+        actor.equippedArmors.forEach((armor: string) => {
+            this._armors.push(TEW.DATABASE.ARMORS.ARRAY.find(a => a[0] === armor));
         });
-        actor.armors.forEach(armor => {
-            this._armors.push(TEW.ARMORS_ARRAY.find(a => a[0] === armor));
+        actor.armors.forEach((armor: string) => {
+            this._armors.push(TEW.DATABASE.ARMORS.ARRAY.find(a => a[0] === armor));
         });
         this._maxItems = this._armors.length;
         this.refresh();
@@ -46,16 +47,16 @@ Window_InventoryArmors.prototype.drawAllItems = function() {
     }
 };
 
-Window_InventoryArmors.prototype.drawItem = function(index) {
+Window_InventoryArmors.prototype.drawItem = function(index: number) {
     const normalizedIndex = index - this.topIndex();
     const x = 48;
-    const y = normalizedIndex * TEW.MENU_LINE_HEIGHT;
+    const y = normalizedIndex * TEW.MENU.MENU_LINE_HEIGHT;
 
     const armor = this.armorFromIndex(index);
 
     if (armor) {
         const iconEquipped = this._actor.hasArmorEquipped(armor[0])
-            ? TEW.ICONS_IDS.EQUIPPED_ARMOR
+            ? TEW.DATABASE.ICONS.SET.EQUIPPED_ARMOR
             : 0;
         this.changeTextColor(this.systemColor());
         this.drawIcon(iconEquipped, x - 32, y)
@@ -66,11 +67,11 @@ Window_InventoryArmors.prototype.drawItem = function(index) {
 };
 
 // Getting an item from its index
-Window_InventoryArmors.prototype.armorFromIndex = function(index) {
+Window_InventoryArmors.prototype.armorFromIndex = function(index: number) {
     return this._armors[index];
 };
 
-Window_InventoryArmors.prototype.select = function(index) {
+Window_InventoryArmors.prototype.select = function(index: number) {
     this._index = index;
     if (this._index >= 0) {
         this.callHandler("show_armor_details");

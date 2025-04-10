@@ -10,7 +10,7 @@ function Window_InventoryHelp() {
     this.initialize.apply(this, arguments);
 }
 
-Window_InventoryHelp.prototype = Object.create(Window_Help.prototype);
+export default Window_InventoryHelp.prototype = Object.create(Window_Help.prototype);
 Window_InventoryHelp.prototype.constructor = Window_InventoryHelp;
 
 // Initializing the help window
@@ -29,13 +29,13 @@ Window_InventoryHelp.prototype.reshape = function(numLines = 2) {
     this.contents.resize(Graphics.width, this.fittingHeight(numLines));
 };
 
-Window_InventoryHelp.prototype.clear = function (){
+Window_InventoryHelp.prototype.clear = function() {
     this.contents.clear();
     this._textArray = [];
     this._iconsArray = [];
 }
 
-Window_InventoryHelp.prototype.addText = function (text, x, y){
+Window_InventoryHelp.prototype.addText = function (text: string, x: number, y: number) {
     this._textArray.push({
         desc:text,
         x:x,
@@ -43,7 +43,7 @@ Window_InventoryHelp.prototype.addText = function (text, x, y){
     });
 }
 
-Window_InventoryHelp.prototype.addIcon = function(iconId, x, y){
+Window_InventoryHelp.prototype.addIcon = function(iconId: number, x: number, y: number) {
     this._iconsArray.push({
         id:iconId,
         x:x,
@@ -54,12 +54,21 @@ Window_InventoryHelp.prototype.addIcon = function(iconId, x, y){
 Window_InventoryHelp.prototype.refresh = function() {
     this.contents.clear();
     // Drawing the text
-    this._textArray.forEach(text => {
+    this._textArray.forEach((text: {
+        desc: string;
+        x: number;
+        y: number;
+        align: string;
+    }) => {
         this.drawText(text.desc, text.x, text.y, Graphics.width, text.align || 'left');
     });
 
     // Drawing the icons
-    this._iconsArray.forEach(icon => {
+    this._iconsArray.forEach((icon: {
+        id: number;
+        x: number;
+        y: number;
+    }) => {
         this.drawIcon(icon.id, icon.x, icon.y);
     });
 };

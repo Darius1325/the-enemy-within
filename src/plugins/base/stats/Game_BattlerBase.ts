@@ -3,6 +3,14 @@
 import { WeaponGroup } from "../../types/enum";
 import TEW from "../../types/TEW";
 
+export type ActorWeapon = {
+    id: string;
+    isInMainHand: boolean;
+    isInSecondHand: boolean;
+    ammo: number;
+    ammoType: string;
+};
+
 // $StartCompilation
 
 /*
@@ -229,15 +237,15 @@ Game_BattlerBase.prototype.hasItem = function(itemId: string) {
 // Weapons
 
 Game_BattlerBase.prototype.weapon = function(weaponId: string) {
-    return this.weapons.find(weapon => weapon.id === weaponId);
+    return this.weapons.find((weapon: ActorWeapon) => weapon.id === weaponId);
 }
 
 Game_BattlerBase.prototype.mainHand = function() {
-    return this.weapons.find(weapon => weapon.isInMainHand);
+    return this.weapons.find((weapon: ActorWeapon) => weapon.isInMainHand);
 }
 
 Game_BattlerBase.prototype.secondHand = function() {
-    return this.weapons.find(weapon => weapon.isInSecondHand);
+    return this.weapons.find((weapon: ActorWeapon) => weapon.isInSecondHand);
 }
 
 Game_BattlerBase.prototype.addWeapon = function(weaponId: string) {
@@ -253,23 +261,23 @@ Game_BattlerBase.prototype.addWeapon = function(weaponId: string) {
         ammo: 0,
         ammoType: undefined // Ammo ID
     });
-    this.weapons = this.weapons.sort((a, b) =>
+    this.weapons = this.weapons.sort((a: ActorWeapon, b: ActorWeapon) =>
         TEW.DATABASE.WEAPONS.IDS.indexOf(a.id) - TEW.DATABASE.WEAPONS.IDS.indexOf(b.id));
 }
 
 Game_BattlerBase.prototype.hasWeaponTEW = function(weaponId: string) {
-    return this.weapons.some(weapon => weapon.id === weaponId);
+    return this.weapons.some((weapon: ActorWeapon) => weapon.id === weaponId);
 }
 
 Game_BattlerBase.prototype.equipMainHand = function(index: number) {
-    this.weapons.forEach(weapon => {
+    this.weapons.forEach((weapon: ActorWeapon) => {
         weapon.isInMainHand = false;
     });
     this.weapons[index].isInMainHand = true;
 }
 
 Game_BattlerBase.prototype.equipSecondHand = function(index: number) {
-    this.weapons.forEach(weapon => {
+    this.weapons.forEach((weapon: ActorWeapon) => {
         weapon.isInSecondHand = false;
     });
     this.weapons[index].isInSecondHand = true;
@@ -278,7 +286,7 @@ Game_BattlerBase.prototype.equipSecondHand = function(index: number) {
 // Armors
 
 Game_BattlerBase.prototype.armor = function(armorId: string){
-    return this.armors.find(armor => armor.id === armorId);
+    return this.armors.find((armor: string) => armor === armorId);
 }
 
 Game_BattlerBase.prototype.addArmor = function(armorId: string) {
@@ -287,11 +295,11 @@ Game_BattlerBase.prototype.addArmor = function(armorId: string) {
 }
 
 Game_BattlerBase.prototype.hasArmorTEW = function(armorId: string) {
-    return this.armors.some(armor => armor === armorId);
+    return this.armors.some((armor: string) => armor === armorId);
 }
 
 Game_BattlerBase.prototype.hasArmorEquipped = function(armorId: string) {
-    return this.equippedArmors.some(armor => armor === armorId);
+    return this.equippedArmors.some((armor: string) => armor === armorId);
 }
 
 Game_BattlerBase.prototype.equipArmor = function(armorId: string) {
@@ -307,12 +315,12 @@ Game_BattlerBase.prototype.unequipArmor = function(armorId: string) {
 }
 
 Game_BattlerBase.prototype.sortArmors = function() {
-    this.armors = this.armors.sort((a, b) =>
+    this.armors = this.armors.sort((a: string, b: string) =>
         TEW.DATABASE.ARMORS.IDS.indexOf(a) - TEW.DATABASE.ARMORS.IDS.indexOf(b));
 }
 
 Game_BattlerBase.prototype.sortEquippedArmors = function() {
-    this.equippedArmors = this.equippedArmors.sort((a, b) =>
+    this.equippedArmors = this.equippedArmors.sort((a: string, b: string) =>
         TEW.DATABASE.ARMORS.IDS.indexOf(a) - TEW.DATABASE.ARMORS.IDS.indexOf(b));
 }
 

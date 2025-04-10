@@ -1,6 +1,9 @@
 // $PluginCompiler TEW_Menus.js
 // $StartCompilation
 
+import { Armor } from "../../../types/armor";
+import Window_InventoryDetails from "../Window_InventoryDetails";
+
 //-----------------------------------------------------------------------------
 // Window_InventoryArmorDetails
 //
@@ -10,7 +13,7 @@ function Window_InventoryArmorDetails() {
     this.initialize.apply(this, arguments);
 }
 
-Window_InventoryArmorDetails.prototype = Object.create(Window_InventoryDetails.prototype);
+export default Window_InventoryArmorDetails.prototype = Object.create(Window_InventoryDetails.prototype);
 Window_InventoryArmorDetails.prototype.constructor = Window_InventoryArmorDetails;
 
 Window_InventoryArmorDetails.prototype.initialize = function(commandWindowHeight = 0) {
@@ -27,7 +30,7 @@ Window_InventoryArmorDetails.prototype.refresh = function() {
 };
 
 // Drawing the details
-Window_InventoryArmorDetails.prototype.drawDetails = function(armor){
+Window_InventoryArmorDetails.prototype.drawDetails = function(armor: [string, Armor]){
     // Title
     this.drawUnderlinedText(armor[1].name, 0, 0, this.contentsWidth(), "center");
 

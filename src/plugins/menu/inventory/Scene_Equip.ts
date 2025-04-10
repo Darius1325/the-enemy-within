@@ -1,4 +1,19 @@
 // $PluginCompiler TEW_Menus.js 101
+
+import Window_InventoryAmmo from "./ammo/Window_InventoryAmmo";
+import Window_InventoryArmorCommand from "./armors/Window_InventoryArmorCommand";
+import Window_InventoryArmorDetails from "./armors/Window_InventoryArmorDetails";
+import Window_InventoryArmors from "./armors/Window_InventoryArmors";
+import Window_InventoryInfo from "./info/Window_InventoryInfo";
+import Window_InventoryItemCommand from "./items/Window_InventoryItemCommand";
+import Window_InventoryItemDetails from "./items/Window_InventoryItemDetails";
+import Window_InventoryItems from "./items/Window_InventoryItems";
+import Window_InventoryWeaponCommand from "./weapons/Window_InventoryWeaponCommand";
+import Window_InventoryWeaponDetails from "./weapons/Window_InventoryWeaponDetails";
+import Window_InventoryWeapons from "./weapons/Window_InventoryWeapons";
+import Window_InventoryCommand from "./Window_InventoryCommand";
+import Window_InventoryHelp from "./Window_InventoryHelp";
+
 // $StartCompilation
 
 //-----------------------------------------------------------------------------

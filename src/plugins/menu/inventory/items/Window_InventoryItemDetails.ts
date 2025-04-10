@@ -1,4 +1,12 @@
 // $PluginCompiler TEW_Menus.js
+
+import { Item } from "../../../types/item";
+import Window_InventoryDetails from "../Window_InventoryDetails";
+
+type ItemWithQuantity = Item & {
+    quantity: number;
+};
+
 // $StartCompilation
 
 //-----------------------------------------------------------------------------
@@ -10,7 +18,7 @@ function Window_InventoryItemDetails() {
     this.initialize.apply(this, arguments);
 }
 
-Window_InventoryItemDetails.prototype = Object.create(Window_InventoryDetails.prototype);
+export default Window_InventoryItemDetails.prototype = Object.create(Window_InventoryDetails.prototype);
 Window_InventoryItemDetails.prototype.constructor = Window_InventoryItemDetails;
 
 Window_InventoryItemDetails.prototype.initialize = function(commandWindowHeight = 0) {
@@ -27,7 +35,7 @@ Window_InventoryItemDetails.prototype.refresh = function() {
 };
 
 // Drawing the details
-Window_InventoryItemDetails.prototype.drawDetails = function(item){
+Window_InventoryItemDetails.prototype.drawDetails = function(item: [string, ItemWithQuantity]){
     // Title
     this.drawUnderlinedText(item[1].name, 0, 0, this.contentsWidth(), "center");
 

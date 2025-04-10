@@ -1,4 +1,7 @@
 // $PluginCompiler TEW_Menus.js
+
+import Window_InventoryDetailsCommand from "../Window_InventoryDetailsCommand";
+
 // $StartCompilation
 
 //-----------------------------------------------------------------------------
@@ -10,7 +13,7 @@ function Window_InventoryItemCommand() {
     this.initialize.apply(this, arguments);
 }
 
-Window_InventoryItemCommand.prototype = Object.create(Window_InventoryDetailsCommand.prototype);
+export default Window_InventoryItemCommand.prototype = Object.create(Window_InventoryDetailsCommand.prototype);
 Window_InventoryItemCommand.prototype.constructor = Window_InventoryItemCommand;
 
 // Initializing the command window

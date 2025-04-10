@@ -1,4 +1,7 @@
 // $PluginCompiler TEW_Menus.js 10
+
+import TEW from "../../types/TEW";
+
 // $StartCompilation
 
 //-----------------------------------------------------------------------------
@@ -10,16 +13,16 @@ function Window_InventoryList() {
     this.initialize.apply(this, arguments);
 }
 
-Window_InventoryList.prototype = Object.create(Window_Selectable.prototype);
+export default Window_InventoryList.prototype = Object.create(Window_Selectable.prototype);
 Window_InventoryList.prototype.constructor = Window_InventoryList;
 
 // Inializing the window
 Window_InventoryList.prototype.initialize = function() {
     Window_Selectable.prototype.initialize.call(this,
         0,
-        INVENTORY_WINDOW_TOPBAR_HEIGHT,
+        TEW.MENU.INVENTORY_WINDOW_TOPBAR_HEIGHT,
         Graphics.boxWidth / 2,
-        Graphics.boxHeight - INVENTORY_WINDOW_TOPBAR_HEIGHT);
+        Graphics.boxHeight - TEW.MENU.INVENTORY_WINDOW_TOPBAR_HEIGHT);
     this._actor = null;
     this._maxItems = 0;
     this._leftPadding = 10;
@@ -31,7 +34,7 @@ Window_InventoryList.prototype.initialize = function() {
 };
 
 // Setting the actor
-Window_InventoryList.prototype.setActor = function(actor) {
+Window_InventoryList.prototype.setActor = function(actor: any) {
     if (this._actor !== actor) {
         this._actor = actor;
         this.refresh();

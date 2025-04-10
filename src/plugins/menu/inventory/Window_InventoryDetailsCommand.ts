@@ -10,7 +10,7 @@ function Window_InventoryDetailsCommand() {
     this.initialize.apply(this, arguments);
 }
 
-Window_InventoryDetailsCommand.prototype = Object.create(Window_Command.prototype);
+export default Window_InventoryDetailsCommand.prototype = Object.create(Window_Command.prototype);
 Window_InventoryDetailsCommand.prototype.constructor = Window_InventoryDetailsCommand;
 
 // Initializing the command window
@@ -29,6 +29,6 @@ Window_InventoryDetailsCommand.prototype.windowWidth = function() {
     return this._windowWidth;
 };
 
-Window_InventoryDetailsCommand.prototype.addCommand = function(name, symbol, enabled = true, ext = null) {
+Window_InventoryDetailsCommand.prototype.addCommand = function(name: string, symbol: string, enabled = true, ext = null) {
     this._list.push({ name: name, symbol: symbol, enabled: enabled, ext: ext});
 };

@@ -1,4 +1,7 @@
 // $PluginCompiler TEW_Menus.js
+
+import Window_InventoryDetailsCommand from "../Window_InventoryDetailsCommand";
+
 // $StartCompilation
 
 //-----------------------------------------------------------------------------
@@ -10,7 +13,7 @@ function Window_InventoryWeaponCommand() {
     this.initialize.apply(this, arguments);
 }
 
-Window_InventoryWeaponCommand.prototype = Object.create(Window_InventoryDetailsCommand.prototype);
+export default Window_InventoryWeaponCommand.prototype = Object.create(Window_InventoryDetailsCommand.prototype);
 Window_InventoryWeaponCommand.prototype.constructor = Window_InventoryWeaponCommand;
 
 // Initializing the command window
@@ -25,7 +28,7 @@ Window_InventoryWeaponCommand.prototype.makeCommandList = function() {
     this.addCommand(TextManager.inventoryWeaponReload, 'inventory_weapon_reload');
 };
 
-Window_InventoryWeaponCommand.prototype.refreshCommand = function(actor, weaponId = 0){
+Window_InventoryWeaponCommand.prototype.refreshCommand = function(actor: any, weaponId = 0){
     if (actor){
         const weapon = actor.weapon(weaponId);
         this.clearCommandList();

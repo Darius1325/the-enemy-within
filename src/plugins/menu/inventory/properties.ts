@@ -1,25 +1,28 @@
 // $PluginCompiler TEW_Menus.js 1
+
+import TEW from "../../types/TEW";
+
 // $StartCompilation
 
-TEW.COMMAND_NAMES = TEW.COMMAND_NAMES || {};
-TEW.COMMAND_NAMES[40] = "InventoryNextChar";
-TEW.COMMAND_NAMES[41] = "InventoryPreviousChar";
-TEW.COMMAND_NAMES[42] = "Infos";
-TEW.COMMAND_NAMES[43] = "Weapons";
-TEW.COMMAND_NAMES[44] = "Armors";
-TEW.COMMAND_NAMES[45] = "Items";
-TEW.COMMAND_NAMES[46] = "Ammo";
-TEW.COMMAND_NAMES[47] = "Use";
-TEW.COMMAND_NAMES[48] = "Transfer";
-TEW.COMMAND_NAMES[49] = "Equip";
-TEW.COMMAND_NAMES[50] = "Unequip";
-TEW.COMMAND_NAMES[51] = "Transfer";
-TEW.COMMAND_NAMES[52] = "Reload";
-TEW.COMMAND_NAMES[53] = "Equip";
-TEW.COMMAND_NAMES[54] = "Unequip";
-TEW.COMMAND_NAMES[55] = "Transfer";
+TEW.MENU.COMMAND_NAMES = TEW.MENU.COMMAND_NAMES || {};
+TEW.MENU.COMMAND_NAMES[40] = "InventoryNextChar";
+TEW.MENU.COMMAND_NAMES[41] = "InventoryPreviousChar";
+TEW.MENU.COMMAND_NAMES[42] = "Infos";
+TEW.MENU.COMMAND_NAMES[43] = "Weapons";
+TEW.MENU.COMMAND_NAMES[44] = "Armors";
+TEW.MENU.COMMAND_NAMES[45] = "Items";
+TEW.MENU.COMMAND_NAMES[46] = "Ammo";
+TEW.MENU.COMMAND_NAMES[47] = "Use";
+TEW.MENU.COMMAND_NAMES[48] = "Transfer";
+TEW.MENU.COMMAND_NAMES[49] = "Equip";
+TEW.MENU.COMMAND_NAMES[50] = "Unequip";
+TEW.MENU.COMMAND_NAMES[51] = "Transfer";
+TEW.MENU.COMMAND_NAMES[52] = "Reload";
+TEW.MENU.COMMAND_NAMES[53] = "Equip";
+TEW.MENU.COMMAND_NAMES[54] = "Unequip";
+TEW.MENU.COMMAND_NAMES[55] = "Transfer";
 
-TEW.MENU_LINE_HEIGHT = 36;
+TEW.MENU.MENU_LINE_HEIGHT = 36;
 
 // TextManager
 // Override commands
@@ -27,7 +30,7 @@ TextManager.command = function(commandId) {
     if (commandId <= 25) {
         return $dataSystem.terms.commands[commandId] || '';
     } else {
-        return TEW.COMMAND_NAMES[commandId] || '';
+        return TEW.MENU.COMMAND_NAMES[commandId] || '';
     }
 };
 
@@ -37,7 +40,7 @@ Input.keyMapper[69] = "E_Key";
 
 
 // Windows
-const INVENTORY_WINDOW_TOPBAR_HEIGHT = 70;
+TEW.MENU.INVENTORY_WINDOW_TOPBAR_HEIGHT = 70;
 
 // The window for selecting a command on the inventory screen.
 // Adding new Commands Entries

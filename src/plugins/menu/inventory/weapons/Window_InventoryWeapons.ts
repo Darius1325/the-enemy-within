@@ -1,4 +1,16 @@
 // $PluginCompiler TEW_Menus.js
+
+import { ActorWeapon } from "../../../base/stats/Game_BattlerBase";
+import { MeleeWeapon } from "../../../types/meleeWeapon";
+import { RangedWeapon } from "../../../types/rangedWeapon";
+import TEW from "../../../types/TEW";
+import Window_InventoryList from "../Window_InventoryList";
+
+type LoadedWeapon = (MeleeWeapon | RangedWeapon) & {
+    ammo?: number;
+    ammoType?: string;
+};
+
 // $StartCompilation
 
 //-----------------------------------------------------------------------------
@@ -10,21 +22,21 @@ function Window_InventoryWeapons() {
     this.initialize.apply(this, arguments);
 }
 
-Window_InventoryWeapons.prototype = Object.create(Window_InventoryList.prototype);
+export default Window_InventoryWeapons.prototype = Object.create(Window_InventoryList.prototype);
 Window_InventoryWeapons.prototype.constructor = Window_InventoryWeapons;
 
 Window_InventoryWeapons.prototype.initialize = function() {
     Window_InventoryList.prototype.initialize.call(this);
 };
 
-Window_InventoryWeapons.prototype.setActor = function(actor) {
+Window_InventoryWeapons.prototype.setActor = function(actor: any) {
     if (this._actor !== actor) {
         this._actor = actor;
 
-        const unequippedWeapons = actor.weapons.filter(weapon => !weapon.isInMainHand && !weapon.isInSecondHand);
+        const unequippedWeapons = actor.weapons.filter((weapon: ActorWeapon) => !weapon.isInMainHand && !weapon.isInSecondHand);
         this._weapons = []; // [<internal name>, {<item data>}]
-        unequippedWeapons.forEach(weapon => {
-            const weaponData = TEW.WEAPONS_ARRAY.find(w => w[0] === weapon.id);
+        unequippedWeapons.forEach((weapon: ActorWeapon) => {
+            const weaponData: [string, LoadedWeapon] = TEW.DATABASE.WEAPONS.ARRAY.find(w => w[0] === weapon.id);
             weaponData[1].ammo = weapon.ammo;
             weaponData[1].ammoType = weapon.ammoType;
             this._weapons.push(weaponData);
@@ -34,19 +46,19 @@ Window_InventoryWeapons.prototype.setActor = function(actor) {
 
         const mainHand = actor.mainHand();
         if (mainHand) {
-            this._mainHandWeapon = TEW.WEAPONS_ARRAY.find(w => w[0] === mainHand.id);
+            this._mainHandWeapon = TEW.DATABASE.WEAPONS.ARRAY.find(w => w[0] === mainHand.id);
             this._mainHandWeapon[1].ammo = mainHand.ammo;
             this._mainHandWeapon[1].ammoType = mainHand.ammoType;
-            this._mainHandWeapon[1].equipIcon = TEW.ICONS_IDS.EQUIPPED_MAIN_HAND;
+            this._mainHandWeapon[1].equipIcon = TEW.DATABASE.ICONS.SET.EQUIPPED_MAIN_HAND;
             this._maxItems ++;
         }
 
         const secondHand = actor.secondHand();
         if (secondHand) {
-            this._secondHandWeapon = TEW.WEAPONS_ARRAY.find(w => w[0] === secondHand.id);
+            this._secondHandWeapon = TEW.DATABASE.WEAPONS.ARRAY.find(w => w[0] === secondHand.id);
             this._secondHandWeapon[1].ammo = secondHand.ammo;
             this._secondHandWeapon[1].ammoType = secondHand.ammoType;
-            this._secondHandWeapon[1].equipIcon = TEW.ICONS_IDS.EQUIPPED_SECOND_HAND;
+            this._secondHandWeapon[1].equipIcon = TEW.DATABASE.ICONS.SET.EQUIPPED_SECOND_HAND;
             this._maxItems++;
         }
         this.refresh();
@@ -63,10 +75,10 @@ Window_InventoryWeapons.prototype.drawAllItems = function() {
     }
 };
 
-Window_InventoryWeapons.prototype.drawItem = function(index) {
+Window_InventoryWeapons.prototype.drawItem = function(index: number) {
     const normalizedIndex = index - this.topIndex();
     const x = 48;
-    const y = normalizedIndex * TEW.MENU_LINE_HEIGHT;
+    const y = normalizedIndex * TEW.MENU.MENU_LINE_HEIGHT;
 
     const weapon = this.weaponFromIndex(index);
 
@@ -79,7 +91,7 @@ Window_InventoryWeapons.prototype.drawItem = function(index) {
     }
 };
 
-Window_InventoryWeapons.prototype.weaponFromIndex = function(index) {
+Window_InventoryWeapons.prototype.weaponFromIndex = function(index: number) {
     let weapon;
 
     if (index === 0){
@@ -99,7 +111,7 @@ Window_InventoryWeapons.prototype.weaponFromIndex = function(index) {
     return weapon;
 };
 
-Window_InventoryWeapons.prototype.select = function(index) {
+Window_InventoryWeapons.prototype.select = function(index: number) {
     this._index = index;
     if (this._index >= 0) {
         this.callHandler("show_weapon_details");
