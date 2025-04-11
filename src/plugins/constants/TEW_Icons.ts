@@ -1,8 +1,9 @@
-// $PluginCompiler TEW_Constants.js 1
+// $PluginCompiler TEW_Constants.js 2
 
-import TEW from "../types/TEW";
+import TEW from "../types/tew";
 
 // $StartCompilation
+TEW.DATABASE.ICONS = {};
 TEW.DATABASE.ICONS.SET = {
     // Item groups
     ITEM_CLOTHES : 154,

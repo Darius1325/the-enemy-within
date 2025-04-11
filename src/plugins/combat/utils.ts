@@ -1,7 +1,7 @@
 // $PluginCompiler TEW_Combat.js 2
 
+import TEW from "../types/tew";
 import { ArmorGroup, WeaponGroup, WeaponQuality } from "../types/enum";
-import TEW from "../types/TEW";
 
 // $StartCompilation
 

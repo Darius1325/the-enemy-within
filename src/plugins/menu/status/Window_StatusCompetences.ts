@@ -1,6 +1,6 @@
 // $PluginCompiler TEW_Menus.js
 
-import TEW from "../../types/TEW";
+import TEW from "../../types/tew";
 
 // $StartCompilation
 
@@ -63,7 +63,7 @@ Window_StatusCompetences.prototype.competenceFromIndex = function(index: number)
 };
 
 Window_StatusCompetences.prototype.item = function() {
-    return 'Depends on ' + TEW.DATABASE.CHARACTERS.STATS_VERBOSE[TEW.DATABASE.CHARACTERS.STATS[
+    return 'Depends on ' + TEW.CHARACTERS.STATS_VERBOSE[TEW.CHARACTERS.STATS[
         this.competenceFromIndex(this._index)[1].stat
     ]];
 };

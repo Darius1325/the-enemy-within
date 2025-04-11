@@ -1,10 +1,10 @@
 // $PluginCompiler TEW_Base.js 1
 
-import TEW from "../../types/TEW";
+import TEW from "../../types/tew";
 
 // $StartCompilation
 
-TEW.DATABASE.CHARACTERS.SET = {
+TEW.CHARACTERS.SET = {
     Cecile: 1,
     Cheplu: 2,
     Ciara: 3,
@@ -13,7 +13,7 @@ TEW.DATABASE.CHARACTERS.SET = {
     Wanda: 6
 };
 
-TEW.DATABASE.CHARACTERS.STATS = {
+TEW.CHARACTERS.STATS = {
     mhp: 0,
     weas: 1,
     bals: 2,
@@ -26,7 +26,7 @@ TEW.DATABASE.CHARACTERS.STATS = {
     will: 9,
     felw: 10
 };
-TEW.DATABASE.CHARACTERS.STATS_VERBOSE = [
+TEW.CHARACTERS.STATS_VERBOSE = [
     'Max Wounds',
     'Weapon skill',
     'Ballistic skill',
@@ -41,7 +41,7 @@ TEW.DATABASE.CHARACTERS.STATS_VERBOSE = [
 ];
 
 // 0 for base skills, -1 for acquired
-TEW.DATABASE.CHARACTERS.BASE_COMP_VALUES = TEW.DATABASE.COMPS.IDS.reduce((acc: number[], compId) => {
+TEW.CHARACTERS.BASE_COMP_VALUES = TEW.DATABASE.COMPS.IDS.reduce((acc: number[], compId) => {
     acc.push(TEW.DATABASE.COMPS.SET[compId].isBase ? 0 : -1);
     return acc;
 }, []);

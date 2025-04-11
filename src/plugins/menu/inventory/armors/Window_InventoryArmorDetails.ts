@@ -1,8 +1,9 @@
 // $PluginCompiler TEW_Menus.js
-// $StartCompilation
 
 import { Armor } from "../../../types/armor";
 import Window_InventoryDetails from "../Window_InventoryDetails";
+
+// $StartCompilation
 
 //-----------------------------------------------------------------------------
 // Window_InventoryArmorDetails

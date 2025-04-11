@@ -12,13 +12,6 @@ import { ArmorGroup, WeaponGroup, WeaponQuality } from "./enum";
 const TEW: {
     // Constants
     DATABASE?: {
-
-        CHARACTERS?: {
-            SET?: Record<string, number>;
-            STATS?: Record<string, number>;
-            STATS_VERBOSE?: string[];
-            BASE_COMP_VALUES?: number[];
-        }
     
         ICONS?: {
             SET?: Record<string, number>;
@@ -76,6 +69,13 @@ const TEW: {
         MENU_LINE_HEIGHT?: number;
         STATUS_WINDOW_TOPBAR_HEIGHT?: number;
         INVENTORY_WINDOW_TOPBAR_HEIGHT?: number;
+    }
+
+    CHARACTERS?: {
+        SET?: Record<string, number>;
+        STATS?: Record<string, number>;
+        STATS_VERBOSE?: string[];
+        BASE_COMP_VALUES?: number[];
     }
 
     // Dice

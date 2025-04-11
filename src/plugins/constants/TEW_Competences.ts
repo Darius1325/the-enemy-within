@@ -2,9 +2,10 @@
 
 import { Competence } from "../types/competence";
 import { Stat } from "../types/enum";
-import TEW from "../types/TEW";
+import TEW from "../types/tew";
 
 // $StartCompilation
+TEW.DATABASE.COMPS = {};
 TEW.DATABASE.COMPS.SET = { 
     ANIMAL_CARE: {
         name: "Animal Care",

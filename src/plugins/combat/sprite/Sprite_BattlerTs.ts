@@ -1,7 +1,8 @@
 // $PluginCompiler TEW_Combat.js
-// $StartCompilation
 
 import Sprite_HpGauge from "./Sprite_HpGauge";
+
+// $StartCompilation
 
 //-----------------------------------------------------------------------------
 // Sprite_BattlerTs

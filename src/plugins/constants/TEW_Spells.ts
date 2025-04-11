@@ -1,8 +1,9 @@
 // $PluginCompiler TEW_Constants.js
 import { SpellDomain, SpellDuration, SpellRange, SpellTarget, SpellTargetRadius, SpellType } from "../types/enum";
-import TEW from "../types/TEW"
+import TEW from "../types/tew";
 
 // $StartCompilation
+TEW.DATABASE.SPELLS = {};
 TEW.DATABASE.SPELLS.SET = {
     AETHYRIC_ARMOUR: {
         name: "Aethyric Armour",

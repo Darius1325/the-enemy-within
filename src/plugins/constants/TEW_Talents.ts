@@ -1,9 +1,10 @@
 // $PluginCompiler TEW_Constants.js
 
 import { Stat } from "../types/enum";
-import TEW from "../types/TEW"
+import TEW from "../types/tew";
 
 // $StartCompilation
+TEW.DATABASE.TALENTS = {};
 TEW.DATABASE.TALENTS.SET = {
     ACCURATE_SHOT: {
         name: "Accurate Shot",

@@ -3,7 +3,7 @@
 import { ActorWeapon } from "../../../base/stats/Game_BattlerBase";
 import { MeleeWeapon } from "../../../types/meleeWeapon";
 import { RangedWeapon } from "../../../types/rangedWeapon";
-import TEW from "../../../types/TEW";
+import TEW from "../../../types/tew";
 import Window_InventoryList from "../Window_InventoryList";
 
 type LoadedWeapon = (MeleeWeapon | RangedWeapon) & {

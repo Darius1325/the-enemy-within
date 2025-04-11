@@ -1,11 +1,11 @@
 // $PluginCompiler TEW_Menus.js
-// $StartCompilation
 
 import Window_StatusCommand from "./Window_StatusCommand";
 import Window_StatusCompetences from "./Window_StatusCompetences";
 import Window_StatusSpells from "./Window_StatusSpells";
 import Window_StatusStats from "./Window_StatusStats";
 import Window_StatusTalents from "./Window_StatusTalents";
+// $StartCompilation
 
 //-----------------------------------------------------------------------------
 // Scene_Status (override)

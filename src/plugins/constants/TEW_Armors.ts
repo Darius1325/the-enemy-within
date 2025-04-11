@@ -1,10 +1,10 @@
 // $PluginCompiler TEW_Constants.js
 
 import { ArmorGroup, ArmorGroupLabel, BodyLocation, ArmorQuality, Availability } from "../types/enum";
-import { Armor } from "../types/armor"
-import TEW from "../types/TEW";
+import TEW from "../types/tew";
 
 // $StartCompilation
+TEW.DATABASE.ARMORS = {};
 TEW.DATABASE.ARMORS.SET = {
     SOFT_KIT: {
         name: "Soft Kit",

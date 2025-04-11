@@ -320,12 +320,11 @@ import Window_TacticsSkill from "./Window_TacticsSkill";
  *     https://forums.rpgmakerweb.com/index.php?threads/tactics-system-1-0.117600/
  */
 
+// $StartCompilation
+
 var TacticsSystem = TacticsSystem || {};
 TacticsSystem.Parameters = PluginManager.parameters('TEW_Tactics_Basic');
 TacticsSystem.clearAll = true; // in game system
-
-
-// $StartCompilation
 
 /**
  * Converts a boolean string.

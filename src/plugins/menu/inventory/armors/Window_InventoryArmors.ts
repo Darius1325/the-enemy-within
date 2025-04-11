@@ -1,6 +1,6 @@
 // $PluginCompiler TEW_Menus.js
 
-import TEW from "../../../types/TEW";
+import TEW from "../../../types/tew";
 import Window_InventoryList from "../Window_InventoryList";
 
 // $StartCompilation

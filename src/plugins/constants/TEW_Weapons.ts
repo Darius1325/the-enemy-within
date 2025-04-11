@@ -1,10 +1,10 @@
 // $PluginCompiler TEW_Constants.js
-// $StartCompilation
 
 import { WeaponGroup, WeaponGroupLabel, WeaponQuality, Availability } from "../types/enum";
-import { MeleeWeapon } from "../types/meleeWeapon";
-import TEW from "../types/TEW";
+import TEW from "../types/tew";
 
+// $StartCompilation
+TEW.DATABASE.WEAPONS = {};
 TEW.DATABASE.WEAPONS.MELEE_SET =  {
     AXE: {
         name: "Axe",

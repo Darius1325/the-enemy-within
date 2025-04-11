@@ -3,3 +3,5 @@
 
 var Imported = Imported || {};
 Imported.TEW_Combat = true;
+var TEW = TEW || {};
+TEW.COMBAT = TEW.COMBAT || {};

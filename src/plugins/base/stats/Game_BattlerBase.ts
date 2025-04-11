@@ -1,7 +1,7 @@
 // $PluginCompiler TEW_Base.js
 
 import { WeaponGroup } from "../../types/enum";
-import TEW from "../../types/TEW";
+import TEW from "../../types/tew";
 
 export type ActorWeapon = {
     id: string;
@@ -46,7 +46,7 @@ const battlerBaseInit = Game_BattlerBase.prototype.initialize;
 Game_BattlerBase.prototype.initialize = function() {
     battlerBaseInit.call(this);
     this._paramBase = [1,0,0,0,0,0,0,0,0,0,0];
-    this.competences = TEW.DATABASE.CHARACTERS.BASE_COMP_VALUES.slice();
+    this.competences = TEW.CHARACTERS.BASE_COMP_VALUES.slice();
     this.spells = [];
     this.talents = {}; // ID: level
     this.items = {}; // ID: quantity
@@ -163,7 +163,7 @@ Game_BattlerBase.prototype.param = function(paramId: number) {
 };
 
 Game_BattlerBase.prototype.paramByName = function(paramName: string) {
-    return this.param(TEW.DATABASE.CHARACTERS.STATS[paramName]);
+    return this.param(TEW.CHARACTERS.STATS[paramName]);
 };
 
 // Competences

@@ -3,3 +3,5 @@
 
 var Imported = Imported || {};
 Imported.TEW_Menus = true;
+var TEW = TEW || {};
+TEW.MENUS = TEW.MENUS || {};

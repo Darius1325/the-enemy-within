@@ -1,6 +1,6 @@
 // $PluginCompiler TEW_Menus.js
 
-import TEW from "../../types/TEW";
+import TEW from "../../types/tew";
 
 // $StartCompilation
 
@@ -9,13 +9,13 @@ import TEW from "../../types/TEW";
 //
 // Character info, stats, competences (skills), talents and spells window
 
-Window_Status.BASE_COMPETENCE_LINE_COUNT = Math.ceil(TEW.BASE_COMPS.length / 2);
-Window_Status.BASE_COMPETENCE_WINDOW_HEIGHT = (Window_Status.BASE_COMPETENCE_LINE_COUNT + 1) * TEW.MENU_LINE_HEIGHT;
+Window_Status.BASE_COMPETENCE_LINE_COUNT = Math.ceil(TEW.DATABASE.COMPS.BASE_ARRAY.length / 2);
+Window_Status.BASE_COMPETENCE_WINDOW_HEIGHT = (Window_Status.BASE_COMPETENCE_LINE_COUNT + 1) * TEW.MENU.MENU_LINE_HEIGHT;
 
 Window_Status.prototype.initialize = function() {
     Window_Selectable.prototype.initialize.call(this,
-        0, TEW.STATUS_WINDOW_TOPBAR_HEIGHT,
-        Graphics.boxWidth, Graphics.boxHeight - TEW.STATUS_WINDOW_TOPBAR_HEIGHT);
+        0, TEW.MENU.STATUS_WINDOW_TOPBAR_HEIGHT,
+        Graphics.boxWidth, Graphics.boxHeight - TEW.MENU.STATUS_WINDOW_TOPBAR_HEIGHT);
     this._actor = null;
     this._maxItems = 0;
     this.activate();

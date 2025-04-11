@@ -1,9 +1,10 @@
 // $PluginCompiler TEW_Constants.js
 import { Availability, ItemGroup, ItemGroupLabel } from "../types/enum";
 import { Item } from "../types/item";
-import TEW from "../types/TEW";
+import TEW from "../types/tew";
 
 // $StartCompilation
+TEW.DATABASE.ITEMS = {};
 TEW.DATABASE.ITEMS.SET = {
     AMULET: {
         name: "Amulet",

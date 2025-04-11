@@ -1,6 +1,6 @@
 // $PluginCompiler TEW_Base.js
 
-import TEW from "../../types/TEW";
+import TEW from "../../types/tew";
 
 // $StartCompilation
 

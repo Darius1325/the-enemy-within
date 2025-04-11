@@ -1,10 +1,10 @@
 // $PluginCompiler TEW_Constants.js
-import TEW from "../types/TEW"
-import { NPC } from "../types/npc"
+import TEW from "../types/tew";
 import { Status } from "../types/enum";
 
 
 // $StartCompilation
+TEW.DATABASE.NPCS = {};
 TEW.DATABASE.NPCS.SET = {
     GUSTAV_FONDLEBURGER: {
         name: "Gustav Fondleburger",
