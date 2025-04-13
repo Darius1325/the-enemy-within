@@ -1,11 +1,11 @@
-// === \$Begin file import
+// #region ============================== import ============================== //
 var Imported = Imported || {};
 Imported.TEW_Combat = true;
 var TEW = TEW || {};
 TEW.COMBAT = TEW.COMBAT || {};
-// === \$End file import
-// ====== //
-// === \$Begin file utils
+// #endregion =========================== import ============================== //
+// ============================== //
+// #region ============================== utils ============================== //
 //-----------------------------------------------------------------------------
 // Utilities
 // Retrieving Weapon info
@@ -179,9 +179,9 @@ TEW.COMBAT.getWeaponFromId = (weaponId) => {
     }
     return meleeWeapon;
 };
-// === \$End file utils
-// ====== //
-// === \$Begin file Game_Action
+// #endregion =========================== utils ============================== //
+// ============================== //
+// #region ============================== Game_Action ============================== //
 //-----------------------------------------------------------------------------
 // Game_Action
 // Applying action (damage)
@@ -250,9 +250,9 @@ Game_Action.prototype.makeDamageValue = function (target, critical) {
     value = Math.round(value);
     return value;
 };
-// === \$End file Game_Action
-// ====== //
-// === \$Begin file Sprite_BattlerTs
+// #endregion =========================== Game_Action ============================== //
+// ============================== //
+// #region ============================== Sprite_BattlerTs ============================== //
 //-----------------------------------------------------------------------------
 // Sprite_BattlerTs
 //
@@ -502,9 +502,9 @@ Sprite_BattlerTs.prototype.updateOther = function () {
         Sprite_Character.prototype.updateOther.call(this);
     }
 };
-// === \$End file Sprite_BattlerTs
-// ====== //
-// === \$Begin file Sprite_HpGauge
+// #endregion =========================== Sprite_BattlerTs ============================== //
+// ============================== //
+// #region ============================== Sprite_HpGauge ============================== //
 //-----------------------------------------------------------------------------
 // Sprite_HpGauge
 //
@@ -555,9 +555,9 @@ Sprite_HpGauge.prototype.drawGauge = function (x, y, width, rate, color1, color2
     this.bitmap.fillRect(x, y, width, 4, this.gaugeBackColor());
     this.bitmap.gradientFillRect(x, y, fillW, 4, color1, color2);
 };
-// === \$End file Sprite_HpGauge
-// ====== //
-// === \$Begin file TODO_TEW_Tactics_Basic
+// #endregion =========================== Sprite_HpGauge ============================== //
+// ============================== //
+// #region ============================== TODO_TEW_Tactics_Basic ============================== //
 var TacticsSystem = TacticsSystem || {};
 TacticsSystem.Parameters = PluginManager.parameters('TEW_Tactics_Basic');
 TacticsSystem.clearAll = true; // in game system
@@ -4267,9 +4267,9 @@ Window_BattleLog.prototype.showNormalAnimation = function (targets, animationId,
         TacticsSystem.Window_BattleLog_showNormalAnimation.call(this, targets, animationId, mirror);
     }
 };
-// === \$End file TODO_TEW_Tactics_Basic
-// ====== //
-// === \$Begin file Window_TacticsItem
+// #endregion =========================== TODO_TEW_Tactics_Basic ============================== //
+// ============================== //
+// #region ============================== Window_TacticsItem ============================== //
 //-----------------------------------------------------------------------------
 // Window_TacticsItem
 //
@@ -4296,9 +4296,9 @@ Window_TacticsItem.prototype.show = function () {
         BattleManager.refreshRedCells(action);
     }
 };
-// === \$End file Window_TacticsItem
-// ====== //
-// === \$Begin file Window_TacticsMap
+// #endregion =========================== Window_TacticsItem ============================== //
+// ============================== //
+// #region ============================== Window_TacticsMap ============================== //
 //-----------------------------------------------------------------------------
 // Window_TacticsMap
 //
@@ -4343,9 +4343,9 @@ Window_TacticsMap.prototype.addFormationCommand = function () {
 Window_TacticsMap.prototype.selectLast = function () {
     this.selectSymbol(Window_TacticsMap._lastCommandSymbol);
 };
-// === \$End file Window_TacticsMap
-// ====== //
-// === \$Begin file Window_TacticsSkill
+// #endregion =========================== Window_TacticsMap ============================== //
+// ============================== //
+// #region ============================== Window_TacticsSkill ============================== //
 //-----------------------------------------------------------------------------
 // Window_TacticsSkill
 //
@@ -4380,6 +4380,6 @@ Window_TacticsSkill.prototype.refreshRedCells = function () {
     action.setSkill(this.item().id);
     BattleManager.refreshRedCells(action);
 };
-// === \$End file Window_TacticsSkill
-// ====== //
+// #endregion =========================== Window_TacticsSkill ============================== //
+// ============================== //
 

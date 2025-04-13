@@ -1,12 +1,12 @@
-// === \$Begin file import
+// #region ============================== import ============================== //
 var Imported = Imported || {};
 Imported.TEW_Base = true;
 var TEW = TEW || {};
 TEW.DICE = TEW.DICE || {};
 TEW.CHARACTERS = TEW.CHARACTERS || {};
-// === \$End file import
-// ====== //
-// === \$Begin file properties
+// #endregion =========================== import ============================== //
+// ============================== //
+// #region ============================== properties ============================== //
 TEW.CHARACTERS.SET = {
     Cecile: 1,
     Cheplu: 2,
@@ -46,9 +46,9 @@ TEW.CHARACTERS.BASE_COMP_VALUES = TEW.DATABASE.COMPS.IDS.reduce((acc, compId) =>
     acc.push(TEW.DATABASE.COMPS.SET[compId].isBase ? 0 : -1);
     return acc;
 }, []);
-// === \$End file properties
-// ====== //
-// === \$Begin file Bitmap
+// #endregion =========================== properties ============================== //
+// ============================== //
+// #region ============================== Bitmap ============================== //
 // Bitmap
 TEW.DICE.DIE_10_POINTS = [
     [0, 22],
@@ -99,9 +99,9 @@ Bitmap.prototype.drawDie = function (x, size, value, edgeColor, fillColor) {
     context.restore();
     this._setDirty();
 };
-// === \$End file Bitmap
-// ====== //
-// === \$Begin file Game_Interpreter
+// #endregion =========================== Bitmap ============================== //
+// ============================== //
+// #region ============================== Game_Interpreter ============================== //
 // Game_Interpreter
 TEW.DICE.rollD100 = function () {
     return Math.floor(Math.random() * 99) + 1;
@@ -214,9 +214,9 @@ Game_Interpreter.prototype.opposedSkillTest = function (compIdPlayer, modifierPl
 // Scene_Class.prototype.refreshWindows = function() {
 //     this._diceWindow.refresh();
 // };
-// === \$End file Game_Interpreter
-// ====== //
-// === \$Begin file Game_Actor
+// #endregion =========================== Game_Interpreter ============================== //
+// ============================== //
+// #region ============================== Game_Actor ============================== //
 // Game_Actor
 Game_Actor.prototype.paramBase = function (paramId) {
     return this._paramBase[paramId];
@@ -224,9 +224,9 @@ Game_Actor.prototype.paramBase = function (paramId) {
 Game_Actor.prototype.paramPlus = function (paramId) {
     return Game_Battler.prototype.paramPlus.call(this, paramId);
 };
-// === \$End file Game_Actor
-// ====== //
-// === \$Begin file Game_BattlerBase
+// #endregion =========================== Game_Actor ============================== //
+// ============================== //
+// #region ============================== Game_BattlerBase ============================== //
 /*
 * Replaces the eight defaut character stats of RPG Maker with the eleven stats of Warhammer Fantasy.
 * Max Wounds : mhp
@@ -494,21 +494,21 @@ Game_BattlerBase.prototype.addAmmo = function (ammoId, quantity = 1) {
 Game_BattlerBase.prototype.hasAmmo = function (ammoId) {
     return this.ammo[ammoId] > 0;
 };
-// === \$End file Game_BattlerBase
-// ====== //
-// === \$Begin file Game_Interpreter
+// #endregion =========================== Game_BattlerBase ============================== //
+// ============================== //
+// #region ============================== Game_Interpreter ============================== //
 // Game_Interpreter
 Game_Interpreter.prototype.setBaseStat = function (playerName, statName, value) {
     const player = $gameActors._data[TEW.CHARACTERS.SET[playerName]];
     player._paramBase[TEW.CHARACTERS.STATS[statName]] = value;
 };
-// === \$End file Game_Interpreter
-// ====== //
-// === \$Begin file TextManager
+// #endregion =========================== Game_Interpreter ============================== //
+// ============================== //
+// #region ============================== TextManager ============================== //
 // Text
 TextManager.param = function (paramId) {
     return TEW.CHARACTERS.STATS_VERBOSE[paramId];
 };
-// === \$End file TextManager
-// ====== //
+// #endregion =========================== TextManager ============================== //
+// ============================== //
 

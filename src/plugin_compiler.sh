@@ -4,9 +4,6 @@ declare -A priorities
 declare -A file_list
 declare -A collected_content
 regex='\$PluginCompiler ([^ ]+\.js)( [0-9]+)?'
-begin_file_const='// === \$Begin file '
-end_file_const='// === \$End file '
-file_separator_const='// ====== //'
 
 # Translating Ts to Js
 tsc --project ./tsconfig.json
@@ -31,16 +28,19 @@ for file in "${sorted_files[@]}"; do
     output_file="${file_list[$file]}"
     started=0
     filename=$(basename "$file" .${file##*.})
+    begin_file_region="// #region ============================== $filename ============================== //"
+    end_file_region="// #endregion =========================== $filename ============================== //"
+    file_separator_const='// ============================== //'
     while IFS= read -r line || [[ -n $line ]]; do
         if [[ $started -eq 1 ]]; then
             collected_content["$output_file"]+="$line\n"
         elif [[ $line =~ \$StartCompilation ]]; then
-            collected_content["$output_file"]+="$begin_file_const$filename\n"
+            collected_content["$output_file"]+="$begin_file_region\n"
             started=1
         fi
     done < $file
     if [[ $started -eq 1 ]]; then
-        collected_content["$output_file"]+="$end_file_const$filename\n$file_separator_const\n"
+        collected_content["$output_file"]+="$end_file_region\n$file_separator_const\n"
     fi
 done
 

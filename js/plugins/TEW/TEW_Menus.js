@@ -1,11 +1,11 @@
-// === \$Begin file import
+// #region ============================== import ============================== //
 var Imported = Imported || {};
 Imported.TEW_Menus = true;
 var TEW = TEW || {};
 TEW.MENUS = TEW.MENUS || {};
-// === \$End file import
-// ====== //
-// === \$Begin file properties
+// #endregion =========================== import ============================== //
+// ============================== //
+// #region ============================== properties ============================== //
 TEW.MENU.COMMAND_NAMES = TEW.MENU.COMMAND_NAMES || {};
 TEW.MENU.COMMAND_NAMES[40] = "InventoryNextChar";
 TEW.MENU.COMMAND_NAMES[41] = "InventoryPreviousChar";
@@ -23,7 +23,7 @@ TEW.MENU.COMMAND_NAMES[52] = "Reload";
 TEW.MENU.COMMAND_NAMES[53] = "Equip";
 TEW.MENU.COMMAND_NAMES[54] = "Unequip";
 TEW.MENU.COMMAND_NAMES[55] = "Transfer";
-TEW.MENU.MENU_LINE_HEIGHT = 36;
+TEW.MENU.LINE_HEIGHT = 36;
 // TextManager
 // Override commands
 TextManager.command = function (commandId) {
@@ -59,15 +59,15 @@ Object.defineProperties(TextManager, {
     inventoryArmorUnequip: TextManager.getter('command', 54),
     inventoryArmorTransfer: TextManager.getter('command', 55)
 });
-// === \$End file properties
-// ====== //
-// === \$Begin file properties
+// #endregion =========================== properties ============================== //
+// ============================== //
+// #region ============================== properties ============================== //
 // Init COMMAND_NAMES
 TEW.MENU.COMMAND_NAMES[30] = "Stats";
 TEW.MENU.COMMAND_NAMES[31] = "Skills";
 TEW.MENU.COMMAND_NAMES[32] = "Talents";
 TEW.MENU.COMMAND_NAMES[33] = "Spells";
-TEW.MENU.MENU_LINE_HEIGHT = 36;
+TEW.MENU.LINE_HEIGHT = 36;
 // TextManager
 // Override commands
 TextManager.command = function (commandId) {
@@ -87,9 +87,9 @@ Object.defineProperties(TextManager, {
     statusTalents: TextManager.getter('command', 32),
     statusSpells: TextManager.getter('command', 33)
 });
-// === \$End file properties
-// ====== //
-// === \$Begin file Window_InventoryDetails
+// #endregion =========================== properties ============================== //
+// ============================== //
+// #region ============================== Window_InventoryDetails ============================== //
 //-----------------------------------------------------------------------------
 // Window_InventoryDetails
 //
@@ -174,9 +174,9 @@ Window_InventoryDetails.prototype.drawLine = function (y) {
     const lineSize = 2;
     this.contents.fillRect((this.contentsWidth() - lineWidth) / 2, y, lineWidth, lineSize, this.normalColor());
 };
-// === \$End file Window_InventoryDetails
-// ====== //
-// === \$Begin file Window_InventoryDetailsCommand
+// #endregion =========================== Window_InventoryDetails ============================== //
+// ============================== //
+// #region ============================== Window_InventoryDetailsCommand ============================== //
 //-----------------------------------------------------------------------------
 // Window_InventoryDetails
 //
@@ -200,9 +200,9 @@ Window_InventoryDetailsCommand.prototype.windowWidth = function () {
 Window_InventoryDetailsCommand.prototype.addCommand = function (name, symbol, enabled = true, ext = null) {
     this._list.push({ name: name, symbol: symbol, enabled: enabled, ext: ext });
 };
-// === \$End file Window_InventoryDetailsCommand
-// ====== //
-// === \$Begin file Window_InventoryList
+// #endregion =========================== Window_InventoryDetailsCommand ============================== //
+// ============================== //
+// #region ============================== Window_InventoryList ============================== //
 //-----------------------------------------------------------------------------
 // Window_InventoryList
 //
@@ -246,9 +246,9 @@ Window_InventoryList.prototype.maxItems = function () {
 };
 // Number of columns
 Window_InventoryList.prototype.maxCols = () => 1;
-// === \$End file Window_InventoryList
-// ====== //
-// === \$Begin file Window_InventoryAmmo
+// #endregion =========================== Window_InventoryList ============================== //
+// ============================== //
+// #region ============================== Window_InventoryAmmo ============================== //
 //-----------------------------------------------------------------------------
 // Window_InventoryInfo
 //
@@ -271,9 +271,9 @@ Window_InventoryAmmo.prototype.setActor = function (actor) {
         this.refresh();
     }
 };
-// === \$End file Window_InventoryAmmo
-// ====== //
-// === \$Begin file Window_InventoryArmorCommand
+// #endregion =========================== Window_InventoryAmmo ============================== //
+// ============================== //
+// #region ============================== Window_InventoryArmorCommand ============================== //
 //-----------------------------------------------------------------------------
 // Window_InventoryArmorCommand
 //
@@ -306,9 +306,9 @@ Window_InventoryArmorCommand.prototype.refreshCommand = function (actor, armorId
         Window_Selectable.prototype.refresh.call(this);
     }
 };
-// === \$End file Window_InventoryArmorCommand
-// ====== //
-// === \$Begin file Window_InventoryArmorDetails
+// #endregion =========================== Window_InventoryArmorCommand ============================== //
+// ============================== //
+// #region ============================== Window_InventoryArmorDetails ============================== //
 //-----------------------------------------------------------------------------
 // Window_InventoryArmorDetails
 //
@@ -347,9 +347,9 @@ Window_InventoryArmorDetails.prototype.drawDetails = function (armor) {
     // Description
     this.drawWrappedTextManually(armor[1].description, 0, 220, 24);
 };
-// === \$End file Window_InventoryArmorDetails
-// ====== //
-// === \$Begin file Window_InventoryArmors
+// #endregion =========================== Window_InventoryArmorDetails ============================== //
+// ============================== //
+// #region ============================== Window_InventoryArmors ============================== //
 //-----------------------------------------------------------------------------
 // Window_InventoryArmors
 //
@@ -388,7 +388,7 @@ Window_InventoryArmors.prototype.drawAllItems = function () {
 Window_InventoryArmors.prototype.drawItem = function (index) {
     const normalizedIndex = index - this.topIndex();
     const x = 48;
-    const y = normalizedIndex * TEW.MENU.MENU_LINE_HEIGHT;
+    const y = normalizedIndex * TEW.MENU.LINE_HEIGHT;
     const armor = this.armorFromIndex(index);
     if (armor) {
         const iconEquipped = this._actor.hasArmorEquipped(armor[0])
@@ -425,9 +425,9 @@ Window_InventoryArmors.prototype.processOk = function () {
         this.playBuzzerSound();
     }
 };
-// === \$End file Window_InventoryArmors
-// ====== //
-// === \$Begin file Window_InventoryInfo
+// #endregion =========================== Window_InventoryArmors ============================== //
+// ============================== //
+// #region ============================== Window_InventoryInfo ============================== //
 //-----------------------------------------------------------------------------
 // Window_InventoryInfo
 //
@@ -450,9 +450,9 @@ Window_InventoryInfo.prototype.setActor = function (actor) {
         this.refresh();
     }
 };
-// === \$End file Window_InventoryInfo
-// ====== //
-// === \$Begin file Window_InventoryItemCommand
+// #endregion =========================== Window_InventoryInfo ============================== //
+// ============================== //
+// #region ============================== Window_InventoryItemCommand ============================== //
 //-----------------------------------------------------------------------------
 // Window_InventoryItemCommand
 //
@@ -471,9 +471,9 @@ Window_InventoryItemCommand.prototype.makeCommandList = function () {
     this.addCommand(TextManager.inventoryItemUse, 'inventory_item_use');
     this.addCommand(TextManager.inventoryItemTransfer, 'inventory_item_transfer');
 };
-// === \$End file Window_InventoryItemCommand
-// ====== //
-// === \$Begin file Window_InventoryItemDetails
+// #endregion =========================== Window_InventoryItemCommand ============================== //
+// ============================== //
+// #region ============================== Window_InventoryItemDetails ============================== //
 //-----------------------------------------------------------------------------
 // Window_InventoryItemDetails
 //
@@ -512,9 +512,9 @@ Window_InventoryItemDetails.prototype.drawDetails = function (item) {
     // Description
     this.drawWrappedTextManually(item[1].description, 0, 220, 24);
 };
-// === \$End file Window_InventoryItemDetails
-// ====== //
-// === \$Begin file Window_InventoryItems
+// #endregion =========================== Window_InventoryItemDetails ============================== //
+// ============================== //
+// #region ============================== Window_InventoryItems ============================== //
 //-----------------------------------------------------------------------------
 // Window_InventoryItems
 //
@@ -549,7 +549,7 @@ Window_InventoryItems.prototype.drawAllItems = function () {
 Window_InventoryItems.prototype.drawItem = function (index) {
     const normalizedIndex = index - this.topIndex();
     const x = this._leftPadding; // padding
-    const y = normalizedIndex * TEW.MENU.MENU_LINE_HEIGHT;
+    const y = normalizedIndex * TEW.MENU.LINE_HEIGHT;
     const item = this.itemFromIndex(index);
     this.changeTextColor(this.systemColor());
     this.drawIcon(item[1].groupIcon, x, y);
@@ -586,9 +586,9 @@ Window_InventoryItems.prototype.processOk = function () {
         this.playBuzzerSound();
     }
 };
-// === \$End file Window_InventoryItems
-// ====== //
-// === \$Begin file Window_InventoryWeaponCommand
+// #endregion =========================== Window_InventoryItems ============================== //
+// ============================== //
+// #region ============================== Window_InventoryWeaponCommand ============================== //
 //-----------------------------------------------------------------------------
 // Window_InventoryWeaponCommand
 //
@@ -629,9 +629,9 @@ Window_InventoryWeaponCommand.prototype.refreshCommand = function (actor, weapon
         Window_Selectable.prototype.refresh.call(this);
     }
 };
-// === \$End file Window_InventoryWeaponCommand
-// ====== //
-// === \$Begin file Window_InventoryWeaponDetails
+// #endregion =========================== Window_InventoryWeaponCommand ============================== //
+// ============================== //
+// #region ============================== Window_InventoryWeaponDetails ============================== //
 //-----------------------------------------------------------------------------
 // Window_InventoryWeaponDetails
 //
@@ -670,9 +670,9 @@ Window_InventoryWeaponDetails.prototype.drawDetails = function (weapon) {
     // Description
     this.drawWrappedTextManually(weapon[1].description, 0, 220, 24);
 };
-// === \$End file Window_InventoryWeaponDetails
-// ====== //
-// === \$Begin file Window_InventoryWeapons
+// #endregion =========================== Window_InventoryWeaponDetails ============================== //
+// ============================== //
+// #region ============================== Window_InventoryWeapons ============================== //
 //-----------------------------------------------------------------------------
 // Window_InventoryWeapons
 //
@@ -728,7 +728,7 @@ Window_InventoryWeapons.prototype.drawAllItems = function () {
 Window_InventoryWeapons.prototype.drawItem = function (index) {
     const normalizedIndex = index - this.topIndex();
     const x = 48;
-    const y = normalizedIndex * TEW.MENU.MENU_LINE_HEIGHT;
+    const y = normalizedIndex * TEW.MENU.LINE_HEIGHT;
     const weapon = this.weaponFromIndex(index);
     if (weapon) {
         this.changeTextColor(this.systemColor());
@@ -825,9 +825,9 @@ Window_InventoryWeapons.prototype.processOk = function () {
 //     }
 // };
 Window_InventoryWeapons.prototype.updateHelp = () => { };
-// === \$End file Window_InventoryWeapons
-// ====== //
-// === \$Begin file Window_InventoryCommand
+// #endregion =========================== Window_InventoryWeapons ============================== //
+// ============================== //
+// #region ============================== Window_InventoryCommand ============================== //
 //-----------------------------------------------------------------------------
 // Window_InventoryCommand
 //
@@ -867,9 +867,9 @@ Window_InventoryCommand.prototype.cursorLeft = function (wrap) {
     Window_HorzCommand.prototype.cursorLeft.call(this, wrap);
     this.callHandler('left');
 };
-// === \$End file Window_InventoryCommand
-// ====== //
-// === \$Begin file Window_InventoryHelp
+// #endregion =========================== Window_InventoryCommand ============================== //
+// ============================== //
+// #region ============================== Window_InventoryHelp ============================== //
 //-----------------------------------------------------------------------------
 // Window_InventoryHelp
 //
@@ -923,9 +923,9 @@ Window_InventoryHelp.prototype.refresh = function () {
         this.drawIcon(icon.id, icon.x, icon.y);
     });
 };
-// === \$End file Window_InventoryHelp
-// ====== //
-// === \$Begin file Scene_Status
+// #endregion =========================== Window_InventoryHelp ============================== //
+// ============================== //
+// #region ============================== Scene_Status ============================== //
 //-----------------------------------------------------------------------------
 // Scene_Status (override)
 //
@@ -1081,15 +1081,15 @@ Scene_Status.prototype.activateStatusSpells = function () {
     this._spellsWindow.select(0);
     this._spellsWindow.refresh();
 };
-// === \$End file Scene_Status
-// ====== //
-// === \$Begin file Window_Status
+// #endregion =========================== Scene_Status ============================== //
+// ============================== //
+// #region ============================== Window_Status ============================== //
 // -----------------------------------------------------------------------------
 // Window_Status (override)
 //
 // Character info, stats, competences (skills), talents and spells window
 Window_Status.BASE_COMPETENCE_LINE_COUNT = Math.ceil(TEW.DATABASE.COMPS.BASE_ARRAY.length / 2);
-Window_Status.BASE_COMPETENCE_WINDOW_HEIGHT = (Window_Status.BASE_COMPETENCE_LINE_COUNT + 1) * TEW.MENU.MENU_LINE_HEIGHT;
+Window_Status.BASE_COMPETENCE_WINDOW_HEIGHT = (Window_Status.BASE_COMPETENCE_LINE_COUNT + 1) * TEW.MENU.LINE_HEIGHT;
 Window_Status.prototype.initialize = function () {
     Window_Selectable.prototype.initialize.call(this, 0, TEW.MENU.STATUS_WINDOW_TOPBAR_HEIGHT, Graphics.boxWidth, Graphics.boxHeight - TEW.MENU.STATUS_WINDOW_TOPBAR_HEIGHT);
     this._actor = null;
@@ -1114,9 +1114,9 @@ Window_Status.prototype.refresh = function () {
 Window_Status.prototype.maxItems = function () {
     return this._maxItems;
 };
-// === \$End file Window_Status
-// ====== //
-// === \$Begin file Window_StatusCommand
+// #endregion =========================== Window_Status ============================== //
+// ============================== //
+// #region ============================== Window_StatusCommand ============================== //
 //-----------------------------------------------------------------------------
 // Window_StatusCommand
 //
@@ -1155,9 +1155,9 @@ Window_StatusCommand.prototype.cursorLeft = function (wrap) {
     Window_HorzCommand.prototype.cursorLeft.call(this, wrap);
     this.callHandler('left');
 };
-// === \$End file Window_StatusCommand
-// ====== //
-// === \$Begin file Window_StatusCompetences
+// #endregion =========================== Window_StatusCommand ============================== //
+// ============================== //
+// #region ============================== Window_StatusCompetences ============================== //
 // -----------------------------------------------------------------------------
 // Window_StatusCompetences
 //
@@ -1193,7 +1193,7 @@ Window_StatusCompetences.prototype.drawAllItems = function () {
 Window_StatusCompetences.prototype.drawItem = function (index) {
     const normalizedIndex = index - this.topIndex();
     const x = index % 2 === 0 ? 48 : 432;
-    const y = Math.floor(normalizedIndex / 2) * TEW.MENU.MENU_LINE_HEIGHT;
+    const y = Math.floor(normalizedIndex / 2) * TEW.MENU.LINE_HEIGHT;
     const comp = this.competenceFromIndex(index);
     this.changeTextColor(this.systemColor());
     this.drawText(comp[1].name, x, y, 160);
@@ -1241,9 +1241,9 @@ Window_StatusCompetences.prototype.showHelpWindow = function () {
         this._helpWindow.refresh();
     }
 };
-// === \$End file Window_StatusCompetences
-// ====== //
-// === \$Begin file Window_StatusSpells
+// #endregion =========================== Window_StatusCompetences ============================== //
+// ============================== //
+// #region ============================== Window_StatusSpells ============================== //
 // -----------------------------------------------------------------------------
 // Window_StatusSpells
 //
@@ -1279,7 +1279,7 @@ Window_StatusSpells.prototype.drawAllItems = function () {
 Window_StatusSpells.prototype.drawItem = function (index) {
     const normalizedIndex = index - this.topIndex();
     const x = index % 2 === 0 ? 48 : 432;
-    const y = Math.floor(normalizedIndex / 2) * TEW.MENU.MENU_LINE_HEIGHT;
+    const y = Math.floor(normalizedIndex / 2) * TEW.MENU.LINE_HEIGHT;
     const spell = this.spellFromIndex(index);
     this.changeTextColor(this.systemColor());
     this.drawText(spell[1].name, x, y, 160);
@@ -1325,9 +1325,9 @@ Window_StatusSpells.prototype.showHelpWindow = function () {
     }
 };
 Window_StatusSpells.prototype.updateHelp = () => { };
-// === \$End file Window_StatusSpells
-// ====== //
-// === \$Begin file Window_StatusStats
+// #endregion =========================== Window_StatusSpells ============================== //
+// ============================== //
+// #region ============================== Window_StatusStats ============================== //
 // -----------------------------------------------------------------------------
 // Window_StatusStats
 //
@@ -1342,15 +1342,15 @@ Window_StatusStats.prototype.initialize = function () {
 };
 Window_StatusStats.prototype.drawAllItems = function () {
     this.drawCharacterInfo(1);
-    this.drawHorzLine(TEW.MENU.MENU_LINE_HEIGHT * 7);
-    this.drawStats(TEW.MENU.MENU_LINE_HEIGHT * 8);
+    this.drawHorzLine(TEW.MENU.LINE_HEIGHT * 7);
+    this.drawStats(TEW.MENU.LINE_HEIGHT * 8);
 };
 Window_StatusStats.prototype.drawCharacterInfo = function (y) {
     this.drawActorName(this._actor, 6, y);
     this.drawActorClass(this._actor, 192, y);
-    this.drawHorzLine(y + TEW.MENU.MENU_LINE_HEIGHT);
-    this.drawActorFace(this._actor, 12, y + TEW.MENU.MENU_LINE_HEIGHT * 2);
-    this.drawBasicInfo(204, y + TEW.MENU.MENU_LINE_HEIGHT * 2);
+    this.drawHorzLine(y + TEW.MENU.LINE_HEIGHT);
+    this.drawActorFace(this._actor, 12, y + TEW.MENU.LINE_HEIGHT * 2);
+    this.drawBasicInfo(204, y + TEW.MENU.LINE_HEIGHT * 2);
 };
 Window_StatusStats.prototype.drawStats = function (y) {
     this.drawParameters(48, y, 0);
@@ -1359,16 +1359,16 @@ Window_StatusStats.prototype.drawStats = function (y) {
 Window_StatusStats.prototype.drawParameters = function (x, y, offset) {
     for (var i = 0; i < 5; i++) {
         var paramId = i + offset + 1;
-        var y2 = y + TEW.MENU.MENU_LINE_HEIGHT * i;
+        var y2 = y + TEW.MENU.LINE_HEIGHT * i;
         this.changeTextColor(this.systemColor());
         this.drawText(TextManager.param(paramId), x, y2, 160);
         this.resetTextColor();
         this.drawText(this._actor.param(paramId), x + 160, y2, 60, 'right');
     }
 };
-// === \$End file Window_StatusStats
-// ====== //
-// === \$Begin file Window_StatusTalents
+// #endregion =========================== Window_StatusStats ============================== //
+// ============================== //
+// #region ============================== Window_StatusTalents ============================== //
 // -----------------------------------------------------------------------------
 // Window_StatusTalents
 //
@@ -1404,7 +1404,7 @@ Window_StatusTalents.prototype.drawAllItems = function () {
 Window_StatusTalents.prototype.drawItem = function (index) {
     const normalizedIndex = index - this.topIndex();
     const x = index % 2 === 0 ? 48 : 432;
-    const y = Math.floor(normalizedIndex / 2) * TEW.MENU.MENU_LINE_HEIGHT;
+    const y = Math.floor(normalizedIndex / 2) * TEW.MENU.LINE_HEIGHT;
     const talent = this.talentFromIndex(index);
     this.changeTextColor(this.systemColor());
     this.drawText(talent[1].name, x, y, 160);
@@ -1451,9 +1451,9 @@ Window_StatusTalents.prototype.showHelpWindow = function () {
     }
 };
 Window_StatusTalents.prototype.updateHelp = () => { };
-// === \$End file Window_StatusTalents
-// ====== //
-// === \$Begin file Window_Selectable
+// #endregion =========================== Window_StatusTalents ============================== //
+// ============================== //
+// #region ============================== Window_Selectable ============================== //
 //-----------------------------------------------------------------------------
 // Window_Selectable (override)
 //
@@ -1467,9 +1467,9 @@ Window_Selectable.prototype.setTopRow = function (row) {
         this.updateCursor();
     }
 };
-// === \$End file Window_Selectable
-// ====== //
-// === \$Begin file Scene_Equip
+// #endregion =========================== Window_Selectable ============================== //
+// ============================== //
+// #region ============================== Scene_Equip ============================== //
 //-----------------------------------------------------------------------------
 // Scene_Equip (override)
 //
@@ -1868,6 +1868,6 @@ Scene_Equip.prototype.transferArmor = function () {
     console.log("Transfer armor", this._armorsWindow.index());
     this._armorsCommandWindow.callHandler('cancel');
 };
-// === \$End file Scene_Equip
-// ====== //
+// #endregion =========================== Scene_Equip ============================== //
+// ============================== //
 

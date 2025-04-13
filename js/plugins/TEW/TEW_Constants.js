@@ -1,24 +1,29 @@
-// === \$Begin file import
+// #region ============================== import ============================== //
 var Imported = Imported || {};
 Imported.TEW_Constants = true;
 var TEW = TEW || {};
 TEW.DATABASE = TEW.DATABASE || {};
-// === \$End file import
-// ====== //
-// === \$Begin file TEW_Icons
+// #endregion =========================== import ============================== //
+// ============================== //
+// #region ============================== TEW_Icons ============================== //
 TEW.DATABASE.ICONS = {};
 TEW.DATABASE.ICONS.SET = {
-    // Item groups
+    // #region ====== ICON ITEM === //
     ITEM_CLOTHES: 154,
     ITEM_FOOD: 265,
     ITEM_TOOLS: 216,
     ITEM_BOOKS: 189,
     ITEM_DRUGS: 219,
-    // Item availability
+    // #endregion === ICON ITEM === //
+    // === //
+    // #region ====== ICON AVAILABILITY === //
     AVAILABILITY_COMMON: 89,
     AVAILABILITY_SCARCE: 88,
     AVAILABILITY_RARE: 87,
     AVAILABILITY_EXOTIC: 90,
+    // #endregion === AVAILABILITY === //
+    // === //
+    // #region ====== ICON WEAPON === //
     // Weapon Equipped
     EQUIPPED_MAIN_HAND: 28,
     EQUIPPED_SECOND_HAND: 29,
@@ -56,6 +61,9 @@ TEW.DATABASE.ICONS.SET = {
     WEAPON_STAFF: 350,
     WEAPON_BOMB: 351,
     WEAPON_SHIELD: 352,
+    // #endregion === WEAPON === //
+    // === //
+    // #region ====== ICON ARMOR === //
     // Armor equipped
     EQUIPPED_ARMOR: 30,
     // Armors
@@ -67,10 +75,11 @@ TEW.DATABASE.ICONS.SET = {
     ARMOR_HEAVY_LEGS_SLOT: 365,
     ARMOR_LIGHT_ARMS_SLOT: 366,
     ARMOR_HEAVY_ARMS_SLOT: 367,
+    // #endregion === ARMOR === //
 };
-// === \$End file TEW_Icons
-// ====== //
-// === \$Begin file Window_Dice
+// #endregion =========================== TEW_Icons ============================== //
+// ============================== //
+// #region ============================== Window_Dice ============================== //
 //---------------------------------------
 // Window_Dice
 //
@@ -101,17 +110,18 @@ Window_Dice.prototype.open = function () {
     this.refresh();
     Window_Base.prototype.open.call(this);
 };
-// === \$End file Window_Dice
-// ====== //
-// === \$Begin file TEW_Armors
+// #endregion =========================== Window_Dice ============================== //
+// ============================== //
+// #region ============================== TEW_Armors ============================== //
 TEW.DATABASE.ARMORS = {};
+// #region ====== ARMORS SET === //
 TEW.DATABASE.ARMORS.SET = {
     SOFT_KIT: {
         name: "Soft Kit",
         icon: TEW.DATABASE.ICONS.SET.ARMOR_LIGHT_BODY_SLOT,
         group: 0 /* ArmorGroup.SOFT_KIT */,
         groupLabel: "Soft Kit" /* ArmorGroupLabel.SOFT_KIT */,
-        price: "0/18/0",
+        price: 216,
         enc: 1,
         availability: 3 /* Availability.SCARCE */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
@@ -127,7 +137,7 @@ TEW.DATABASE.ARMORS.SET = {
         icon: TEW.DATABASE.ICONS.SET.ARMOR_HEAVY_BODY_SLOT,
         group: 0 /* ArmorGroup.SOFT_KIT */,
         groupLabel: "Soft Kit" /* ArmorGroupLabel.SOFT_KIT */,
-        price: "2/0/0",
+        price: 480,
         enc: 1,
         availability: 3 /* Availability.SCARCE */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
@@ -143,7 +153,7 @@ TEW.DATABASE.ARMORS.SET = {
         icon: TEW.DATABASE.ICONS.SET.ARMOR_LIGHT_BODY_SLOT,
         group: 1 /* ArmorGroup.BOILED_LEATHER */,
         groupLabel: "Boiled Leather" /* ArmorGroupLabel.BOILED_LEATHER */,
-        price: "0/12/0",
+        price: 144,
         enc: 1,
         availability: 0 /* Availability.COMMON */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
@@ -159,7 +169,7 @@ TEW.DATABASE.ARMORS.SET = {
         icon: TEW.DATABASE.ICONS.SET.ARMOR_LIGHT_BODY_SLOT,
         group: 1 /* ArmorGroup.BOILED_LEATHER */,
         groupLabel: "Boiled Leather" /* ArmorGroupLabel.BOILED_LEATHER */,
-        price: "0/10/0",
+        price: 120,
         enc: 1,
         availability: 0 /* Availability.COMMON */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
@@ -175,7 +185,7 @@ TEW.DATABASE.ARMORS.SET = {
         icon: TEW.DATABASE.ICONS.SET.ARMOR_LIGHT_LEGS_SLOT,
         group: 1 /* ArmorGroup.BOILED_LEATHER */,
         groupLabel: "Boiled Leather" /* ArmorGroupLabel.BOILED_LEATHER */,
-        price: "0/14/0",
+        price: 168,
         enc: 1,
         availability: 0 /* Availability.COMMON */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
@@ -191,7 +201,7 @@ TEW.DATABASE.ARMORS.SET = {
         icon: TEW.DATABASE.ICONS.SET.ARMOR_LIGHT_HEAD_SLOT,
         group: 1 /* ArmorGroup.BOILED_LEATHER */,
         groupLabel: "Boiled Leather" /* ArmorGroupLabel.BOILED_LEATHER */,
-        price: "0/8/0",
+        price: 96,
         enc: 0,
         availability: 0 /* Availability.COMMON */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
@@ -207,7 +217,7 @@ TEW.DATABASE.ARMORS.SET = {
         icon: TEW.DATABASE.ICONS.SET.ARMOR_HEAVY_LEGS_SLOT,
         group: 4 /* ArmorGroup.CHAINMAIL */,
         groupLabel: "Chainmail" /* ArmorGroupLabel.CHAINMAIL */,
-        price: "2/0/0",
+        price: 480,
         enc: 3,
         availability: 3 /* Availability.SCARCE */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
@@ -223,7 +233,7 @@ TEW.DATABASE.ARMORS.SET = {
         icon: TEW.DATABASE.ICONS.SET.ARMOR_HEAVY_BODY_SLOT,
         group: 4 /* ArmorGroup.CHAINMAIL */,
         groupLabel: "Chainmail" /* ArmorGroupLabel.CHAINMAIL */,
-        price: "3/0/0",
+        price: 720,
         enc: 4,
         availability: 0 /* Availability.COMMON */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
@@ -239,7 +249,7 @@ TEW.DATABASE.ARMORS.SET = {
         icon: TEW.DATABASE.ICONS.SET.ARMOR_HEAVY_HEAD_SLOT,
         group: 4 /* ArmorGroup.CHAINMAIL */,
         groupLabel: "Chainmail" /* ArmorGroupLabel.CHAINMAIL */,
-        price: "1/0/0",
+        price: 240,
         enc: 2,
         availability: 3 /* Availability.SCARCE */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
@@ -255,7 +265,7 @@ TEW.DATABASE.ARMORS.SET = {
         icon: TEW.DATABASE.ICONS.SET.ARMOR_HEAVY_BODY_SLOT,
         group: 4 /* ArmorGroup.CHAINMAIL */,
         groupLabel: "Chainmail" /* ArmorGroupLabel.CHAINMAIL */,
-        price: "2/0/0",
+        price: 480,
         enc: 3,
         availability: 3 /* Availability.SCARCE */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
@@ -271,7 +281,7 @@ TEW.DATABASE.ARMORS.SET = {
         icon: TEW.DATABASE.ICONS.SET.ARMOR_LIGHT_BODY_SLOT,
         group: 5 /* ArmorGroup.BRIGANDINE */,
         groupLabel: "Brigandine" /* ArmorGroupLabel.BRIGANDINE */,
-        price: "3/0/0",
+        price: 720,
         enc: 3,
         availability: 3 /* Availability.SCARCE */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
@@ -287,7 +297,7 @@ TEW.DATABASE.ARMORS.SET = {
         icon: TEW.DATABASE.ICONS.SET.ARMOR_LIGHT_BODY_SLOT,
         group: 5 /* ArmorGroup.BRIGANDINE */,
         groupLabel: "Brigandine" /* ArmorGroupLabel.BRIGANDINE */,
-        price: "2/0/0",
+        price: 480,
         enc: 2,
         availability: 3 /* Availability.SCARCE */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
@@ -303,7 +313,7 @@ TEW.DATABASE.ARMORS.SET = {
         icon: TEW.DATABASE.ICONS.SET.ARMOR_HEAVY_BODY_SLOT,
         group: 3 /* ArmorGroup.BREASTPLATE */,
         groupLabel: "Breastplate" /* ArmorGroupLabel.BREASTPLATE */,
-        price: "10/0/0",
+        price: 2400,
         enc: 3,
         availability: 3 /* Availability.SCARCE */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
@@ -319,7 +329,7 @@ TEW.DATABASE.ARMORS.SET = {
         icon: TEW.DATABASE.ICONS.SET.ARMOR_HEAVY_ARMS_SLOT,
         group: 2 /* ArmorGroup.PLATE */,
         groupLabel: "Plate" /* ArmorGroupLabel.PLATE */,
-        price: "8/0/0",
+        price: 1920,
         enc: 3,
         availability: 1 /* Availability.RARE */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_RARE,
@@ -335,7 +345,7 @@ TEW.DATABASE.ARMORS.SET = {
         icon: TEW.DATABASE.ICONS.SET.ARMOR_HEAVY_HEAD_SLOT,
         group: 2 /* ArmorGroup.PLATE */,
         groupLabel: "Plate" /* ArmorGroupLabel.PLATE */,
-        price: "2/0/0",
+        price: 480,
         enc: 1,
         availability: 0 /* Availability.COMMON */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
@@ -351,7 +361,7 @@ TEW.DATABASE.ARMORS.SET = {
         icon: TEW.DATABASE.ICONS.SET.ARMOR_HEAVY_LEGS_SLOT,
         group: 2 /* ArmorGroup.PLATE */,
         groupLabel: "Plate" /* ArmorGroupLabel.PLATE */,
-        price: "10/0/0",
+        price: 2400,
         enc: 3,
         availability: 1 /* Availability.RARE */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_RARE,
@@ -367,7 +377,7 @@ TEW.DATABASE.ARMORS.SET = {
         icon: TEW.DATABASE.ICONS.SET.ARMOR_HEAVY_HEAD_SLOT,
         group: 2 /* ArmorGroup.PLATE */,
         groupLabel: "Plate" /* ArmorGroupLabel.PLATE */,
-        price: "2/0/0",
+        price: 480,
         enc: 2,
         availability: 1 /* Availability.RARE */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_RARE,
@@ -383,7 +393,7 @@ TEW.DATABASE.ARMORS.SET = {
         icon: TEW.DATABASE.ICONS.SET.ARMOR_HEAVY_HEAD_SLOT,
         group: 2 /* ArmorGroup.PLATE */,
         groupLabel: "Plate" /* ArmorGroupLabel.PLATE */,
-        price: "3/0/0",
+        price: 720,
         enc: 2,
         availability: 1 /* Availability.RARE */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_RARE,
@@ -399,7 +409,7 @@ TEW.DATABASE.ARMORS.SET = {
         icon: TEW.DATABASE.ICONS.SET.ARMOR_HEAVY_HEAD_SLOT,
         group: 2 /* ArmorGroup.PLATE */,
         groupLabel: "Plate" /* ArmorGroupLabel.PLATE */,
-        price: "3/0/0",
+        price: 720,
         enc: 2,
         availability: 1 /* Availability.RARE */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_RARE,
@@ -415,7 +425,7 @@ TEW.DATABASE.ARMORS.SET = {
         icon: TEW.DATABASE.ICONS.SET.ARMOR_HEAVY_HEAD_SLOT,
         group: 2 /* ArmorGroup.PLATE */,
         groupLabel: "Plate" /* ArmorGroupLabel.PLATE */,
-        price: "4/0/0",
+        price: 960,
         enc: 2,
         availability: 1 /* Availability.RARE */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_RARE,
@@ -429,14 +439,22 @@ TEW.DATABASE.ARMORS.SET = {
         description: "The Sallet is typified by having heavy plates projecting over the neck to the back, and being combined with separate pieces, either a gorget or bevor, to provide protection to the throat, chin, and face. A wearer of a Sallet who takes a Critical Hit to the head will take 1 less Wound from the Critical Hit than they otherwise would."
     }
 };
-// TODO order in inventory ?
+// #endregion === ARMORS SET === //
+// === //
+// #region ====== ARMORS IDS === //
+// The IDs are the keys of the SET object
 TEW.DATABASE.ARMORS.IDS = Object.keys(TEW.DATABASE.ARMORS.SET).sort((a, b) => a.localeCompare(b));
-// Make an array based on the TEW.ARMORS object for easy access
+// #endregion === ARMORS IDS === //
+// === //
+// #region ====== ARMORS ARRAY === //
+// This is a 2D array, where the first element is the key and the second element is the value
 TEW.DATABASE.ARMORS.ARRAY = TEW.DATABASE.ARMORS.IDS.map((key) => [key, TEW.DATABASE.ARMORS.SET[key]]);
-// === \$End file TEW_Armors
-// ====== //
-// === \$Begin file TEW_Competences
+// #endregion === ARMORS ARRAY === //
+// #endregion =========================== TEW_Armors ============================== //
+// ============================== //
+// #region ============================== TEW_Competences ============================== //
 TEW.DATABASE.COMPS = {};
+// #region ====== COMPS SET === //
 TEW.DATABASE.COMPS.SET = {
     ANIMAL_CARE: {
         name: "Animal Care",
@@ -1109,7 +1127,15 @@ TEW.DATABASE.COMPS.SET = {
         isBase: false
     },
 };
+// #endregion === COMPS SET === //
+// === //
+// #region ====== COMPS IDS === //
+// The IDs are the keys of the SET object
 TEW.DATABASE.COMPS.IDS = Object.keys(TEW.DATABASE.COMPS.SET);
+// #endregion === COMPS IDS === //
+// === //
+// #region ====== COMPS ARRAYS === //
+// Those are 2 2D arrays, where the first element is the key and the second element is the value
 TEW.DATABASE.COMPS.BASE_ARRAY = Object.keys(TEW.DATABASE.COMPS.SET)
     .filter((comp) => TEW.DATABASE.COMPS.SET[comp].isBase)
     .sort((a, b) => a.localeCompare(b))
@@ -1118,14 +1144,16 @@ TEW.DATABASE.COMPS.ADVANCED_ARRAY = Object.keys(TEW.DATABASE.COMPS.SET)
     .filter((comp) => !TEW.DATABASE.COMPS.SET[comp].isBase)
     .sort((a, b) => a.localeCompare(b))
     .map(comp => [comp, TEW.DATABASE.COMPS.SET[comp]]);
-// === \$End file TEW_Competences
-// ====== //
-// === \$Begin file TEW_Npc
+// #endregion === COMPS ARRAYS === //
+// #endregion =========================== TEW_Competences ============================== //
+// ============================== //
+// #region ============================== TEW_Npc ============================== //
 TEW.DATABASE.NPCS = {};
+// #region ====== NPCS SET === //
 TEW.DATABASE.NPCS.SET = {
     GUSTAV_FONDLEBURGER: {
         name: "Gustav Fondleburger",
-        stats: [28, 32, 41, 38, 34, 35, 39, 29, 52],
+        stats: [28, 32, 31, 41, 38, 34, 35, 39, 29, 52],
         wounds: 13,
         move: 4,
         status: 4 /* Status.SILVER_2 */,
@@ -1320,10 +1348,12 @@ TEW.DATABASE.NPCS.SET = {
         prayers: {}
     }
 };
-// === \$End file TEW_Npc
-// ====== //
-// === \$Begin file TEW_Talents
+// #endregion === NPCS SET === //
+// #endregion =========================== TEW_Npc ============================== //
+// ============================== //
+// #region ============================== TEW_Talents ============================== //
 TEW.DATABASE.TALENTS = {};
+// #region ====== TALENTS SET === //
 TEW.DATABASE.TALENTS.SET = {
     ACCURATE_SHOT: {
         name: "Accurate Shot",
@@ -2336,21 +2366,30 @@ TEW.DATABASE.TALENTS.SET = {
         maxTaken: "will" /* Stat.WILL */
     }
 };
+// #endregion === TALENTS SET === //
+// === //
+// #region ====== TALENTS IDS === //
+// The IDs are the keys of the SET object
 TEW.DATABASE.TALENTS.IDS = Object.keys(TEW.DATABASE.TALENTS.SET);
+// #endregion === TALENTS IDS === //
+// #region ====== TALENTS ARRAY === //
+// This is a 2D array, where the first element is the key and the second element is the value
 TEW.DATABASE.TALENTS.ARRAY = Object.keys(TEW.DATABASE.TALENTS.SET)
     .sort((a, b) => a.localeCompare(b))
     .map(talent => [talent, TEW.DATABASE.TALENTS.SET[talent]]);
-// === \$End file TEW_Talents
-// ====== //
-// === \$Begin file TEW_Weapons
+// #endregion === TALENTS ARRAY === //
+// #endregion =========================== TEW_Talents ============================== //
+// ============================== //
+// #region ============================== TEW_Weapons ============================== //
 TEW.DATABASE.WEAPONS = {};
+// #region ====== WEAPONS MELEE SET === //
 TEW.DATABASE.WEAPONS.MELEE_SET = {
     AXE: {
         name: "Axe",
         icon: TEW.DATABASE.ICONS.SET.WEAPON_AXE,
         group: 0 /* WeaponGroup.BASIC */,
         groupLabel: "Basic" /* WeaponGroupLabel.BASIC */,
-        price: "0/10/0",
+        price: 120,
         enc: 1,
         availability: 0 /* Availability.COMMON */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
@@ -2365,7 +2404,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         icon: TEW.DATABASE.ICONS.SET.WEAPON_KNIFE,
         group: 0 /* WeaponGroup.BASIC */,
         groupLabel: "Basic" /* WeaponGroupLabel.BASIC */,
-        price: "0/16/0",
+        price: 192,
         enc: 0,
         availability: 3 /* Availability.SCARCE */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
@@ -2380,7 +2419,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         icon: TEW.DATABASE.ICONS.SET.WEAPON_MACE,
         group: 0 /* WeaponGroup.BASIC */,
         groupLabel: "Basic" /* WeaponGroupLabel.BASIC */,
-        price: "0/4/0",
+        price: 48,
         enc: 0,
         availability: 0 /* Availability.COMMON */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
@@ -2395,7 +2434,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         icon: TEW.DATABASE.ICONS.SET.WEAPON_KNIFE,
         group: 0 /* WeaponGroup.BASIC */,
         groupLabel: "Basic" /* WeaponGroupLabel.BASIC */,
-        price: "0/16/0",
+        price: 192,
         enc: 0,
         availability: 0 /* Availability.COMMON */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
@@ -2410,7 +2449,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         icon: TEW.DATABASE.ICONS.SET.WEAPON_PIPE,
         group: 0 /* WeaponGroup.BASIC */,
         groupLabel: "Basic" /* WeaponGroupLabel.BASIC */,
-        price: "0/0/0",
+        price: 0,
         enc: 1,
         availability: 0 /* Availability.COMMON */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
@@ -2425,7 +2464,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         icon: TEW.DATABASE.ICONS.SET.WEAPON_KNIFE,
         group: 0 /* WeaponGroup.BASIC */,
         groupLabel: "Basic" /* WeaponGroupLabel.BASIC */,
-        price: "0/8/0",
+        price: 96,
         enc: 0,
         availability: 0 /* Availability.COMMON */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
@@ -2440,7 +2479,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         icon: TEW.DATABASE.ICONS.SET.WEAPON_MACE,
         group: 0 /* WeaponGroup.BASIC */,
         groupLabel: "Basic" /* WeaponGroupLabel.BASIC */,
-        price: "0/15/0",
+        price: 180,
         enc: 1,
         availability: 0 /* Availability.COMMON */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
@@ -2455,7 +2494,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         icon: TEW.DATABASE.ICONS.SET.WEAPON_MACE,
         group: 0 /* WeaponGroup.BASIC */,
         groupLabel: "Basic" /* WeaponGroupLabel.BASIC */,
-        price: "0/15/0",
+        price: 180,
         enc: 1,
         availability: 3 /* Availability.SCARCE */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
@@ -2470,7 +2509,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         icon: TEW.DATABASE.ICONS.SET.WEAPON_SABER,
         group: 0 /* WeaponGroup.BASIC */,
         groupLabel: "Basic" /* WeaponGroupLabel.BASIC */,
-        price: "1/0/0",
+        price: 240,
         enc: 1,
         availability: 3 /* Availability.SCARCE */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
@@ -2485,7 +2524,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         icon: TEW.DATABASE.ICONS.SET.WEAPON_SWORD,
         group: 0 /* WeaponGroup.BASIC */,
         groupLabel: "Basic" /* WeaponGroupLabel.BASIC */,
-        price: "1/0/0",
+        price: 240,
         enc: 1,
         availability: 0 /* Availability.COMMON */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
@@ -2500,7 +2539,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         icon: TEW.DATABASE.ICONS.SET.WEAPON_MACE,
         group: 0 /* WeaponGroup.BASIC */,
         groupLabel: "Basic" /* WeaponGroupLabel.BASIC */,
-        price: "1/0/0",
+        price: 240,
         enc: 1,
         availability: 3 /* Availability.SCARCE */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
@@ -2515,7 +2554,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         icon: TEW.DATABASE.ICONS.SET.WEAPON_SHIELD,
         group: 0 /* WeaponGroup.BASIC */,
         groupLabel: "Basic" /* WeaponGroupLabel.BASIC */,
-        price: "0/18/2",
+        price: 218,
         enc: 0,
         availability: 0 /* Availability.COMMON */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
@@ -2530,7 +2569,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         icon: TEW.DATABASE.ICONS.SET.WEAPON_SHIELD,
         group: 0 /* WeaponGroup.BASIC */,
         groupLabel: "Basic" /* WeaponGroupLabel.BASIC */,
-        price: "2/0/0",
+        price: 480,
         enc: 1,
         availability: 0 /* Availability.COMMON */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
@@ -2545,7 +2584,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         icon: TEW.DATABASE.ICONS.SET.WEAPON_SHIELD,
         group: 0 /* WeaponGroup.BASIC */,
         groupLabel: "Basic" /* WeaponGroupLabel.BASIC */,
-        price: "3/0/0",
+        price: 720,
         enc: 3,
         availability: 0 /* Availability.COMMON */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
@@ -2560,7 +2599,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         icon: TEW.DATABASE.ICONS.SET.WEAPON_SHIELD,
         group: 0 /* WeaponGroup.BASIC */,
         groupLabel: "Basic" /* WeaponGroupLabel.BASIC */,
-        price: "3/15/0",
+        price: 900,
         enc: 4,
         availability: 1 /* Availability.RARE */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_RARE,
@@ -2575,7 +2614,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         icon: TEW.DATABASE.ICONS.SET.WEAPON_MACE,
         group: 1 /* WeaponGroup.CAVALRY */,
         groupLabel: "Cavalry" /* WeaponGroupLabel.CAVALRY */,
-        price: "3/0/0",
+        price: 720,
         enc: 3,
         availability: 3 /* Availability.SCARCE */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
@@ -2590,7 +2629,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         icon: TEW.DATABASE.ICONS.SET.WEAPON_SPEAR,
         group: 1 /* WeaponGroup.CAVALRY */,
         groupLabel: "Cavalry" /* WeaponGroupLabel.CAVALRY */,
-        price: "1/0/0",
+        price: 240,
         enc: 2,
         availability: 3 /* Availability.SCARCE */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
@@ -2605,7 +2644,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         icon: TEW.DATABASE.ICONS.SET.WEAPON_SPEAR,
         group: 1 /* WeaponGroup.CAVALRY */,
         groupLabel: "Cavalry" /* WeaponGroupLabel.CAVALRY */,
-        price: "1/0/0",
+        price: 240,
         enc: 3,
         availability: 1 /* Availability.RARE */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_RARE,
@@ -2620,7 +2659,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         icon: TEW.DATABASE.ICONS.SET.WEAPON_SABER,
         group: 1 /* WeaponGroup.CAVALRY */,
         groupLabel: "Cavalry" /* WeaponGroupLabel.CAVALRY */,
-        price: "0/10/0",
+        price: 120,
         enc: 1,
         availability: 3 /* Availability.SCARCE */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
@@ -2635,7 +2674,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         icon: TEW.DATABASE.ICONS.SET.WEAPON_FOIL,
         group: 2 /* WeaponGroup.FENCING */,
         groupLabel: "Fencing" /* WeaponGroupLabel.FENCING */,
-        price: "5/0/0",
+        price: 1200,
         enc: 1,
         availability: 3 /* Availability.SCARCE */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
@@ -2650,7 +2689,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         icon: TEW.DATABASE.ICONS.SET.WEAPON_RAPIER,
         group: 2 /* WeaponGroup.FENCING */,
         groupLabel: "Fencing" /* WeaponGroupLabel.FENCING */,
-        price: "5/0/0",
+        price: 1200,
         enc: 1,
         availability: 3 /* Availability.SCARCE */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
@@ -2665,7 +2704,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         icon: TEW.DATABASE.ICONS.SET.WEAPON_FOIL,
         group: 2 /* WeaponGroup.FENCING */,
         groupLabel: "Fencing" /* WeaponGroupLabel.FENCING */,
-        price: "4/0/0",
+        price: 960,
         enc: 1,
         availability: 3 /* Availability.SCARCE */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
@@ -2680,7 +2719,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         icon: TEW.DATABASE.ICONS.SET.WEAPON_GAUNTLET,
         group: 3 /* WeaponGroup.BRAWLING */,
         groupLabel: "Brawling" /* WeaponGroupLabel.BRAWLING */,
-        price: "2/0/0",
+        price: 480,
         enc: 1,
         availability: 3 /* Availability.SCARCE */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
@@ -2695,7 +2734,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         icon: TEW.DATABASE.ICONS.SET.WEAPON_SPEAR,
         group: 3 /* WeaponGroup.BRAWLING */,
         groupLabel: "Brawling" /* WeaponGroupLabel.BRAWLING */,
-        price: "0/6/0",
+        price: 72,
         enc: 0,
         availability: 0 /* Availability.COMMON */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
@@ -2710,7 +2749,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         icon: TEW.DATABASE.ICONS.SET.WEAPON_CHAINS,
         group: 3 /* WeaponGroup.BRAWLING */,
         groupLabel: "Brawling" /* WeaponGroupLabel.BRAWLING */,
-        price: "0/1/0",
+        price: 12,
         enc: 0,
         availability: 1 /* Availability.RARE */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_RARE,
@@ -2725,7 +2764,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         icon: TEW.DATABASE.ICONS.SET.WEAPON_GAUNTLET,
         group: 3 /* WeaponGroup.BRAWLING */,
         groupLabel: "Brawling" /* WeaponGroupLabel.BRAWLING */,
-        price: "0/0/0",
+        price: 0,
         enc: 0,
         availability: 0 /* Availability.COMMON */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
@@ -2740,7 +2779,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         icon: TEW.DATABASE.ICONS.SET.WEAPON_GAUNTLET,
         group: 3 /* WeaponGroup.BRAWLING */,
         groupLabel: "Brawling" /* WeaponGroupLabel.BRAWLING */,
-        price: "0/2/6",
+        price: 30,
         enc: 0,
         availability: 0 /* Availability.COMMON */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
@@ -2755,7 +2794,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         icon: TEW.DATABASE.ICONS.SET.WEAPON_CLAW,
         group: 3 /* WeaponGroup.BRAWLING */,
         groupLabel: "Brawling" /* WeaponGroupLabel.BRAWLING */,
-        price: "1/0/0",
+        price: 240,
         enc: 1,
         availability: 0 /* Availability.COMMON */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
@@ -2770,7 +2809,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         icon: TEW.DATABASE.ICONS.SET.WEAPON_GAUNTLET,
         group: 3 /* WeaponGroup.BRAWLING */,
         groupLabel: "Brawling" /* WeaponGroupLabel.BRAWLING */,
-        price: "0/1/0",
+        price: 12,
         enc: 0,
         availability: 1 /* Availability.RARE */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_RARE,
@@ -2785,7 +2824,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         icon: TEW.DATABASE.ICONS.SET.WEAPON_FLAIL,
         group: 4 /* WeaponGroup.FLAIL */,
         groupLabel: "Flail" /* WeaponGroupLabel.FLAIL */,
-        price: "0/10/0",
+        price: 120,
         enc: 1,
         availability: 0 /* Availability.COMMON */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
@@ -2800,7 +2839,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         icon: TEW.DATABASE.ICONS.SET.WEAPON_FLAIL,
         group: 4 /* WeaponGroup.FLAIL */,
         groupLabel: "Flail" /* WeaponGroupLabel.FLAIL */,
-        price: "2/0/0",
+        price: 480,
         enc: 1,
         availability: 3 /* Availability.SCARCE */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
@@ -2815,7 +2854,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         icon: TEW.DATABASE.ICONS.SET.WEAPON_FLAIL,
         group: 4 /* WeaponGroup.FLAIL */,
         groupLabel: "Flail" /* WeaponGroupLabel.FLAIL */,
-        price: "3/0/0",
+        price: 720,
         enc: 2,
         availability: 1 /* Availability.RARE */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_RARE,
@@ -2830,7 +2869,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         icon: TEW.DATABASE.ICONS.SET.WEAPON_CHAINS,
         group: 5 /* WeaponGroup.PARRY */,
         groupLabel: "Parry" /* WeaponGroupLabel.PARRY */,
-        price: "0/10/0",
+        price: 120,
         enc: 1,
         availability: 0 /* Availability.COMMON */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
@@ -2845,7 +2884,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         icon: TEW.DATABASE.ICONS.SET.WEAPON_KNIFE,
         group: 5 /* WeaponGroup.PARRY */,
         groupLabel: "Parry" /* WeaponGroupLabel.PARRY */,
-        price: "1/0/0",
+        price: 240,
         enc: 0,
         availability: 1 /* Availability.RARE */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_RARE,
@@ -2860,7 +2899,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         icon: TEW.DATABASE.ICONS.SET.WEAPON_BREAKER,
         group: 5 /* WeaponGroup.PARRY */,
         groupLabel: "Parry" /* WeaponGroupLabel.PARRY */,
-        price: "1/2/6",
+        price: 270,
         enc: 1,
         availability: 3 /* Availability.SCARCE */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
@@ -2875,7 +2914,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         icon: TEW.DATABASE.ICONS.SET.WEAPON_CHAINS,
         group: 5 /* WeaponGroup.PARRY */,
         groupLabel: "Parry" /* WeaponGroupLabel.PARRY */,
-        price: "0/10/0",
+        price: 120,
         enc: 1,
         availability: 1 /* Availability.RARE */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_RARE,
@@ -2890,7 +2929,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         icon: TEW.DATABASE.ICONS.SET.WEAPON_SPEAR,
         group: 6 /* WeaponGroup.POLE_ARM */,
         groupLabel: "Pole arm" /* WeaponGroupLabel.POLE_ARM */,
-        price: "2/0/0",
+        price: 480,
         enc: 2,
         availability: 3 /* Availability.SCARCE */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
@@ -2905,7 +2944,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         icon: TEW.DATABASE.ICONS.SET.WEAPON_SPEAR,
         group: 6 /* WeaponGroup.POLE_ARM */,
         groupLabel: "Pole arm" /* WeaponGroupLabel.POLE_ARM */,
-        price: "2/0/0",
+        price: 480,
         enc: 3,
         availability: 3 /* Availability.SCARCE */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
@@ -2920,7 +2959,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         icon: TEW.DATABASE.ICONS.SET.WEAPON_SPEAR,
         group: 6 /* WeaponGroup.POLE_ARM */,
         groupLabel: "Pole arm" /* WeaponGroupLabel.POLE_ARM */,
-        price: "2/0/0",
+        price: 480,
         enc: 3,
         availability: 0 /* Availability.COMMON */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
@@ -2935,7 +2974,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         icon: TEW.DATABASE.ICONS.SET.WEAPON_SPEAR,
         group: 6 /* WeaponGroup.POLE_ARM */,
         groupLabel: "Pole arm" /* WeaponGroupLabel.POLE_ARM */,
-        price: "2/0/0",
+        price: 480,
         enc: 3,
         availability: 1 /* Availability.RARE */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_RARE,
@@ -2950,7 +2989,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         icon: TEW.DATABASE.ICONS.SET.WEAPON_SPEAR,
         group: 6 /* WeaponGroup.POLE_ARM */,
         groupLabel: "Pole arm" /* WeaponGroupLabel.POLE_ARM */,
-        price: "2/0/0",
+        price: 480,
         enc: 3,
         availability: 3 /* Availability.SCARCE */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
@@ -2965,7 +3004,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         icon: TEW.DATABASE.ICONS.SET.WEAPON_AXE,
         group: 6 /* WeaponGroup.POLE_ARM */,
         groupLabel: "Pole arm" /* WeaponGroupLabel.POLE_ARM */,
-        price: "2/0/0",
+        price: 480,
         enc: 3,
         availability: 3 /* Availability.SCARCE */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
@@ -2980,7 +3019,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         icon: TEW.DATABASE.ICONS.SET.WEAPON_SPEAR,
         group: 6 /* WeaponGroup.POLE_ARM */,
         groupLabel: "Pole arm" /* WeaponGroupLabel.POLE_ARM */,
-        price: "0/15/0",
+        price: 180,
         enc: 2,
         availability: 0 /* Availability.COMMON */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
@@ -2995,7 +3034,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         icon: TEW.DATABASE.ICONS.SET.WEAPON_SPEAR,
         group: 6 /* WeaponGroup.POLE_ARM */,
         groupLabel: "Pole arm" /* WeaponGroupLabel.POLE_ARM */,
-        price: "0/18/0",
+        price: 216,
         enc: 4,
         availability: 1 /* Availability.RARE */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_RARE,
@@ -3010,7 +3049,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         icon: TEW.DATABASE.ICONS.SET.WEAPON_STAFF,
         group: 6 /* WeaponGroup.POLE_ARM */,
         groupLabel: "Pole arm" /* WeaponGroupLabel.POLE_ARM */,
-        price: "0/3/0",
+        price: 36,
         enc: 2,
         availability: 0 /* Availability.COMMON */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
@@ -3025,7 +3064,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         icon: TEW.DATABASE.ICONS.SET.WEAPON_STAFF,
         group: 6 /* WeaponGroup.POLE_ARM */,
         groupLabel: "Pole arm" /* WeaponGroupLabel.POLE_ARM */,
-        price: "15/0/0",
+        price: 3600,
         enc: 2,
         availability: 2 /* Availability.EXOTIC */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_EXOTIC,
@@ -3040,7 +3079,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         icon: TEW.DATABASE.ICONS.SET.WEAPON_SWORD,
         group: 7 /* WeaponGroup.TWO_HANDED */,
         groupLabel: "Two-Handed" /* WeaponGroupLabel.TWO_HANDED */,
-        price: "8/0/0",
+        price: 1920,
         enc: 3,
         availability: 3 /* Availability.SCARCE */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
@@ -3055,7 +3094,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         icon: TEW.DATABASE.ICONS.SET.WEAPON_AXE,
         group: 7 /* WeaponGroup.TWO_HANDED */,
         groupLabel: "Two-Handed" /* WeaponGroupLabel.TWO_HANDED */,
-        price: "4/0/0",
+        price: 960,
         enc: 3,
         availability: 0 /* Availability.COMMON */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
@@ -3070,7 +3109,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         icon: TEW.DATABASE.ICONS.SET.WEAPON_SWORD,
         group: 7 /* WeaponGroup.TWO_HANDED */,
         groupLabel: "Two-Handed" /* WeaponGroupLabel.TWO_HANDED */,
-        price: "30/0/0",
+        price: 7200,
         enc: 3,
         availability: 2 /* Availability.EXOTIC */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_EXOTIC,
@@ -3085,7 +3124,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         icon: TEW.DATABASE.ICONS.SET.WEAPON_MACE,
         group: 7 /* WeaponGroup.TWO_HANDED */,
         groupLabel: "Two-Handed" /* WeaponGroupLabel.TWO_HANDED */,
-        price: "0/9/0",
+        price: 108,
         enc: 3,
         availability: 0 /* Availability.COMMON */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
@@ -3100,7 +3139,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         icon: TEW.DATABASE.ICONS.SET.WEAPON_MACE,
         group: 7 /* WeaponGroup.TWO_HANDED */,
         groupLabel: "Two-Handed" /* WeaponGroupLabel.TWO_HANDED */,
-        price: "3/0/0",
+        price: 720,
         enc: 3,
         availability: 0 /* Availability.COMMON */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
@@ -3115,7 +3154,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         icon: TEW.DATABASE.ICONS.SET.WEAPON_SWORD,
         group: 7 /* WeaponGroup.TWO_HANDED */,
         groupLabel: "Two-Handed" /* WeaponGroupLabel.TWO_HANDED */,
-        price: "10/0/0",
+        price: 2400,
         enc: 3,
         availability: 3 /* Availability.SCARCE */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
@@ -3126,6 +3165,9 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         description: "empty"
     }
 };
+// #endregion === WEAPONS MELEE SET === //
+// === //
+// #region ====== WEAPONS RANGED SET === //
 TEW.DATABASE.WEAPONS.RANGED_SET = {
     ELF_BOW: {
         name: "Elf Bow",
@@ -3133,7 +3175,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         group: 8 /* WeaponGroup.BOW */,
         groupLabel: "Bow" /* WeaponGroupLabel.BOW */,
         twoHanded: true,
-        price: "10/0/0",
+        price: 2400,
         enc: 2,
         availability: 2 /* Availability.EXOTIC */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_EXOTIC,
@@ -3149,7 +3191,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         group: 8 /* WeaponGroup.BOW */,
         groupLabel: "Bow" /* WeaponGroupLabel.BOW */,
         twoHanded: true,
-        price: "5/0/0",
+        price: 1200,
         enc: 3,
         availability: 3 /* Availability.SCARCE */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
@@ -3160,12 +3202,12 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         description: "empty"
     },
     BOW: {
-        name: "Bow" /* WeaponGroupLabel.BOW */,
+        name: "Bow",
         icon: TEW.DATABASE.ICONS.SET.WEAPON_BOW,
         group: 8 /* WeaponGroup.BOW */,
         groupLabel: "Bow" /* WeaponGroupLabel.BOW */,
         twoHanded: true,
-        price: "4/0/0",
+        price: 960,
         enc: 2,
         availability: 0 /* Availability.COMMON */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
@@ -3181,7 +3223,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         group: 8 /* WeaponGroup.BOW */,
         groupLabel: "Bow" /* WeaponGroupLabel.BOW */,
         twoHanded: true,
-        price: "3/0/0",
+        price: 720,
         enc: 1,
         availability: 0 /* Availability.COMMON */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
@@ -3197,7 +3239,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         group: 9 /* WeaponGroup.CROSSBOW */,
         groupLabel: "Crossbow" /* WeaponGroupLabel.CROSSBOW */,
         twoHanded: false,
-        price: "6/0/0",
+        price: 1440,
         enc: 0,
         availability: 3 /* Availability.SCARCE */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
@@ -3213,7 +3255,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         group: 9 /* WeaponGroup.CROSSBOW */,
         groupLabel: "Crossbow" /* WeaponGroupLabel.CROSSBOW */,
         twoHanded: true,
-        price: "7/0/0",
+        price: 1680,
         enc: 3,
         availability: 1 /* Availability.RARE */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_RARE,
@@ -3224,12 +3266,12 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         description: "empty"
     },
     CROSSBOW: {
-        name: "Crossbow" /* WeaponGroupLabel.CROSSBOW */,
+        name: "Crossbow",
         icon: TEW.DATABASE.ICONS.SET.WEAPON_CROSSBOW,
         group: 9 /* WeaponGroup.CROSSBOW */,
         groupLabel: "Crossbow" /* WeaponGroupLabel.CROSSBOW */,
         twoHanded: true,
-        price: "5/0/0",
+        price: 1200,
         enc: 2,
         availability: 0 /* Availability.COMMON */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
@@ -3245,7 +3287,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         group: 10 /* WeaponGroup.ENTANGLING */,
         groupLabel: "Entangling" /* WeaponGroupLabel.ENTANGLING */,
         twoHanded: false,
-        price: "0/6/0",
+        price: 72,
         enc: 0,
         availability: 0 /* Availability.COMMON */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
@@ -3261,7 +3303,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         group: 10 /* WeaponGroup.ENTANGLING */,
         groupLabel: "Entangling" /* WeaponGroupLabel.ENTANGLING */,
         twoHanded: false,
-        price: "0/5/0",
+        price: 60,
         enc: 0,
         availability: 0 /* Availability.COMMON */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
@@ -3277,7 +3319,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         group: 11 /* WeaponGroup.SLING */,
         groupLabel: "Sling" /* WeaponGroupLabel.SLING */,
         twoHanded: false,
-        price: "0/1/0",
+        price: 12,
         enc: 0,
         availability: 0 /* Availability.COMMON */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
@@ -3293,7 +3335,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         group: 11 /* WeaponGroup.SLING */,
         groupLabel: "Sling" /* WeaponGroupLabel.SLING */,
         twoHanded: true,
-        price: "0/4/0",
+        price: 48,
         enc: 2,
         availability: 3 /* Availability.SCARCE */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
@@ -3309,7 +3351,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         group: 12 /* WeaponGroup.THROWING */,
         groupLabel: "Throwing" /* WeaponGroupLabel.THROWING */,
         twoHanded: false,
-        price: "0/1/0",
+        price: 12,
         enc: 0,
         availability: 1 /* Availability.RARE */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_RARE,
@@ -3325,7 +3367,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         group: 12 /* WeaponGroup.THROWING */,
         groupLabel: "Throwing" /* WeaponGroupLabel.THROWING */,
         twoHanded: false,
-        price: "0/2/0",
+        price: 24,
         enc: 0,
         availability: 3 /* Availability.SCARCE */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
@@ -3341,7 +3383,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         group: 12 /* WeaponGroup.THROWING */,
         groupLabel: "Throwing" /* WeaponGroupLabel.THROWING */,
         twoHanded: false,
-        price: "0/10/6",
+        price: 126,
         enc: 1,
         availability: 3 /* Availability.SCARCE */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
@@ -3357,7 +3399,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         group: 12 /* WeaponGroup.THROWING */,
         groupLabel: "Throwing" /* WeaponGroupLabel.THROWING */,
         twoHanded: false,
-        price: "0/0/0",
+        price: 0,
         enc: 0,
         availability: 0 /* Availability.COMMON */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
@@ -3373,7 +3415,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         group: 12 /* WeaponGroup.THROWING */,
         groupLabel: "Throwing" /* WeaponGroupLabel.THROWING */,
         twoHanded: false,
-        price: "1/0/0",
+        price: 240,
         enc: 1,
         availability: 0 /* Availability.COMMON */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
@@ -3389,7 +3431,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         group: 12 /* WeaponGroup.THROWING */,
         groupLabel: "Throwing" /* WeaponGroupLabel.THROWING */,
         twoHanded: false,
-        price: "0/18/0",
+        price: 216,
         enc: 0,
         availability: 0 /* Availability.COMMON */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
@@ -3405,7 +3447,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         group: 13 /* WeaponGroup.EXPLOSIVES */,
         groupLabel: "Explosives" /* WeaponGroupLabel.EXPLOSIVES */,
         twoHanded: false,
-        price: "3/0/0",
+        price: 720,
         enc: 0,
         availability: 1 /* Availability.RARE */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_RARE,
@@ -3421,7 +3463,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         group: 13 /* WeaponGroup.EXPLOSIVES */,
         groupLabel: "Explosives" /* WeaponGroupLabel.EXPLOSIVES */,
         twoHanded: false,
-        price: "1/0/0",
+        price: 240,
         enc: 0,
         availability: 3 /* Availability.SCARCE */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
@@ -3437,7 +3479,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         group: 14 /* WeaponGroup.BLACKPOWDER */,
         groupLabel: "Blackpowder" /* WeaponGroupLabel.BLACKPOWDER */,
         twoHanded: true,
-        price: "2/0/0",
+        price: 480,
         enc: 1,
         availability: 3 /* Availability.SCARCE */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
@@ -3453,7 +3495,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         group: 14 /* WeaponGroup.BLACKPOWDER */,
         groupLabel: "Blackpowder" /* WeaponGroupLabel.BLACKPOWDER */,
         twoHanded: true,
-        price: "100/0/0",
+        price: 24000,
         enc: 3,
         availability: 2 /* Availability.EXOTIC */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_EXOTIC,
@@ -3469,7 +3511,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         group: 14 /* WeaponGroup.BLACKPOWDER */,
         groupLabel: "Blackpowder" /* WeaponGroupLabel.BLACKPOWDER */,
         twoHanded: true,
-        price: "4/0/0",
+        price: 960,
         enc: 2,
         availability: 3 /* Availability.SCARCE */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
@@ -3485,7 +3527,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         group: 14 /* WeaponGroup.BLACKPOWDER */,
         groupLabel: "Blackpowder" /* WeaponGroupLabel.BLACKPOWDER */,
         twoHanded: false,
-        price: "8/0/0",
+        price: 1920,
         enc: 0,
         availability: 1 /* Availability.RARE */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_RARE,
@@ -3501,7 +3543,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         group: 14 /* WeaponGroup.BLACKPOWDER */,
         groupLabel: "Blackpowder" /* WeaponGroupLabel.BLACKPOWDER */,
         twoHanded: true,
-        price: "2/0/0",
+        price: 480,
         enc: 2,
         availability: 1 /* Availability.RARE */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_RARE,
@@ -3517,7 +3559,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         group: 14 /* WeaponGroup.BLACKPOWDER */,
         groupLabel: "Blackpowder" /* WeaponGroupLabel.BLACKPOWDER */,
         twoHanded: true,
-        price: "1/0/0",
+        price: 240,
         enc: 1,
         availability: 1 /* Availability.RARE */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_RARE,
@@ -3533,7 +3575,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         group: 14 /* WeaponGroup.BLACKPOWDER */,
         groupLabel: "Blackpowder" /* WeaponGroupLabel.BLACKPOWDER */,
         twoHanded: true,
-        price: "5/0/0",
+        price: 1200,
         enc: 3,
         availability: 2 /* Availability.EXOTIC */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_EXOTIC,
@@ -3549,7 +3591,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         group: 14 /* WeaponGroup.BLACKPOWDER */,
         groupLabel: "Blackpowder" /* WeaponGroupLabel.BLACKPOWDER */,
         twoHanded: true,
-        price: "7/0/0",
+        price: 1680,
         enc: 3,
         availability: 2 /* Availability.EXOTIC */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_EXOTIC,
@@ -3565,7 +3607,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         group: 14 /* WeaponGroup.BLACKPOWDER */,
         groupLabel: "Blackpowder" /* WeaponGroupLabel.BLACKPOWDER */,
         twoHanded: false,
-        price: "10/0/0",
+        price: 2400,
         enc: 1,
         availability: 2 /* Availability.EXOTIC */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_EXOTIC,
@@ -3581,7 +3623,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         group: 14 /* WeaponGroup.BLACKPOWDER */,
         groupLabel: "Blackpowder" /* WeaponGroupLabel.BLACKPOWDER */,
         twoHanded: true,
-        price: "8/0/0",
+        price: 1920,
         enc: 1,
         availability: 2 /* Availability.EXOTIC */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_EXOTIC,
@@ -3597,7 +3639,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         group: 14 /* WeaponGroup.BLACKPOWDER */,
         groupLabel: "Blackpowder" /* WeaponGroupLabel.BLACKPOWDER */,
         twoHanded: true,
-        price: "10/0/0",
+        price: 2400,
         enc: 3,
         availability: 2 /* Availability.EXOTIC */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_EXOTIC,
@@ -3613,7 +3655,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         group: 15 /* WeaponGroup.ENGINEERING */,
         groupLabel: "Engineering" /* WeaponGroupLabel.ENGINEERING */,
         twoHanded: true,
-        price: "10/0/0",
+        price: 2400,
         enc: 3,
         availability: 1 /* Availability.RARE */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_RARE,
@@ -3629,7 +3671,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         group: 15 /* WeaponGroup.ENGINEERING */,
         groupLabel: "Engineering" /* WeaponGroupLabel.ENGINEERING */,
         twoHanded: false,
-        price: "15/0/0",
+        price: 3600,
         enc: 1,
         availability: 1 /* Availability.RARE */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_RARE,
@@ -3645,7 +3687,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         group: 15 /* WeaponGroup.ENGINEERING */,
         groupLabel: "Engineering" /* WeaponGroupLabel.ENGINEERING */,
         twoHanded: true,
-        price: "50/0/0",
+        price: 12000,
         enc: 3,
         availability: 2 /* Availability.EXOTIC */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_EXOTIC,
@@ -3661,7 +3703,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         group: 15 /* WeaponGroup.ENGINEERING */,
         groupLabel: "Engineering" /* WeaponGroupLabel.ENGINEERING */,
         twoHanded: false,
-        price: "15/0/0",
+        price: 3600,
         enc: 3,
         availability: 2 /* Availability.EXOTIC */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_EXOTIC,
@@ -3672,6 +3714,9 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         description: "empty"
     }
 };
+// #endregion === WEAPONS RANGED SET === //
+// === //
+// #region ====== WEAPONS AMMO SET === //
 TEW.DATABASE.WEAPONS.AMMO_SET = {
     ARROW: {
         name: "Arrow",
@@ -3679,7 +3724,7 @@ TEW.DATABASE.WEAPONS.AMMO_SET = {
         group: 8 /* WeaponGroup.BOW */,
         groupLabel: "Bow" /* WeaponGroupLabel.BOW */,
         ammountSold: 12,
-        price: "0/5/0",
+        price: 60,
         availability: 0 /* Availability.COMMON */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
         range: "+0",
@@ -3693,7 +3738,7 @@ TEW.DATABASE.WEAPONS.AMMO_SET = {
         group: 8 /* WeaponGroup.BOW */,
         groupLabel: "Bow" /* WeaponGroupLabel.BOW */,
         ammountSold: 12,
-        price: "0/8/0",
+        price: 96,
         availability: 3 /* Availability.SCARCE */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
         range: "+0",
@@ -3707,7 +3752,7 @@ TEW.DATABASE.WEAPONS.AMMO_SET = {
         group: 8 /* WeaponGroup.BOW */,
         groupLabel: "Bow" /* WeaponGroupLabel.BOW */,
         ammountSold: 12,
-        price: "0/8/0",
+        price: 96,
         availability: 3 /* Availability.SCARCE */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
         range: "+0",
@@ -3721,7 +3766,7 @@ TEW.DATABASE.WEAPONS.AMMO_SET = {
         group: 8 /* WeaponGroup.BOW */,
         groupLabel: "Bow" /* WeaponGroupLabel.BOW */,
         ammountSold: 1,
-        price: "0/6/0",
+        price: 72,
         availability: 2 /* Availability.EXOTIC */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_EXOTIC,
         range: "+50",
@@ -3735,7 +3780,7 @@ TEW.DATABASE.WEAPONS.AMMO_SET = {
         group: 8 /* WeaponGroup.BOW */,
         groupLabel: "Bow" /* WeaponGroupLabel.BOW */,
         ammountSold: 1,
-        price: "0/0/0",
+        price: 0,
         availability: 0 /* Availability.COMMON */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
         range: "/2",
@@ -3749,7 +3794,7 @@ TEW.DATABASE.WEAPONS.AMMO_SET = {
         group: 9 /* WeaponGroup.CROSSBOW */,
         groupLabel: "Crossbow" /* WeaponGroupLabel.CROSSBOW */,
         ammountSold: 12,
-        price: "0/5/0",
+        price: 60,
         availability: 0 /* Availability.COMMON */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
         range: "+0",
@@ -3763,7 +3808,7 @@ TEW.DATABASE.WEAPONS.AMMO_SET = {
         group: 11 /* WeaponGroup.SLING */,
         groupLabel: "Sling" /* WeaponGroupLabel.SLING */,
         ammountSold: 12,
-        price: "0/0/4",
+        price: 4,
         availability: 0 /* Availability.COMMON */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
         range: "-10",
@@ -3777,7 +3822,7 @@ TEW.DATABASE.WEAPONS.AMMO_SET = {
         group: 11 /* WeaponGroup.SLING */,
         groupLabel: "Sling" /* WeaponGroupLabel.SLING */,
         ammountSold: 1,
-        price: "0/0/0",
+        price: 0,
         availability: 3 /* Availability.SCARCE */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
         range: "-10",
@@ -3791,7 +3836,7 @@ TEW.DATABASE.WEAPONS.AMMO_SET = {
         group: 11 /* WeaponGroup.SLING */,
         groupLabel: "Sling" /* WeaponGroupLabel.SLING */,
         ammountSold: 12,
-        price: "0/0/2",
+        price: 2,
         availability: 0 /* Availability.COMMON */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
         range: "+0",
@@ -3805,7 +3850,7 @@ TEW.DATABASE.WEAPONS.AMMO_SET = {
         group: 14 /* WeaponGroup.BLACKPOWDER */,
         groupLabel: "Blackpowder" /* WeaponGroupLabel.BLACKPOWDER */,
         ammountSold: 12,
-        price: "0/3/3",
+        price: 39,
         availability: 0 /* Availability.COMMON */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
         range: "+0",
@@ -3819,7 +3864,7 @@ TEW.DATABASE.WEAPONS.AMMO_SET = {
         group: 14 /* WeaponGroup.BLACKPOWDER */,
         groupLabel: "Blackpowder" /* WeaponGroupLabel.BLACKPOWDER */,
         ammountSold: 12,
-        price: "0/5/0",
+        price: 60,
         availability: 3 /* Availability.SCARCE */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
         range: "+0",
@@ -3833,7 +3878,7 @@ TEW.DATABASE.WEAPONS.AMMO_SET = {
         group: 14 /* WeaponGroup.BLACKPOWDER */,
         groupLabel: "Blackpowder" /* WeaponGroupLabel.BLACKPOWDER */,
         ammountSold: 12,
-        price: "1/0/0",
+        price: 240,
         availability: 2 /* Availability.EXOTIC */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_EXOTIC,
         range: "+10",
@@ -3847,7 +3892,7 @@ TEW.DATABASE.WEAPONS.AMMO_SET = {
         group: 14 /* WeaponGroup.BLACKPOWDER */,
         groupLabel: "Blackpowder" /* WeaponGroupLabel.BLACKPOWDER */,
         ammountSold: 1,
-        price: "0/3/0",
+        price: 36,
         availability: 0 /* Availability.COMMON */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
         range: "+0",
@@ -3861,7 +3906,7 @@ TEW.DATABASE.WEAPONS.AMMO_SET = {
         group: 14 /* WeaponGroup.BLACKPOWDER */,
         groupLabel: "Blackpowder" /* WeaponGroupLabel.BLACKPOWDER */,
         ammountSold: 1,
-        price: "0/0/3",
+        price: 3,
         availability: 0 /* Availability.COMMON */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
         range: "/2",
@@ -3875,7 +3920,7 @@ TEW.DATABASE.WEAPONS.AMMO_SET = {
         group: 14 /* WeaponGroup.BLACKPOWDER */,
         groupLabel: "Blackpowder" /* WeaponGroupLabel.BLACKPOWDER */,
         ammountSold: 12,
-        price: "0/3/3",
+        price: 39,
         availability: 0 /* Availability.COMMON */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
         range: "+0",
@@ -3889,7 +3934,7 @@ TEW.DATABASE.WEAPONS.AMMO_SET = {
         group: 14 /* WeaponGroup.BLACKPOWDER */,
         groupLabel: "Blackpowder" /* WeaponGroupLabel.BLACKPOWDER */,
         ammountSold: 12,
-        price: "0/2/0",
+        price: 24,
         availability: 0 /* Availability.COMMON */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
         range: "/2",
@@ -3903,7 +3948,7 @@ TEW.DATABASE.WEAPONS.AMMO_SET = {
         group: 14 /* WeaponGroup.BLACKPOWDER */,
         groupLabel: "Blackpowder" /* WeaponGroupLabel.BLACKPOWDER */,
         ammountSold: 12,
-        price: "1/0/0",
+        price: 240,
         availability: 3 /* Availability.SCARCE */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
         range: "+0",
@@ -3912,11 +3957,14 @@ TEW.DATABASE.WEAPONS.AMMO_SET = {
         description: "empty"
     }
 };
+// #endregion === WEAPONS AMMO SET === //
+// === //
+// #region ====== WEAPONS IDS === //
+// The IDs are the keys of the SET objects MELE_SET, RANGED_SET
 TEW.DATABASE.WEAPONS.IDS = Object.keys(TEW.DATABASE.WEAPONS.MELEE_SET)
     .concat(Object.keys(TEW.DATABASE.WEAPONS.RANGED_SET))
     .sort((a, b) => a.localeCompare(b));
-TEW.DATABASE.WEAPONS.ARRAY = TEW.DATABASE.WEAPONS.IDS
-    .map((key) => [key, TEW.DATABASE.WEAPONS.MELEE_SET[key] || TEW.DATABASE.WEAPONS.RANGED_SET[key]]);
+// Those are the IDs of the groups
 TEW.DATABASE.WEAPONS.GROUP_IDS = [
     "BASIC",
     "CAVALRY",
@@ -3935,6 +3983,13 @@ TEW.DATABASE.WEAPONS.GROUP_IDS = [
     "BLACKPOWDER",
     "ENGINEERING"
 ];
-// === \$End file TEW_Weapons
-// ====== //
+// #endregion === WEAPONS IDS === //
+// === //
+// #region ====== WEAPONS ARRAY === //
+// This is a 2D array, where the first element is the key and the second element is the value
+TEW.DATABASE.WEAPONS.ARRAY = TEW.DATABASE.WEAPONS.IDS
+    .map((key) => [key, TEW.DATABASE.WEAPONS.MELEE_SET[key] || TEW.DATABASE.WEAPONS.RANGED_SET[key]]);
+// #endregion === WEAPONS ARRAY === //
+// #endregion =========================== TEW_Weapons ============================== //
+// ============================== //
 
