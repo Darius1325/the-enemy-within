@@ -46,7 +46,7 @@ Window_StatusSpells.prototype.drawAllItems = function() {
 Window_StatusSpells.prototype.drawItem = function(index: number) {
     const normalizedIndex = index - this.topIndex();
     const x = index % 2 === 0 ? 48 : 432;
-    const y = Math.floor(normalizedIndex / 2) * TEW.MENU.MENU_LINE_HEIGHT;
+    const y = Math.floor(normalizedIndex / 2) * TEW.MENU.LINE_HEIGHT;
 
     const spell = this.spellFromIndex(index);
 

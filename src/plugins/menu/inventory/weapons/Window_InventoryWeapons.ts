@@ -78,7 +78,7 @@ Window_InventoryWeapons.prototype.drawAllItems = function() {
 Window_InventoryWeapons.prototype.drawItem = function(index: number) {
     const normalizedIndex = index - this.topIndex();
     const x = 48;
-    const y = normalizedIndex * TEW.MENU.MENU_LINE_HEIGHT;
+    const y = normalizedIndex * TEW.MENU.LINE_HEIGHT;
 
     const weapon = this.weaponFromIndex(index);
 

@@ -46,7 +46,7 @@ Window_StatusTalents.prototype.drawAllItems = function() {
 Window_StatusTalents.prototype.drawItem = function(index) { // TODO
     const normalizedIndex = index - this.topIndex();
     const x = index % 2 === 0 ? 48 : 432;
-    const y = Math.floor(normalizedIndex / 2) * TEW.MENU.MENU_LINE_HEIGHT;
+    const y = Math.floor(normalizedIndex / 2) * TEW.MENU.LINE_HEIGHT;
 
     const talent = this.talentFromIndex(index);
 

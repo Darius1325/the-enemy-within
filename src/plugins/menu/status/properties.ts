@@ -10,7 +10,7 @@ TEW.MENU.COMMAND_NAMES[31] = "Skills";
 TEW.MENU.COMMAND_NAMES[32] = "Talents";
 TEW.MENU.COMMAND_NAMES[33] = "Spells";
 
-TEW.MENU.MENU_LINE_HEIGHT = 36;
+TEW.MENU.LINE_HEIGHT = 36;
 
 // TextManager
 // Override commands

@@ -10,7 +10,7 @@ import TEW from "../../types/tew";
 // Character info, stats, competences (skills), talents and spells window
 
 Window_Status.BASE_COMPETENCE_LINE_COUNT = Math.ceil(TEW.DATABASE.COMPS.BASE_ARRAY.length / 2);
-Window_Status.BASE_COMPETENCE_WINDOW_HEIGHT = (Window_Status.BASE_COMPETENCE_LINE_COUNT + 1) * TEW.MENU.MENU_LINE_HEIGHT;
+Window_Status.BASE_COMPETENCE_WINDOW_HEIGHT = (Window_Status.BASE_COMPETENCE_LINE_COUNT + 1) * TEW.MENU.LINE_HEIGHT;
 
 Window_Status.prototype.initialize = function() {
     Window_Selectable.prototype.initialize.call(this,

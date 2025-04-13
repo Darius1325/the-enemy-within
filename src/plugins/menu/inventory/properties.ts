@@ -22,7 +22,7 @@ TEW.MENU.COMMAND_NAMES[53] = "Equip";
 TEW.MENU.COMMAND_NAMES[54] = "Unequip";
 TEW.MENU.COMMAND_NAMES[55] = "Transfer";
 
-TEW.MENU.MENU_LINE_HEIGHT = 36;
+TEW.MENU.LINE_HEIGHT = 36;
 
 // TextManager
 // Override commands

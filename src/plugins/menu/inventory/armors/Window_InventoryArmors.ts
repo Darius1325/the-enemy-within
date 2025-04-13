@@ -50,7 +50,7 @@ Window_InventoryArmors.prototype.drawAllItems = function() {
 Window_InventoryArmors.prototype.drawItem = function(index: number) {
     const normalizedIndex = index - this.topIndex();
     const x = 48;
-    const y = normalizedIndex * TEW.MENU.MENU_LINE_HEIGHT;
+    const y = normalizedIndex * TEW.MENU.LINE_HEIGHT;
 
     const armor = this.armorFromIndex(index);
 

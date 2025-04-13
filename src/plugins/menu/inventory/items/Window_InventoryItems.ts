@@ -45,7 +45,7 @@ Window_InventoryItems.prototype.drawAllItems = function() {
 Window_InventoryItems.prototype.drawItem = function(index: number) {
     const normalizedIndex = index - this.topIndex();
     const x = this._leftPadding; // padding
-    const y = normalizedIndex  * TEW.MENU.MENU_LINE_HEIGHT;
+    const y = normalizedIndex  * TEW.MENU.LINE_HEIGHT;
 
     const item = this.itemFromIndex(index);
     this.changeTextColor(this.systemColor());
