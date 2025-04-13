@@ -5,6 +5,7 @@ import TEW from "../types/tew";
 
 // $StartCompilation
 TEW.DATABASE.ARMORS = {};
+// #region ====== ARMORS SET === //
 TEW.DATABASE.ARMORS.SET = {
     SOFT_KIT: {
         name: "Soft Kit",
@@ -329,9 +330,14 @@ TEW.DATABASE.ARMORS.SET = {
         description: "The Sallet is typified by having heavy plates projecting over the neck to the back, and being combined with separate pieces, either a gorget or bevor, to provide protection to the throat, chin, and face. A wearer of a Sallet who takes a Critical Hit to the head will take 1 less Wound from the Critical Hit than they otherwise would."
     }
 };
-
-// TODO order in inventory ?
+// #endregion === ARMORS SET === //
+// === //
+// #region ====== ARMORS IDS === //
+// The IDs are the keys of the SET object
 TEW.DATABASE.ARMORS.IDS = Object.keys(TEW.DATABASE.ARMORS.SET).sort((a, b) => a.localeCompare(b));
-
-// Make an array based on the TEW.ARMORS object for easy access
+// #endregion === ARMORS IDS === //
+// === //
+// #region ====== ARMORS ARRAY === //
+// This is a 2D array, where the first element is the key and the second element is the value
 TEW.DATABASE.ARMORS.ARRAY = TEW.DATABASE.ARMORS.IDS.map((key: string) => [key, TEW.DATABASE.ARMORS.SET[key]]);
+// #endregion === ARMORS ARRAY === //

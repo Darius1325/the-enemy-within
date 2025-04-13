@@ -5,6 +5,7 @@ import { Status } from "../types/enum";
 
 // $StartCompilation
 TEW.DATABASE.NPCS = {};
+// #region ====== NPCS SET === //
 TEW.DATABASE.NPCS.SET = {
     GUSTAV_FONDLEBURGER: {
         name: "Gustav Fondleburger",
@@ -205,3 +206,4 @@ TEW.DATABASE.NPCS.SET = {
         prayers: {}
     }
 }
+// #endregion === NPCS SET === //

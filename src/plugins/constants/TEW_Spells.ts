@@ -4,6 +4,7 @@ import TEW from "../types/tew";
 
 // $StartCompilation
 TEW.DATABASE.SPELLS = {};
+// #region ====== SPELLS SET === //
 TEW.DATABASE.SPELLS.SET = {
     AETHYRIC_ARMOUR: {
         name: "Aethyric Armour",
@@ -685,8 +686,16 @@ TEW.DATABASE.SPELLS.SET = {
         desc: "You funnel intense flame to burn away the taint and corruption in an area. Anything flammable is set alight, and any creatures in the area takes +SL Ablaze conditions. If the location contains a Corrupting Influence, such as Dhar , warpstone, or a Chaostainted object, it too will smoulder and blacken, beginning to burn. This spell may be maintained in subsequent rounds by passing a Challenging (+0) Channelling Test. The precise time needed to eliminate the Corrupting Influence will be determined by your GM. As a rough guideline, a small quantity (smaller than an acorn) of warpstone, or a minor Chaos-tainted object may require 10-Willpower Bonus Rounds (minimum of 1 Round). A larger quantity of warpstone - fist-sized - or a more potent Chaos-tainted object may require double this. A powerful Chaos Artefact may take hours, or even longer..."
     }
 };
-
+// #endregion === SPELLS SET === //
+// === //
+// #region ====== SPELLS IDS === //
+// The IDs are the keys of the SET object
 TEW.DATABASE.SPELLS.IDS = Object.keys(TEW.DATABASE.SPELLS.SET);
+// #endregion === SPELLS IDS === //
+// === //
+// #region ====== SPELLS ARRAY === //
+// This is a 2D array, where the first element is the key and the second element is the value
 TEW.DATABASE.SPELLS.ARRAY = Object.keys(TEW.DATABASE.SPELLS.SET)
         .sort((a, b) => a.localeCompare(b))
         .map(spell => [spell, TEW.DATABASE.SPELLS.SET[spell]]);
+// #endregion === SPELLS ARRAY === //

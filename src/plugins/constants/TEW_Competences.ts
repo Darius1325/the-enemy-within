@@ -1,11 +1,11 @@
 // $PluginCompiler TEW_Constants.js
 
-import { Competence } from "../types/competence";
 import { Stat } from "../types/enum";
 import TEW from "../types/tew";
 
 // $StartCompilation
 TEW.DATABASE.COMPS = {};
+// #region ====== COMPS SET === //
 TEW.DATABASE.COMPS.SET = { 
     ANIMAL_CARE: {
         name: "Animal Care",
@@ -678,8 +678,15 @@ TEW.DATABASE.COMPS.SET = {
         isBase: false
     },
 }
-
+// #endregion === COMPS SET === //
+// === //
+// #region ====== COMPS IDS === //
+// The IDs are the keys of the SET object
 TEW.DATABASE.COMPS.IDS = Object.keys(TEW.DATABASE.COMPS.SET);
+// #endregion === COMPS IDS === //
+// === //
+// #region ====== COMPS ARRAYS === //
+// Those are 2 2D arrays, where the first element is the key and the second element is the value
 TEW.DATABASE.COMPS.BASE_ARRAY = Object.keys(TEW.DATABASE.COMPS.SET)
         .filter((comp) => TEW.DATABASE.COMPS.SET[comp].isBase)
         .sort((a, b) => a.localeCompare(b))
@@ -688,3 +695,5 @@ TEW.DATABASE.COMPS.ADVANCED_ARRAY = Object.keys(TEW.DATABASE.COMPS.SET)
         .filter((comp) => !TEW.DATABASE.COMPS.SET[comp].isBase)
         .sort((a, b) => a.localeCompare(b))
         .map(comp => [comp, TEW.DATABASE.COMPS.SET[comp]]);
+// #endregion === COMPS ARRAYS === //
+

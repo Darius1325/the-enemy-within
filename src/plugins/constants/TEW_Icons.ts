@@ -5,19 +5,22 @@ import TEW from "../types/tew";
 // $StartCompilation
 TEW.DATABASE.ICONS = {};
 TEW.DATABASE.ICONS.SET = {
-    // Item groups
+    // #region ====== ICON ITEM === //
     ITEM_CLOTHES : 154,
     ITEM_FOOD : 265,
     ITEM_TOOLS : 216,
     ITEM_BOOKS : 189,
     ITEM_DRUGS : 219,
-
-    // Item availability
+    // #endregion === ICON ITEM === //
+    // === //
+    // #region ====== ICON AVAILABILITY === //
     AVAILABILITY_COMMON : 89,
     AVAILABILITY_SCARCE : 88,
     AVAILABILITY_RARE : 87,
     AVAILABILITY_EXOTIC : 90,
-
+    // #endregion === AVAILABILITY === //
+    // === //
+    // #region ====== ICON WEAPON === //
     // Weapon Equipped
     EQUIPPED_MAIN_HAND: 28,
     EQUIPPED_SECOND_HAND: 29,
@@ -56,7 +59,9 @@ TEW.DATABASE.ICONS.SET = {
     WEAPON_STAFF: 350, 
     WEAPON_BOMB: 351,   
     WEAPON_SHIELD: 352,
-
+    // #endregion === WEAPON === //
+    // === //
+    // #region ====== ICON ARMOR === //
     // Armor equipped
     EQUIPPED_ARMOR: 30,
 
@@ -69,4 +74,5 @@ TEW.DATABASE.ICONS.SET = {
     ARMOR_HEAVY_LEGS_SLOT: 365,
     ARMOR_LIGHT_ARMS_SLOT: 366,
     ARMOR_HEAVY_ARMS_SLOT: 367,
+    // #endregion === ARMOR === //
 }

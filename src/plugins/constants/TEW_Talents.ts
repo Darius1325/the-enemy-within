@@ -5,6 +5,7 @@ import TEW from "../types/tew";
 
 // $StartCompilation
 TEW.DATABASE.TALENTS = {};
+// #region ====== TALENTS SET === //
 TEW.DATABASE.TALENTS.SET = {
     ACCURATE_SHOT: {
         name: "Accurate Shot",
@@ -1017,8 +1018,15 @@ TEW.DATABASE.TALENTS.SET = {
         maxTaken: Stat.WILL
     }
 }
-
+// #endregion === TALENTS SET === //
+// === //
+// #region ====== TALENTS IDS === //
+// The IDs are the keys of the SET object
 TEW.DATABASE.TALENTS.IDS = Object.keys(TEW.DATABASE.TALENTS.SET);
+// #endregion === TALENTS IDS === //
+// #region ====== TALENTS ARRAY === //
+// This is a 2D array, where the first element is the key and the second element is the value
 TEW.DATABASE.TALENTS.ARRAY = Object.keys(TEW.DATABASE.TALENTS.SET)
         .sort((a, b) => a.localeCompare(b))
         .map(talent => [talent, TEW.DATABASE.TALENTS.SET[talent]]);
+// #endregion === TALENTS ARRAY === //

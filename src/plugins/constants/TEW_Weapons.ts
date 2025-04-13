@@ -5,6 +5,7 @@ import TEW from "../types/tew";
 
 // $StartCompilation
 TEW.DATABASE.WEAPONS = {};
+// #region ====== WEAPONS MELEE SET === //
 TEW.DATABASE.WEAPONS.MELEE_SET =  {
     AXE: {
         name: "Axe",
@@ -787,7 +788,9 @@ TEW.DATABASE.WEAPONS.MELEE_SET =  {
         description: "empty"
     }
 };
-
+// #endregion === WEAPONS MELEE SET === //
+// === //
+// #region ====== WEAPONS RANGED SET === //
 TEW.DATABASE.WEAPONS.RANGED_SET = {
     ELF_BOW: {
         name: "Elf Bow",
@@ -1334,7 +1337,9 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         description: "empty"
     }
 };
-
+// #endregion === WEAPONS RANGED SET === //
+// === //
+// #region ====== WEAPONS AMMO SET === //
 TEW.DATABASE.WEAPONS.AMMO_SET = {
     ARROW: {
         name: "Arrow",
@@ -1575,15 +1580,14 @@ TEW.DATABASE.WEAPONS.AMMO_SET = {
         description: "empty"
     }
 };
-
+// #endregion === WEAPONS AMMO SET === //
+// === //
+// #region ====== WEAPONS IDS === //
+// The IDs are the keys of the SET objects MELE_SET, RANGED_SET
 TEW.DATABASE.WEAPONS.IDS = Object.keys(TEW.DATABASE.WEAPONS.MELEE_SET)
         .concat(Object.keys(TEW.DATABASE.WEAPONS.RANGED_SET))
         .sort((a, b) => a.localeCompare(b));
-
-TEW.DATABASE.WEAPONS.ARRAY = TEW.DATABASE.WEAPONS.IDS
-        .map((key: string) => [key, TEW.DATABASE.WEAPONS.MELEE_SET[key] || TEW.DATABASE.WEAPONS.RANGED_SET[key]])
-
-
+// Those are the IDs of the groups
 TEW.DATABASE.WEAPONS.GROUP_IDS = [
     "BASIC",
     "CAVALRY",
@@ -1602,3 +1606,12 @@ TEW.DATABASE.WEAPONS.GROUP_IDS = [
     "BLACKPOWDER",
     "ENGINEERING"
 ];
+// #endregion === WEAPONS IDS === //
+// === //
+// #region ====== WEAPONS ARRAY === //
+// This is a 2D array, where the first element is the key and the second element is the value
+TEW.DATABASE.WEAPONS.ARRAY = TEW.DATABASE.WEAPONS.IDS
+        .map((key: string) => [key, TEW.DATABASE.WEAPONS.MELEE_SET[key] || TEW.DATABASE.WEAPONS.RANGED_SET[key]])
+// #endregion === WEAPONS ARRAY === //
+
+

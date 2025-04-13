@@ -4,6 +4,7 @@ import TEW from "../types/tew";
 
 // $StartCompilation
 TEW.DATABASE.ITEMS = {};
+// #region ====== ITEMS SET === //
 TEW.DATABASE.ITEMS.SET = {
     AMULET: {
         name: "Amulet",
@@ -1146,6 +1147,15 @@ TEW.DATABASE.ITEMS.SET = {
         description: "One of the most common street-drugs in the Empire, Weirdroot is chewed, bringing a sense of euphoria and pleasant hallucinations, which some suggest may be connected to the Winds of Magic. The drug gives a +10 bonus to Toughness and Willpower Tests, but a penalty of -10 to Agility, Initiative, and Intelligence Tests. Duration: Active when chewed plus an additional 1d10x10 minutes."
     }
 }
-
+// #endregion === ITEMS SET === //
+// === //
+// #region ====== ITEMS IDS === //
+// The IDs are the keys of the SET object
 TEW.DATABASE.ITEMS.IDS = Object.keys(TEW.DATABASE.ITEMS.SET).sort((a, b) => a.localeCompare(b));
+// #endregion === ITEMS IDS === //
+// === //
+// #region ====== ITEMS ARRAY === //
+// This is a 2D array, where the first element is the key and the second element is the value
 TEW.DATABASE.ITEMS.ARRAY = Object.keys(TEW.DATABASE.ITEMS.IDS).map(item => [item, TEW.DATABASE.ITEMS.SET[item]]);
+// #endregion === ITEMS ARRAY === //
+
