@@ -1,6 +1,6 @@
 // $PluginCompiler TEW_Base.js
 
-import { WeaponGroup } from "../../types/enum";
+import { StatName, WeaponGroup } from "../../types/enum";
 import TEW from "../../types/tew";
 
 export type ActorWeapon = {
@@ -10,6 +10,64 @@ export type ActorWeapon = {
     ammo: number;
     ammoType: string;
 };
+
+interface Game_BattlerBase {
+    _paramBase: [number, number, number, number, number, number, number, number, number, number, number];
+    competences: number[];
+    spells: string[];
+    talents: Record<string, number>;
+    items: Record<string, number>;
+    weapons: {
+        id: string,
+        isInMainHand: boolean,
+        isInSecondHand: boolean,
+        ammo: number,
+        ammoType: string
+    }[];
+    armors: string[];
+    equippedArmors: string[];
+    ammo: Record<string, number>;
+
+    param: (paramId: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10) => number;
+    paramByName: (paramName: StatName) => number;
+
+    compPlus: (compId: string) => number;
+    comp: (compId: string) => number;
+    hasComp: (compId: string) => boolean;
+    addComp: (compId: string, value: number) => void;
+
+    talent: (talentId: string) => number;
+    allTalents: () => string[];
+    hasTalent: (talentId: string) => boolean;
+    addTalent: (talentId: string) => void;
+
+    hasSpell: (spellId: string) => boolean;
+    addSpell: (spellId: string) => void;
+
+    item: (itemId: string) => number;
+    hasItem: (itemId: string) => boolean;
+    addItem: (itemId: string, quantity?: number) => void;
+
+    weapon: (weaponId: string) => ActorWeapon;
+    mainHand: () => ActorWeapon;
+    secondHand: () => ActorWeapon;
+    equipMainHand: (index: number) => void;
+    equipSecondHand: (index: number) => void;
+    hasWeaponTEW: (weaponId: string) => boolean;
+    addWeapon: (weaponId: string) => void;
+
+    hasArmorTEW: (armorId: string) => boolean;
+    hasArmorEquipped: (armorId: string) => boolean;
+    addArmor: (armorId: string) => void;
+    equipArmor: (armorId: string) => void;
+    unequipArmor: (armorId: string) => void;
+    sortArmors: () => void;
+    sortEquippedArmors: () => void;
+
+    ammoType: (ammoId: string) => number;
+    hasAmmo: (ammoId: string) => boolean;
+    addAmmo: (ammoId: string, quantity?: number) => void;
+}
 
 // $StartCompilation
 
@@ -187,7 +245,7 @@ Game_BattlerBase.prototype.hasComp = function(compId: string) {
 
 Game_BattlerBase.prototype.addComp = function(compId: string, value: number) {
     this.competences[TEW.DATABASE.COMPS.IDS.indexOf(compId)] += value;
-    this.refresh();
+    // this.refresh();
 };
 
 // Talents
@@ -196,7 +254,7 @@ Game_BattlerBase.prototype.talent = function(talentId: string) {
     return this.talents[talentId] || 0;
 };
 
-Game_BattlerBase.prototype.talents = function() {
+Game_BattlerBase.prototype.allTalents = function() {
     return Object.keys(this.talents);
 };
 
@@ -284,10 +342,6 @@ Game_BattlerBase.prototype.equipSecondHand = function(index: number) {
 }
 
 // Armors
-
-Game_BattlerBase.prototype.armor = function(armorId: string){
-    return this.armors.find((armor: string) => armor === armorId);
-}
 
 Game_BattlerBase.prototype.addArmor = function(armorId: string) {
     this.armors.push(armorId);

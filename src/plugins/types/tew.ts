@@ -25,172 +25,141 @@ const TEW: {
          */
         ICONS?: {
             /**
-             * The SET property contains a set of icons identified by their names.
-             * Each icon is represented by a string value and its corresponding icon ID.
+             * The SET property links each icon's ID to an index indicating its position in img/system/IconSet.png
              */
             SET?: Record<string, number>;
         }
         
         /**
          * The ARMORS property contains a set of armors used in the game.
-         * It includes a set of armors identified by their names, an array of armor IDs.
          */
         ARMORS?: {
             /**
              * The SET property contains a set of armors identified by their names.
-             * Each armor is represented by a string value and its corresponding armor object.
              */
             SET?: Record<string, Armor>;
             /**
-             * The IDS property contains an array of armor IDs.
-             * Each ID is represented as a string value.
+             * The IDS property is a list of all armor IDs.
              */
             IDS?: string[];
             /**
-             * The ARRAY property contains an array of armor objects.
-             * Each object is represented as a tuple containing the armor ID and the corresponding armor object.
+             * The ARRAY property contains the pre-computed decoupled entries of the SET for performance purposes.
              */
             ARRAY?: [string, Armor][];
         }
 
         /**
          * The WEAPONS property contains a set of weapons used in the game.
-         * It includes a set of melee weapons, ranged weapons, ammunition, weapon IDs, an array of weapon objects and a list of group IDs.
          */
         WEAPONS?: {
             /**
              * The SET property contains a set of melee weapons identified by their names.
-             * Each melee weapon is represented by a string value and its corresponding melee weapon object.
              */
             MELEE_SET?: Record<string, MeleeWeapon>;
             /**
              * The SET property contains a set of ranged weapons identified by their names.
-             * Each ranged weapon is represented by a string value and its corresponding ranged weapon object.
              */
             RANGED_SET?: Record<string, RangedWeapon>;
             /**
              * The SET property contains a set of ammunition identified by their names.
-             * Each ammunition is represented by a string value and its corresponding ammunition object.
              */
             AMMO_SET?: Record<string, Ammunition>;
             /**
-             * The IDS property contains an array of weapon IDs.
-             * Each ID is represented as a string value.
+             * The IDS property is a list of all weapon IDs.
              */
             IDS?: string[];
             /**
-             * The ARRAY property contains an array of weapon objects.
-             * Each object is represented as a tuple containing the weapon ID and the corresponding weapon object.
+             * The ARRAY property contains the pre-computed decoupled entries of MELEE_SET and RANGED_SET, for performance purposes.
              */
             ARRAY?: [string, MeleeWeapon | RangedWeapon][];
             /**
-             * The IDS property contains an array of group IDs.
-             * Each ID is represented as a string value.
+             * The IDS property is a list of all weapon group IDs.
              */
             GROUP_IDS?: string[];
         }
 
         /**
          * The COMPS property contains a set of competences used in the game.
-         * It includes a set of competences identified by their names, an array of competence IDs, and two arrays of competence objects, one for the basic ones, the other for the advanced.
          */
         COMPS?: {
             /**
              * The SET property contains a set of competences identified by their names.
-             * Each competence is represented by a string value and its corresponding competence object.
              */
             SET?: Record<string, Competence>;
             /**
-             * The IDS property contains an array of competence IDs.
-             * Each ID is represented as a string value.
+             * The IDS property is a list of all competence IDs.
              */
             IDS?: string[];
             /**
-             * The ARRAY property contains an array of basic competence objects.
-             * Each object is represented as a tuple containing the competence ID and the corresponding competence object.
+             * The BASE_ARRAY property contains the pre-computed decoupled entries where isBase == true, for performance purposes.
              */
             BASE_ARRAY?: [string, Competence][];
             /**
-             * The ARRAY property contains an array of advanced competence objects.
-             * Each object is represented as a tuple containing the competence ID and the corresponding competence object.
+             * The ADVANCED_ARRAY property contains the pre-computed decoupled entries where isBase == false, for performance purposes.
              */
             ADVANCED_ARRAY?: [string, Competence][];
         }
 
         /**
          * The ITEMS property contains a set of items used in the game.
-         * It includes a set of items identified by their names, an array of item IDs, and an array of item objects.
          */
         ITEMS?: {
             /**
              * The SET property contains a set of items identified by their names.
-             * Each item is represented by a string value and its corresponding item object.
              */
             SET?: Record<string, Item>;
             /**
-             * The IDS property contains an array of item IDs.
-             * Each ID is represented as a string value.
+             * The IDS property is a list of all item IDs.
              */
             IDS?: string[];
             /**
-             * The ARRAY property contains an array of item objects.
-             * Each object is represented as a tuple containing the item ID and the corresponding item object.
+             * The ARRAY property contains the pre-computed decoupled entries of the SET for performance purposes.
              */
             ARRAY?: [string, Item][];
         }
 
         /**
          * The SPELLS property contains a set of spells used in the game.
-         * It includes a set of spells identified by their names, an array of spell IDs, and an array of spell objects.
          */
         SPELLS?: {
             /**
              * The SET property contains a set of spells identified by their names.
-             * Each spell is represented by a string value and its corresponding spell object.
              */
             SET?: Record<string, Spell>;
             /**
-             * The IDS property contains an array of spell IDs.
-             * Each ID is represented as a string value.
+             * The IDS property is a list of all spell IDs.
              */
             IDS?: string[];
             /**
-             * The ARRAY property contains an array of spell objects.
-             * Each object is represented as a tuple containing the spell ID and the corresponding spell object.
+             * The ARRAY property contains the pre-computed decoupled entries of the SET for performance purposes.
              */
             ARRAY?: [string, Spell][];
         }
         
         /**
          * The TALENTS property contains a set of talents used in the game.
-         * It includes a set of talents identified by their names, an array of talent IDs, and an array of talent objects.
          */
         TALENTS?: {
             /**
              * The SET property contains a set of talents identified by their names.
-             * Each talent is represented by a string value and its corresponding talent object.
              */
             SET?: Record<string, Talent>;
             /**
-             * The IDS property contains an array of talent IDs.
-             * Each ID is represented as a string value.
+             * The IDS property is a list of all talent IDs.
              */
             IDS?: string[];
             /**
-             * The ARRAY property contains an array of talent objects.
-             * Each object is represented as a tuple containing the talent ID and the corresponding talent object.
+             * The ARRAY property contains the pre-computed decoupled entries of the SET for performance purposes.
              */
             ARRAY?: [string, Talent][];
         }
 
         /**
          * The NPCS property contains a set of non-player characters (NPCs) used in the game.
-         * It includes a set of NPCs identified by their names.
          */
         NPCS?: {
             /**
              * The SET property contains a set of NPCs identified by their names.
-             * Each NPC is represented by a string value and its corresponding NPC object.
              */
             SET?: Record<string, NPC>;
         }
@@ -198,12 +167,11 @@ const TEW: {
 
     /**
      * The MENU property contains various constants related to the game's menus.
-     * It includes command names, menu constants.
+     * It includes command names and menu constants.
      */
     MENU?: {
         /**
-         * The COMMAND_NAMES property contains a set of command names used in the game.
-         * Each command is represented by a number and its corresponding name.
+         * The COMMAND_NAMES property links internal command number to their respective human-readable name.
          */
         COMMAND_NAMES?: Record<number, string>;
         /**
@@ -211,37 +179,34 @@ const TEW: {
          */
         LINE_HEIGHT?: number;
         /**
-         * the STATUS_WINDOW_TOPBAR_HEIGHT property specifies the height of the status window's command window.
+         * The STATUS_WINDOW_TOPBAR_HEIGHT property specifies the height of the status window's command window.
          */
         STATUS_WINDOW_TOPBAR_HEIGHT?: number;
         /**
-         * The inVENTORY_WINDOW_TOPBAR_HEIGHT property specifies the height of the inventory window's command window.
+         * The INVENTORY_WINDOW_TOPBAR_HEIGHT property specifies the height of the inventory window's command window.
          */
         INVENTORY_WINDOW_TOPBAR_HEIGHT?: number;
     }
 
     /**
      * The CHARACTERS property contains various constants related to the game's characters.
-     * It includes a set of character IDs, a set of character stats, a set of character stats in verbose format, and a set of base competence values.
      */
     CHARACTERS?: {
         /**
-         * The SET property contains a set of character IDs.
-         * Each character is represented by a string value and its corresponding ID.
+         * The SET property links character names to their respective ID.
          */
         SET?: Record<string, number>;
         /**
-         * The STATS property contains a set of character stats.
-         * Each stat is represented by a string value and its corresponding value.
+         * The STATS property links character stat IDs to their param number.
          */
         STATS?: Record<string, number>;
         /**
-         * The STATS_VERBOSE property contains a set of character stats in verbose format.
+         * The STATS_VERBOSE property contains the display names of character stats.
          */
         STATS_VERBOSE?: string[];
         /**
-         * The BASE_COMP_VALUES property contains a set of base competence values.
-         * Each value is represented as a number.
+         * The BASE_COMP_VALUES property contains base competence values:
+         * 0 for innate competences and -1 (unavailable) for acquired ones.
          */
         BASE_COMP_VALUES?: number[];
     }
@@ -286,19 +251,19 @@ const TEW: {
          */
         getWeaponQualityEffects: (weaponId: string) => {
             /**
-             * The attackMod property specifies the attack modifier of the weapon.
+             * The attackMod property specifies the weapon's bonus to attack rolls.
              */
             attackMod: number;
             /**
-             * The defenceMod property specifies the defence modifier of the weapon.
+             * The defenceMod property specifies the weapon's bonus to defence rolls.
              */
             defenceMod: number;
             /**
-             * The attackBonusDR property specifies the attack bonus linked to the degree of success ("Degré de Réussite" in french).
+             * The attackBonusDR property specifies the weapon's bonus DR for attack rolls ('Degré de Réussite' in french).
              */
             attackBonusDR: number;
             /**
-             * The defenceBonusDR property specifies the defence bonus linked to the degree of success ("Degré de Réussite" in french).
+             * The defenceBonusDR property specifies the weapon's bonus DR for defence rolls ('Degré de Réussite' in french).
              */
             defenceBonusDR: number;
             /**
@@ -314,13 +279,12 @@ const TEW: {
              */
             ignoredArmorTypes: ArmorGroup[];
             /**
-             * The effects property specifies the effects of the weapon quality.
+             * The effects property specifies some weapon qualities that have special effects.
              * Each effect is represented by a key-value pair, where the key is the name of the effect and the value is a boolean indicating whether the effect is active or not.
              */
             effects: Partial<Record<keyof typeof WeaponQuality, boolean>>;
             /**
-             * The slashLevel property specifies the slash level of the weapon.
-             * It is used to determine the type of damage dealt by the weapon.
+             * The slashLevel property specifies the level of a weapon's SLASH quality.
              */
             slashLevel: number;
         };
@@ -332,65 +296,66 @@ const TEW: {
          */
         getArmorInfos: (armorIds: string[]) => {
             /**
-             * The headModifier property specifies the head modifier of the armor.
+             * The headModifier property contains all head armor modifiers.
              * Each modifier is represented by an object containing the type of armor group and the corresponding modifier value.
              */
             headModifier: {
                 /**
-                 * The type property specifies the type of armor group.
+                 * The type property specifies the armor's group.
                  */
                 type: ArmorGroup;
                 /**
-                 * The modifier property specifies the modifier of the armor group.
+                 * The modifier property specifies the armor piece's PA.
                  */
                 modifier: number;
             }[];
             /**
-             * The bodyModifier property specifies the body modifier of the armor.
+             * The bodyModifier property contains all body armor modifiers.
              * Each modifier is represented by an object containing the type of armor group and the corresponding modifier value.
              */
             bodyModifier: {
                 /**
-                 * The type property specifies the type of armor group.
+                 * The type property specifies the armor's group.
                  */
                 type: ArmorGroup;
                 /**
-                 * The modifier property specifies the modifier of the armor group.
+                 * The modifier property specifies the armor piece's PA.
                  */
                 modifier: number;
             }[];
             /**
-             * The legsModifier property specifies the legs modifier of the armor.
+             * The legsModifier property contains all leg armor modifiers.
              * Each modifier is represented by an object containing the type of armor group and the corresponding modifier value.
              */
             legsModifier: {
                 /**
-                 * The type property specifies the type of armor group.
+                 * The type property specifies the armor's group.
                  */
                 type: ArmorGroup;
                 /**
-                 * The modifier property specifies the modifier of the armor group.
+                 * The modifier property specifies the armor piece's PA.
                  */
                 modifier: number;
             }[];
             /**
-             * The armsModifier property specifies the arms modifier of the armor.
+             * The armsModifier property contains all arm armor modifiers.
              * Each modifier is represented by an object containing the type of armor group and the corresponding modifier value.
              */
             armsModifier: {
                 /**
-                 * The type property specifies the type of armor group. 
+                 * The type property specifies the armor's group.
                  */
                 type: ArmorGroup;
                 /**
-                 * The modifier property specifies the modifier of the armor group.
+                 * The modifier property specifies the armor piece's PA.
                  */
                 modifier: number;
             }[];
         };
 
         /**
-         * getArmorCompOrDefault is a function that returns the armor competence or default value based on the provided parameters.
+         * getCombatCompOrDefault is a function that returns the competence value associated with a weapon group.
+         * If the battler does not have that competence, this function returns its base weapon or ballistic skill.
          * @param battler the battler object
          * @param weaponGroup the group of the weapon
          * @param isMelee true if the weapon is melee, false if it is ranged
@@ -398,7 +363,7 @@ const TEW: {
          */
         getCombatCompOrDefault: (battler: any, weaponGroup: WeaponGroup, isMelee: boolean) => {
             /**
-             * The match property specifies whether the competence matches the weapon group.
+             * The match property specifies whether the battler has a competence for this weapon group.
              */
             match: boolean;
             /**
