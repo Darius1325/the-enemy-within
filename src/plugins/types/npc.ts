@@ -1,7 +1,18 @@
+// ----------------------
+
+// File: npc.ts
+// Author: Ersokili, 7evy, Sebibebi67
+// Date: 12/04/2025
+// Description: This file contains the type definitions for the NPC (Non-Player Character) objects in the game. It includes the properties and types of each NPC object, as well as the available NPC types and their properties. The file is used to define the NPC objects and their properties in the game.
+
+// ----------------------
+// Imports
+// ----------------------
+
 import { Status } from "./enum"
 
 /**
- * * NPC (Non-Player Character) object type
+ * NPC (Non-Player Character) object type
  */
 export type NPC = {
     /**

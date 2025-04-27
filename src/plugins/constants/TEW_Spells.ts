@@ -1,9 +1,23 @@
 // $PluginCompiler TEW_Constants.js
 
+// ----------------------
+
+// File: TEW_Spells.ts
+// Author: Ersokili, 7evy, Sebibebi67
+// Date: 12/04/2025
+// Description: This file contains the constants for the TEW spells. It is used to define the spells in the game, their stats, effects, and other properties. The constants are used throughout the game to reference the spells and their properties.
+
+// ----------------------
+// Imports
+// ----------------------
+
 import { SpellDomain, SpellDuration, SpellRange, SpellTarget, SpellTargetRadius, SpellType } from "../types/enum";
 import TEW from "../types/tew";
 
+// ----------------------
 // $StartCompilation
+// ----------------------
+
 TEW.DATABASE.SPELLS = {};
 // #region ====== SPELLS SET === //
 TEW.DATABASE.SPELLS.SET = {
@@ -201,7 +215,7 @@ TEW.DATABASE.SPELLS.SET = {
         duration: {
             type: SpellDuration.SPECIAL
         },
-        desc: "Using magic, you entrap your target, wrapping them in whatever suits your Lore: vines, shadows, their own clothing… Your target gains one Entangled Condition with a Strength equal to your Intelligence. For every +2 SL, you may give the target +1 additional Entangled Condition. The spell lasts until all Entangled Conditions are removed."
+        desc: "Using magic, you entrap your target, wrapping them in whatever suits your Lore: vines, shadows, their own clothing... Your target gains one Entangled Condition with a Strength equal to your Intelligence. For every +2 SL, you may give the target +1 additional Entangled Condition. The spell lasts until all Entangled Conditions are removed."
     },
     FEARWOME: {
         name: "Fearsome",

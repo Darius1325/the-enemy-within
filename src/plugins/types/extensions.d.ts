@@ -1,3 +1,14 @@
+// ----------------------
+
+// File: extensions.d.ts
+// Author: Ersokili, 7evy, Sebibebi67
+// Date: 12/04/2025
+// Description: This file contains the type definitions for the extensions used in the game. It includes the properties and types of each extension, as well as the available extension types and their properties. The file is used to define the extensions and their properties in the game.
+
+// ----------------------
+// exports
+// ----------------------
+
 export {};
 
 declare global {

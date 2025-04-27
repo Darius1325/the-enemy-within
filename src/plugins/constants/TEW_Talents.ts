@@ -1,9 +1,23 @@
 // $PluginCompiler TEW_Constants.js
 
+// ----------------------
+
+// File: TEW_Spells.ts
+// Author: Ersokili, 7evy, Sebibebi67
+// Date: 12/04/2025
+// Description: This file contains the constants for the TEW Talents. It is used to define the talents in the game, their effects, and other properties. The constants are used throughout the game to reference the talents and their properties.
+
+// ----------------------
+// Imports
+// ----------------------
+
 import { Stat } from "../types/enum";
 import TEW from "../types/tew";
 
+// ----------------------
 // $StartCompilation
+// ----------------------
+
 TEW.DATABASE.TALENTS = {};
 // #region ====== TALENTS SET === //
 TEW.DATABASE.TALENTS.SET = {

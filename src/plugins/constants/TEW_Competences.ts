@@ -1,9 +1,23 @@
 // $PluginCompiler TEW_Constants.js
 
+// ----------------------
+
+// File: TEW_Competences.ts
+// Author: Ersokili, 7evy, Sebibebi67
+// Date: 12/04/2025
+// Description: This file contains the competences data for the TEW plugin. It includes the competences set, their IDs, and their arrays. The competences are categorized into base and advanced competences, and each competence has a name, a stat associated with it, and a boolean indicating if it is a base competence or not.
+
+// ----------------------
+// Imports
+// ----------------------
+
 import { Stat } from "../types/enum";
 import TEW from "../types/tew";
 
+// ----------------------
 // $StartCompilation
+// ----------------------
+
 TEW.DATABASE.COMPS = {};
 // #region ====== COMPS SET === //
 TEW.DATABASE.COMPS.SET = { 

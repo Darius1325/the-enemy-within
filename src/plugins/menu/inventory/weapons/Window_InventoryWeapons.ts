@@ -1,14 +1,15 @@
 // $PluginCompiler TEW_Menus.js
 
+import { Game_Actor } from "../../../base/stats/Game_Actor";
 import { ActorWeapon } from "../../../base/stats/Game_BattlerBase";
 import { MeleeWeapon } from "../../../types/meleeWeapon";
 import { RangedWeapon } from "../../../types/rangedWeapon";
 import TEW from "../../../types/tew";
 import Window_InventoryList from "../Window_InventoryList";
 
-type LoadedWeapon = (MeleeWeapon | RangedWeapon) & {
-    ammo?: number;
-    ammoType?: string;
+export type LoadedWeapon = (MeleeWeapon | RangedWeapon) & ActorWeapon & {
+    equipIndex: number;
+    equipIcon?: number;
 };
 
 // $StartCompilation
@@ -29,38 +30,41 @@ Window_InventoryWeapons.prototype.initialize = function() {
     Window_InventoryList.prototype.initialize.call(this);
 };
 
-Window_InventoryWeapons.prototype.setActor = function(actor: any) {
+Window_InventoryWeapons.prototype.setActor = function(actor: Game_Actor) {
     if (this._actor !== actor) {
         this._actor = actor;
 
-        const unequippedWeapons = actor.weapons.filter((weapon: ActorWeapon) => !weapon.isInMainHand && !weapon.isInSecondHand);
-        this._weapons = []; // [<internal name>, {<item data>}]
-        unequippedWeapons.forEach((weapon: ActorWeapon) => {
-            const weaponData: [string, LoadedWeapon] = TEW.DATABASE.WEAPONS.ARRAY.find(w => w[0] === weapon.id);
-            weaponData[1].ammo = weapon.ammo;
-            weaponData[1].ammoType = weapon.ammoType;
-            this._weapons.push(weaponData);
+        const displayedWeapons = actor.weapons.map((weapon: ActorWeapon, index: number): LoadedWeapon => {
+            const weaponData = Object.assign({},
+                TEW.DATABASE.WEAPONS.ARRAY.find(w => w[0] === weapon.id));
+            return {
+                ...weaponData[1],
+                ...weapon,
+                equipIndex: index,
+                equipIcon: weapon.isInMainHand
+                    ? TEW.DATABASE.ICONS.SET.EQUIPPED_MAIN_HAND
+                    : weapon.isInSecondHand
+                        ? TEW.DATABASE.ICONS.SET.EQUIPPED_SECOND_HAND
+                        : undefined
+            };
         });
+
+        this._weapons = displayedWeapons // [<internal name>, {<item data>}]
+            .filter((weapon) => !weapon.isInMainHand && !weapon.isInSecondHand)
+            .map((weapon) => [weapon.id, weapon]);
 
         this._maxItems = this._weapons.length;
 
-        const mainHand = actor.mainHand();
-        if (mainHand) {
-            this._mainHandWeapon = TEW.DATABASE.WEAPONS.ARRAY.find(w => w[0] === mainHand.id);
-            this._mainHandWeapon[1].ammo = mainHand.ammo;
-            this._mainHandWeapon[1].ammoType = mainHand.ammoType;
-            this._mainHandWeapon[1].equipIcon = TEW.DATABASE.ICONS.SET.EQUIPPED_MAIN_HAND;
+        this._mainHandWeapon = displayedWeapons.find((weapon) => weapon.isInMainHand);
+        if (this._mainHandWeapon) {
             this._maxItems ++;
         }
 
-        const secondHand = actor.secondHand();
-        if (secondHand) {
-            this._secondHandWeapon = TEW.DATABASE.WEAPONS.ARRAY.find(w => w[0] === secondHand.id);
-            this._secondHandWeapon[1].ammo = secondHand.ammo;
-            this._secondHandWeapon[1].ammoType = secondHand.ammoType;
-            this._secondHandWeapon[1].equipIcon = TEW.DATABASE.ICONS.SET.EQUIPPED_SECOND_HAND;
-            this._maxItems++;
+        this._secondHandWeapon = displayedWeapons.find((weapon) => weapon.isInSecondHand);
+        if (this._secondHandWeapon) {
+            this._maxItems ++;
         }
+
         this.refresh();
     }
 };

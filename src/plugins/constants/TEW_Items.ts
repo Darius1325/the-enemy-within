@@ -1,9 +1,23 @@
 // $PluginCompiler TEW_Constants.js
 
+// ----------------------
+
+// File: TEW_Items.ts
+// Author: Ersokili, 7evy, Sebibebi67
+// Date: 12/04/2025
+// Description: This file contains the items for the TEW game. It is used to define the items in the game, their stats, weapons, armor, and other properties. The constants are used throughout the game to reference the items and their properties.
+
+// ----------------------
+// Imports
+// ----------------------
+
 import { Availability, ItemGroup, ItemGroupLabel } from "../types/enum";
 import TEW from "../types/tew";
 
+// ----------------------
 // $StartCompilation
+// ----------------------
+
 TEW.DATABASE.ITEMS = {};
 // #region ====== ITEMS SET === //
 TEW.DATABASE.ITEMS.SET = {

@@ -48,5 +48,7 @@ mkdir -p ../js/plugins/TEW
 
 # Write collected content to respective output files
 for output_file in "${!collected_content[@]}"; do
-    echo -e "${collected_content[$output_file]}" | sed 's/export default //' > ../js/plugins/TEW/$output_file
+    echo -e "${collected_content[$output_file]}" \
+        | sed 's/export default //' \
+        | sed 's/export {};//' > ../js/plugins/TEW/$output_file
 done

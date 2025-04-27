@@ -1,3 +1,14 @@
+// ----------------------
+
+// File: spell.ts
+// Author: Ersokili, 7evy, Sebibebi67
+// Date: 12/04/2025
+// Description: This file contains the type definitions for the spell objects in the game. It includes the properties and types of each spell object, as well as the available spell types and their properties. The file is used to define the spell objects and their properties in the game.
+
+// ----------------------
+// Imports
+// ----------------------
+
 import { SpellDomain, SpellDuration, SpellRange, SpellTarget, SpellTargetRadius, SpellType } from "./enum";
 
 /**

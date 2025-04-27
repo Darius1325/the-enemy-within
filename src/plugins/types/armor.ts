@@ -1,3 +1,14 @@
+// ----------------------
+
+// File: armror.ts
+// Author: Ersokili, 7evy, Sebibebi67
+// Date: 12/04/2025
+// Description: This file contains the type definitions for the armor objects in the game. It includes the properties and types of each armor object, as well as the available armor types and their properties. The file is used to define the armor objects and their properties in the game.
+
+// ----------------------
+// Imports
+// ----------------------
+
 import { ArmorGroup, ArmorGroupLabel, ArmorQuality, Availability, BodyLocation } from "./enum";
 
 /**

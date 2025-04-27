@@ -1,9 +1,22 @@
 // $PluginCompiler TEW_Constants.js
+
+// ----------------------
+
+// File: TEW_NPc.ts
+// Author: Ersokili, 7evy, Sebibebi67
+// Date: 12/04/2025
+// Description: This file contains the constants for the TEW NPCs. It is used to define the NPCs in the game, their stats, weapons, armor, and other properties. The constants are used throughout the game to reference the NPCs and their properties.
+
+// ----------------------
+// Imports
+// ----------------------
 import TEW from "../types/tew";
 import { Status } from "../types/enum";
 
-
+// ----------------------
 // $StartCompilation
+// ----------------------
+
 TEW.DATABASE.NPCS = {};
 // #region ====== NPCS SET === //
 TEW.DATABASE.NPCS.SET = {

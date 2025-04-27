@@ -1,5 +1,8 @@
 // $PluginCompiler TEW_Menus.js 101
 
+import { WeaponGroup, WeaponQuality } from "../../types/enum";
+import { MeleeWeapon } from "../../types/meleeWeapon";
+import { RangedWeapon } from "../../types/rangedWeapon";
 import Window_InventoryAmmo from "./ammo/Window_InventoryAmmo";
 import Window_InventoryArmorCommand from "./armors/Window_InventoryArmorCommand";
 import Window_InventoryArmorDetails from "./armors/Window_InventoryArmorDetails";
@@ -10,7 +13,7 @@ import Window_InventoryItemDetails from "./items/Window_InventoryItemDetails";
 import Window_InventoryItems from "./items/Window_InventoryItems";
 import Window_InventoryWeaponCommand from "./weapons/Window_InventoryWeaponCommand";
 import Window_InventoryWeaponDetails from "./weapons/Window_InventoryWeaponDetails";
-import Window_InventoryWeapons from "./weapons/Window_InventoryWeapons";
+import Window_InventoryWeapons, { LoadedWeapon } from "./weapons/Window_InventoryWeapons";
 import Window_InventoryCommand from "./Window_InventoryCommand";
 import Window_InventoryHelp from "./Window_InventoryHelp";
 
@@ -420,55 +423,74 @@ Scene_Equip.prototype.showArmorDetails = function(){
 }
 
 // Using an item - Triggered on the items window
-Scene_Equip.prototype.useItem = function(){
+Scene_Equip.prototype.useItem = function() {
     console.log("Use item : ", this._itemsWindow.index());
     this._itemsCommandWindow.callHandler('cancel');
 }
 
 // Transfering an item - Triggered on the items window
-Scene_Equip.prototype.transferItem = function(){
+Scene_Equip.prototype.transferItem = function() {
     console.log("Transfer item", this._itemsWindow.index());
     this._itemsCommandWindow.callHandler('cancel');
 }
 
 // Equipping a weapon - Triggered on the weapons window
-Scene_Equip.prototype.equipWeapon = function(){
-    console.log("Equip weapon : ", this._weaponsWindow.index());
+Scene_Equip.prototype.equipWeapon = function() {
+    const weapon: [string, LoadedWeapon] = this._weaponsWindow.weaponFromIndex(this._weaponsWindow.index());
+    if (weapon[1].group === WeaponGroup.PARRY
+        || weapon[1].qualities.some((quality) =>
+            quality === WeaponQuality.SHIELD_1
+            || quality === WeaponQuality.SHIELD_2
+            || quality === WeaponQuality.SHIELD_3
+            || quality === WeaponQuality.SHIELD_4
+            || quality === WeaponQuality.SHIELD_5)
+    ) {
+        this._actor.unequipSecondHand();
+        this._actor.equipSecondHand(weapon[1].equipIndex);
+    } else {
+        this._actor.unequipMainHand();
+        this._actor.equipMainHand(weapon[1].equipIndex);
+    }
     this._weaponsCommandWindow.callHandler('cancel');
 }
 
 // Unequipping a weapon - Triggered on the weapons window
-Scene_Equip.prototype.unequipWeapon = function(){
-    console.log("Unequip weapon : ", this._weaponsWindow.index());
+Scene_Equip.prototype.unequipWeapon = function() {
+    const weaponIndex = this._weaponsWindow.index();
+    if (weaponIndex === 0) {
+        this._actor.unequipMainHand();
+    } else if (weaponIndex === 1) {
+        this._actor.unequipSecondHand();
+    }
     this._weaponsCommandWindow.callHandler('cancel');
 }
 
 // Transfering a weapon - Triggered on the weapons window
-Scene_Equip.prototype.transferWeapon = function(){
+Scene_Equip.prototype.transferWeapon = function() {
     console.log("Transfer weapon", this._weaponsWindow.index());
     this._weaponsCommandWindow.callHandler('cancel');
 }
 
 // Reloading a weapon - Triggered on the weapons window
-Scene_Equip.prototype.reloadWeapon = function(){
+Scene_Equip.prototype.reloadWeapon = function() {
     console.log("Reload weapon : ", this._weaponsWindow.index());
     this._weaponsCommandWindow.callHandler('cancel');
 }
 
 // Equipping a weapon - Triggered on the weapons window
-Scene_Equip.prototype.equipArmor = function(){
+Scene_Equip.prototype.equipArmor = function() {
     console.log("Equip armor : ", this._armorsWindow.index());
     this._armorsCommandWindow.callHandler('cancel');
 }
 
 // Unequipping a weapon - Triggered on the weapons window
-Scene_Equip.prototype.unequipArmor = function(){
+Scene_Equip.prototype.unequipArmor = function() {
     console.log("Unequip armor : ", this._armorsWindow.index());
     this._armorsCommandWindow.callHandler('cancel');
 }
 
 // Transfering a weapon - Triggered on the weapons window
-Scene_Equip.prototype.transferArmor = function(){
+Scene_Equip.prototype.transferArmor = function() {
     console.log("Transfer armor", this._armorsWindow.index());
     this._armorsCommandWindow.callHandler('cancel');
 }

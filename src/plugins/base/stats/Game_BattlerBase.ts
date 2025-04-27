@@ -7,11 +7,12 @@ export type ActorWeapon = {
     id: string;
     isInMainHand: boolean;
     isInSecondHand: boolean;
+    isReloadable: boolean;
     ammo: number;
     ammoType: string;
 };
 
-interface Game_BattlerBase {
+export interface Game_BattlerBase {
     _paramBase: [number, number, number, number, number, number, number, number, number, number, number];
     competences: number[];
     spells: string[];
@@ -53,6 +54,8 @@ interface Game_BattlerBase {
     secondHand: () => ActorWeapon;
     equipMainHand: (index: number) => void;
     equipSecondHand: (index: number) => void;
+    unequipMainHand: () => void;
+    unequipSecondHand: () => void;
     hasWeaponTEW: (weaponId: string) => boolean;
     addWeapon: (weaponId: string) => void;
 
@@ -160,8 +163,8 @@ Game_BattlerBase.prototype.initialize = function() {
     this.addWeapon("CANE_PISTOL");
     this.addWeapon("CANE_PISTOL");
     this.addWeapon("HOCHLAND_LONG_RIFLE");
-    this.equipMainHand(0);
-    this.equipSecondHand(2);
+    // this.equipMainHand(0);
+    // this.equipSecondHand(2);
 
     // temp Armor
     this.addArmor("SOFT_KIT");
@@ -328,17 +331,25 @@ Game_BattlerBase.prototype.hasWeaponTEW = function(weaponId: string) {
 }
 
 Game_BattlerBase.prototype.equipMainHand = function(index: number) {
-    this.weapons.forEach((weapon: ActorWeapon) => {
-        weapon.isInMainHand = false;
-    });
+    this.unequipMainHand();
     this.weapons[index].isInMainHand = true;
 }
 
 Game_BattlerBase.prototype.equipSecondHand = function(index: number) {
+    this.unequipSecondHand();
+    this.weapons[index].isInSecondHand = true;
+}
+
+Game_BattlerBase.prototype.unequipMainHand = function() {
+    this.weapons.forEach((weapon: ActorWeapon) => {
+        weapon.isInMainHand = false;
+    });
+}
+
+Game_BattlerBase.prototype.unequipSecondHand = function() {
     this.weapons.forEach((weapon: ActorWeapon) => {
         weapon.isInSecondHand = false;
     });
-    this.weapons[index].isInSecondHand = true;
 }
 
 // Armors

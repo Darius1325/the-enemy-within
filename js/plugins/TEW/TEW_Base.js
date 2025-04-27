@@ -4,6 +4,12 @@ Imported.TEW_Base = true;
 var TEW = TEW || {};
 TEW.DICE = TEW.DICE || {};
 TEW.CHARACTERS = TEW.CHARACTERS || {};
+// SceneManager
+SceneManager = SceneManager || {};
+SceneManager._screenWidth = 1280;
+SceneManager._screenHeight = 720;
+SceneManager._boxWidth = 1280;
+SceneManager._boxHeight = 720;
 // #endregion =========================== import ============================== //
 // ============================== //
 // #region ============================== properties ============================== //
@@ -224,6 +230,7 @@ Game_Actor.prototype.paramBase = function (paramId) {
 Game_Actor.prototype.paramPlus = function (paramId) {
     return Game_Battler.prototype.paramPlus.call(this, paramId);
 };
+
 // #endregion =========================== Game_Actor ============================== //
 // ============================== //
 // #region ============================== Game_BattlerBase ============================== //
@@ -310,8 +317,8 @@ Game_BattlerBase.prototype.initialize = function () {
     this.addWeapon("CANE_PISTOL");
     this.addWeapon("CANE_PISTOL");
     this.addWeapon("HOCHLAND_LONG_RIFLE");
-    this.equipMainHand(0);
-    this.equipSecondHand(2);
+    // this.equipMainHand(0);
+    // this.equipSecondHand(2);
     // temp Armor
     this.addArmor("SOFT_KIT");
     this.addArmor("SALLET");
@@ -443,16 +450,22 @@ Game_BattlerBase.prototype.hasWeaponTEW = function (weaponId) {
     return this.weapons.some((weapon) => weapon.id === weaponId);
 };
 Game_BattlerBase.prototype.equipMainHand = function (index) {
-    this.weapons.forEach((weapon) => {
-        weapon.isInMainHand = false;
-    });
+    this.unequipMainHand();
     this.weapons[index].isInMainHand = true;
 };
 Game_BattlerBase.prototype.equipSecondHand = function (index) {
+    this.unequipSecondHand();
+    this.weapons[index].isInSecondHand = true;
+};
+Game_BattlerBase.prototype.unequipMainHand = function () {
+    this.weapons.forEach((weapon) => {
+        weapon.isInMainHand = false;
+    });
+};
+Game_BattlerBase.prototype.unequipSecondHand = function () {
     this.weapons.forEach((weapon) => {
         weapon.isInSecondHand = false;
     });
-    this.weapons[index].isInSecondHand = true;
 };
 // Armors
 Game_BattlerBase.prototype.addArmor = function (armorId) {

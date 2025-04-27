@@ -1,3 +1,14 @@
+// ----------------------
+
+// File: item.ts
+// Author: Ersokili, 7evy, Sebibebi67
+// Date: 12/04/2025
+// Description: This file contains the type definitions for the item objects in the game. It includes the properties and types of each item object, as well as the available item types and their properties. The file is used to define the item objects and their properties in the game.
+
+// ----------------------
+// Imports
+// ----------------------
+
 import { ItemGroup, ItemGroupLabel, Availability } from "./enum";
 
 /**

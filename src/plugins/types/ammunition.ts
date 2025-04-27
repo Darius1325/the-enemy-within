@@ -1,3 +1,14 @@
+// ----------------------
+
+// File: ammunition.ts
+// Author: Ersokili, 7evy, Sebibebi67
+// Date: 12/04/2025
+// Description: This file contains the type definitions for the ammunition objects in the game. It includes the properties and types of each ammunition object, as well as the available ammunition types and their properties. The file is used to define the ammunition objects and their properties in the game.
+
+// ----------------------
+// Imports
+// ----------------------
+
 import { Availability, WeaponGroup, WeaponGroupLabel, WeaponQuality } from "./enum";
 
 /**

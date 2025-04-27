@@ -1,4 +1,14 @@
-//
+// ----------------------
+
+// File: enum.ts
+// Author: Ersokili, 7evy, Sebibebi67
+// Date: 12/04/2025
+// Description: This file contains the type definitions for the enums used in the game. It includes the properties and types of each enum, as well as the available enum types and their properties. The file is used to define the enums and their properties in the game.
+
+// ----------------------
+// Imports
+// ----------------------
+
 export const enum Stat {
     MHP = 'mhp',
     WEAS = 'weas',

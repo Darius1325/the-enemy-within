@@ -688,29 +688,24 @@ Window_InventoryWeapons.prototype.initialize = function () {
 Window_InventoryWeapons.prototype.setActor = function (actor) {
     if (this._actor !== actor) {
         this._actor = actor;
-        const unequippedWeapons = actor.weapons.filter((weapon) => !weapon.isInMainHand && !weapon.isInSecondHand);
-        this._weapons = []; // [<internal name>, {<item data>}]
-        unequippedWeapons.forEach((weapon) => {
-            const weaponData = TEW.DATABASE.WEAPONS.ARRAY.find(w => w[0] === weapon.id);
-            weaponData[1].ammo = weapon.ammo;
-            weaponData[1].ammoType = weapon.ammoType;
-            this._weapons.push(weaponData);
+        const displayedWeapons = actor.weapons.map((weapon, index) => {
+            const weaponData = Object.assign({}, TEW.DATABASE.WEAPONS.ARRAY.find(w => w[0] === weapon.id));
+            return Object.assign(Object.assign(Object.assign({}, weaponData[1]), weapon), { equipIndex: index, equipIcon: weapon.isInMainHand
+                    ? TEW.DATABASE.ICONS.SET.EQUIPPED_MAIN_HAND
+                    : weapon.isInSecondHand
+                        ? TEW.DATABASE.ICONS.SET.EQUIPPED_SECOND_HAND
+                        : undefined });
         });
+        this._weapons = displayedWeapons // [<internal name>, {<item data>}]
+            .filter((weapon) => !weapon.isInMainHand && !weapon.isInSecondHand)
+            .map((weapon) => [weapon.id, weapon]);
         this._maxItems = this._weapons.length;
-        const mainHand = actor.mainHand();
-        if (mainHand) {
-            this._mainHandWeapon = TEW.DATABASE.WEAPONS.ARRAY.find(w => w[0] === mainHand.id);
-            this._mainHandWeapon[1].ammo = mainHand.ammo;
-            this._mainHandWeapon[1].ammoType = mainHand.ammoType;
-            this._mainHandWeapon[1].equipIcon = TEW.DATABASE.ICONS.SET.EQUIPPED_MAIN_HAND;
+        this._mainHandWeapon = displayedWeapons.find((weapon) => weapon.isInMainHand);
+        if (this._mainHandWeapon) {
             this._maxItems++;
         }
-        const secondHand = actor.secondHand();
-        if (secondHand) {
-            this._secondHandWeapon = TEW.DATABASE.WEAPONS.ARRAY.find(w => w[0] === secondHand.id);
-            this._secondHandWeapon[1].ammo = secondHand.ammo;
-            this._secondHandWeapon[1].ammoType = secondHand.ammoType;
-            this._secondHandWeapon[1].equipIcon = TEW.DATABASE.ICONS.SET.EQUIPPED_SECOND_HAND;
+        this._secondHandWeapon = displayedWeapons.find((weapon) => weapon.isInSecondHand);
+        if (this._secondHandWeapon) {
             this._maxItems++;
         }
         this.refresh();
@@ -1835,12 +1830,31 @@ Scene_Equip.prototype.transferItem = function () {
 };
 // Equipping a weapon - Triggered on the weapons window
 Scene_Equip.prototype.equipWeapon = function () {
-    console.log("Equip weapon : ", this._weaponsWindow.index());
+    const weapon = this._weaponsWindow.weaponFromIndex(this._weaponsWindow.index());
+    if (weapon[1].group === 5 /* WeaponGroup.PARRY */
+        || weapon[1].qualities.some((quality) => quality === 10 /* WeaponQuality.SHIELD_1 */
+            || quality === 11 /* WeaponQuality.SHIELD_2 */
+            || quality === 12 /* WeaponQuality.SHIELD_3 */
+            || quality === 13 /* WeaponQuality.SHIELD_4 */
+            || quality === 14 /* WeaponQuality.SHIELD_5 */)) {
+        this._actor.unequipSecondHand();
+        this._actor.equipSecondHand(weapon[1].equipIndex);
+    }
+    else {
+        this._actor.unequipMainHand();
+        this._actor.equipMainHand(weapon[1].equipIndex);
+    }
     this._weaponsCommandWindow.callHandler('cancel');
 };
 // Unequipping a weapon - Triggered on the weapons window
 Scene_Equip.prototype.unequipWeapon = function () {
-    console.log("Unequip weapon : ", this._weaponsWindow.index());
+    const weaponIndex = this._weaponsWindow.index();
+    if (weaponIndex === 0) {
+        this._actor.unequipMainHand();
+    }
+    else if (weaponIndex === 1) {
+        this._actor.unequipSecondHand();
+    }
     this._weaponsCommandWindow.callHandler('cancel');
 };
 // Transfering a weapon - Triggered on the weapons window

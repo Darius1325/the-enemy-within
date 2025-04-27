@@ -1,8 +1,22 @@
 // $PluginCompiler TEW_Constants.js 2
 
+// ----------------------
+
+// File: TEW_Icons.ts
+// Author: Ersokili, 7evy, Sebibebi67
+// Date: 12/04/2025
+// Description: This file contains the constants for the TEW Icons. It is used to define the icons for the items, weapons, armors, and availability in the game. The constants are used throughout the game to reference the icons and their properties.
+
+// ----------------------
+// Imports
+// ----------------------
+
 import TEW from "../types/tew";
 
+// ----------------------
 // $StartCompilation
+// ----------------------
+
 TEW.DATABASE.ICONS = {};
 TEW.DATABASE.ICONS.SET = {
     // #region ====== ICON ITEM === //

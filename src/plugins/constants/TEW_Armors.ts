@@ -1,9 +1,23 @@
 // $PluginCompiler TEW_Constants.js
 
+// ----------------------
+
+// File: TEW_Armors.ts
+// Author: Ersokili, 7evy, Sebibebi67
+// Date: 12/04/2025
+// Description: This file contains the armor database for the TEW plugin.
+
+// ----------------------
+// Imports
+// ----------------------
+
 import { ArmorGroup, ArmorGroupLabel, BodyLocation, ArmorQuality, Availability } from "../types/enum";
 import TEW from "../types/tew";
 
+// ----------------------
 // $StartCompilation
+// ----------------------
+
 TEW.DATABASE.ARMORS = {};
 // #region ====== ARMORS SET === //
 TEW.DATABASE.ARMORS.SET = {
@@ -21,7 +35,7 @@ TEW.DATABASE.ARMORS.SET = {
         ap: 0,
         qualities: [],
         forbiddenWith: [],
-        description: "Description has to be done."
+        description: "Soft kits are woollen doublets and hose designed to be worn under armour. They provide padding needed to prevent chafing and laces and holes to attach pieces of armour to. They can be worn under any armour and must be worn under certain pieces of plate."
     },
     REINFORCED_SOFT_KIT: {
         name: "Reinforced Soft Kit",
@@ -37,7 +51,7 @@ TEW.DATABASE.ARMORS.SET = {
         ap: 1,
         qualities: [ArmorQuality.PARTIAL, ArmorQuality.REINFORCED],
         forbiddenWith: [],
-        description: "Description has to be done."
+        description: "Soft kits are woollen doublets and hose designed to be worn under armour. They provide padding needed to prevent chafing and laces and holes to attach pieces of armour to. They can be worn under any armour and must be worn under certain pieces of plate. This one has been reinforced with sections of mail placed to compensate for chinks in a full suit of plate armour."
     },
     LEATHER_JACK: {
         name: "Leather Jack",
@@ -53,7 +67,7 @@ TEW.DATABASE.ARMORS.SET = {
         ap: 1,
         qualities: [],
         forbiddenWith: [ArmorGroup.CHAINMAIL, ArmorGroup.PLATE],
-        description: "Description has to be done."
+        description: "Boiled leather is constructed from thick pieces of hide. It is rigid and tough and cannot be worn under mail or the more complicated pieces of plate. This jacket will protect your body and arms."
     },
     LEATHER_JERKIN: {
         name: "Leather Jerkin",
@@ -69,7 +83,7 @@ TEW.DATABASE.ARMORS.SET = {
         ap: 1,
         qualities: [],
         forbiddenWith: [ArmorGroup.CHAINMAIL, ArmorGroup.PLATE],
-        description: "Description has to be done."
+        description: "Boiled leather is constructed from thick pieces of hide. It is rigid and tough and cannot be worn under mail or the more complicated pieces of plate. This jerkin will protect your body."
     },
     LEATHER_LEGGINGS: {
         name: "Leather Leggings",
@@ -85,7 +99,7 @@ TEW.DATABASE.ARMORS.SET = {
         ap: 1,
         qualities: [],
         forbiddenWith: [ArmorGroup.CHAINMAIL, ArmorGroup.PLATE],
-        description: "Description has to be done."
+        description: "Boiled leather is constructed from thick pieces of hide. It is rigid and tough and cannot be worn under mail or the more complicated pieces of plate. These leggings will protect your legs."
     },
     LEATHER_SKULLCAP: {
         name: "Leather Skullcap",
@@ -101,7 +115,7 @@ TEW.DATABASE.ARMORS.SET = {
         ap: 1,
         qualities: [],
         forbiddenWith: [ArmorGroup.CHAINMAIL, ArmorGroup.PLATE],
-        description: "Description has to be done."
+        description: "Boiled leather is constructed from thick pieces of hide. It is rigid and tough and cannot be worn under mail or the more complicated pieces of plate. This skullcap will protect your head."
     },
     CHAINMAIL_CHAUSSES: {
         name: "Chainmail Chausses",
@@ -117,7 +131,7 @@ TEW.DATABASE.ARMORS.SET = {
         ap: 2,
         qualities: [],
         forbiddenWith: [ArmorGroup.BOILED_LEATHER, ArmorGroup.PLATE],
-        description: "Description has to be done."
+        description: "Chainmail is made from thousands of interlocking iron rings. It is heavy and requires regular cleaning and oiling to prevent corrosion. These chausses will protect your legs."
     },
     CHAINMAIL_COAT: {
         name: "Chainmail Coat",
@@ -133,7 +147,7 @@ TEW.DATABASE.ARMORS.SET = {
         ap: 2,
         qualities: [],
         forbiddenWith: [ArmorGroup.BOILED_LEATHER, ArmorGroup.PLATE],
-        description: "Description has to be done."
+        description: "Chainmail is made from thousands of interlocking iron rings. It is heavy and requires regular cleaning and oiling to prevent corrosion. This coat will protect your body and arms."
     },
     CHAINMAIL_COIF: {
         name: "Chainmail Coif",
@@ -149,7 +163,7 @@ TEW.DATABASE.ARMORS.SET = {
         ap: 2,
         qualities: [ArmorQuality.PARTIAL],
         forbiddenWith: [ArmorGroup.BOILED_LEATHER, ArmorGroup.PLATE],
-        description: "Description has to be done."
+        description: "Chainmail is made from thousands of interlocking iron rings. It is heavy and requires regular cleaning and oiling to prevent corrosion. This coif will protect your head."
     },
     CHAINMAIL_SHIRT: {
         name: "Chainmail Shirt",
@@ -165,7 +179,7 @@ TEW.DATABASE.ARMORS.SET = {
         ap: 2,
         qualities: [],
         forbiddenWith: [ArmorGroup.BOILED_LEATHER, ArmorGroup.PLATE],
-        description: "Description has to be done."
+        description: "Chainmail is made from thousands of interlocking iron rings. It is heavy and requires regular cleaning and oiling to prevent corrosion. This shirt will protect your body."
     },
     BRIGANDINE_JACK: {
         name: "Brigandine Jack",
@@ -181,7 +195,7 @@ TEW.DATABASE.ARMORS.SET = {
         ap: 2,
         qualities: [ArmorQuality.OVERCOAT],
         forbiddenWith: [ArmorGroup.PLATE],
-        description: "Description has to be done."
+        description: "Brigandine consists of padded leather or fabric into which many small metal strips, or lames, have been riveted. Brigandine pieces are bulky and cannot be worn under other forms of armour. Lamellar armour, or scale mail, may look rather different to brigandine, but has the same qualities. This jacket will protect your body and arms."
     },
     BRIGANDINE_JERKIN: {
         name: "Brigandine Jerkin",
@@ -197,7 +211,7 @@ TEW.DATABASE.ARMORS.SET = {
         ap: 2,
         qualities: [ArmorQuality.OVERCOAT],
         forbiddenWith: [ArmorGroup.PLATE],
-        description: "Description has to be done."
+        description: "Brigandine consists of padded leather or fabric into which many small metal strips, or lames, have been riveted. Brigandine pieces are bulky and cannot be worn under other forms of armour. Lamellar armour, or scale mail, may look rather different to brigandine, but has the same qualities. This jerkin will protect your body."
     },
     BREASTPLATE: {
         name: "Breastplate",
@@ -213,7 +227,7 @@ TEW.DATABASE.ARMORS.SET = {
         ap: 3,
         qualities: [ArmorQuality.IMPENETRABLE, ArmorQuality.OVERCOAT, ArmorQuality.WEAKPOINTS],
         forbiddenWith: [ArmorGroup.PLATE],
-        description: "Description has to be done."
+        description: "Plate armour is painstakingly crafted from sheets of iron or steel. It is tailor made and close-fitting, so may not normally be worn over other types of armour. Breastplates may be an exception to this general rule, as many of them are designed to be worn over padding or chainmail. This breastplate will protect your body."
     },
     BRACERS: {
         name: "Bracers",
@@ -229,7 +243,7 @@ TEW.DATABASE.ARMORS.SET = {
         ap: 3,
         qualities: [ArmorQuality.IMPENETRABLE, ArmorQuality.REQUIRES_KIT, ArmorQuality.WEAKPOINTS],
         forbiddenWith: [ArmorGroup.BOILED_LEATHER, ArmorGroup.CHAINMAIL, ArmorGroup.BRIGANDINE],
-        description: "Description has to be done."
+        description: "Plate armour is painstakingly crafted from sheets of iron or steel. It is tailor made and close-fitting, so may not normally be worn over other types of armour. These bracers will protect yout arms."
     },
     OPEN_HELM: {
         name: "Open Helm",
@@ -245,7 +259,7 @@ TEW.DATABASE.ARMORS.SET = {
         ap: 3,
         qualities: [ArmorQuality.PARTIAL],
         forbiddenWith: [ArmorGroup.BOILED_LEATHER, ArmorGroup.CHAINMAIL, ArmorGroup.BRIGANDINE],
-        description: "Description has to be done."
+        description: "Plate armour is painstakingly crafted from sheets of iron or steel. It is tailor made and close-fitting, so may not normally be worn over other types of armour. This helm will protect your head but not your face."
     },
     PLATE_LEGGINGS: {
         name: "Plate Leggings",
@@ -261,7 +275,7 @@ TEW.DATABASE.ARMORS.SET = {
         ap: 3,
         qualities: [ArmorQuality.IMPENETRABLE, ArmorQuality.REQUIRES_KIT, ArmorQuality.WEAKPOINTS],
         forbiddenWith: [ArmorGroup.BOILED_LEATHER, ArmorGroup.CHAINMAIL, ArmorGroup.BRIGANDINE],
-        description: "Description has to be done."
+        description: "Plate armour is painstakingly crafted from sheets of iron or steel. It is tailor made and close-fitting, so may not normally be worn over other types of armour. These leggings will protect your legs."
     },
     GREAT_HELM: {
         name: "Great Helm",
@@ -293,7 +307,7 @@ TEW.DATABASE.ARMORS.SET = {
         ap: 3,
         qualities: [ArmorQuality.IMPENETRABLE, ArmorQuality.VISOR, ArmorQuality.WEAKPOINTS],
         forbiddenWith: [ArmorGroup.BOILED_LEATHER, ArmorGroup.CHAINMAIL, ArmorGroup.BRIGANDINE],
-        description: "The Bascinet typically incorporates a conical ArmorQuality.VISOR, leading it to be known as a ‘pigs-snout’ helmet by many soldiers. This design provides additional protection against missile fire, as slingshots and arrows are deflected by the conical ArmorQuality.VISOR. If missile fire strikes the wearer of a Bascinet, and originates from in front of the wearer, then the helmet provides 4 APs rather than 3."
+        description: "The Bascinet typically incorporates a conical ArmorQuality.VISOR, leading it to be known as a 'pigs-snout' helmet by many soldiers. This design provides additional protection against missile fire, as slingshots and arrows are deflected by the conical ArmorQuality.VISOR. If missile fire strikes the wearer of a Bascinet, and originates from in front of the wearer, then the helmet provides 4 APs rather than 3."
     },
     ARMET: {
         name: "Armet",

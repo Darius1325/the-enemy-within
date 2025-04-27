@@ -1,3 +1,14 @@
+// ----------------------
+
+// File: tew.ts
+// Author: Ersokili, 7evy, Sebibebi67
+// Date: 12/04/2025
+// Description: This file contains the type definitions for the TEW object. It includes the properties and types of each object in the TEW object, as well as the available constants and methods. The file is used to define the TEW object and its properties in the game.
+
+// ----------------------
+// Imports
+// ----------------------
+
 import { Armor } from "./armor";
 import { Item } from "./item";
 import { Competence } from "./competence";
