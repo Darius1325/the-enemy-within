@@ -381,13 +381,13 @@ Game_BattlerBase.prototype.hasComp = function (compId) {
 };
 Game_BattlerBase.prototype.addComp = function (compId, value) {
     this.competences[TEW.DATABASE.COMPS.IDS.indexOf(compId)] += value;
-    this.refresh();
+    // this.refresh();
 };
 // Talents
 Game_BattlerBase.prototype.talent = function (talentId) {
     return this.talents[talentId] || 0;
 };
-Game_BattlerBase.prototype.talents = function () {
+Game_BattlerBase.prototype.allTalents = function () {
     return Object.keys(this.talents);
 };
 Game_BattlerBase.prototype.hasTalent = function (talentId) {
@@ -455,9 +455,6 @@ Game_BattlerBase.prototype.equipSecondHand = function (index) {
     this.weapons[index].isInSecondHand = true;
 };
 // Armors
-Game_BattlerBase.prototype.armor = function (armorId) {
-    return this.armors.find((armor) => armor === armorId);
-};
 Game_BattlerBase.prototype.addArmor = function (armorId) {
     this.armors.push(armorId);
     this.sortArmors();

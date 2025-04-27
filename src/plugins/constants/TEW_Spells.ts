@@ -1,4 +1,5 @@
 // $PluginCompiler TEW_Constants.js
+
 import { SpellDomain, SpellDuration, SpellRange, SpellTarget, SpellTargetRadius, SpellType } from "../types/enum";
 import TEW from "../types/tew";
 

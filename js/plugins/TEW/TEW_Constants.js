@@ -1147,6 +1147,1164 @@ TEW.DATABASE.COMPS.ADVANCED_ARRAY = Object.keys(TEW.DATABASE.COMPS.SET)
 // #endregion === COMPS ARRAYS === //
 // #endregion =========================== TEW_Competences ============================== //
 // ============================== //
+// #region ============================== TEW_Items ============================== //
+TEW.DATABASE.ITEMS = {};
+// #region ====== ITEMS SET === //
+TEW.DATABASE.ITEMS.SET = {
+    AMULET: {
+        name: "Amulet",
+        group: 0 /* ItemGroup.CLOTHES */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_CLOTHES,
+        groupLabel: "Clothes" /* ItemGroupLabel.CLOTHES */,
+        nb: 1,
+        price: 2,
+        enc: 0,
+        availability: 0 /* Availability.COMMON */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "A brass amulent representing Sigmar."
+    },
+    BOOTS: {
+        name: "Boots",
+        group: 0 /* ItemGroup.CLOTHES */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_CLOTHES,
+        groupLabel: "Clothes" /* ItemGroupLabel.CLOTHES */,
+        nb: 1,
+        price: 60,
+        enc: 1,
+        availability: 0 /* Availability.COMMON */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "Sturdy boots to keep your feet dry."
+    },
+    CLOTHING: {
+        name: "Clothing",
+        group: 0 /* ItemGroup.CLOTHES */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_CLOTHES,
+        groupLabel: "Clothes" /* ItemGroupLabel.CLOTHES */,
+        nb: 1,
+        price: 72,
+        enc: 1,
+        availability: 0 /* Availability.COMMON */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "Common clothes."
+    },
+    COAT: {
+        name: "Coat",
+        group: 0 /* ItemGroup.CLOTHES */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_CLOTHES,
+        groupLabel: "Clothes" /* ItemGroupLabel.CLOTHES */,
+        nb: 1,
+        price: 216,
+        enc: 1,
+        availability: 0 /* Availability.COMMON */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "Protects you against the elements."
+    },
+    COSTUME: {
+        name: "Costume",
+        group: 0 /* ItemGroup.CLOTHES */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_CLOTHES,
+        groupLabel: "Clothes" /* ItemGroupLabel.CLOTHES */,
+        nb: 1,
+        price: 240,
+        enc: 1,
+        availability: 3 /* Availability.SCARCE */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
+        description: "Expensive clothes to shine in society."
+    },
+    COURTLY_GARB: {
+        name: "Courtly Garb",
+        group: 0 /* ItemGroup.CLOTHES */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_CLOTHES,
+        groupLabel: "Clothes" /* ItemGroupLabel.CLOTHES */,
+        nb: 1,
+        price: 2880,
+        enc: 1,
+        availability: 3 /* Availability.SCARCE */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
+        description: "Nobles' garb features embellishments such as lace cuffs & collars, excessive high-quality fabric and pointed shoes."
+    },
+    FACE_POWDER: {
+        name: "Face Powder",
+        group: 0 /* ItemGroup.CLOTHES */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_CLOTHES,
+        groupLabel: "Clothes" /* ItemGroupLabel.CLOTHES */,
+        nb: 1,
+        price: 120,
+        enc: 0,
+        availability: 0 /* Availability.COMMON */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "Stylish makeup for the noblefolk."
+    },
+    GLOVES: {
+        name: "Gloves",
+        group: 0 /* ItemGroup.CLOTHES */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_CLOTHES,
+        groupLabel: "Clothes" /* ItemGroupLabel.CLOTHES */,
+        nb: 1,
+        price: 48,
+        enc: 0,
+        availability: 0 /* Availability.COMMON */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "To keep your hands dry and warm."
+    },
+    HAT: {
+        name: "Hat",
+        group: 0 /* ItemGroup.CLOTHES */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_CLOTHES,
+        groupLabel: "Clothes" /* ItemGroupLabel.CLOTHES */,
+        nb: 1,
+        price: 48,
+        enc: 0,
+        availability: 0 /* Availability.COMMON */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "Fine quality hats are status symbols in the Empire's towns and cities. The more flamboyant the hat, the better."
+    },
+    HOOD: {
+        name: "Hood",
+        group: 0 /* ItemGroup.CLOTHES */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_CLOTHES,
+        groupLabel: "Clothes" /* ItemGroupLabel.CLOTHES */,
+        nb: 1,
+        price: 60,
+        enc: 0,
+        availability: 0 /* Availability.COMMON */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "Usefull to keep your head dry, or to hide it."
+    },
+    JEWELLERY: {
+        name: "Jewellery",
+        group: 0 /* ItemGroup.CLOTHES */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_CLOTHES,
+        groupLabel: "Clothes" /* ItemGroupLabel.CLOTHES */,
+        nb: 1,
+        price: 1920,
+        enc: 0,
+        availability: 0 /* Availability.COMMON */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "Nice jewels with various gemstones."
+    },
+    PERFUME: {
+        name: "Perfume",
+        group: 0 /* ItemGroup.CLOTHES */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_CLOTHES,
+        groupLabel: "Clothes" /* ItemGroupLabel.CLOTHES */,
+        nb: 1,
+        price: 120,
+        enc: 0,
+        availability: 0 /* Availability.COMMON */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "Smells nicer than most people."
+    },
+    PINS: {
+        name: "Pins",
+        group: 0 /* ItemGroup.CLOTHES */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_CLOTHES,
+        groupLabel: "Clothes" /* ItemGroupLabel.CLOTHES */,
+        nb: 6,
+        price: 120,
+        enc: 0,
+        availability: 3 /* Availability.SCARCE */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
+        description: "Small silver pins."
+    },
+    RELIGIOUS_SYMBOL: {
+        name: "Religious Symbol",
+        group: 0 /* ItemGroup.CLOTHES */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_CLOTHES,
+        groupLabel: "Clothes" /* ItemGroupLabel.CLOTHES */,
+        nb: 1,
+        price: 80,
+        enc: 0,
+        availability: 0 /* Availability.COMMON */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "Small silver symbol representing a god."
+    },
+    ROBES_PRACTICAL: {
+        name: "Practical Robes",
+        group: 0 /* ItemGroup.CLOTHES */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_CLOTHES,
+        groupLabel: "Clothes" /* ItemGroupLabel.CLOTHES */,
+        nb: 1,
+        price: 240,
+        enc: 1,
+        availability: 1 /* Availability.RARE */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_RARE,
+        description: "These costumes are inexpensive, comfortable, and relatively plain. A wizard wearing practical robes may even go unrecognised in many situations. Gives +1 SL to any Channeling test."
+    },
+    ROBES_STANDARD: {
+        name: "Standard Robes",
+        group: 0 /* ItemGroup.CLOTHES */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_CLOTHES,
+        groupLabel: "Clothes" /* ItemGroupLabel.CLOTHES */,
+        nb: 1,
+        price: 1920,
+        enc: 2,
+        availability: 2 /* Availability.EXOTIC */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_EXOTIC,
+        description: "These costumes are complex and typically include heavy coats or cloaks and distinctive headwear. Gives +2 SL to any Channeling test."
+    },
+    ROBES_ELABORATE: {
+        name: "Elaborate Robes",
+        group: 0 /* ItemGroup.CLOTHES */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_CLOTHES,
+        groupLabel: "Clothes" /* ItemGroupLabel.CLOTHES */,
+        nb: 1,
+        price: 7200,
+        enc: 4,
+        availability: 2 /* Availability.EXOTIC */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_EXOTIC,
+        description: "These costumes are heavy and impractical, often incorporating bulky accessories and reams of cloth woven from magically infused thread. Anyone wearing these robes will be instantly recognised as a wizard. Gives +3 SL to any Channeling test."
+    },
+    SCEPTRE: {
+        name: "Sceptre",
+        group: 0 /* ItemGroup.CLOTHES */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_CLOTHES,
+        groupLabel: "Clothes" /* ItemGroupLabel.CLOTHES */,
+        nb: 1,
+        price: 1920,
+        enc: 1,
+        availability: 1 /* Availability.RARE */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_RARE,
+        description: "The highest-ranking legal officials carry sceptres to indicate their status."
+    },
+    SHOES: {
+        name: "Shoes",
+        group: 0 /* ItemGroup.CLOTHES */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_CLOTHES,
+        groupLabel: "Clothes" /* ItemGroupLabel.CLOTHES */,
+        nb: 1,
+        price: 60,
+        enc: 0,
+        availability: 0 /* Availability.COMMON */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "Nice shoes to keep your feet dry."
+    },
+    SIGNET_RING: {
+        name: "Signet Ring",
+        group: 0 /* ItemGroup.CLOTHES */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_CLOTHES,
+        groupLabel: "Clothes" /* ItemGroupLabel.CLOTHES */,
+        nb: 1,
+        price: 1200,
+        enc: 0,
+        availability: 1 /* Availability.RARE */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_RARE,
+        description: "Gold ring with engraved stamp."
+    },
+    TATOO: {
+        name: "Tatoo",
+        group: 0 /* ItemGroup.CLOTHES */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_CLOTHES,
+        groupLabel: "Clothes" /* ItemGroupLabel.CLOTHES */,
+        nb: 1,
+        price: 48,
+        enc: 0,
+        availability: 3 /* Availability.SCARCE */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
+        description: "Definitive mark made with totally clean tools."
+    },
+    UNIFORM: {
+        name: "Uniform",
+        group: 0 /* ItemGroup.CLOTHES */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_CLOTHES,
+        groupLabel: "Clothes" /* ItemGroupLabel.CLOTHES */,
+        nb: 1,
+        price: 264,
+        enc: 1,
+        availability: 3 /* Availability.SCARCE */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
+        description: "Outfit with the city's coat of arms."
+    },
+    WALKING_CANE: {
+        name: "Walking Cane",
+        group: 0 /* ItemGroup.CLOTHES */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_CLOTHES,
+        groupLabel: "Clothes" /* ItemGroupLabel.CLOTHES */,
+        nb: 1,
+        price: 720,
+        enc: 1,
+        availability: 0 /* Availability.COMMON */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "Polished wooden canes with metal caps are status symbols amongst wealthier townsfolk."
+    },
+    ALE_PINT: {
+        name: "Ale, pint",
+        group: 1 /* ItemGroup.FOOD */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_FOOD,
+        groupLabel: "Food" /* ItemGroupLabel.FOOD */,
+        nb: 1,
+        price: 3,
+        enc: 0,
+        availability: 0 /* Availability.COMMON */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "Pint of the finest ale you can find, not really good though."
+    },
+    ALE_KEG: {
+        name: "Ale, keg",
+        group: 1 /* ItemGroup.FOOD */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_FOOD,
+        groupLabel: "Food" /* ItemGroupLabel.FOOD */,
+        nb: 1,
+        price: 36,
+        enc: 2,
+        availability: 0 /* Availability.COMMON */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "Keg full of the finest ale you can find, not really good though."
+    },
+    BUGMANS_ALE_PINT: {
+        name: "Bugman's XXXXXX Ale, pint",
+        group: 1 /* ItemGroup.FOOD */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_FOOD,
+        groupLabel: "Food" /* ItemGroupLabel.FOOD */,
+        nb: 1,
+        price: 9,
+        enc: 0,
+        availability: 2 /* Availability.EXOTIC */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_EXOTIC,
+        description: "Merchants travel across the Old World to purchase this potent Dwarfen ale from the famous brewery founded by Josef Bugman."
+    },
+    FOOD_ONE_DAY: {
+        name: "Food, Groceries/day",
+        group: 1 /* ItemGroup.FOOD */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_FOOD,
+        groupLabel: "Food" /* ItemGroupLabel.FOOD */,
+        nb: 1,
+        price: 10,
+        enc: 1,
+        availability: 0 /* Availability.COMMON */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "Enough food to feed one person for one day. Needs to be prepared."
+    },
+    MEAL_INN: {
+        name: "Meal, inn",
+        group: 1 /* ItemGroup.FOOD */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_FOOD,
+        groupLabel: "Food" /* ItemGroupLabel.FOOD */,
+        nb: 1,
+        price: 12,
+        enc: 0,
+        availability: 0 /* Availability.COMMON */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "Hot meal served in a wooden plate."
+    },
+    RATIONS_ONE_DAY: {
+        name: "Rations, one day",
+        group: 1 /* ItemGroup.FOOD */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_FOOD,
+        groupLabel: "Food" /* ItemGroupLabel.FOOD */,
+        nb: 1,
+        price: 24,
+        enc: 0,
+        availability: 0 /* Availability.COMMON */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "Food to go for one person for one day."
+    },
+    ROOM_COMMON: {
+        name: "Common Room/night",
+        group: 1 /* ItemGroup.FOOD */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_FOOD,
+        groupLabel: "Food" /* ItemGroupLabel.FOOD */,
+        nb: 1,
+        price: 10,
+        enc: 0,
+        availability: 0 /* Availability.COMMON */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "One night in the common room for one person. Guests sleeping in common rooms should be wary of thieves."
+    },
+    ROOM_PRIVATE: {
+        name: "Private Room/night",
+        group: 1 /* ItemGroup.FOOD */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_FOOD,
+        groupLabel: "Food" /* ItemGroupLabel.FOOD */,
+        nb: 1,
+        price: 120,
+        enc: 0,
+        availability: 0 /* Availability.COMMON */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "One night in a private room. Accommodates 2 guests."
+    },
+    SPIRITS_PINT: {
+        name: "Spirits, pint",
+        group: 1 /* ItemGroup.FOOD */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_FOOD,
+        groupLabel: "Food" /* ItemGroupLabel.FOOD */,
+        nb: 1,
+        price: 24,
+        enc: 0,
+        availability: 0 /* Availability.COMMON */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "One pint of fine spirits."
+    },
+    STABLES_NIGHT: {
+        name: "Stables/night",
+        group: 1 /* ItemGroup.FOOD */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_FOOD,
+        groupLabel: "Food" /* ItemGroupLabel.FOOD */,
+        nb: 1,
+        price: 10,
+        enc: 0,
+        availability: 0 /* Availability.COMMON */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "Room for one horse in the stables fon one night."
+    },
+    WINE_BOTTLE: {
+        name: "Wine Bottle",
+        group: 1 /* ItemGroup.FOOD */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_FOOD,
+        groupLabel: "Food" /* ItemGroupLabel.FOOD */,
+        nb: 1,
+        price: 10,
+        enc: 0,
+        availability: 0 /* Availability.COMMON */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "A bottle of fine wine."
+    },
+    WINE_GLASS: {
+        name: "Wine Glass",
+        group: 1 /* ItemGroup.FOOD */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_FOOD,
+        groupLabel: "Food" /* ItemGroupLabel.FOOD */,
+        nb: 1,
+        price: 4,
+        enc: 0,
+        availability: 0 /* Availability.COMMON */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "A glass of fine wine."
+    },
+    ABACUS: {
+        name: "Abacus",
+        group: 2 /* ItemGroup.TOOLS */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_TOOLS,
+        groupLabel: "Tools" /* ItemGroupLabel.TOOLS */,
+        nb: 1,
+        price: 40,
+        enc: 0,
+        availability: 3 /* Availability.SCARCE */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
+        description: "Mechanical tool facilitating calculus."
+    },
+    ANIMAL_TRAP: {
+        name: "Animal Trap",
+        group: 2 /* ItemGroup.TOOLS */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_TOOLS,
+        groupLabel: "Tools" /* ItemGroupLabel.TOOLS */,
+        nb: 1,
+        price: 30,
+        enc: 1,
+        availability: 0 /* Availability.COMMON */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "Used to catch animals like wolves or rabbits."
+    },
+    ANTITOXIN_KIT: {
+        name: "Antitoxin Kit",
+        group: 2 /* ItemGroup.TOOLS */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_TOOLS,
+        groupLabel: "Tools" /* ItemGroupLabel.TOOLS */,
+        nb: 1,
+        price: 720,
+        enc: 0,
+        availability: 3 /* Availability.SCARCE */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
+        description: "Contains a small knife, herbs, and a jar of leeches. A successful Heal Test with an antitoxin kit removes all Poisoned Conditions. Treatment takes at least two Rounds."
+    },
+    BOAT_HOOK: {
+        name: "Boat Hook",
+        group: 2 /* ItemGroup.TOOLS */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_TOOLS,
+        groupLabel: "Tools" /* ItemGroupLabel.TOOLS */,
+        nb: 1,
+        price: 60,
+        enc: 1,
+        availability: 0 /* Availability.COMMON */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "Tool used to catch boats from shore."
+    },
+    BROOM: {
+        name: "Broom",
+        group: 2 /* ItemGroup.TOOLS */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_TOOLS,
+        groupLabel: "Tools" /* ItemGroupLabel.TOOLS */,
+        nb: 1,
+        price: 10,
+        enc: 2,
+        availability: 0 /* Availability.COMMON */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "It's a broom, nothing more."
+    },
+    BUCKET: {
+        name: "Bucket",
+        group: 2 /* ItemGroup.TOOLS */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_TOOLS,
+        groupLabel: "Tools" /* ItemGroupLabel.TOOLS */,
+        nb: 1,
+        price: 30,
+        enc: 1,
+        availability: 0 /* Availability.COMMON */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "Can be used to move liquids."
+    },
+    CHISEL: {
+        name: "Chisel",
+        group: 2 /* ItemGroup.TOOLS */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_TOOLS,
+        groupLabel: "Tools" /* ItemGroupLabel.TOOLS */,
+        nb: 1,
+        price: 50,
+        enc: 0,
+        availability: 0 /* Availability.COMMON */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "Little tool used to scult stone."
+    },
+    COMB: {
+        name: "Comb",
+        group: 2 /* ItemGroup.TOOLS */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_TOOLS,
+        groupLabel: "Tools" /* ItemGroupLabel.TOOLS */,
+        nb: 1,
+        price: 10,
+        enc: 0,
+        availability: 0 /* Availability.COMMON */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "Used to brush your hair."
+    },
+    CROWBAR: {
+        name: "Crowbar",
+        group: 2 /* ItemGroup.TOOLS */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_TOOLS,
+        groupLabel: "Tools" /* ItemGroupLabel.TOOLS */,
+        nb: 1,
+        price: 30,
+        enc: 1,
+        availability: 0 /* Availability.COMMON */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "Metal bar that can be used as an improvised weapon."
+    },
+    CRUTCH: {
+        name: "Crutch",
+        group: 2 /* ItemGroup.TOOLS */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_TOOLS,
+        groupLabel: "Tools" /* ItemGroupLabel.TOOLS */,
+        nb: 1,
+        price: 36,
+        enc: 2,
+        availability: 0 /* Availability.COMMON */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "Helps you walk."
+    },
+    DISGUISE_KIT: {
+        name: "Disguise Kit",
+        group: 2 /* ItemGroup.TOOLS */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_TOOLS,
+        groupLabel: "Tools" /* ItemGroupLabel.TOOLS */,
+        nb: 1,
+        price: 78,
+        enc: 0,
+        availability: 3 /* Availability.SCARCE */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
+        description: "Contains enough props for four disguises and also materials for changing your appearance used by those with the Entertain (Acting) Skill."
+    },
+    EAR_PICK: {
+        name: "Ear Pick",
+        group: 2 /* ItemGroup.TOOLS */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_TOOLS,
+        groupLabel: "Tools" /* ItemGroupLabel.TOOLS */,
+        nb: 1,
+        price: 24,
+        enc: 0,
+        availability: 3 /* Availability.SCARCE */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
+        description: "To clean your ears."
+    },
+    FISH_HOOKS: {
+        name: "Fish Hooks",
+        group: 2 /* ItemGroup.TOOLS */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_TOOLS,
+        groupLabel: "Tools" /* ItemGroupLabel.TOOLS */,
+        nb: 12,
+        price: 12,
+        enc: 0,
+        availability: 0 /* Availability.COMMON */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "Can be used to catch fish."
+    },
+    FLOOR_BRUSH: {
+        name: "Floor Brush",
+        group: 2 /* ItemGroup.TOOLS */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_TOOLS,
+        groupLabel: "Tools" /* ItemGroupLabel.TOOLS */,
+        nb: 1,
+        price: 18,
+        enc: 0,
+        availability: 0 /* Availability.COMMON */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "Little brush, often used in rich houses."
+    },
+    GAVEL: {
+        name: "Gavel",
+        group: 2 /* ItemGroup.TOOLS */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_TOOLS,
+        groupLabel: "Tools" /* ItemGroupLabel.TOOLS */,
+        nb: 1,
+        price: 240,
+        enc: 0,
+        availability: 3 /* Availability.SCARCE */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
+        description: "Little hammer used by judges and magistrates."
+    },
+    HAMMER: {
+        name: "Hammer",
+        group: 2 /* ItemGroup.TOOLS */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_TOOLS,
+        groupLabel: "Tools" /* ItemGroupLabel.TOOLS */,
+        nb: 1,
+        price: 36,
+        enc: 0,
+        availability: 0 /* Availability.COMMON */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "Tool used to punch nails."
+    },
+    HAND_MIRROR: {
+        name: "Hand Mirror",
+        group: 2 /* ItemGroup.TOOLS */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_TOOLS,
+        groupLabel: "Tools" /* ItemGroupLabel.TOOLS */,
+        nb: 1,
+        price: 258,
+        enc: 0,
+        availability: 2 /* Availability.EXOTIC */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_EXOTIC,
+        description: "Little mirror used by nobles."
+    },
+    HOE: {
+        name: "Hoe",
+        group: 2 /* ItemGroup.TOOLS */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_TOOLS,
+        groupLabel: "Tools" /* ItemGroupLabel.TOOLS */,
+        nb: 1,
+        price: 48,
+        enc: 2,
+        availability: 0 /* Availability.COMMON */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "Farming tool."
+    },
+    KEY: {
+        name: "Key",
+        group: 2 /* ItemGroup.TOOLS */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_TOOLS,
+        groupLabel: "Tools" /* ItemGroupLabel.TOOLS */,
+        nb: 1,
+        price: 12,
+        enc: 0,
+        availability: 0 /* Availability.COMMON */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "No idea what it opens."
+    },
+    LOCK_PICK: {
+        name: "Lock Pick",
+        group: 2 /* ItemGroup.TOOLS */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_TOOLS,
+        groupLabel: "Tools" /* ItemGroupLabel.TOOLS */,
+        nb: 1,
+        price: 180,
+        enc: 0,
+        availability: 3 /* Availability.SCARCE */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
+        description: "An assortment of small, variously-shaped tools needed to use the Pick Lock Skill without penalty."
+    },
+    MANACLES: {
+        name: "Manacles",
+        group: 2 /* ItemGroup.TOOLS */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_TOOLS,
+        groupLabel: "Tools" /* ItemGroupLabel.TOOLS */,
+        nb: 1,
+        price: 216,
+        enc: 0,
+        availability: 3 /* Availability.SCARCE */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
+        description: "Prisoners trying to break out of manacles suffer 1 Wound and must pass a Very Hard (-30) Strength Test."
+    },
+    MOP: {
+        name: "Mop",
+        group: 2 /* ItemGroup.TOOLS */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_TOOLS,
+        groupLabel: "Tools" /* ItemGroupLabel.TOOLS */,
+        nb: 1,
+        price: 12,
+        enc: 2,
+        availability: 0 /* Availability.COMMON */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "Used to clean the floor."
+    },
+    NAILS: {
+        name: "Nails",
+        group: 2 /* ItemGroup.TOOLS */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_TOOLS,
+        groupLabel: "Tools" /* ItemGroupLabel.TOOLS */,
+        nb: 12,
+        price: 2,
+        enc: 0,
+        availability: 0 /* Availability.COMMON */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "Cna be punched by a hammer."
+    },
+    PAINT_BRUSH: {
+        name: "Paint Brush",
+        group: 2 /* ItemGroup.TOOLS */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_TOOLS,
+        groupLabel: "Tools" /* ItemGroupLabel.TOOLS */,
+        nb: 1,
+        price: 48,
+        enc: 0,
+        availability: 0 /* Availability.COMMON */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "Brush used by artists to paint on canvas."
+    },
+    PESTLE_AND_MORTAR: {
+        name: "Pestle and Mortar",
+        group: 2 /* ItemGroup.TOOLS */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_TOOLS,
+        groupLabel: "Tools" /* ItemGroupLabel.TOOLS */,
+        nb: 1,
+        price: 168,
+        enc: 0,
+        availability: 0 /* Availability.COMMON */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "Tools used by an apothecary."
+    },
+    PICK: {
+        name: "Pick",
+        group: 2 /* ItemGroup.TOOLS */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_TOOLS,
+        groupLabel: "Tools" /* ItemGroupLabel.TOOLS */,
+        nb: 1,
+        price: 216,
+        enc: 1,
+        availability: 0 /* Availability.COMMON */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "Tool used by minors."
+    },
+    POLE: {
+        name: "Pole (3 yards)",
+        group: 2 /* ItemGroup.TOOLS */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_TOOLS,
+        groupLabel: "Tools" /* ItemGroupLabel.TOOLS */,
+        nb: 1,
+        price: 96,
+        enc: 3,
+        availability: 0 /* Availability.COMMON */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "A long pole used for barging; counts as an Improvised Weapon."
+    },
+    QUILL_PEN: {
+        name: "Quill Pen",
+        group: 2 /* ItemGroup.TOOLS */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_TOOLS,
+        groupLabel: "Tools" /* ItemGroupLabel.TOOLS */,
+        nb: 1,
+        price: 36,
+        enc: 0,
+        availability: 0 /* Availability.COMMON */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "Expensive writing tool."
+    },
+    RAKE: {
+        name: "Rake",
+        group: 2 /* ItemGroup.TOOLS */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_TOOLS,
+        groupLabel: "Tools" /* ItemGroupLabel.TOOLS */,
+        nb: 1,
+        price: 54,
+        enc: 2,
+        availability: 0 /* Availability.COMMON */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "Usefull to removes leaves from your garden."
+    },
+    READING_LENS: {
+        name: "Reading Lens",
+        group: 2 /* ItemGroup.TOOLS */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_TOOLS,
+        groupLabel: "Tools" /* ItemGroupLabel.TOOLS */,
+        nb: 1,
+        price: 720,
+        enc: 0,
+        availability: 1 /* Availability.RARE */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_RARE,
+        description: "Glass lenses with handles provide a +20 bonus to Read/Write Tests for deciphering tiny or unintelligible writing. Perception Tests to search for fine details such as secret doors or compartments also receive a +20 bonus."
+    },
+    SAW: {
+        name: "Saw",
+        group: 2 /* ItemGroup.TOOLS */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_TOOLS,
+        groupLabel: "Tools" /* ItemGroupLabel.TOOLS */,
+        nb: 1,
+        price: 72,
+        enc: 1,
+        availability: 0 /* Availability.COMMON */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "Tool used to cut wood."
+    },
+    SICKLE: {
+        name: "Sickle",
+        group: 2 /* ItemGroup.TOOLS */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_TOOLS,
+        groupLabel: "Tools" /* ItemGroupLabel.TOOLS */,
+        nb: 1,
+        price: 240,
+        enc: 1,
+        availability: 0 /* Availability.COMMON */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "Tool used by herborists to collect herbs."
+    },
+    SPADE: {
+        name: "Spade",
+        group: 2 /* ItemGroup.TOOLS */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_TOOLS,
+        groupLabel: "Tools" /* ItemGroupLabel.TOOLS */,
+        nb: 1,
+        price: 96,
+        enc: 2,
+        availability: 0 /* Availability.COMMON */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "Farming tool."
+    },
+    SPIKE: {
+        name: "Spike",
+        group: 2 /* ItemGroup.TOOLS */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_TOOLS,
+        groupLabel: "Tools" /* ItemGroupLabel.TOOLS */,
+        nb: 1,
+        price: 12,
+        enc: 0,
+        availability: 0 /* Availability.COMMON */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "Great spike."
+    },
+    STAMP: {
+        name: "Stamp, engraved",
+        group: 2 /* ItemGroup.TOOLS */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_TOOLS,
+        groupLabel: "Tools" /* ItemGroupLabel.TOOLS */,
+        nb: 1,
+        price: 1200,
+        enc: 0,
+        availability: 3 /* Availability.SCARCE */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
+        description: "Stamp engraved with heraldry."
+    },
+    TONGS: {
+        name: "Tongs, steel",
+        group: 2 /* ItemGroup.TOOLS */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_TOOLS,
+        groupLabel: "Tools" /* ItemGroupLabel.TOOLS */,
+        nb: 1,
+        price: 192,
+        enc: 0,
+        availability: 0 /* Availability.COMMON */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "Usefull to spread laundry."
+    },
+    TELESCOPE: {
+        name: "Telescope",
+        group: 2 /* ItemGroup.TOOLS */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_TOOLS,
+        groupLabel: "Tools" /* ItemGroupLabel.TOOLS */,
+        nb: 1,
+        price: 1200,
+        enc: 0,
+        availability: 1 /* Availability.RARE */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_RARE,
+        description: "Tool used to watch the stars."
+    },
+    TWEEZERS: {
+        name: "Tweezers",
+        group: 2 /* ItemGroup.TOOLS */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_TOOLS,
+        groupLabel: "Tools" /* ItemGroupLabel.TOOLS */,
+        nb: 1,
+        price: 12,
+        enc: 0,
+        availability: 3 /* Availability.SCARCE */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
+        description: "Usefull."
+    },
+    WRITING_KIT: {
+        name: "Writing Kit",
+        group: 2 /* ItemGroup.TOOLS */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_TOOLS,
+        groupLabel: "Tools" /* ItemGroupLabel.TOOLS */,
+        nb: 1,
+        price: 480,
+        enc: 0,
+        availability: 3 /* Availability.SCARCE */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
+        description: "Contains a quill pen, inkpot, and ink blotter."
+    },
+    APOTHECARY_BOOK: {
+        name: "Apothecary Book",
+        group: 3 /* ItemGroup.BOOKS */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_BOOKS,
+        groupLabel: "Books" /* ItemGroupLabel.BOOKS */,
+        nb: 1,
+        price: 1920,
+        enc: 1,
+        availability: 3 /* Availability.SCARCE */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
+        description: "Apothecary books are usually hand-written. A basic apothecary book contains ingredient descriptions and diagrammed instructions for brewing processes. Formulas for Digestive Tonics, Healing Draughts, and Vitality Draughts are usually included. Advanced texts contain formulas for more exotic draughts."
+    },
+    ART_BOOK: {
+        name: "Art Book",
+        group: 3 /* ItemGroup.BOOKS */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_BOOKS,
+        groupLabel: "Books" /* ItemGroupLabel.BOOKS */,
+        nb: 1,
+        price: 1200,
+        enc: 1,
+        availability: 3 /* Availability.SCARCE */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
+        description: "Plays, poems, and ballads or perhaps musical arrangements scribbled on loose parchment, Art books come inmany forms. They also include treatises on perspective, form, and style, often written by famous painters or sculptors - such as Leonardo da Miragliano - for mass printing."
+    },
+    CRYPTOGRAPHY_BOOK: {
+        name: "Cryptography Book",
+        group: 3 /* ItemGroup.BOOKS */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_BOOKS,
+        groupLabel: "Books" /* ItemGroupLabel.BOOKS */,
+        nb: 1,
+        price: 1920,
+        enc: 1,
+        availability: 2 /* Availability.EXOTIC */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_EXOTIC,
+        description: "Where individual ciphers and encryption keys can be written on a single page or two, Cryptography books are often hand-scribed codices dealing with mathematics, numerology, and polyalphabetic encryption."
+    },
+    ENGINEER_BOOK: {
+        name: "Engineer Book",
+        group: 3 /* ItemGroup.BOOKS */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_BOOKS,
+        groupLabel: "Books" /* ItemGroupLabel.BOOKS */,
+        nb: 1,
+        price: 720,
+        enc: 1,
+        availability: 3 /* Availability.SCARCE */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
+        description: "The majority of engineering books are pressprinted. Engineering is an advanced science in the Empire, largely due to the Imperial Engineers' School in Altdorf and the Dwarf Engineers' Guild. Because of this, Engineering texts are often authored, co-authored, or edited by Dwarfs."
+    },
+    LAW_BOOK: {
+        name: "Law Book",
+        group: 3 /* ItemGroup.BOOKS */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_BOOKS,
+        groupLabel: "Books" /* ItemGroupLabel.BOOKS */,
+        nb: 1,
+        price: 3600,
+        enc: 1,
+        availability: 1 /* Availability.RARE */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_RARE,
+        description: "Laws vary considerably from one region to the next. Cities with printing presses compile legislation in bound volumes, whereas judges in smaller towns often rely on documents handwritten centuries ago. Law books used by travelling lawyers or judges often combine printed and written pages from different towns across the Empire, collated and bound together within the same cover."
+    },
+    MAGIC_GRIMOIRE: {
+        name: "Magic Grimoire",
+        group: 3 /* ItemGroup.BOOKS */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_BOOKS,
+        groupLabel: "Books" /* ItemGroupLabel.BOOKS */,
+        nb: 1,
+        price: 4800,
+        enc: 1,
+        availability: 2 /* Availability.EXOTIC */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_EXOTIC,
+        description: "Spell grimoires are usually scribed by wizards, and their covers are often secured with locks. Sometimes grimoires are even protected by magical alarms or wards. Carrying a spell grimoire is punishable as heresy unless the owning wizard is licensed by the Colleges of Magic."
+    },
+    MEDICINE_BOOK: {
+        name: "Medicine Book",
+        group: 3 /* ItemGroup.BOOKS */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_BOOKS,
+        groupLabel: "Books" /* ItemGroupLabel.BOOKS */,
+        nb: 1,
+        price: 3600,
+        enc: 1,
+        availability: 1 /* Availability.RARE */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_RARE,
+        description: "Medical texts can either be scribed or pressprinted, depending on the authoring physician's prestige. Illuminations are common, and usually include detailed autopsy drawings and procedural diagrams."
+    },
+    RELIGION_BOOK: {
+        name: "Religion Book",
+        group: 3 /* ItemGroup.BOOKS */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_BOOKS,
+        groupLabel: "Books" /* ItemGroupLabel.BOOKS */,
+        nb: 1,
+        price: 240,
+        enc: 1,
+        availability: 0 /* Availability.COMMON */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "Religions books come in all forms in the Empire, a realm renowned for its religious observances. There is a eager market for the most popular texts, most of which are cheaply produced by printing presses."
+    },
+    GUILD_LICENSE: {
+        name: "Guild License",
+        group: 3 /* ItemGroup.BOOKS */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_BOOKS,
+        groupLabel: "Books" /* ItemGroupLabel.BOOKS */,
+        nb: 1,
+        price: 0,
+        enc: 0,
+        availability: 2 /* Availability.EXOTIC */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_EXOTIC,
+        description: "Guild licenses are usually printed on single sheets of parchment, stamped with an official seal, and signed by the local guild master. Guild licenses are not purchased; instead, they are granted to guild members according to each guild's traditions and laws."
+    },
+    LEAFLET: {
+        name: "Leaflet",
+        group: 3 /* ItemGroup.BOOKS */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_BOOKS,
+        groupLabel: "Books" /* ItemGroupLabel.BOOKS */,
+        nb: 1,
+        price: 12,
+        enc: 0,
+        availability: 0 /* Availability.COMMON */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "Leaflets contain usefull information about the local city and customs."
+    },
+    LEGAL_DOCUMENT: {
+        name: "Legal Document",
+        group: 3 /* ItemGroup.BOOKS */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_BOOKS,
+        groupLabel: "Books" /* ItemGroupLabel.BOOKS */,
+        nb: 1,
+        price: 36,
+        enc: 0,
+        availability: 0 /* Availability.COMMON */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "A simple legal document such as a will, IOU or letter of intent."
+    },
+    MAP: {
+        name: "Map",
+        group: 3 /* ItemGroup.BOOKS */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_BOOKS,
+        groupLabel: "Books" /* ItemGroupLabel.BOOKS */,
+        nb: 1,
+        price: 720,
+        enc: 0,
+        availability: 3 /* Availability.SCARCE */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
+        description: "A map of the surronding lands."
+    },
+    PARCHMENT: {
+        name: "Parchment",
+        group: 3 /* ItemGroup.BOOKS */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_BOOKS,
+        groupLabel: "Books" /* ItemGroupLabel.BOOKS */,
+        nb: 1,
+        price: 12,
+        enc: 0,
+        availability: 0 /* Availability.COMMON */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "A piece of parchment."
+    },
+    BLACK_LOTUS: {
+        name: "Black Lotus",
+        group: 4 /* ItemGroup.DRUGS */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_DRUGS,
+        groupLabel: "Drugs" /* ItemGroupLabel.DRUGS */,
+        nb: 1,
+        price: 4800,
+        enc: 0,
+        availability: 2 /* Availability.EXOTIC */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_EXOTIC,
+        description: "This deadly plant grows in Southland jungles and is used for blade venom. Victims who suffer at least 1 Wound from a sap-coated blade immediately take 2 Poisoned Conditions. Resisted with a Difficult (-10) Endurance Test."
+    },
+    HEARTKILL: {
+        name: "Heartkill",
+        group: 4 /* ItemGroup.DRUGS */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_DRUGS,
+        groupLabel: "Drugs" /* ItemGroupLabel.DRUGS */,
+        nb: 1,
+        price: 9600,
+        enc: 0,
+        availability: 2 /* Availability.EXOTIC */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_EXOTIC,
+        description: "Combining the venoms from an Amphisbaena (a rare, two-headed serpent) and a Jabberslythe produces an odourless, colourless poison. When ingested, the deadly mixture inflicts 4 Poisoned Conditions. Resisted with a Difficult (-10) Endurance Test."
+    },
+    MAD_CAP_MUSHROOMS: {
+        name: "Mad Cap Mushrooms",
+        group: 4 /* ItemGroup.DRUGS */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_DRUGS,
+        groupLabel: "Drugs" /* ItemGroupLabel.DRUGS */,
+        nb: 1,
+        price: 1200,
+        enc: 0,
+        availability: 2 /* Availability.EXOTIC */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_EXOTIC,
+        description: "These hallucinogenic mushrooms are eaten by Goblin fanatics before battle. They induce a berserker rage, adding +10 Strength, +4 Wounds, and the Frenzy Talent. When the effect wears off, the user loses 1d10 Wounds. Non- Greenskins must also pass a Challenging (+0) Endurance Test or contract a Minor Infection. Duration: Active when chewed plus an additional 2d10 minutes."
+    },
+    MANDRAKE_ROOT: {
+        name: "Mandrake Root",
+        group: 4 /* ItemGroup.DRUGS */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_DRUGS,
+        groupLabel: "Drugs" /* ItemGroupLabel.DRUGS */,
+        nb: 1,
+        price: 240,
+        enc: 0,
+        availability: 1 /* Availability.RARE */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_RARE,
+        description: "This highly-addictive deliriant grows under gallows, and is chewed to keep an unquiet mind still. Users must pass a Willpower Test every Round to perform an Action or a Move (choose one); further, Movement is halved. However, Cool Tests receive a bonus of +20. Duration: Active when chewed plus an additional 1d10x10 minutes."
+    },
+    MOONFLOWER: {
+        name: "Moonflower",
+        group: 4 /* ItemGroup.DRUGS */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_DRUGS,
+        groupLabel: "Drugs" /* ItemGroupLabel.DRUGS */,
+        nb: 1,
+        price: 1200,
+        enc: 0,
+        availability: 3 /* Availability.SCARCE */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
+        description: "This tranquilliser is a dried moss which grows only on leaves in the Laurelorn forest. Elves use Moonflower to treat Black Plague, granting a bonus of +30 to any associated Tests for Elves to resist the disease, otherwise it has no effect on their species. Others can inhale vapours from boiling the moss and if they fail a Very Hard (-30) Willpower Test will gain an Unconscious Condition; if passed, they receive a bonus of +20 to Cool Tests and gain a Fatigued Condition. Moonflower is used by the most expensive Physicians as an anesthetic. Duration: 1d10+5 hours."
+    },
+    RANALDS_DELIGHT: {
+        name: "Ranald's Delight",
+        group: 4 /* ItemGroup.DRUGS */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_DRUGS,
+        groupLabel: "Drugs" /* ItemGroupLabel.DRUGS */,
+        nb: 1,
+        price: 216,
+        enc: 0,
+        availability: 3 /* Availability.SCARCE */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
+        description: "This highly-addictive stimulant is a synthetic compound made from sulphur, mercury and other elements. Inhaling the powder provides a bonus of +1 to Movement, and +10 to WS, S, T, and Agi. This last for 3 hours, after which the user suffers a penalty of -2 Movement and -20 on Weapon Skill, Strength, Toughness, and Agility. Duration: 1 day."
+    },
+    SPIT: {
+        name: "Spit",
+        group: 4 /* ItemGroup.DRUGS */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_DRUGS,
+        groupLabel: "Drugs" /* ItemGroupLabel.DRUGS */,
+        nb: 1,
+        price: 300,
+        enc: 0,
+        availability: 1 /* Availability.RARE */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_RARE,
+        description: "Extracted from Chameleoleeches found in the marshes of the Empire, this extraordinarily powerful hallucinogen brings visions of something deeply desired, such as a lost lover, a dead friend, or a missing child. Called Spit on the streets, it's popular with those lost to despair. Upon exposure, you must pass a Very Hard (-30) Toughness Test or be lost to a fully real fantasy, which is a matter for the GM to handle. Duration: 1d10 minutes."
+    },
+    WEIRDROOT: {
+        name: "Weirdroot",
+        group: 4 /* ItemGroup.DRUGS */,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_DRUGS,
+        groupLabel: "Drugs" /* ItemGroupLabel.DRUGS */,
+        nb: 1,
+        price: 48,
+        enc: 0,
+        availability: 1 /* Availability.RARE */,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_RARE,
+        description: "One of the most common street-drugs in the Empire, Weirdroot is chewed, bringing a sense of euphoria and pleasant hallucinations, which some suggest may be connected to the Winds of Magic. The drug gives a +10 bonus to Toughness and Willpower Tests, but a penalty of -10 to Agility, Initiative, and Intelligence Tests. Duration: Active when chewed plus an additional 1d10x10 minutes."
+    }
+};
+// #endregion === ITEMS SET === //
+// === //
+// #region ====== ITEMS IDS === //
+// The IDs are the keys of the SET object
+TEW.DATABASE.ITEMS.IDS = Object.keys(TEW.DATABASE.ITEMS.SET).sort((a, b) => a.localeCompare(b));
+// #endregion === ITEMS IDS === //
+// === //
+// #region ====== ITEMS ARRAY === //
+// This is a 2D array, where the first element is the key and the second element is the value
+TEW.DATABASE.ITEMS.ARRAY = Object.keys(TEW.DATABASE.ITEMS.IDS).map(item => [item, TEW.DATABASE.ITEMS.SET[item]]);
+// #endregion === ITEMS ARRAY === //
+// #endregion =========================== TEW_Items ============================== //
+// ============================== //
 // #region ============================== TEW_Npc ============================== //
 TEW.DATABASE.NPCS = {};
 // #region ====== NPCS SET === //
@@ -1350,6 +2508,705 @@ TEW.DATABASE.NPCS.SET = {
 };
 // #endregion === NPCS SET === //
 // #endregion =========================== TEW_Npc ============================== //
+// ============================== //
+// #region ============================== TEW_Spells ============================== //
+TEW.DATABASE.SPELLS = {};
+// #region ====== SPELLS SET === //
+TEW.DATABASE.SPELLS.SET = {
+    AETHYRIC_ARMOUR: {
+        name: "Aethyric Armour",
+        type: 0 /* SpellType.SPELL */,
+        domain: 0 /* SpellDomain.ARCANE */,
+        cn: 2,
+        target: {
+            type: 0 /* SpellTarget.SELF */
+        },
+        duration: {
+            type: 1 /* SpellDuration.WILL_BONUS */
+        },
+        desc: "You gain +1 Armour Point to all Hit Locations as you wrap yourself in a protective swathe of magic."
+    },
+    AETHYRIC_ARMS: {
+        name: "Aethyric Arms",
+        type: 0 /* SpellType.SPELL */,
+        domain: 0 /* SpellDomain.ARCANE */,
+        cn: 2,
+        target: {
+            type: 0 /* SpellTarget.SELF */
+        },
+        duration: {
+            type: 1 /* SpellDuration.WILL_BONUS */
+        },
+        desc: "You create a melee weapon with a Damage equal to your WILLpower Bonus. This may take any form, and so use any Melee Skill you may possess. The weapon counts as Magical."
+    },
+    ARROW_SHIELD: {
+        name: "Arrow Shield",
+        type: 0 /* SpellType.SPELL */,
+        domain: 0 /* SpellDomain.ARCANE */,
+        cn: 3,
+        range: {
+            type: 0 /* SpellRange.SELF */
+        },
+        target: {
+            type: 2 /* SpellTarget.AOE */,
+            distance: 0 /* SpellTargetRadius.WILL_BONUS */
+        },
+        duration: {
+            type: 1 /* SpellDuration.WILL_BONUS */
+        },
+        desc: "Any missiles containing organic matter, such as arrows with wooden shafts, are automatically destroyed if they pass within the Area of Effect, causing no damage to their target. Missiles comprising only inorganic matter, such as throwing knives or pistol shots, are unaffected."
+    },
+    BLAST: {
+        name: "Blast",
+        type: 0 /* SpellType.SPELL */,
+        domain: 0 /* SpellDomain.ARCANE */,
+        cn: 4,
+        range: {
+            type: 1 /* SpellRange.WILL */
+        },
+        target: {
+            type: 2 /* SpellTarget.AOE */,
+            distance: 0 /* SpellTargetRadius.WILL_BONUS */
+        },
+        duration: {
+            type: 0 /* SpellDuration.INSTANT */
+        },
+        desc: "You channel magic into an explosive blast. This is a magic missile with Damage +3 that targets everyone in the Area of Effect."
+    },
+    BOLT: {
+        name: "Bolt",
+        type: 0 /* SpellType.SPELL */,
+        domain: 0 /* SpellDomain.ARCANE */,
+        cn: 4,
+        range: {
+            type: 1 /* SpellRange.WILL */
+        },
+        target: {
+            type: 1 /* SpellTarget.ONE */
+        },
+        duration: {
+            type: 0 /* SpellDuration.INSTANT */
+        },
+        desc: "You channel magic into a damaging bolt. Bolt is a magic missile with a Damage of +4."
+    },
+    BREATH: {
+        name: "Breath",
+        type: 0 /* SpellType.SPELL */,
+        domain: 0 /* SpellDomain.ARCANE */,
+        cn: 4,
+        range: {
+            type: 3 /* SpellRange.ONE */
+        },
+        target: {
+            type: 3 /* SpellTarget.SPECIAL */
+        },
+        duration: {
+            type: 0 /* SpellDuration.INSTANT */
+        },
+        desc: "You immediately make a Breath attack, as if you had spent 2 Advantage to activate the Breath Creature Trait. Breath is a magic missile with a Damage equal to your Toughness Bonus. The GM decides which type of Breath attack best suits your Arcane Magic Talent."
+    },
+    CHAIN_ATTACK: {
+        name: "Chain Attack",
+        type: 0 /* SpellType.SPELL */,
+        domain: 0 /* SpellDomain.ARCANE */,
+        cn: 6,
+        range: {
+            type: 1 /* SpellRange.WILL */
+        },
+        target: {
+            type: 3 /* SpellTarget.SPECIAL */
+        },
+        duration: {
+            type: 0 /* SpellDuration.INSTANT */
+        },
+        desc: "You channel a twisting spur of rupturing magic into your target. This is a magic missile with a Damage of +4. If Chain Attack reduces a target to 0 Wounds, it leaps to another target within the spell's initial range, and within WILLpower Bonus yards of the previous target, inflicting the same Damage again. It may leap a maximum number of times equal to your WILLpower Bonus. For every +2 SL achieved, it may chain to an additional target."
+    },
+    CORROSIVE_BLOOD: {
+        name: "Bolt",
+        type: 0 /* SpellType.SPELL */,
+        domain: 0 /* SpellDomain.ARCANE */,
+        cn: 4,
+        target: {
+            type: 0 /* SpellTarget.SELF */
+        },
+        duration: {
+            type: 1 /* SpellDuration.WILL_BONUS */
+        },
+        desc: "You infuse yourself with magic, lending your blood a fearsome potency. You gain the Corrosive Blood Creature Trait."
+    },
+    DARK_VISION: {
+        name: "Dark Vision",
+        type: 0 /* SpellType.SPELL */,
+        domain: 0 /* SpellDomain.ARCANE */,
+        cn: 4,
+        target: {
+            type: 0 /* SpellTarget.SELF */
+        },
+        duration: {
+            type: 1 /* SpellDuration.WILL_BONUS */
+        },
+        desc: "You boost your Second Sight to assist your mundane senses. While the spell is active, gain the Dark Vision Creature Trait."
+    },
+    DISTRACTING: {
+        name: "Distracting",
+        type: 0 /* SpellType.SPELL */,
+        domain: 0 /* SpellDomain.ARCANE */,
+        cn: 4,
+        target: {
+            type: 0 /* SpellTarget.SELF */
+        },
+        duration: {
+            type: 1 /* SpellDuration.WILL_BONUS */
+        },
+        desc: "You wreathe yourself in magic, which swirls around you, distracting your foes. While the spell is active, gain the Distracting Creature Trait."
+    },
+    DOME: {
+        name: "Dome",
+        type: 0 /* SpellType.SPELL */,
+        domain: 0 /* SpellDomain.ARCANE */,
+        cn: 7,
+        range: {
+            type: 0 /* SpellRange.SELF */
+        },
+        target: {
+            type: 2 /* SpellTarget.AOE */,
+            distance: 0 /* SpellTargetRadius.WILL_BONUS */
+        },
+        duration: {
+            type: 1 /* SpellDuration.WILL_BONUS */
+        },
+        desc: "You create a dome of magical energy overhead, blocking incoming attacks. Anyone within the Area of Effect gains the Ward (6+) Creature Trait against magical or ranged attacks originating outside the dome. Those within may attack out of the dome as normal, and the dome does not impede movement."
+    },
+    DROP: {
+        name: "Drop",
+        type: 0 /* SpellType.SPELL */,
+        domain: 0 /* SpellDomain.ARCANE */,
+        cn: 1,
+        range: {
+            type: 1 /* SpellRange.WILL */
+        },
+        target: {
+            type: 1 /* SpellTarget.ONE */
+        },
+        duration: {
+            type: 0 /* SpellDuration.INSTANT */
+        },
+        desc: "You channel magic into an object being held by an opponent. This could be a weapon, a rope, or someone's hand. Unless a Challenging (+0) Dexterity Test is passed, the item is dropped. For every +2 SL you may impose an additional -10 on the Dexterity Test."
+    },
+    ENTANGLE: {
+        name: "Entangle",
+        type: 0 /* SpellType.SPELL */,
+        domain: 0 /* SpellDomain.ARCANE */,
+        cn: 3,
+        range: {
+            type: 1 /* SpellRange.WILL */
+        },
+        target: {
+            type: 1 /* SpellTarget.ONE */
+        },
+        duration: {
+            type: 2 /* SpellDuration.SPECIAL */
+        },
+        desc: "Using magic, you entrap your target, wrapping them in whatever suits your Lore: vines, shadows, their own clothing… Your target gains one Entangled Condition with a Strength equal to your Intelligence. For every +2 SL, you may give the target +1 additional Entangled Condition. The spell lasts until all Entangled Conditions are removed."
+    },
+    FEARWOME: {
+        name: "Fearsome",
+        type: 0 /* SpellType.SPELL */,
+        domain: 0 /* SpellDomain.ARCANE */,
+        cn: 3,
+        target: {
+            type: 0 /* SpellTarget.SELF */
+        },
+        duration: {
+            type: 1 /* SpellDuration.WILL_BONUS */
+        },
+        desc: "Shrouding yourself in magic, you become fearsome and intimidating. Gain Fear 1. For every +3 SL, you may increase your Fear value by one."
+    },
+    MAGIC_SHIELD: {
+        name: "Magic Shield",
+        type: 0 /* SpellType.SPELL */,
+        domain: 0 /* SpellDomain.ARCANE */,
+        cn: 4,
+        target: {
+            type: 0 /* SpellTarget.SELF */
+        },
+        duration: {
+            type: 1 /* SpellDuration.WILL_BONUS */
+        },
+        desc: "You encase yourself in bands of protective magic. While the spell is active, add +Willpower Bonus SL to any dispel attempts you make."
+    },
+    MUNDANE_AURA: {
+        name: "Mundane Aura",
+        type: 0 /* SpellType.SPELL */,
+        domain: 0 /* SpellDomain.ARCANE */,
+        cn: 4,
+        target: {
+            type: 0 /* SpellTarget.SELF */
+        },
+        duration: {
+            type: 5 /* SpellDuration.WILL */,
+            multiplier: 10
+        },
+        desc: "You drain all the Winds of Magic from within your body and your possessions, removing any magical aura. For the duration of the spell you appear mundane to the Magical Sense Talent and similar. You effectively have no magical ability and your magical nature cannot be detected by any means. While this spell is in effect, you cannot cast any other spells. Mundane Aura is immediately dispelled if you make a Channelling Test."
+    },
+    PUSH: {
+        name: "Push",
+        type: 0 /* SpellType.SPELL */,
+        domain: 0 /* SpellDomain.ARCANE */,
+        cn: 6,
+        target: {
+            type: 0 /* SpellTarget.SELF */
+        },
+        duration: {
+            type: 0 /* SpellDuration.INSTANT */
+        },
+        desc: "All living creatures within Willpower Bonus yards are pushed back your Willpower Bonus in yards and gain the Prone Condition. If this brings them into contact with a wall or other large obstacle, they take Damage equal to the distance travelled in yards. For every +2 SL, you may push creatures back another Willpower Bonus in yards."
+    },
+    TELEPORT: {
+        name: "Teleport",
+        type: 0 /* SpellType.SPELL */,
+        domain: 0 /* SpellDomain.ARCANE */,
+        cn: 5,
+        target: {
+            type: 0 /* SpellTarget.SELF */
+        },
+        duration: {
+            type: 0 /* SpellDuration.INSTANT */
+        },
+        desc: "Using magic, you can teleport up to your Willpower Bonus in yards. This movement allows you to traverse gaps, avoid perils and pitfalls, and ignore obstacles. For every +2 SL you may increase the distance travelled by your Willpower Bonus in yards."
+    },
+    TERRIFYING: {
+        name: "Terrifying",
+        type: 0 /* SpellType.SPELL */,
+        domain: 0 /* SpellDomain.ARCANE */,
+        cn: 7,
+        target: {
+            type: 0 /* SpellTarget.SELF */
+        },
+        duration: {
+            type: 1 /* SpellDuration.WILL_BONUS */
+        },
+        desc: "You gain the Terror (1) Creature Trait."
+    },
+    WARD: {
+        name: "Ward",
+        type: 0 /* SpellType.SPELL */,
+        domain: 0 /* SpellDomain.ARCANE */,
+        cn: 5,
+        target: {
+            type: 0 /* SpellTarget.SELF */
+        },
+        duration: {
+            type: 1 /* SpellDuration.WILL_BONUS */
+        },
+        desc: "You wrap yourself in protective magic, gaining the Ward (9+) Creature Trait."
+    },
+    ANIMAL_FRIEND: {
+        name: "Animal Friend",
+        type: 0 /* SpellType.SPELL */,
+        domain: 2 /* SpellDomain.PETTY */,
+        cn: 0,
+        range: {
+            type: 3 /* SpellRange.ONE */
+        },
+        target: {
+            type: 1 /* SpellTarget.ONE */
+        },
+        duration: {
+            type: 3 /* SpellDuration.NUMBER */,
+            duration: 600
+        },
+        desc: "You make friends with a creature that is smaller than you and possesses the Bestial Creature Trait. The animal trusts you completely and regards you as a friend."
+    },
+    BEARINGS: {
+        name: "Bearings",
+        type: 0 /* SpellType.SPELL */,
+        domain: 2 /* SpellDomain.PETTY */,
+        cn: 0,
+        target: {
+            type: 0 /* SpellTarget.SELF */
+        },
+        duration: {
+            type: 0 /* SpellDuration.INSTANT */
+        },
+        desc: "You sense the influx of the Winds of Magic from their source. You know which direction North is."
+    },
+    DAZZLE: {
+        name: "Dazzle",
+        type: 0 /* SpellType.SPELL */,
+        domain: 2 /* SpellDomain.PETTY */,
+        cn: 0,
+        range: {
+            type: 2 /* SpellRange.TOUCH */
+        },
+        target: {
+            type: 1 /* SpellTarget.ONE */
+        },
+        duration: {
+            type: 1 /* SpellDuration.WILL_BONUS */
+        },
+        desc: "The target gains 1 Blinded Condition, and gains 1 Blinded Condition at the start of each round for the duration of the spell."
+    },
+    CAREFUL_STEP: {
+        name: "Careful Step",
+        type: 0 /* SpellType.SPELL */,
+        domain: 2 /* SpellDomain.PETTY */,
+        cn: 0,
+        target: {
+            type: 0 /* SpellTarget.SELF */
+        },
+        duration: {
+            type: 1 /* SpellRange.WILL */,
+            multiplier: 10
+        },
+        desc: "The magic flowing through your feet ensures any organic matter you tread upon remains undamaged: twigs do not break, grass springs back to its original position, and even delicate flowers are unharmed. Those seeking to use the Track skill to pursue you through rural terrain suffer a -30 penalty to their Tests."
+    },
+    DART: {
+        name: "Dart",
+        type: 0 /* SpellType.SPELL */,
+        domain: 2 /* SpellDomain.PETTY */,
+        cn: 0,
+        range: {
+            type: 1 /* SpellRange.WILL */
+        },
+        target: {
+            type: 1 /* SpellTarget.ONE */
+        },
+        duration: {
+            type: 0 /* SpellDuration.INSTANT */
+        },
+        desc: "You cause a small dart of magical energy to fly from your fingers. This is a magic missile with a Damage of +0."
+    },
+    DRAIN: {
+        name: "Dart",
+        type: 0 /* SpellType.SPELL */,
+        domain: 2 /* SpellDomain.PETTY */,
+        cn: 0,
+        range: {
+            type: 2 /* SpellRange.TOUCH */
+        },
+        target: {
+            type: 1 /* SpellTarget.ONE */
+        },
+        duration: {
+            type: 0 /* SpellDuration.INSTANT */
+        },
+        desc: "You touch your targets, draining their life. This counts as a magic missile with Damage +0 that ignores Armour Points. You then Heal 1 Wound."
+    },
+    EAVESDROP: {
+        name: "Eavesdrop",
+        type: 0 /* SpellType.SPELL */,
+        domain: 2 /* SpellDomain.PETTY */,
+        cn: 0,
+        range: {
+            type: 1 /* SpellRange.WILL */
+        },
+        target: {
+            type: 1 /* SpellTarget.ONE */
+        },
+        duration: {
+            type: 4 /* SpellDuration.INIT_BONUS */,
+            multiplier: 10
+        },
+        desc: "You can hear what your targets say as if you were standing right next to them."
+    },
+    GUST: {
+        name: "Gust",
+        type: 0 /* SpellType.SPELL */,
+        domain: 2 /* SpellDomain.PETTY */,
+        cn: 0,
+        range: {
+            type: 1 /* SpellRange.WILL */
+        },
+        target: {
+            type: 3 /* SpellTarget.SPECIAL */
+        },
+        duration: {
+            type: 0 /* SpellDuration.INSTANT */
+        },
+        desc: "You create a brief gust of wind, strong enough to blow out a candle, cause an open door to slam, or blow a few pages to the floor."
+    },
+    LIGHT: {
+        name: "Light",
+        type: 0 /* SpellType.SPELL */,
+        domain: 2 /* SpellDomain.PETTY */,
+        cn: 0,
+        target: {
+            type: 0 /* SpellTarget.SELF */
+        },
+        duration: {
+            type: 1 /* SpellRange.WILL */,
+            multiplier: 10
+        },
+        desc: "You create a small light, roughly equivalent to a torch, which glows from your hand, staff or some other part of your person. While the spell is active, you may choose to increase the illumination to that of a lantern, or decrease it to that of a candle, if you pass a Average (+20) Channelling Test."
+    },
+    MAGIC_FLAME: {
+        name: "Magic Flame",
+        type: 0 /* SpellType.SPELL */,
+        domain: 2 /* SpellDomain.PETTY */,
+        cn: 0,
+        target: {
+            type: 0 /* SpellTarget.SELF */
+        },
+        duration: {
+            type: 1 /* SpellDuration.WILL_BONUS */
+        },
+        desc: "You kindle a small flame that flickers to life in the palm of your hand. It will not burn you, but will emit heat and set flammable objects alight, like a natural flame."
+    },
+    MARSH_LIGHTS: {
+        name: "Marsh Lights",
+        type: 0 /* SpellType.SPELL */,
+        domain: 2 /* SpellDomain.PETTY */,
+        cn: 0,
+        range: {
+            type: 1 /* SpellRange.WILL */
+        },
+        target: {
+            type: 3 /* SpellTarget.SPECIAL */
+        },
+        duration: {
+            type: 1 /* SpellRange.WILL */,
+            multiplier: 10
+        },
+        desc: "You cast your voice at a point within Willpower yards, regardless of line of sight. Your voice sounds from this point, and all within earshot will hear it."
+    },
+    OPEN_LOCK: {
+        name: "Open Lock",
+        type: 0 /* SpellType.SPELL */,
+        domain: 2 /* SpellDomain.PETTY */,
+        cn: 0,
+        range: {
+            type: 2 /* SpellRange.TOUCH */
+        },
+        target: {
+            type: 3 /* SpellTarget.SPECIAL */
+        },
+        duration: {
+            type: 0 /* SpellDuration.INSTANT */
+        },
+        desc: "One non-magical lock you touch opens."
+    },
+    PURIFY_WATER: {
+        name: "Purify Water",
+        type: 0 /* SpellType.SPELL */,
+        domain: 2 /* SpellDomain.PETTY */,
+        cn: 0,
+        range: {
+            type: 3 /* SpellRange.ONE */
+        },
+        target: {
+            type: 3 /* SpellTarget.SPECIAL */
+        },
+        duration: {
+            type: 0 /* SpellDuration.INSTANT */
+        },
+        desc: "You purify all water within a receptacle, such as a water flask, stein, or jug. All non-magical impurities, such as poison or contaminants are removed, leaving crisp, clear, potable water. If the vessel contained another liquid that is predominantly water - such as ale, or wine - this is also purified, turning into delicious, pure, non-alcoholic water."
+    },
+    SLEEP: {
+        name: "Sleep",
+        type: 0 /* SpellType.SPELL */,
+        domain: 2 /* SpellDomain.PETTY */,
+        cn: 0,
+        range: {
+            type: 2 /* SpellRange.TOUCH */
+        },
+        target: {
+            type: 1 /* SpellTarget.ONE */
+        },
+        duration: {
+            type: 1 /* SpellDuration.WILL_BONUS */
+        },
+        desc: "You touch your opponent, sending them into a deep sleep. If the target has the Prone Condition, they gain the Unconscious Condition as they fall asleep. They remain unconscious for the duration, although loud noises or being moved or jostled will awaken them instantly. If your targets are standing or sitting when affected, they start themselves awake as they hit the ground, gaining the Prone Condition, but remaining conscious. If your targets are not resisting, and are suitably tired, they will, at the spell's end, pass into a deep and restful sleep."
+    },
+    SHOCK: {
+        name: "Shock",
+        type: 0 /* SpellType.SPELL */,
+        domain: 2 /* SpellDomain.PETTY */,
+        cn: 0,
+        range: {
+            type: 2 /* SpellRange.TOUCH */
+        },
+        target: {
+            type: 1 /* SpellTarget.ONE */
+        },
+        duration: {
+            type: 0 /* SpellDuration.INSTANT */
+        },
+        desc: "Your target receives 1 Stunned Condition."
+    },
+    SOUNDS: {
+        name: "Sounds",
+        type: 0 /* SpellType.SPELL */,
+        domain: 2 /* SpellDomain.PETTY */,
+        cn: 0,
+        range: {
+            type: 1 /* SpellRange.WILL */
+        },
+        target: {
+            type: 3 /* SpellTarget.SPECIAL */
+        },
+        duration: {
+            type: 1 /* SpellDuration.WILL_BONUS */
+        },
+        desc: "You create small noises nearby. You can create quiet, indistinct noises that sound as if they come from a specific location within range, regardless of line of sight. The noises can evoke something specific, such as footsteps, whispers or the howl of an animal, but nothing so distinct that it might convey a message. While the spell is active, you may control the sounds by passing a Average (+20) Channelling Test. A success allows you to move the sounds to another point within range, or to increase or decrease their volume."
+    },
+    WARNING: {
+        name: "Warning",
+        type: 0 /* SpellType.SPELL */,
+        domain: 2 /* SpellDomain.PETTY */,
+        cn: 0,
+        range: {
+            type: 3 /* SpellRange.ONE */
+        },
+        target: {
+            type: 3 /* SpellTarget.SPECIAL */
+        },
+        duration: {
+            type: 0 /* SpellDuration.INSTANT */
+        },
+        desc: "You channel magic into an object, noticing immediately if it has been poisoned or trapped."
+    },
+    AQSHYS_AEGIS: {
+        name: "Aqshy's Aegis",
+        type: 0 /* SpellType.SPELL */,
+        domain: 1 /* SpellDomain.FIRE */,
+        cn: 5,
+        target: {
+            type: 0 /* SpellTarget.SELF */
+        },
+        duration: {
+            type: 1 /* SpellDuration.WILL_BONUS */
+        },
+        desc: "You wrap yourself in a fiery cloak of Aqshy , which channels flame into the Aegis. You are completely immune to damage from non-magical fire, including the breath attacks of monsters, and ignore any Ablaze Conditions you receive. You receive the Ward (9+) Creature Trait against magical fire attacks including spells from the Lore of Fire."
+    },
+    CAUTERISE: {
+        name: "Cauterise",
+        type: 0 /* SpellType.SPELL */,
+        domain: 1 /* SpellDomain.FIRE */,
+        cn: 4,
+        range: {
+            type: 2 /* SpellRange.TOUCH */
+        },
+        target: {
+            type: 1 /* SpellTarget.ONE */
+        },
+        duration: {
+            type: 0 /* SpellDuration.INSTANT */
+        },
+        desc: "Channelling Aqshy through your hands you lay them on an ally's wounds. Immediately heal 1d10 Wounds and remove all Bleeding Conditions. Further, the wounds will not become infected. Targets without the Arcane Magic (Fire) Talent, must pass a Challenging (+0) Cool Test or scream in agony.. If Failed by -6 or more SL, the target gains the Unconscious Condition and is permanently scarred, waking up 1d10 hours later"
+    },
+    CROWN_OF_FLAME: {
+        name: "Crown of Flame",
+        type: 0 /* SpellType.SPELL */,
+        domain: 1 /* SpellDomain.FIRE */,
+        cn: 8,
+        target: {
+            type: 0 /* SpellTarget.SELF */
+        },
+        duration: {
+            type: 1 /* SpellDuration.WILL_BONUS */
+        },
+        desc: "You channel Aqshy into a majestic crown of inspiring fire about your brow. Gain the Fear (1) Trait and +1 War Leader Talent while the spell is active. For every +2 SL, you may increase your Fear value by +1, or take War Leader Talent again. Furthermore, gain a bonus of +10 on all attempts to Channel and Cast with Aqshy while the spell is in effect."
+    },
+    FLAMING_HEARTS: {
+        name: "Flaming Hearts",
+        type: 0 /* SpellType.SPELL */,
+        domain: 1 /* SpellDomain.FIRE */,
+        cn: 8,
+        range: {
+            type: 1 /* SpellRange.WILL */
+        },
+        target: {
+            type: 2 /* SpellTarget.AOE */,
+            distance: 0 /* SpellTargetRadius.WILL_BONUS */
+        },
+        duration: {
+            type: 1 /* SpellDuration.WILL_BONUS */
+        },
+        desc: "Your voice takes on a rich resonance, echoing with Aqshy's fiery passion. Affected allies lose all Broken and Fatigued Conditions, and gain +1 Drilled, Fearless and Stout-hearted Talent while the spell is in effect."
+    },
+    FIREWALL: {
+        name: "Firewall",
+        type: 0 /* SpellType.SPELL */,
+        domain: 1 /* SpellDomain.FIRE */,
+        cn: 6,
+        range: {
+            type: 1 /* SpellRange.WILL */
+        },
+        target: {
+            type: 2 /* SpellTarget.AOE */,
+            distance: 1 /* SpellTargetRadius.SPECIAL */
+        },
+        duration: {
+            type: 1 /* SpellDuration.WILL_BONUS */
+        },
+        desc: "You channel a fiery streak of Aqshy , creating a wall of flame. The Firewall is Willpower Bonus yards wide, and 1 yard deep. For every +2 SL you may extend the length of the Firewall by +Willpower Bonus yards. Anyone crossing the firewall gains 1 Ablaze condition and suffers a hit with a Damage equal to your Willpower Bonus, handled like a magical missile."
+    },
+    GREAT_FIRES_OF_UZHUL: {
+        name: "Great Fires of U'Zhul",
+        type: 0 /* SpellType.SPELL */,
+        domain: 1 /* SpellDomain.FIRE */,
+        cn: 10,
+        range: {
+            type: 1 /* SpellRange.WILL */
+        },
+        target: {
+            type: 2 /* SpellTarget.AOE */,
+            distance: 0 /* SpellTargetRadius.WILL_BONUS */
+        },
+        duration: {
+            type: 1 /* SpellDuration.WILL_BONUS */
+        },
+        desc: "You hurl a great, explosive blast of Aqshy into an enemy, which erupts into a furious blaze, burning with the heat of a forge. This is a magical missile with Damage +10 that ignores Armour Points and inflicts +2 Ablaze Conditions and the Prone Condition on a target. Everyone within the Area of Effect of that target suffers a Damage +5 hit ignoring Armour Points, and must pass a Dodge Test or also gain +1 Ablaze Condition. The spell stops behaving like a magic missile as the fire continues to burn in the Area of Effect for the duration. Anyone within the Area of Effect at the start of a round suffers 1d10+6 Damage, ignoring APs, and gains +1 Ablaze Condition."
+    },
+    FLAMING_SWORD_OF_RHUIN: {
+        name: "Flaming Sword of Rhuin",
+        type: 0 /* SpellType.SPELL */,
+        domain: 1 /* SpellDomain.FIRE */,
+        cn: 8,
+        range: {
+            type: 1 /* SpellRange.WILL */
+        },
+        target: {
+            type: 1 /* SpellTarget.ONE */
+        },
+        duration: {
+            type: 1 /* SpellDuration.WILL_BONUS */
+        },
+        desc: "You wreathe a sword in magical flames. The weapon has Damage +6 and the Impact Quality (see page 298), and anyone struck by the blade gains +1 Ablaze Condition. If wielders do not possess the Arcane Magic (Fire) Talent, and they fumble an attack with the Flaming Sword, they gain +1 Ablaze Condition."
+    },
+    PURGE: {
+        name: "Purge",
+        type: 0 /* SpellType.SPELL */,
+        domain: 1 /* SpellDomain.FIRE */,
+        cn: 10,
+        range: {
+            type: 1 /* SpellRange.WILL */
+        },
+        target: {
+            type: 2 /* SpellTarget.AOE */,
+            distance: 0 /* SpellTargetRadius.WILL_BONUS */
+        },
+        duration: {
+            type: 1 /* SpellDuration.WILL_BONUS */
+        },
+        desc: "You funnel intense flame to burn away the taint and corruption in an area. Anything flammable is set alight, and any creatures in the area takes +SL Ablaze conditions. If the location contains a Corrupting Influence, such as Dhar , warpstone, or a Chaostainted object, it too will smoulder and blacken, beginning to burn. This spell may be maintained in subsequent rounds by passing a Challenging (+0) Channelling Test. The precise time needed to eliminate the Corrupting Influence will be determined by your GM. As a rough guideline, a small quantity (smaller than an acorn) of warpstone, or a minor Chaos-tainted object may require 10-Willpower Bonus Rounds (minimum of 1 Round). A larger quantity of warpstone - fist-sized - or a more potent Chaos-tainted object may require double this. A powerful Chaos Artefact may take hours, or even longer..."
+    }
+};
+// #endregion === SPELLS SET === //
+// === //
+// #region ====== SPELLS IDS === //
+// The IDs are the keys of the SET object
+TEW.DATABASE.SPELLS.IDS = Object.keys(TEW.DATABASE.SPELLS.SET);
+// #endregion === SPELLS IDS === //
+// === //
+// #region ====== SPELLS ARRAY === //
+// This is a 2D array, where the first element is the key and the second element is the value
+TEW.DATABASE.SPELLS.ARRAY = Object.keys(TEW.DATABASE.SPELLS.SET)
+    .sort((a, b) => a.localeCompare(b))
+    .map(spell => [spell, TEW.DATABASE.SPELLS.SET[spell]]);
+// #endregion === SPELLS ARRAY === //
+// #endregion =========================== TEW_Spells ============================== //
 // ============================== //
 // #region ============================== TEW_Talents ============================== //
 TEW.DATABASE.TALENTS = {};

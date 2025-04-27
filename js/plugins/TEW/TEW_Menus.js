@@ -2,7 +2,7 @@
 var Imported = Imported || {};
 Imported.TEW_Menus = true;
 var TEW = TEW || {};
-TEW.MENUS = TEW.MENUS || {};
+TEW.MENU = TEW.MENU || {};
 // #endregion =========================== import ============================== //
 // ============================== //
 // #region ============================== properties ============================== //

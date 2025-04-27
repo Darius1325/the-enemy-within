@@ -1,4 +1,5 @@
 // $PluginCompiler TEW_Constants.js
+
 import { Availability, ItemGroup, ItemGroupLabel } from "../types/enum";
 import TEW from "../types/tew";
 
