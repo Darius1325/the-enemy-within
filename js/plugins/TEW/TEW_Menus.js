@@ -53,6 +53,7 @@ Input.keyMapper[65] = "A_Key";
 Input.keyMapper[69] = "E_Key";
 // Windows
 TEW.MENU.INVENTORY_WINDOW_TOPBAR_HEIGHT = 70;
+TEW.MENU.STATUS_WINDOW_TOPBAR_HEIGHT = 70;
 // The window for selecting a command on the inventory screen.
 // Adding new Commands Entries
 Object.defineProperties(TextManager, {
@@ -1182,9 +1183,6 @@ Scene_Status.prototype.hideAllWindows = function () {
 Scene_Status.prototype.displayWindow = function () {
     // hide all
     this.hideAllWindows();
-    console.log("Index actif : ", this._commandWindow.index());
-    console.log("Fenêtre active : ", this._commandWindow.currentSymbol());
-
     // Changing window
     if (this._commandWindow.index() === this.STATS_WINDOW_INDEX) {
         this._statsWindow.show();
@@ -1251,6 +1249,7 @@ Window_Status.BASE_COMPETENCE_LINE_COUNT = Math.ceil(TEW.DATABASE.COMPS.BASE_ARR
 Window_Status.BASE_COMPETENCE_WINDOW_HEIGHT = (Window_Status.BASE_COMPETENCE_LINE_COUNT + 1) * TEW.MENU.LINE_HEIGHT;
 Window_Status.prototype.initialize = function () {
     Window_Selectable.prototype.initialize.call(this, 0, TEW.MENU.STATUS_WINDOW_TOPBAR_HEIGHT, Graphics.boxWidth, Graphics.boxHeight - TEW.MENU.STATUS_WINDOW_TOPBAR_HEIGHT);
+    console.log("Window_Status initialize");
     this._actor = null;
     this._maxItems = 0;
     this.activate();
@@ -1317,37 +1316,54 @@ Window_StatusCommand.prototype.cursorLeft = function (wrap) {
 // #endregion =========================== Window_StatusCommand ============================== //
 // ============================== //
 // #region ============================== Window_StatusCompetences ============================== //
-// -----------------------------------------------------------------------------
-// Window_StatusCompetences
-//
-// Competence list window
+// ----------------------
 function Window_StatusCompetences() {
     this.initialize.apply(this, arguments);
 }
-Window_StatusCompetences.prototype = Object.create(Window_Status.prototype);
+Window_StatusCompetences.prototype = Object.create(Window_Selectable.prototype);
 Window_StatusCompetences.prototype.constructor = Window_StatusCompetences;
+/**
+ * Constructor for the Window_StatusCompetences class.
+ */
 Window_StatusCompetences.prototype.initialize = function () {
-    Window_Status.prototype.initialize.call(this);
-    this.contents.fillRect(0, 0, this.contentsWidth(), this.contentsHeight(), "#B7462E"); // Couleur visible
-    this._helpWindow = null;
-    this.setHandler('ok', this.showHelpWindow.bind(this));
+    Window_Selectable.prototype.initialize.call(this, 0, TEW.MENU.STATUS_WINDOW_TOPBAR_HEIGHT, Graphics.boxWidth, Graphics.boxHeight - TEW.MENU.STATUS_WINDOW_TOPBAR_HEIGHT);
+    console.log("dimensions", this.width, this.height);
+    console.log("position", this.x, this.y);
+    this._actor = null;
+    this._maxItems = 0;
+    console.log("max items in initialize", this._maxItems);
+    this._leftPadding = 10;
+    this._compColumnWidth = this.width / 4 - this._leftPadding;
+    this._levelColumnWidth = this.width / 8;
+    this._statColumnWidth = this.width / 8;
+    this.activate();
+    this.refresh();
 };
+/**
+ * Sets the actor for the window.
+ */
 Window_StatusCompetences.prototype.setActor = function (actor) {
-    console.log("Acteur assigné : ", this._actor);
     if (this._actor !== actor) {
         this._actor = actor;
         this._advancedCompsList = TEW.DATABASE.COMPS.ADVANCED_ARRAY.filter(comp => actor.hasComp(comp[0]));
+        console.log("base comps list", TEW.DATABASE.COMPS.BASE_ARRAY);
+        console.log("advanced comps list", this._advancedCompsList);
         this._maxItems = TEW.DATABASE.COMPS.BASE_ARRAY.length + this._advancedCompsList.length;
+        console.log("max items in setActor", this._maxItems);
         this.refresh();
     }
 };
+/**
+ * Returns the maximum number of columns in the window.
+ */
 Window_StatusCompetences.prototype.maxCols = () => 2;
+/**
+ * Draws all items in the window.
+ */
 Window_StatusCompetences.prototype.drawAllItems = function () {
-    console.log("drawAllItems");
     var topIndex = this.topIndex();
-    console.log("topIndex : ", topIndex);
-    console.log("maxPageItems : ", this.maxPageItems());
-
+    console.log("top index", topIndex);
+    console.log("max items in drawAllItems", this.maxItems());
     for (var i = 0; i < this.maxPageItems(); i++) {
         var index = topIndex + i;
         if (index < this.maxItems()) {
@@ -1355,39 +1371,35 @@ Window_StatusCompetences.prototype.drawAllItems = function () {
         }
     }
 };
+/**
+ * Draws a single item in the window.
+ */
 Window_StatusCompetences.prototype.drawItem = function (index) {
-    console.log("Position x/y de la fenêtre : ", this.x, this.y);
-    console.log("Dimensions width/height : ", this.width, this.height);
-
     const normalizedIndex = index - this.topIndex();
-    const x = index % 2 === 0 ? 48 : 432;
+    const x = index % 2 * this.width / 2 + this._leftPadding;
     const y = Math.floor(normalizedIndex / 2) * TEW.MENU.LINE_HEIGHT;
     const comp = this.competenceFromIndex(index);
+    // Comp name
     this.changeTextColor(this.systemColor());
-    this.drawText(comp[1].name, x, y, 160);
+    this.drawText(comp[1].name, x, y, this._compColumnWidth);
     this.resetTextColor();
-    this.drawText(this._actor.comp(comp[0]) + '(' + this._actor.compPlus(comp[0]) + ')', x + 260, y, 60, 'right');
+    // Level of the comp
+    const compLevel = this._actor.compPlus(comp[0]);
+    const compLevelText = compLevel > 0 ? `Lvl${compLevel}` : "Base";
+    this.drawText(compLevelText, x + this._compColumnWidth, y, this._levelColumnWidth, 'left');
+    // Stats which the comp depends on
+    const statName = comp ? comp[1].stat : null;
+    const statNumber = this._actor.comp(comp[0]);
+    const statText = `${statName} (${statNumber})`;
+    this.drawText(statText, x + this._compColumnWidth + this._levelColumnWidth, y, this._statColumnWidth, 'left');
 };
+/**
+ * Returns the competence from the given index.
+ */
 Window_StatusCompetences.prototype.competenceFromIndex = function (index) {
     return index < TEW.DATABASE.COMPS.BASE_ARRAY.length // [<internal name>, {<competence data>}]
         ? TEW.DATABASE.COMPS.BASE_ARRAY[index]
         : this._advancedCompsList[index - TEW.DATABASE.COMPS.BASE_ARRAY.length];
-};
-Window_StatusCompetences.prototype.item = function () {
-    return 'Depends on ' + TEW.CHARACTERS.STATS_VERBOSE[TEW.CHARACTERS.STATS[this.competenceFromIndex(this._index)[1].stat]];
-};
-Window_StatusCompetences.prototype.select = function (index) {
-    if (this._index !== index) {
-        this.hideHelpWindow();
-    }
-    this._index = index;
-    if (this._index >= 0) {
-        this._helpWindow.setText(this.item());
-    }
-    this._stayCount = 0;
-    this.ensureCursorVisible();
-    this.updateCursor();
-    this.callUpdateHelp();
 };
 Window_StatusCompetences.prototype.processOk = function () {
     if (this.isCurrentItemEnabled()) {
@@ -1399,15 +1411,9 @@ Window_StatusCompetences.prototype.processOk = function () {
         this.playBuzzerSound();
     }
 };
-Window_StatusCompetences.prototype.updateHelp = () => { };
-Window_StatusCompetences.prototype.isCurrentItemEnabled = function () {
-    return true; // TODO
-};
-Window_StatusCompetences.prototype.showHelpWindow = function () {
-    if (this._helpWindow && this.active) {
-        this._helpWindow.show();
-        this._helpWindow.refresh();
-    }
+// Number of items
+Window_StatusCompetences.prototype.maxItems = function () {
+    return this._maxItems;
 };
 // #endregion =========================== Window_StatusCompetences ============================== //
 // ============================== //
@@ -1437,8 +1443,6 @@ Window_StatusSpells.prototype.setActor = function (actor) {
 Window_StatusSpells.prototype.maxCols = () => 2;
 Window_StatusSpells.prototype.drawAllItems = function () {
     var topIndex = this.topIndex();
-    console.log("topIndex : ", topIndex);
-    console.log("maxPageItems : ", this.maxPageItems());
     for (var i = 0; i < this.maxPageItems(); i++) {
         var index = topIndex + i;
         if (index < this.maxItems()) {

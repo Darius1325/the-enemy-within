@@ -224,7 +224,7 @@ Game_BattlerBase.prototype.param = function(paramId: number) {
 };
 
 Game_BattlerBase.prototype.paramByName = function(paramName: string) {
-    return this.param(TEW.CHARACTERS.STATS[paramName]);
+    return this.param(TEW.CHARACTERS.STATS[paramName.toLowerCase()]);
 };
 
 // Competences
@@ -235,6 +235,9 @@ Game_BattlerBase.prototype.compPlus = function(compId: string) {
 };
 
 Game_BattlerBase.prototype.comp = function(compId: string) {
+    // compId = compId.toLowerCase();
+    console.log("compId", compId);
+    console.log("competences", TEW.DATABASE.COMPS.SET);
     const associatedStat = TEW.DATABASE.COMPS.SET[compId].stat;
     return this.compPlus(compId) + this.paramByName(associatedStat);
 };

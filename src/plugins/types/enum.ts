@@ -10,19 +10,19 @@
 // ----------------------
 
 export const enum Stat {
-    MHP = 'mhp',
-    WEAS = 'weas',
-    BALS = 'bals',
-    STRG = 'strg',
-    TOUG = 'toug',
-    AGIL = 'agil',
-    DEXT = 'dext',
-    INIT = 'init',
-    INTL = 'intl',
-    FELW = 'felw',
-    WILL = 'will',
+    MHP = 'MHP',
+    WEAS = 'WEAS',
+    BALS = 'BALS',
+    STRG = 'STRG',
+    TOUG = 'TOUG',
+    AGIL = 'AGIL',
+    DEXT = 'DEXT',
+    INIT = 'INIT',
+    INTL = 'INTL',
+    FELW = 'FELW',
+    WILL = 'WILL',
 }
-export type StatName = 'mhp' | 'weas' | 'bals' | 'strg' | 'toug' | 'agil' | 'dext' | 'init' | 'intl' | 'felw' | 'will';
+export type StatName = 'MHP' | 'WEAS' | 'BALS' | 'STRG' | 'TOUG' | 'AGIL' | 'DEXT' | 'INIT' | 'INTL' | 'FELW' | 'WILL';
 
 /**
  * Armor types

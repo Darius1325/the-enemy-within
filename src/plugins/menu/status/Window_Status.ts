@@ -16,6 +16,8 @@ Window_Status.prototype.initialize = function() {
     Window_Selectable.prototype.initialize.call(this,
         0, TEW.MENU.STATUS_WINDOW_TOPBAR_HEIGHT,
         Graphics.boxWidth, Graphics.boxHeight - TEW.MENU.STATUS_WINDOW_TOPBAR_HEIGHT);
+    console.log("Window_Status initialize");
+    
     this._actor = null;
     this._maxItems = 0;
     this.activate();

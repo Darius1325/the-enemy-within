@@ -1,40 +1,77 @@
 // $PluginCompiler TEW_Menus.js
 
+// ----------------------
+
+// File: Scene_Status.ts
+// Author: Ersokili, 7evy, Sebibebi67
+// Date: 01/05/2025
+// Description: This file contains the implementation of the Scene_Status class, which is responsible for displaying the status screen in the game. It includes methods for creating the command window, stats window, competences window, talents window, and spells window. The class also handles user input and navigation between different windows within the status screen.
+
+// ----------------------
+// Imports
+// ----------------------
 import TEW from "../../types/tew";
 
+// ----------------------
 // $StartCompilation
-
-// -----------------------------------------------------------------------------
-// Window_StatusCompetences
-//
-// Competence list window
+// ----------------------
 
 function Window_StatusCompetences() {
     this.initialize.apply(this, arguments);
 }
 
-export default Window_StatusCompetences.prototype = Object.create(Window_Status.prototype);
+export default Window_StatusCompetences.prototype = Object.create(Window_Selectable.prototype);
 Window_StatusCompetences.prototype.constructor = Window_StatusCompetences;
 
+/**
+ * Constructor for the Window_StatusCompetences class.
+ */
 Window_StatusCompetences.prototype.initialize = function() {
-    Window_Status.prototype.initialize.call(this);
-    this._helpWindow = null;
-    this.setHandler('ok', this.showHelpWindow.bind(this));
+    Window_Selectable.prototype.initialize.call(this,
+        0,
+        TEW.MENU.STATUS_WINDOW_TOPBAR_HEIGHT,
+        Graphics.boxWidth,
+        Graphics.boxHeight - TEW.MENU.STATUS_WINDOW_TOPBAR_HEIGHT);
+    console.log("dimensions", this.width, this.height);
+    console.log("position", this.x, this.y);
+    this._actor = null;
+    this._maxItems = 0;
+    console.log("max items in initialize", this._maxItems);
+    this._leftPadding = 10;
+    this._compColumnWidth = this.width / 4 - this._leftPadding;
+    this._levelColumnWidth = this.width / 8;
+    this._statColumnWidth = this.width / 8;
+    this.activate();
+    this.refresh();
 };
 
+/**
+ * Sets the actor for the window.
+ */
 Window_StatusCompetences.prototype.setActor = function(actor: any) {
     if (this._actor !== actor) {
         this._actor = actor;
         this._advancedCompsList = TEW.DATABASE.COMPS.ADVANCED_ARRAY.filter(comp => actor.hasComp(comp[0]));
+        console.log("base comps list", TEW.DATABASE.COMPS.BASE_ARRAY);
+        console.log("advanced comps list", this._advancedCompsList);
         this._maxItems = TEW.DATABASE.COMPS.BASE_ARRAY.length + this._advancedCompsList.length;
+        console.log("max items in setActor", this._maxItems);
         this.refresh();
     }
 };
 
+/**
+ * Returns the maximum number of columns in the window.
+ */
 Window_StatusCompetences.prototype.maxCols = () => 2;
 
+/**
+ * Draws all items in the window.
+ */
 Window_StatusCompetences.prototype.drawAllItems = function() {
     var topIndex = this.topIndex();
+    console.log("top index", topIndex);
+    console.log("max items in drawAllItems", this.maxItems());
     for (var i = 0; i < this.maxPageItems(); i++) {
         var index = topIndex + i;
         if (index < this.maxItems()) {
@@ -43,43 +80,51 @@ Window_StatusCompetences.prototype.drawAllItems = function() {
     }
 };
 
+/**
+ * Draws a single item in the window.
+ */
 Window_StatusCompetences.prototype.drawItem = function(index: number) {
     const normalizedIndex = index - this.topIndex();
-    const x = index % 2 === 0 ? 48 : 432;
+    const x = index % 2 * this.width / 2 + this._leftPadding;
     const y = Math.floor(normalizedIndex / 2) * TEW.MENU.LINE_HEIGHT;
 
     const comp = this.competenceFromIndex(index);
-
+    // Comp name
     this.changeTextColor(this.systemColor());
-    this.drawText(comp[1].name, x, y, 160);
+    this.drawText(comp[1].name, x, y, this._compColumnWidth);
     this.resetTextColor();
-    this.drawText(this._actor.comp(comp[0]) + '(' + this._actor.compPlus(comp[0]) + ')', x + 260, y, 60, 'right');
+
+    // Level of the comp
+    const compLevel = this._actor.compPlus(comp[0])
+    const compLevelText = compLevel > 0 ? `Lvl${compLevel}` : "Base";
+    this.drawText(
+        compLevelText,
+        x + this._compColumnWidth,
+        y,
+        this._levelColumnWidth,
+        'left');
+
+    // Stats which the comp depends on
+    const statName = comp ? comp[1].stat : null;
+    const statNumber = this._actor.comp(comp[0]);
+    const statText = `${statName} (${statNumber})`;
+
+    this.drawText(
+        statText,
+        x + this._compColumnWidth + this._levelColumnWidth,
+        y,
+        this._statColumnWidth,
+        'left'
+    )
 };
 
+/**
+ * Returns the competence from the given index.
+ */
 Window_StatusCompetences.prototype.competenceFromIndex = function(index: number) {
     return index < TEW.DATABASE.COMPS.BASE_ARRAY.length  // [<internal name>, {<competence data>}]
         ? TEW.DATABASE.COMPS.BASE_ARRAY[index]
         : this._advancedCompsList[index - TEW.DATABASE.COMPS.BASE_ARRAY.length];
-};
-
-Window_StatusCompetences.prototype.item = function() {
-    return 'Depends on ' + TEW.CHARACTERS.STATS_VERBOSE[TEW.CHARACTERS.STATS[
-        this.competenceFromIndex(this._index)[1].stat
-    ]];
-};
-
-Window_StatusCompetences.prototype.select = function(index: number) {
-    if (this._index !== index) {
-        this.hideHelpWindow();
-    }
-    this._index = index;
-    if (this._index >= 0) {
-        this._helpWindow.setText(this.item());
-    }
-    this._stayCount = 0;
-    this.ensureCursorVisible();
-    this.updateCursor();
-    this.callUpdateHelp();
 };
 
 Window_StatusCompetences.prototype.processOk = function() {
@@ -92,15 +137,7 @@ Window_StatusCompetences.prototype.processOk = function() {
     }
 };
 
-Window_StatusCompetences.prototype.updateHelp = () => {};
-
-Window_StatusCompetences.prototype.isCurrentItemEnabled = function() {
-    return true; // TODO
-};
-
-Window_StatusCompetences.prototype.showHelpWindow = function() {
-    if (this._helpWindow && this.active) {
-        this._helpWindow.show();
-        this._helpWindow.refresh();
-    }
+// Number of items
+Window_StatusCompetences.prototype.maxItems = function() {
+    return this._maxItems;
 };

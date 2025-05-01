@@ -18,7 +18,7 @@ import { Talent } from "./talent";
 import { MeleeWeapon } from "./meleeWeapon";
 import { RangedWeapon } from "./rangedWeapon";
 import { Ammunition } from "./ammunition";
-import { ArmorGroup, WeaponGroup, WeaponQuality } from "./enum";
+import { ArmorGroup, Stat, WeaponGroup, WeaponQuality } from "./enum";
 
 /**
  * The TEW object contains various constants and methods related to the game "The Enemy Within".
