@@ -1,16 +1,25 @@
 // $PluginCompiler TEW_Menus.js
 
+// ----------------------
+
+// File: Scene_Status.ts
+// Author: Ersokili, 7evy, Sebibebi67
+// Date: 01/05/2025
+// Description: This file contains the implementation of the Scene_Status class, which is responsible for displaying the status screen in the game. It includes methods for creating the command window, stats window, competences window, talents window, and spells window. The class also handles user input and navigation between different windows within the status screen.
+
+// ----------------------
+// Imports
+// ----------------------
+
 import Window_StatusCommand from "./Window_StatusCommand";
 import Window_StatusCompetences from "./Window_StatusCompetences";
 import Window_StatusSpells from "./Window_StatusSpells";
 import Window_StatusStats from "./Window_StatusStats";
 import Window_StatusTalents from "./Window_StatusTalents";
-// $StartCompilation
 
-//-----------------------------------------------------------------------------
-// Scene_Status (override)
-//
-// Customizing the status scene
+// ----------------------
+// $StartCompilation
+// ----------------------
 
 Scene_Status.prototype.STATS_WINDOW_INDEX = 0;
 Scene_Status.prototype.COMPS_WINDOW_INDEX = 1;

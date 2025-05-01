@@ -63,6 +63,7 @@ declare global {
     var Scene_Title: any;
     var Scene_Gameover: any;
     var Scene_Map: any;
+    var Scene_Save: any;
     var Window_Base: any;
     var Window_Status: any;
     var Window_MenuStatus: any;
@@ -75,6 +76,7 @@ declare global {
     var Window_BattleItem: any;
     var Window_ActorCommand: any;
     var Window_Command: any;
+    var Window_Gold: any;
     var Bitmap: any;
     var Game_Actor: any;
     var Game_BattlerBase: any;

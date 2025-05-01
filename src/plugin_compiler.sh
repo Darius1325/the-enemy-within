@@ -5,6 +5,10 @@ declare -A file_list
 declare -A collected_content
 regex='\$PluginCompiler ([^ ]+\.js)( [0-9]+)?'
 
+#cleaning up the dist folder
+rm -rf dist/
+mkdir -p dist/
+
 # Translating Ts to Js
 tsc --project ./tsconfig.json
 

@@ -7,22 +7,36 @@ TEW.MENU = TEW.MENU || {};
 // ============================== //
 // #region ============================== properties ============================== //
 TEW.MENU.COMMAND_NAMES = TEW.MENU.COMMAND_NAMES || {};
-TEW.MENU.COMMAND_NAMES[40] = "InventoryNextChar";
-TEW.MENU.COMMAND_NAMES[41] = "InventoryPreviousChar";
-TEW.MENU.COMMAND_NAMES[42] = "Infos";
-TEW.MENU.COMMAND_NAMES[43] = "Weapons";
-TEW.MENU.COMMAND_NAMES[44] = "Armors";
-TEW.MENU.COMMAND_NAMES[45] = "Items";
-TEW.MENU.COMMAND_NAMES[46] = "Ammo";
-TEW.MENU.COMMAND_NAMES[47] = "Use";
-TEW.MENU.COMMAND_NAMES[48] = "Transfer";
-TEW.MENU.COMMAND_NAMES[49] = "Equip";
-TEW.MENU.COMMAND_NAMES[50] = "Unequip";
-TEW.MENU.COMMAND_NAMES[51] = "Transfer";
-TEW.MENU.COMMAND_NAMES[52] = "Reload";
-TEW.MENU.COMMAND_NAMES[53] = "Equip";
-TEW.MENU.COMMAND_NAMES[54] = "Unequip";
-TEW.MENU.COMMAND_NAMES[55] = "Transfer";
+// Main Menu
+TEW.MENU.COMMAND_NAMES[30] = "Status";
+TEW.MENU.COMMAND_NAMES[31] = "Inventory";
+TEW.MENU.COMMAND_NAMES[32] = "Quests";
+TEW.MENU.COMMAND_NAMES[33] = "Formation";
+TEW.MENU.COMMAND_NAMES[34] = "Options";
+TEW.MENU.COMMAND_NAMES[35] = "Save";
+TEW.MENU.COMMAND_NAMES[36] = "Quit";
+// Status Menu
+TEW.MENU.COMMAND_NAMES[50] = "Stats";
+TEW.MENU.COMMAND_NAMES[51] = "Skills";
+TEW.MENU.COMMAND_NAMES[52] = "Talents";
+TEW.MENU.COMMAND_NAMES[53] = "Spells";
+// Inventory Menu
+TEW.MENU.COMMAND_NAMES[70] = "InventoryNextChar";
+TEW.MENU.COMMAND_NAMES[71] = "InventoryPreviousChar";
+TEW.MENU.COMMAND_NAMES[72] = "Infos";
+TEW.MENU.COMMAND_NAMES[73] = "Weapons";
+TEW.MENU.COMMAND_NAMES[74] = "Armors";
+TEW.MENU.COMMAND_NAMES[75] = "Items";
+TEW.MENU.COMMAND_NAMES[76] = "Ammo";
+TEW.MENU.COMMAND_NAMES[77] = "Use";
+TEW.MENU.COMMAND_NAMES[78] = "Transfer";
+TEW.MENU.COMMAND_NAMES[79] = "Equip";
+TEW.MENU.COMMAND_NAMES[80] = "Unequip";
+TEW.MENU.COMMAND_NAMES[81] = "Transfer";
+TEW.MENU.COMMAND_NAMES[82] = "Reload";
+TEW.MENU.COMMAND_NAMES[83] = "Equip";
+TEW.MENU.COMMAND_NAMES[84] = "Unequip";
+TEW.MENU.COMMAND_NAMES[85] = "Transfer";
 TEW.MENU.LINE_HEIGHT = 36;
 // TextManager
 // Override commands
@@ -42,52 +56,148 @@ TEW.MENU.INVENTORY_WINDOW_TOPBAR_HEIGHT = 70;
 // The window for selecting a command on the inventory screen.
 // Adding new Commands Entries
 Object.defineProperties(TextManager, {
-    inventoryNextChar: TextManager.getter('command', 40),
-    inventoryPreviousChar: TextManager.getter('command', 41),
-    inventoryInfos: TextManager.getter('command', 42),
-    inventoryWeapons: TextManager.getter('command', 43),
-    inventoryArmors: TextManager.getter('command', 44),
-    inventoryItems: TextManager.getter('command', 45),
-    inventoryAmmo: TextManager.getter('command', 46),
-    inventoryItemUse: TextManager.getter('command', 47),
-    inventoryItemTransfer: TextManager.getter('command', 48),
-    inventoryWeaponEquip: TextManager.getter('command', 49),
-    inventoryWeaponUnequip: TextManager.getter('command', 50),
-    inventoryWeaponTransfer: TextManager.getter('command', 51),
-    inventoryWeaponReload: TextManager.getter('command', 52),
-    inventoryArmorEquip: TextManager.getter('command', 53),
-    inventoryArmorUnequip: TextManager.getter('command', 54),
-    inventoryArmorTransfer: TextManager.getter('command', 55)
+    // Main Menu
+    mainMenuStatus: TextManager.getter('command', 30),
+    mainMenuInventory: TextManager.getter('command', 31),
+    mainMenuQuests: TextManager.getter('command', 32),
+    mainMenuFormation: TextManager.getter('command', 33),
+    mainMenuOptions: TextManager.getter('command', 34),
+    mainMenuSave: TextManager.getter('command', 35),
+    mainMenuGameEnd: TextManager.getter('command', 36),
+    // Status Menu
+    statusStats: TextManager.getter('command', 50),
+    statusComps: TextManager.getter('command', 51),
+    statusTalents: TextManager.getter('command', 52),
+    statusSpells: TextManager.getter('command', 53),
+    // Inventory Menu
+    inventoryNextChar: TextManager.getter('command', 70),
+    inventoryPreviousChar: TextManager.getter('command', 71),
+    inventoryInfos: TextManager.getter('command', 72),
+    inventoryWeapons: TextManager.getter('command', 73),
+    inventoryArmors: TextManager.getter('command', 74),
+    inventoryItems: TextManager.getter('command', 75),
+    inventoryAmmo: TextManager.getter('command', 76),
+    inventoryItemUse: TextManager.getter('command', 77),
+    inventoryItemTransfer: TextManager.getter('command', 78),
+    inventoryWeaponEquip: TextManager.getter('command', 79),
+    inventoryWeaponUnequip: TextManager.getter('command', 80),
+    inventoryWeaponTransfer: TextManager.getter('command', 81),
+    inventoryWeaponReload: TextManager.getter('command', 82),
+    inventoryArmorEquip: TextManager.getter('command', 83),
+    inventoryArmorUnequip: TextManager.getter('command', 84),
+    inventoryArmorTransfer: TextManager.getter('command', 85),
 });
 // #endregion =========================== properties ============================== //
 // ============================== //
-// #region ============================== properties ============================== //
-// Init COMMAND_NAMES
-TEW.MENU.COMMAND_NAMES[30] = "Stats";
-TEW.MENU.COMMAND_NAMES[31] = "Skills";
-TEW.MENU.COMMAND_NAMES[32] = "Talents";
-TEW.MENU.COMMAND_NAMES[33] = "Spells";
-TEW.MENU.LINE_HEIGHT = 36;
-// TextManager
-// Override commands
-TextManager.command = function (commandId) {
-    if (commandId <= 25) {
-        return $dataSystem.terms.commands[commandId] || '';
-    }
-    else {
-        return TEW.MENU.COMMAND_NAMES[commandId] || '';
+// #region ============================== Scene_Menu ============================== //
+// ----------------------
+function Scene_Menu() {
+    this.initialize.apply(this, arguments);
+}
+Scene_Menu.prototype = Object.create(Scene_MenuBase.prototype);
+Scene_Menu.prototype.constructor = Scene_Menu;
+Scene_Menu.prototype.initialize = function () {
+    Scene_MenuBase.prototype.initialize.call(this);
+};
+Scene_Menu.prototype.create = function () {
+    Scene_MenuBase.prototype.create.call(this);
+    this.createCommandWindow();
+    this.createGoldWindow();
+    this.createStatusWindow();
+};
+Scene_Menu.prototype.start = function () {
+    Scene_MenuBase.prototype.start.call(this);
+    this._statusMenuWindow.refresh();
+};
+Scene_Menu.prototype.createCommandWindow = function () {
+    this._commandWindow = new Window_MenuCommand(0, 0);
+    this._commandWindow.setHandler('menu_status', this.commandPersonal.bind(this));
+    this._commandWindow.setHandler('menu_inventory', this.commandPersonal.bind(this));
+    this._commandWindow.setHandler('menu_formation', this.commandFormation.bind(this));
+    this._commandWindow.setHandler('menu_quest', this.commandQuests.bind(this));
+    this._commandWindow.setHandler('options', this.commandOptions.bind(this));
+    this._commandWindow.setHandler('save', this.commandSave.bind(this));
+    this._commandWindow.setHandler('gameEnd', this.commandGameEnd.bind(this));
+    this._commandWindow.setHandler('cancel', this.popScene.bind(this));
+    this.addWindow(this._commandWindow);
+};
+Scene_Menu.prototype.createGoldWindow = function () {
+    this._goldWindow = new Window_Gold(0, 0);
+    this._goldWindow.y = Graphics.boxHeight - this._goldWindow.height;
+    this.addWindow(this._goldWindow);
+};
+Scene_Menu.prototype.createStatusWindow = function () {
+    this._statusMenuWindow = new Window_MenuStatus(this._commandWindow.width, 0);
+    this._statusMenuWindow.reserveFaceImages();
+    this.addWindow(this._statusMenuWindow);
+};
+Scene_Menu.prototype.commandPersonal = function () {
+    this._statusMenuWindow.setFormationMode(false);
+    this._statusMenuWindow.selectLast();
+    this._statusMenuWindow.activate();
+    this._statusMenuWindow.setHandler('ok', this.onPersonalOk.bind(this));
+    this._statusMenuWindow.setHandler('cancel', this.onPersonalCancel.bind(this));
+};
+Scene_Menu.prototype.commandFormation = function () {
+    this._statusMenuWindow.setFormationMode(true);
+    this._statusMenuWindow.selectLast();
+    this._statusMenuWindow.activate();
+    this._statusMenuWindow.setHandler('ok', this.onFormationOk.bind(this));
+    this._statusMenuWindow.setHandler('cancel', this.onFormationCancel.bind(this));
+};
+Scene_Menu.prototype.commandQuests = function () {
+    // SceneManager.push(Scene_Quests); // TODO
+};
+Scene_Menu.prototype.commandOptions = function () {
+    SceneManager.push(Scene_Options);
+};
+Scene_Menu.prototype.commandSave = function () {
+    SceneManager.push(Scene_Save);
+};
+Scene_Menu.prototype.commandGameEnd = function () {
+    SceneManager.push(Scene_GameEnd);
+};
+Scene_Menu.prototype.onPersonalOk = function () {
+    switch (this._commandWindow.currentSymbol()) {
+        case 'menu_status':
+            SceneManager.push(Scene_Status);
+            break;
+        case 'menu_inventory':
+            SceneManager.push(Scene_Equip);
+            break;
+        default:
+            break;
     }
 };
-TEW.MENU.STATUS_WINDOW_TOPBAR_HEIGHT = 70;
-// The window for selecting a command on the status screen.
-// Adding new Commands Entries
-Object.defineProperties(TextManager, {
-    statusStats: TextManager.getter('command', 30),
-    statusComps: TextManager.getter('command', 31),
-    statusTalents: TextManager.getter('command', 32),
-    statusSpells: TextManager.getter('command', 33)
-});
-// #endregion =========================== properties ============================== //
+Scene_Menu.prototype.onPersonalCancel = function () {
+    this._statusMenuWindow.deselect();
+    this._commandWindow.activate();
+};
+Scene_Menu.prototype.onFormationOk = function () {
+    var index = this._statusMenuWindow.index();
+    var actor = $gameParty.members()[index];
+    var pendingIndex = this._statusMenuWindow.pendingIndex();
+    if (pendingIndex >= 0) {
+        $gameParty.swapOrder(index, pendingIndex);
+        this._statusMenuWindow.setPendingIndex(-1);
+        this._statusMenuWindow.redrawItem(index);
+    }
+    else {
+        this._statusMenuWindow.setPendingIndex(index);
+    }
+    this._statusMenuWindow.activate();
+};
+Scene_Menu.prototype.onFormationCancel = function () {
+    if (this._statusMenuWindow.pendingIndex() >= 0) {
+        this._statusMenuWindow.setPendingIndex(-1);
+        this._statusMenuWindow.activate();
+    }
+    else {
+        this._statusMenuWindow.deselect();
+        this._commandWindow.activate();
+    }
+};
+// #endregion =========================== Scene_Menu ============================== //
 // ============================== //
 // #region ============================== Window_InventoryDetails ============================== //
 //-----------------------------------------------------------------------------
@@ -920,11 +1030,62 @@ Window_InventoryHelp.prototype.refresh = function () {
 };
 // #endregion =========================== Window_InventoryHelp ============================== //
 // ============================== //
+// #region ============================== Window_MenuCommand ============================== //
+// ----------------------
+function Window_MenuCommand() {
+    this.initialize.apply(this, arguments);
+}
+Window_MenuCommand.prototype = Object.create(Window_Command.prototype);
+Window_MenuCommand.prototype.constructor = Window_MenuCommand;
+Window_MenuCommand.prototype.initialize = function (x, y) {
+    Window_Command.prototype.initialize.call(this, x, y);
+    this.selectLast();
+};
+Window_MenuCommand._lastCommandSymbol = null;
+Window_MenuCommand.initCommandPosition = function () {
+    this._lastCommandSymbol = null;
+};
+Window_MenuCommand.prototype.windowWidth = function () {
+    return 240;
+};
+Window_MenuCommand.prototype.numVisibleRows = function () {
+    return this.maxItems();
+};
+Window_MenuCommand.prototype.makeCommandList = function () {
+    this.addMainCommands();
+    this.addFormationCommand();
+    this.addOptionsCommand();
+    this.addSaveCommand();
+    this.addGameEndCommand();
+};
+Window_MenuCommand.prototype.addMainCommands = function () {
+    this.addCommand(TextManager.mainMenuStatus, 'menu_status', true);
+    this.addCommand(TextManager.mainMenuInventory, 'menu_inventory', true);
+    this.addCommand(TextManager.mainMenuQuests, 'menu_quests', false);
+};
+Window_MenuCommand.prototype.addFormationCommand = function () {
+    this.addCommand(TextManager.mainMenuFormation, 'menu_formation', false); // TODO
+};
+Window_MenuCommand.prototype.addOptionsCommand = function () {
+    this.addCommand(TextManager.mainMenuOptions, 'options', true);
+};
+Window_MenuCommand.prototype.addSaveCommand = function () {
+    this.addCommand(TextManager.mainMenuSave, 'save', true);
+};
+Window_MenuCommand.prototype.addGameEndCommand = function () {
+    this.addCommand(TextManager.mainMenuGameEnd, 'gameEnd', true);
+};
+Window_MenuCommand.prototype.processOk = function () {
+    Window_MenuCommand._lastCommandSymbol = this.currentSymbol();
+    Window_Command.prototype.processOk.call(this);
+};
+Window_MenuCommand.prototype.selectLast = function () {
+    this.selectSymbol(Window_MenuCommand._lastCommandSymbol);
+};
+// #endregion =========================== Window_MenuCommand ============================== //
+// ============================== //
 // #region ============================== Scene_Status ============================== //
-//-----------------------------------------------------------------------------
-// Scene_Status (override)
-//
-// Customizing the status scene
+// ----------------------
 Scene_Status.prototype.STATS_WINDOW_INDEX = 0;
 Scene_Status.prototype.COMPS_WINDOW_INDEX = 1;
 Scene_Status.prototype.TALENTS_WINDOW_INDEX = 2;
@@ -1021,6 +1182,9 @@ Scene_Status.prototype.hideAllWindows = function () {
 Scene_Status.prototype.displayWindow = function () {
     // hide all
     this.hideAllWindows();
+    console.log("Index actif : ", this._commandWindow.index());
+    console.log("Fenêtre active : ", this._commandWindow.currentSymbol());
+
     // Changing window
     if (this._commandWindow.index() === this.STATS_WINDOW_INDEX) {
         this._statsWindow.show();
@@ -1164,10 +1328,12 @@ Window_StatusCompetences.prototype = Object.create(Window_Status.prototype);
 Window_StatusCompetences.prototype.constructor = Window_StatusCompetences;
 Window_StatusCompetences.prototype.initialize = function () {
     Window_Status.prototype.initialize.call(this);
+    this.contents.fillRect(0, 0, this.contentsWidth(), this.contentsHeight(), "#B7462E"); // Couleur visible
     this._helpWindow = null;
     this.setHandler('ok', this.showHelpWindow.bind(this));
 };
 Window_StatusCompetences.prototype.setActor = function (actor) {
+    console.log("Acteur assigné : ", this._actor);
     if (this._actor !== actor) {
         this._actor = actor;
         this._advancedCompsList = TEW.DATABASE.COMPS.ADVANCED_ARRAY.filter(comp => actor.hasComp(comp[0]));
@@ -1177,7 +1343,11 @@ Window_StatusCompetences.prototype.setActor = function (actor) {
 };
 Window_StatusCompetences.prototype.maxCols = () => 2;
 Window_StatusCompetences.prototype.drawAllItems = function () {
+    console.log("drawAllItems");
     var topIndex = this.topIndex();
+    console.log("topIndex : ", topIndex);
+    console.log("maxPageItems : ", this.maxPageItems());
+
     for (var i = 0; i < this.maxPageItems(); i++) {
         var index = topIndex + i;
         if (index < this.maxItems()) {
@@ -1186,6 +1356,9 @@ Window_StatusCompetences.prototype.drawAllItems = function () {
     }
 };
 Window_StatusCompetences.prototype.drawItem = function (index) {
+    console.log("Position x/y de la fenêtre : ", this.x, this.y);
+    console.log("Dimensions width/height : ", this.width, this.height);
+
     const normalizedIndex = index - this.topIndex();
     const x = index % 2 === 0 ? 48 : 432;
     const y = Math.floor(normalizedIndex / 2) * TEW.MENU.LINE_HEIGHT;
@@ -1264,6 +1437,8 @@ Window_StatusSpells.prototype.setActor = function (actor) {
 Window_StatusSpells.prototype.maxCols = () => 2;
 Window_StatusSpells.prototype.drawAllItems = function () {
     var topIndex = this.topIndex();
+    console.log("topIndex : ", topIndex);
+    console.log("maxPageItems : ", this.maxPageItems());
     for (var i = 0; i < this.maxPageItems(); i++) {
         var index = topIndex + i;
         if (index < this.maxItems()) {
@@ -1465,11 +1640,7 @@ Window_Selectable.prototype.setTopRow = function (row) {
 // #endregion =========================== Window_Selectable ============================== //
 // ============================== //
 // #region ============================== Scene_Equip ============================== //
-//-----------------------------------------------------------------------------
-// Scene_Equip (override)
-//
-// Customizing the inventory scene
-// TODO change menu label
+// ----------------------
 Scene_Equip.prototype.INFOS_WINDOW_INDEX = 0;
 Scene_Equip.prototype.WEAPONS_WINDOW_INDEX = 1;
 Scene_Equip.prototype.ARMORS_WINDOW_INDEX = 2;

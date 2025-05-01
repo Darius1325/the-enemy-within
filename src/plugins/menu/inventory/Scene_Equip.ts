@@ -1,8 +1,17 @@
 // $PluginCompiler TEW_Menus.js 101
 
+// ----------------------
+
+// File: Scene_Equip.ts
+// Author: Ersokili, 7evy, Sebibebi67
+// Date: 01/05/2025
+// Description: This file contains the implementation of the Scene_Equip class, which is responsible for displaying the equipment screen in the game. It includes methods for creating the command window, stats window, weapons window, armors window, items window, and ammo window. The class also handles user input and navigation between different windows within the equipment screen.
+
+// ----------------------
+// Imports
+// ----------------------
+
 import { WeaponGroup, WeaponQuality } from "../../types/enum";
-import { MeleeWeapon } from "../../types/meleeWeapon";
-import { RangedWeapon } from "../../types/rangedWeapon";
 import Window_InventoryAmmo from "./ammo/Window_InventoryAmmo";
 import Window_InventoryArmorCommand from "./armors/Window_InventoryArmorCommand";
 import Window_InventoryArmorDetails from "./armors/Window_InventoryArmorDetails";
@@ -17,13 +26,9 @@ import Window_InventoryWeapons, { LoadedWeapon } from "./weapons/Window_Inventor
 import Window_InventoryCommand from "./Window_InventoryCommand";
 import Window_InventoryHelp from "./Window_InventoryHelp";
 
+// ----------------------
 // $StartCompilation
-
-//-----------------------------------------------------------------------------
-// Scene_Equip (override)
-//
-// Customizing the inventory scene
-// TODO change menu label
+// ----------------------
 
 Scene_Equip.prototype.INFOS_WINDOW_INDEX = 0;
 Scene_Equip.prototype.WEAPONS_WINDOW_INDEX = 1;
