@@ -193,6 +193,11 @@ const TEW: {
          * The STATUS_WINDOW_TOPBAR_HEIGHT property specifies the height of the status window's command window.
          */
         STATUS_WINDOW_TOPBAR_HEIGHT?: number;
+
+        /**
+         * the STATUS_WINDOW_BOTTOM_DESCRIPTION_HEIGHT property specifies the height of the status window's bottom bar.
+         */
+        STATUS_WINDOW_BOTTOM_DESCRIPTION_HEIGHT?: number;
         /**
          * The INVENTORY_WINDOW_TOPBAR_HEIGHT property specifies the height of the inventory window's command window.
          */

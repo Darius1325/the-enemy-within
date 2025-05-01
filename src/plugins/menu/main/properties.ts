@@ -66,6 +66,7 @@ Input.keyMapper[69] = "E_Key";
 // Windows
 TEW.MENU.INVENTORY_WINDOW_TOPBAR_HEIGHT = 70;
 TEW.MENU.STATUS_WINDOW_TOPBAR_HEIGHT = 70;
+TEW.MENU.STATUS_WINDOW_BOTTOM_DESCRIPTION_HEIGHT = 140;
 
 // The window for selecting a command on the inventory screen.
 // Adding new Commands Entries

@@ -16,6 +16,7 @@ import Window_StatusCompetences from "./Window_StatusCompetences";
 import Window_StatusSpells from "./Window_StatusSpells";
 import Window_StatusStats from "./Window_StatusStats";
 import Window_StatusTalents from "./Window_StatusTalents";
+import Window_StatusTalentDescription from "./Window_StatusTalentDescription";
 
 // ----------------------
 // $StartCompilation
@@ -33,6 +34,7 @@ Scene_Status.prototype.create = function() {
     this.createStatsWindow();
     this.createCompsWindow();
     this.createTalentsWindow();
+    this.createTalentDescriptionWindow();
     this.createSpellWindow();
     this.createHelpWindow();
     this._helpWindow.hide();
@@ -99,6 +101,16 @@ Scene_Status.prototype.createTalentsWindow = function() {
     this.addWindow(this._talentsWindow);
 };
 
+// Creating the items details Window for the scene
+Scene_Status.prototype.createTalentDescriptionWindow = function(){
+    this._talentDescriptionWindow = new Window_StatusTalentDescription();
+    this._talentsWindow.setHandler('show_talent_description', () => {
+        this.showTalentDescription();
+    });
+    this._talentDescriptionWindow.hide();
+    this.addWindow(this._talentDescriptionWindow);
+};
+
 // Creating the spells Window for the scene
 Scene_Status.prototype.createSpellWindow = function() {
     this._spellsWindow = new Window_StatusSpells();
@@ -121,6 +133,9 @@ Scene_Status.prototype.hideAllWindows = function() {
     this._talentsWindow.hide();
     this._talentsWindow.deactivate();
 
+    this._talentDescriptionWindow.hide();
+    this._talentDescriptionWindow.deactivate();
+
     this._spellsWindow.hide();
     this._spellsWindow.deactivate();
 };
@@ -140,6 +155,8 @@ Scene_Status.prototype.displayWindow = function() {
     } else if (this._commandWindow.index() === this.TALENTS_WINDOW_INDEX){
         this._talentsWindow.show();
         this._talentsWindow.refresh();
+        this._talentDescriptionWindow.show();
+        this._talentDescriptionWindow.refresh();
     } else if (this._commandWindow.index() === this.SPELLS_WINDOW_INDEX){
         this._spellsWindow.show();
         this._spellsWindow.refresh();
@@ -155,24 +172,23 @@ Scene_Status.prototype.activateStatusStats = function() {
 };
 
 // Activating the competences window
-Scene_Status.prototype.activateStatusComps = function() {
+Scene_Status.prototype.activateStatusComps = function(index:number = 0) {
     this.hideAllWindows()
     this._competencesWindow.show();
     this._commandWindow.deactivate();
     this._competencesWindow.activate();
-    this._helpWindow.move(0, Graphics.height - 75, Graphics.width, 75);
-    this._competencesWindow.select(0);
+    this._competencesWindow.select(index);
     this._competencesWindow.refresh();
 };
 
 // Activating the talents window
-Scene_Status.prototype.activateStatusTalents = function() {
+Scene_Status.prototype.activateStatusTalents = function(index:number = 0) {
     this.hideAllWindows();
     this._talentsWindow.show();
+    this._talentDescriptionWindow.show();
     this._commandWindow.deactivate();
     this._talentsWindow.activate();
-    this._helpWindow.move(0, 70, Graphics.width, Graphics.height - 70);
-    this._talentsWindow.select(0);
+    this._talentsWindow.select(index);
     this._talentsWindow.refresh();
 };
 
@@ -186,3 +202,10 @@ Scene_Status.prototype.activateStatusSpells = function() {
     this._spellsWindow.select(0);
     this._spellsWindow.refresh();
 };
+
+// Showing the talent description
+Scene_Status.prototype.showTalentDescription = function(){
+    const talent = this._talentsWindow.talentFromIndex(this._talentsWindow.index());
+    this._talentDescriptionWindow._talent = talent;
+    this._talentDescriptionWindow.refresh();
+}

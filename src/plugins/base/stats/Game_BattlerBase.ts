@@ -134,6 +134,7 @@ Game_BattlerBase.prototype.initialize = function() {
 
     // temp Talents
     this.addTalent("ACCURATE_SHOT");
+    this.addTalent("ACCURATE_SHOT");
     this.addTalent("WEALTHY");
 
     // temp Spells
@@ -235,9 +236,6 @@ Game_BattlerBase.prototype.compPlus = function(compId: string) {
 };
 
 Game_BattlerBase.prototype.comp = function(compId: string) {
-    // compId = compId.toLowerCase();
-    console.log("compId", compId);
-    console.log("competences", TEW.DATABASE.COMPS.SET);
     const associatedStat = TEW.DATABASE.COMPS.SET[compId].stat;
     return this.compPlus(compId) + this.paramByName(associatedStat);
 };

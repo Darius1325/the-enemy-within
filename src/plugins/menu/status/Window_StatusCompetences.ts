@@ -32,11 +32,8 @@ Window_StatusCompetences.prototype.initialize = function() {
         TEW.MENU.STATUS_WINDOW_TOPBAR_HEIGHT,
         Graphics.boxWidth,
         Graphics.boxHeight - TEW.MENU.STATUS_WINDOW_TOPBAR_HEIGHT);
-    console.log("dimensions", this.width, this.height);
-    console.log("position", this.x, this.y);
     this._actor = null;
     this._maxItems = 0;
-    console.log("max items in initialize", this._maxItems);
     this._leftPadding = 10;
     this._compColumnWidth = this.width / 4 - this._leftPadding;
     this._levelColumnWidth = this.width / 8;
@@ -52,10 +49,7 @@ Window_StatusCompetences.prototype.setActor = function(actor: any) {
     if (this._actor !== actor) {
         this._actor = actor;
         this._advancedCompsList = TEW.DATABASE.COMPS.ADVANCED_ARRAY.filter(comp => actor.hasComp(comp[0]));
-        console.log("base comps list", TEW.DATABASE.COMPS.BASE_ARRAY);
-        console.log("advanced comps list", this._advancedCompsList);
         this._maxItems = TEW.DATABASE.COMPS.BASE_ARRAY.length + this._advancedCompsList.length;
-        console.log("max items in setActor", this._maxItems);
         this.refresh();
     }
 };
@@ -70,8 +64,6 @@ Window_StatusCompetences.prototype.maxCols = () => 2;
  */
 Window_StatusCompetences.prototype.drawAllItems = function() {
     var topIndex = this.topIndex();
-    console.log("top index", topIndex);
-    console.log("max items in drawAllItems", this.maxItems());
     for (var i = 0; i < this.maxPageItems(); i++) {
         var index = topIndex + i;
         if (index < this.maxItems()) {
@@ -127,6 +119,9 @@ Window_StatusCompetences.prototype.competenceFromIndex = function(index: number)
         : this._advancedCompsList[index - TEW.DATABASE.COMPS.BASE_ARRAY.length];
 };
 
+/**
+ * Called when the process successfully completes.
+ */
 Window_StatusCompetences.prototype.processOk = function() {
     if (this.isCurrentItemEnabled()) {
         this.playOkSound();
@@ -137,7 +132,9 @@ Window_StatusCompetences.prototype.processOk = function() {
     }
 };
 
-// Number of items
+/**
+ * Returns the maximum number of items in the window.
+ */
 Window_StatusCompetences.prototype.maxItems = function() {
     return this._maxItems;
 };
