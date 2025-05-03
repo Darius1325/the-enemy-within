@@ -1,6 +1,6 @@
 // $PluginCompiler TEW_Menus.js
 
-import Window_InventoryList from "../Window_InventoryList";
+import HalfWindow_List from "../../main/HalfWindow_List";
 
 // $StartCompilation
 
@@ -13,11 +13,11 @@ function Window_InventoryAmmo() {
     this.initialize.apply(this, arguments);
 }
 
-export default Window_InventoryAmmo.prototype = Object.create(Window_InventoryList.prototype);
+export default Window_InventoryAmmo.prototype = Object.create(HalfWindow_List.prototype);
 Window_InventoryAmmo.prototype.constructor = Window_InventoryAmmo;
 
 Window_InventoryAmmo.prototype.initialize = function() {
-    Window_InventoryList.prototype.initialize.call(this);
+    HalfWindow_List.prototype.initialize.call(this);
     this._helpWindow = null;
     // this.setHandler('ok', this.showHelpWindow.bind(this));
 };

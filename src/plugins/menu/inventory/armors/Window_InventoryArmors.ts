@@ -1,7 +1,7 @@
 // $PluginCompiler TEW_Menus.js
 
 import TEW from "../../../types/tew";
-import Window_InventoryList from "../Window_InventoryList";
+import HalfWindow_List from "../../main/HalfWindow_List";
 
 // $StartCompilation
 
@@ -14,11 +14,11 @@ function Window_InventoryArmors() {
     this.initialize.apply(this, arguments);
 }
 
-export default Window_InventoryArmors.prototype = Object.create(Window_InventoryList.prototype);
+export default Window_InventoryArmors.prototype = Object.create(HalfWindow_List.prototype);
 Window_InventoryArmors.prototype.constructor = Window_InventoryArmors;
 
 Window_InventoryArmors.prototype.initialize = function() {
-    Window_InventoryList.prototype.initialize.call(this);
+    HalfWindow_List.prototype.initialize.call(this);
 };
 
 Window_InventoryArmors.prototype.setActor = function(actor: any) {

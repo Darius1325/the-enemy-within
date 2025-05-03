@@ -5,19 +5,19 @@ import TEW from "../../types/tew";
 // $StartCompilation
 
 //-----------------------------------------------------------------------------
-// Window_InventoryList
+// HalfWindow_List
 //
 // Super object to manage all inventory list windows
 
-function Window_InventoryList() {
+function HalfWindow_List() {
     this.initialize.apply(this, arguments);
 }
 
-export default Window_InventoryList.prototype = Object.create(Window_Selectable.prototype);
-Window_InventoryList.prototype.constructor = Window_InventoryList;
+export default HalfWindow_List.prototype = Object.create(Window_Selectable.prototype);
+HalfWindow_List.prototype.constructor = HalfWindow_List;
 
 // Inializing the window
-Window_InventoryList.prototype.initialize = function() {
+HalfWindow_List.prototype.initialize = function() {
     Window_Selectable.prototype.initialize.call(this,
         0,
         TEW.MENU.INVENTORY_WINDOW_TOPBAR_HEIGHT,
@@ -34,7 +34,7 @@ Window_InventoryList.prototype.initialize = function() {
 };
 
 // Setting the actor
-Window_InventoryList.prototype.setActor = function(actor: any) {
+HalfWindow_List.prototype.setActor = function(actor: any) {
     if (this._actor !== actor) {
         this._actor = actor;
         this.refresh();
@@ -42,7 +42,7 @@ Window_InventoryList.prototype.setActor = function(actor: any) {
 };
 
 // Refreshing the window
-Window_InventoryList.prototype.refresh = function() {
+HalfWindow_List.prototype.refresh = function() {
     if (this.contents) {
         this.contents.clear();
     }
@@ -52,9 +52,9 @@ Window_InventoryList.prototype.refresh = function() {
 };
 
 // Number of items
-Window_InventoryList.prototype.maxItems = function() {
+HalfWindow_List.prototype.maxItems = function() {
     return this._maxItems;
 };
 
 // Number of columns
-Window_InventoryList.prototype.maxCols = () => 1;
+HalfWindow_List.prototype.maxCols = () => 1;

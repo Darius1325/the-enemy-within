@@ -314,18 +314,18 @@ Window_InventoryDetailsCommand.prototype.addCommand = function (name, symbol, en
 };
 // #endregion =========================== Window_InventoryDetailsCommand ============================== //
 // ============================== //
-// #region ============================== Window_InventoryList ============================== //
+// #region ============================== HalfWindow_List ============================== //
 //-----------------------------------------------------------------------------
-// Window_InventoryList
+// HalfWindow_List
 //
 // Super object to manage all inventory list windows
-function Window_InventoryList() {
+function HalfWindow_List() {
     this.initialize.apply(this, arguments);
 }
-Window_InventoryList.prototype = Object.create(Window_Selectable.prototype);
-Window_InventoryList.prototype.constructor = Window_InventoryList;
+HalfWindow_List.prototype = Object.create(Window_Selectable.prototype);
+HalfWindow_List.prototype.constructor = HalfWindow_List;
 // Inializing the window
-Window_InventoryList.prototype.initialize = function () {
+HalfWindow_List.prototype.initialize = function () {
     Window_Selectable.prototype.initialize.call(this, 0, TEW.MENU.INVENTORY_WINDOW_TOPBAR_HEIGHT, Graphics.boxWidth / 2, Graphics.boxHeight - TEW.MENU.INVENTORY_WINDOW_TOPBAR_HEIGHT);
     this._actor = null;
     this._maxItems = 0;
@@ -337,14 +337,14 @@ Window_InventoryList.prototype.initialize = function () {
     this.refresh();
 };
 // Setting the actor
-Window_InventoryList.prototype.setActor = function (actor) {
+HalfWindow_List.prototype.setActor = function (actor) {
     if (this._actor !== actor) {
         this._actor = actor;
         this.refresh();
     }
 };
 // Refreshing the window
-Window_InventoryList.prototype.refresh = function () {
+HalfWindow_List.prototype.refresh = function () {
     if (this.contents) {
         this.contents.clear();
     }
@@ -353,12 +353,12 @@ Window_InventoryList.prototype.refresh = function () {
     }
 };
 // Number of items
-Window_InventoryList.prototype.maxItems = function () {
+HalfWindow_List.prototype.maxItems = function () {
     return this._maxItems;
 };
 // Number of columns
-Window_InventoryList.prototype.maxCols = () => 1;
-// #endregion =========================== Window_InventoryList ============================== //
+HalfWindow_List.prototype.maxCols = () => 1;
+// #endregion =========================== HalfWindow_List ============================== //
 // ============================== //
 // #region ============================== Window_InventoryAmmo ============================== //
 //-----------------------------------------------------------------------------
@@ -368,10 +368,10 @@ Window_InventoryList.prototype.maxCols = () => 1;
 function Window_InventoryAmmo() {
     this.initialize.apply(this, arguments);
 }
-Window_InventoryAmmo.prototype = Object.create(Window_InventoryList.prototype);
+Window_InventoryAmmo.prototype = Object.create(HalfWindow_List.prototype);
 Window_InventoryAmmo.prototype.constructor = Window_InventoryAmmo;
 Window_InventoryAmmo.prototype.initialize = function () {
-    Window_InventoryList.prototype.initialize.call(this);
+    HalfWindow_List.prototype.initialize.call(this);
     this._helpWindow = null;
     // this.setHandler('ok', this.showHelpWindow.bind(this));
 };
@@ -469,10 +469,10 @@ Window_InventoryArmorDetails.prototype.drawDetails = function (armor) {
 function Window_InventoryArmors() {
     this.initialize.apply(this, arguments);
 }
-Window_InventoryArmors.prototype = Object.create(Window_InventoryList.prototype);
+Window_InventoryArmors.prototype = Object.create(HalfWindow_List.prototype);
 Window_InventoryArmors.prototype.constructor = Window_InventoryArmors;
 Window_InventoryArmors.prototype.initialize = function () {
-    Window_InventoryList.prototype.initialize.call(this);
+    HalfWindow_List.prototype.initialize.call(this);
 };
 Window_InventoryArmors.prototype.setActor = function (actor) {
     if (this._actor !== actor) {
@@ -547,10 +547,10 @@ Window_InventoryArmors.prototype.processOk = function () {
 function Window_InventoryInfo() {
     this.initialize.apply(this, arguments);
 }
-Window_InventoryInfo.prototype = Object.create(Window_InventoryList.prototype);
+Window_InventoryInfo.prototype = Object.create(HalfWindow_List.prototype);
 Window_InventoryInfo.prototype.constructor = Window_InventoryInfo;
 Window_InventoryInfo.prototype.initialize = function () {
-    Window_InventoryList.prototype.initialize.call(this);
+    HalfWindow_List.prototype.initialize.call(this);
     this._helpWindow = null;
     // this.setHandler('ok', this.showHelpWindow.bind(this));
 };
@@ -634,10 +634,10 @@ Window_InventoryItemDetails.prototype.drawDetails = function (item) {
 function Window_InventoryItems() {
     this.initialize.apply(this, arguments);
 }
-Window_InventoryItems.prototype = Object.create(Window_InventoryList.prototype);
+Window_InventoryItems.prototype = Object.create(HalfWindow_List.prototype);
 Window_InventoryItems.prototype.constructor = Window_InventoryItems;
 Window_InventoryItems.prototype.initialize = function () {
-    Window_InventoryList.prototype.initialize.call(this);
+    HalfWindow_List.prototype.initialize.call(this);
 };
 Window_InventoryItems.prototype.setActor = function (actor) {
     if (this._actor !== actor) {
@@ -792,10 +792,10 @@ Window_InventoryWeaponDetails.prototype.drawDetails = function (weapon) {
 function Window_InventoryWeapons() {
     this.initialize.apply(this, arguments);
 }
-Window_InventoryWeapons.prototype = Object.create(Window_InventoryList.prototype);
+Window_InventoryWeapons.prototype = Object.create(HalfWindow_List.prototype);
 Window_InventoryWeapons.prototype.constructor = Window_InventoryWeapons;
 Window_InventoryWeapons.prototype.initialize = function () {
-    Window_InventoryList.prototype.initialize.call(this);
+    HalfWindow_List.prototype.initialize.call(this);
 };
 Window_InventoryWeapons.prototype.setActor = function (actor) {
     if (this._actor !== actor) {

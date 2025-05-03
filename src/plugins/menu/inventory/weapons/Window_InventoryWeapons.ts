@@ -5,7 +5,7 @@ import { ActorWeapon } from "../../../base/stats/Game_BattlerBase";
 import { MeleeWeapon } from "../../../types/meleeWeapon";
 import { RangedWeapon } from "../../../types/rangedWeapon";
 import TEW from "../../../types/tew";
-import Window_InventoryList from "../Window_InventoryList";
+import HalfWindow_List from "../../main/HalfWindow_List";
 
 export type LoadedWeapon = (MeleeWeapon | RangedWeapon) & ActorWeapon & {
     equipIndex: number;
@@ -23,11 +23,11 @@ function Window_InventoryWeapons() {
     this.initialize.apply(this, arguments);
 }
 
-export default Window_InventoryWeapons.prototype = Object.create(Window_InventoryList.prototype);
+export default Window_InventoryWeapons.prototype = Object.create(HalfWindow_List.prototype);
 Window_InventoryWeapons.prototype.constructor = Window_InventoryWeapons;
 
 Window_InventoryWeapons.prototype.initialize = function() {
-    Window_InventoryList.prototype.initialize.call(this);
+    HalfWindow_List.prototype.initialize.call(this);
 };
 
 Window_InventoryWeapons.prototype.setActor = function(actor: Game_Actor) {
