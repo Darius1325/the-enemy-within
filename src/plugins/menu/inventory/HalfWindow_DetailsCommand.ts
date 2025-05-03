@@ -2,19 +2,19 @@
 // $StartCompilation
 
 //-----------------------------------------------------------------------------
-// Window_InventoryDetails
+// HalfWindow_DetailsCommand
 //
 // Super object to manage individual item command windows
 
-function Window_InventoryDetailsCommand() {
+function HalfWindow_DetailsCommand() {
     this.initialize.apply(this, arguments);
 }
 
-export default Window_InventoryDetailsCommand.prototype = Object.create(Window_Command.prototype);
-Window_InventoryDetailsCommand.prototype.constructor = Window_InventoryDetailsCommand;
+export default HalfWindow_DetailsCommand.prototype = Object.create(Window_Command.prototype);
+HalfWindow_DetailsCommand.prototype.constructor = HalfWindow_DetailsCommand;
 
 // Initializing the command window
-Window_InventoryDetailsCommand.prototype.initialize = function(actionsNumber = 2) {
+HalfWindow_DetailsCommand.prototype.initialize = function(actionsNumber = 2) {
     this._actionsNumber = actionsNumber;
     this._windowWidth = Graphics.boxWidth / 2;
     this._windowHeight = this.fittingHeight(this._actionsNumber);
@@ -25,10 +25,10 @@ Window_InventoryDetailsCommand.prototype.initialize = function(actionsNumber = 2
 };
 
 // Window Width
-Window_InventoryDetailsCommand.prototype.windowWidth = function() {
+HalfWindow_DetailsCommand.prototype.windowWidth = function() {
     return this._windowWidth;
 };
 
-Window_InventoryDetailsCommand.prototype.addCommand = function(name: string, symbol: string, enabled = true, ext = null) {
+HalfWindow_DetailsCommand.prototype.addCommand = function(name: string, symbol: string, enabled = true, ext = null) {
     this._list.push({ name: name, symbol: symbol, enabled: enabled, ext: ext});
 };

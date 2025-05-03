@@ -332,7 +332,7 @@ Game_BattlerBase.prototype.initialize = function () {
     this.addAmmo("ARROW", 64);
     this.addAmmo("LEAD_BULLET", 98);
     this.addAmmo("BULLET_AND_POWDER", 50);
-    console.log(this);
+    // console.log(this);
 };
 Object.defineProperties(Game_BattlerBase.prototype, {
     // Max wounds

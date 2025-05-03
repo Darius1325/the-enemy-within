@@ -1,6 +1,6 @@
 // $PluginCompiler TEW_Menus.js
 
-import Window_InventoryDetailsCommand from "../Window_InventoryDetailsCommand";
+import HalfWindow_DetailsCommand from "../HalfWindow_DetailsCommand";
 
 // $StartCompilation
 
@@ -13,12 +13,12 @@ function Window_InventoryArmorCommand() {
     this.initialize.apply(this, arguments);
 }
 
-export default Window_InventoryArmorCommand.prototype = Object.create(Window_InventoryDetailsCommand.prototype);
+export default Window_InventoryArmorCommand.prototype = Object.create(HalfWindow_DetailsCommand.prototype);
 Window_InventoryArmorCommand.prototype.constructor = Window_InventoryArmorCommand;
 
 // Initializing the command window
 Window_InventoryArmorCommand.prototype.initialize = function() {
-    Window_InventoryDetailsCommand.prototype.initialize.call(this, 2);
+    HalfWindow_DetailsCommand.prototype.initialize.call(this, 2);
 };
 
 // Making the 2 lines

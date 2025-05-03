@@ -1171,6 +1171,6 @@ TEW.DATABASE.ITEMS.IDS = Object.keys(TEW.DATABASE.ITEMS.SET).sort((a, b) => a.lo
 // === //
 // #region ====== ITEMS ARRAY === //
 // This is a 2D array, where the first element is the key and the second element is the value
-TEW.DATABASE.ITEMS.ARRAY = Object.keys(TEW.DATABASE.ITEMS.IDS).map(item => [item, TEW.DATABASE.ITEMS.SET[item]]);
+TEW.DATABASE.ITEMS.ARRAY = Object.keys(TEW.DATABASE.ITEMS.SET).map(item => [item, TEW.DATABASE.ITEMS.SET[item]]);
 // #endregion === ITEMS ARRAY === //
 

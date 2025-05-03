@@ -5,19 +5,19 @@ import TEW from "../../types/tew";
 // $StartCompilation
 
 //-----------------------------------------------------------------------------
-// Window_InventoryDetails
+// HalfWindow_Details
 //
 // Super object to manage all item details windows
 
-function Window_InventoryDetails() {
+function HalfWindow_Details() {
     this.initialize.apply(this, arguments);
 }
 
-export default Window_InventoryDetails.prototype = Object.create(Window_Base.prototype);
-Window_InventoryDetails.prototype.constructor = Window_InventoryDetails;
+export default HalfWindow_Details.prototype = Object.create(Window_Base.prototype);
+HalfWindow_Details.prototype.constructor = HalfWindow_Details;
 
 // Initalizing the window
-Window_InventoryDetails.prototype.initialize = function(commandWindowHeight: number) {
+HalfWindow_Details.prototype.initialize = function(commandWindowHeight: number) {
     Window_Base.prototype.initialize.call(this,
         Graphics.boxWidth / 2,
         TEW.MENU.INVENTORY_WINDOW_TOPBAR_HEIGHT,
@@ -28,7 +28,7 @@ Window_InventoryDetails.prototype.initialize = function(commandWindowHeight: num
     this.refresh();
 };
 
-Window_InventoryDetails.prototype.setActor = function(actor: any) {
+HalfWindow_Details.prototype.setActor = function(actor: any) {
     if (this._actor !== actor) {
         this._actor = actor;
         this.refresh();
@@ -36,7 +36,7 @@ Window_InventoryDetails.prototype.setActor = function(actor: any) {
 };
 
 // Drawing an underlined Text
-Window_InventoryDetails.prototype.drawUnderlinedText = function(text: string, x: number, y: number, width: number, align: string) {
+HalfWindow_Details.prototype.drawUnderlinedText = function(text: string, x: number, y: number, width: number, align: string) {
     // Draw text
     this.drawText(text, x, y, width, align);
 
@@ -57,7 +57,7 @@ Window_InventoryDetails.prototype.drawUnderlinedText = function(text: string, x:
 };
 
 // Drawing a table with 2 columns
-Window_InventoryDetails.prototype.drawTable2Columns = function(x: number, y: number, width: number, rows: number, textArray: [string, string][]) {
+HalfWindow_Details.prototype.drawTable2Columns = function(x: number, y: number, width: number, rows: number, textArray: [string, string][]) {
     const cellWidthFirstRow = width / 3;
     const cellWidthSecondRow = width / 3 * 2;
     const cellHeight = this.lineHeight();
@@ -73,7 +73,7 @@ Window_InventoryDetails.prototype.drawTable2Columns = function(x: number, y: num
 };
 
 // Drawing a wrapped text - used to draw to description
-Window_InventoryDetails.prototype.drawWrappedTextManually = function(text: string, x: number, y: number, fontSize: number) {
+HalfWindow_Details.prototype.drawWrappedTextManually = function(text: string, x: number, y: number, fontSize: number) {
 
     const words = text.split(" ");
     const maxWidth = this.contentsWidth() - x;
@@ -104,7 +104,7 @@ Window_InventoryDetails.prototype.drawWrappedTextManually = function(text: strin
     this.resetFontSettings();
 };
 
-Window_InventoryDetails.prototype.drawLine = function(y: number) {
+HalfWindow_Details.prototype.drawLine = function(y: number) {
     const lineWidth = 40;
     const lineSize = 2;
     this.contents.fillRect(

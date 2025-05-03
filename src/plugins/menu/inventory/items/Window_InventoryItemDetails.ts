@@ -1,7 +1,7 @@
 // $PluginCompiler TEW_Menus.js
 
 import { Item } from "../../../types/item";
-import Window_InventoryDetails from "../Window_InventoryDetails";
+import HalfWindow_Details from "../../base/HalfWindow_Details";
 
 type ItemWithQuantity = Item & {
     quantity: number;
@@ -18,11 +18,11 @@ function Window_InventoryItemDetails() {
     this.initialize.apply(this, arguments);
 }
 
-export default Window_InventoryItemDetails.prototype = Object.create(Window_InventoryDetails.prototype);
+export default Window_InventoryItemDetails.prototype = Object.create(HalfWindow_Details.prototype);
 Window_InventoryItemDetails.prototype.constructor = Window_InventoryItemDetails;
 
 Window_InventoryItemDetails.prototype.initialize = function(commandWindowHeight = 0) {
-    Window_InventoryDetails.prototype.initialize.call(this, commandWindowHeight);
+    HalfWindow_Details.prototype.initialize.call(this, commandWindowHeight);
     this._item = null;
 };
 

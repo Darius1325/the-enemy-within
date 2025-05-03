@@ -201,31 +201,31 @@ Scene_Menu.prototype.onFormationCancel = function () {
 };
 // #endregion =========================== Scene_Menu ============================== //
 // ============================== //
-// #region ============================== Window_InventoryDetails ============================== //
+// #region ============================== HalfWindow_Details ============================== //
 //-----------------------------------------------------------------------------
-// Window_InventoryDetails
+// HalfWindow_Details
 //
 // Super object to manage all item details windows
-function Window_InventoryDetails() {
+function HalfWindow_Details() {
     this.initialize.apply(this, arguments);
 }
-Window_InventoryDetails.prototype = Object.create(Window_Base.prototype);
-Window_InventoryDetails.prototype.constructor = Window_InventoryDetails;
+HalfWindow_Details.prototype = Object.create(Window_Base.prototype);
+HalfWindow_Details.prototype.constructor = HalfWindow_Details;
 // Initalizing the window
-Window_InventoryDetails.prototype.initialize = function (commandWindowHeight) {
+HalfWindow_Details.prototype.initialize = function (commandWindowHeight) {
     Window_Base.prototype.initialize.call(this, Graphics.boxWidth / 2, TEW.MENU.INVENTORY_WINDOW_TOPBAR_HEIGHT, Graphics.boxWidth / 2, Graphics.boxHeight - TEW.MENU.INVENTORY_WINDOW_TOPBAR_HEIGHT - commandWindowHeight);
     this.width = Graphics.boxWidth / 2;
     this.activate();
     this.refresh();
 };
-Window_InventoryDetails.prototype.setActor = function (actor) {
+HalfWindow_Details.prototype.setActor = function (actor) {
     if (this._actor !== actor) {
         this._actor = actor;
         this.refresh();
     }
 };
 // Drawing an underlined Text
-Window_InventoryDetails.prototype.drawUnderlinedText = function (text, x, y, width, align) {
+HalfWindow_Details.prototype.drawUnderlinedText = function (text, x, y, width, align) {
     // Draw text
     this.drawText(text, x, y, width, align);
     // Getting position of the line
@@ -238,7 +238,7 @@ Window_InventoryDetails.prototype.drawUnderlinedText = function (text, x, y, wid
     this.normalColor());
 };
 // Drawing a table with 2 columns
-Window_InventoryDetails.prototype.drawTable2Columns = function (x, y, width, rows, textArray) {
+HalfWindow_Details.prototype.drawTable2Columns = function (x, y, width, rows, textArray) {
     const cellWidthFirstRow = width / 3;
     const cellWidthSecondRow = width / 3 * 2;
     const cellHeight = this.lineHeight();
@@ -251,7 +251,7 @@ Window_InventoryDetails.prototype.drawTable2Columns = function (x, y, width, row
     }
 };
 // Drawing a wrapped text - used to draw to description
-Window_InventoryDetails.prototype.drawWrappedTextManually = function (text, x, y, fontSize) {
+HalfWindow_Details.prototype.drawWrappedTextManually = function (text, x, y, fontSize) {
     const words = text.split(" ");
     const maxWidth = this.contentsWidth() - x;
     if (text.length <= 100) {
@@ -281,38 +281,12 @@ Window_InventoryDetails.prototype.drawWrappedTextManually = function (text, x, y
     });
     this.resetFontSettings();
 };
-Window_InventoryDetails.prototype.drawLine = function (y) {
+HalfWindow_Details.prototype.drawLine = function (y) {
     const lineWidth = 40;
     const lineSize = 2;
     this.contents.fillRect((this.contentsWidth() - lineWidth) / 2, y, lineWidth, lineSize, this.normalColor());
 };
-// #endregion =========================== Window_InventoryDetails ============================== //
-// ============================== //
-// #region ============================== Window_InventoryDetailsCommand ============================== //
-//-----------------------------------------------------------------------------
-// Window_InventoryDetails
-//
-// Super object to manage individual item command windows
-function Window_InventoryDetailsCommand() {
-    this.initialize.apply(this, arguments);
-}
-Window_InventoryDetailsCommand.prototype = Object.create(Window_Command.prototype);
-Window_InventoryDetailsCommand.prototype.constructor = Window_InventoryDetailsCommand;
-// Initializing the command window
-Window_InventoryDetailsCommand.prototype.initialize = function (actionsNumber = 2) {
-    this._actionsNumber = actionsNumber;
-    this._windowWidth = Graphics.boxWidth / 2;
-    this._windowHeight = this.fittingHeight(this._actionsNumber);
-    Window_Command.prototype.initialize.call(this, Graphics.boxWidth / 2, Graphics.boxHeight - this._windowHeight);
-};
-// Window Width
-Window_InventoryDetailsCommand.prototype.windowWidth = function () {
-    return this._windowWidth;
-};
-Window_InventoryDetailsCommand.prototype.addCommand = function (name, symbol, enabled = true, ext = null) {
-    this._list.push({ name: name, symbol: symbol, enabled: enabled, ext: ext });
-};
-// #endregion =========================== Window_InventoryDetailsCommand ============================== //
+// #endregion =========================== HalfWindow_Details ============================== //
 // ============================== //
 // #region ============================== HalfWindow_List ============================== //
 //-----------------------------------------------------------------------------
@@ -360,6 +334,32 @@ HalfWindow_List.prototype.maxItems = function () {
 HalfWindow_List.prototype.maxCols = () => 1;
 // #endregion =========================== HalfWindow_List ============================== //
 // ============================== //
+// #region ============================== HalfWindow_DetailsCommand ============================== //
+//-----------------------------------------------------------------------------
+// HalfWindow_DetailsCommand
+//
+// Super object to manage individual item command windows
+function HalfWindow_DetailsCommand() {
+    this.initialize.apply(this, arguments);
+}
+HalfWindow_DetailsCommand.prototype = Object.create(Window_Command.prototype);
+HalfWindow_DetailsCommand.prototype.constructor = HalfWindow_DetailsCommand;
+// Initializing the command window
+HalfWindow_DetailsCommand.prototype.initialize = function (actionsNumber = 2) {
+    this._actionsNumber = actionsNumber;
+    this._windowWidth = Graphics.boxWidth / 2;
+    this._windowHeight = this.fittingHeight(this._actionsNumber);
+    Window_Command.prototype.initialize.call(this, Graphics.boxWidth / 2, Graphics.boxHeight - this._windowHeight);
+};
+// Window Width
+HalfWindow_DetailsCommand.prototype.windowWidth = function () {
+    return this._windowWidth;
+};
+HalfWindow_DetailsCommand.prototype.addCommand = function (name, symbol, enabled = true, ext = null) {
+    this._list.push({ name: name, symbol: symbol, enabled: enabled, ext: ext });
+};
+// #endregion =========================== HalfWindow_DetailsCommand ============================== //
+// ============================== //
 // #region ============================== Window_InventoryAmmo ============================== //
 //-----------------------------------------------------------------------------
 // Window_InventoryInfo
@@ -393,11 +393,11 @@ Window_InventoryAmmo.prototype.setActor = function (actor) {
 function Window_InventoryArmorCommand() {
     this.initialize.apply(this, arguments);
 }
-Window_InventoryArmorCommand.prototype = Object.create(Window_InventoryDetailsCommand.prototype);
+Window_InventoryArmorCommand.prototype = Object.create(HalfWindow_DetailsCommand.prototype);
 Window_InventoryArmorCommand.prototype.constructor = Window_InventoryArmorCommand;
 // Initializing the command window
 Window_InventoryArmorCommand.prototype.initialize = function () {
-    Window_InventoryDetailsCommand.prototype.initialize.call(this, 2);
+    HalfWindow_DetailsCommand.prototype.initialize.call(this, 2);
 };
 // Making the 2 lines
 Window_InventoryArmorCommand.prototype.makeCommandList = function () {
@@ -428,10 +428,10 @@ Window_InventoryArmorCommand.prototype.refreshCommand = function (actor, armorId
 function Window_InventoryArmorDetails() {
     this.initialize.apply(this, arguments);
 }
-Window_InventoryArmorDetails.prototype = Object.create(Window_InventoryDetails.prototype);
+Window_InventoryArmorDetails.prototype = Object.create(HalfWindow_Details.prototype);
 Window_InventoryArmorDetails.prototype.constructor = Window_InventoryArmorDetails;
 Window_InventoryArmorDetails.prototype.initialize = function (commandWindowHeight = 0) {
-    Window_InventoryDetails.prototype.initialize.call(this, commandWindowHeight);
+    HalfWindow_Details.prototype.initialize.call(this, commandWindowHeight);
     this._armor = null;
 };
 // Refreshing the window
@@ -572,11 +572,11 @@ Window_InventoryInfo.prototype.setActor = function (actor) {
 function Window_InventoryItemCommand() {
     this.initialize.apply(this, arguments);
 }
-Window_InventoryItemCommand.prototype = Object.create(Window_InventoryDetailsCommand.prototype);
+Window_InventoryItemCommand.prototype = Object.create(HalfWindow_DetailsCommand.prototype);
 Window_InventoryItemCommand.prototype.constructor = Window_InventoryItemCommand;
 // Initializing the command window
 Window_InventoryItemCommand.prototype.initialize = function () {
-    Window_InventoryDetailsCommand.prototype.initialize.call(this, 2);
+    HalfWindow_DetailsCommand.prototype.initialize.call(this, 2);
 };
 // Making the 2 lines
 Window_InventoryItemCommand.prototype.makeCommandList = function () {
@@ -593,10 +593,10 @@ Window_InventoryItemCommand.prototype.makeCommandList = function () {
 function Window_InventoryItemDetails() {
     this.initialize.apply(this, arguments);
 }
-Window_InventoryItemDetails.prototype = Object.create(Window_InventoryDetails.prototype);
+Window_InventoryItemDetails.prototype = Object.create(HalfWindow_Details.prototype);
 Window_InventoryItemDetails.prototype.constructor = Window_InventoryItemDetails;
 Window_InventoryItemDetails.prototype.initialize = function (commandWindowHeight = 0) {
-    Window_InventoryDetails.prototype.initialize.call(this, commandWindowHeight);
+    HalfWindow_Details.prototype.initialize.call(this, commandWindowHeight);
     this._item = null;
 };
 // Refreshing the window
@@ -708,11 +708,11 @@ Window_InventoryItems.prototype.processOk = function () {
 function Window_InventoryWeaponCommand() {
     this.initialize.apply(this, arguments);
 }
-Window_InventoryWeaponCommand.prototype = Object.create(Window_InventoryDetailsCommand.prototype);
+Window_InventoryWeaponCommand.prototype = Object.create(HalfWindow_DetailsCommand.prototype);
 Window_InventoryWeaponCommand.prototype.constructor = Window_InventoryWeaponCommand;
 // Initializing the command window
 Window_InventoryWeaponCommand.prototype.initialize = function () {
-    Window_InventoryDetailsCommand.prototype.initialize.call(this, 3);
+    HalfWindow_DetailsCommand.prototype.initialize.call(this, 3);
 };
 // Making the 3 lines
 Window_InventoryWeaponCommand.prototype.makeCommandList = function () {
@@ -751,10 +751,10 @@ Window_InventoryWeaponCommand.prototype.refreshCommand = function (actor, weapon
 function Window_InventoryWeaponDetails() {
     this.initialize.apply(this, arguments);
 }
-Window_InventoryWeaponDetails.prototype = Object.create(Window_InventoryDetails.prototype);
+Window_InventoryWeaponDetails.prototype = Object.create(HalfWindow_Details.prototype);
 Window_InventoryWeaponDetails.prototype.constructor = Window_InventoryWeaponDetails;
 Window_InventoryWeaponDetails.prototype.initialize = function (commandWindowHeight = 0) {
-    Window_InventoryDetails.prototype.initialize.call(this, commandWindowHeight);
+    HalfWindow_Details.prototype.initialize.call(this, commandWindowHeight);
     this._weapon = null;
 };
 // Refreshing the window

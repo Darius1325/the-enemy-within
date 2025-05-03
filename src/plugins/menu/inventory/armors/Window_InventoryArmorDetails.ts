@@ -1,7 +1,7 @@
 // $PluginCompiler TEW_Menus.js
 
 import { Armor } from "../../../types/armor";
-import Window_InventoryDetails from "../Window_InventoryDetails";
+import HalfWindow_Details from "../../base/HalfWindow_Details";
 
 // $StartCompilation
 
@@ -14,11 +14,11 @@ function Window_InventoryArmorDetails() {
     this.initialize.apply(this, arguments);
 }
 
-export default Window_InventoryArmorDetails.prototype = Object.create(Window_InventoryDetails.prototype);
+export default Window_InventoryArmorDetails.prototype = Object.create(HalfWindow_Details.prototype);
 Window_InventoryArmorDetails.prototype.constructor = Window_InventoryArmorDetails;
 
 Window_InventoryArmorDetails.prototype.initialize = function(commandWindowHeight = 0) {
-    Window_InventoryDetails.prototype.initialize.call(this, commandWindowHeight);
+    HalfWindow_Details.prototype.initialize.call(this, commandWindowHeight);
     this._armor = null;
 };
 

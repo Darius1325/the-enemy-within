@@ -2,7 +2,7 @@
 
 import { MeleeWeapon } from "../../../types/meleeWeapon";
 import { RangedWeapon } from "../../../types/rangedWeapon";
-import Window_InventoryDetails from "../Window_InventoryDetails";
+import HalfWindow_Details from "../../base/HalfWindow_Details";
 
 // $StartCompilation
 
@@ -15,11 +15,11 @@ function Window_InventoryWeaponDetails() {
     this.initialize.apply(this, arguments);
 }
 
-export default Window_InventoryWeaponDetails.prototype = Object.create(Window_InventoryDetails.prototype);
+export default Window_InventoryWeaponDetails.prototype = Object.create(HalfWindow_Details.prototype);
 Window_InventoryWeaponDetails.prototype.constructor = Window_InventoryWeaponDetails;
 
 Window_InventoryWeaponDetails.prototype.initialize = function (commandWindowHeight = 0) {
-    Window_InventoryDetails.prototype.initialize.call(this, commandWindowHeight);
+    HalfWindow_Details.prototype.initialize.call(this, commandWindowHeight);
     this._weapon = null;
 };
 

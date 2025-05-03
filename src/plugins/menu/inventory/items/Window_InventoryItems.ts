@@ -1,7 +1,7 @@
 // $PluginCompiler TEW_Menus.js
 
 import TEW from "../../../types/tew";
-import HalfWindow_List from "../../main/HalfWindow_List";
+import HalfWindow_List from "../../base/HalfWindow_List";
 
 // $StartCompilation
 
@@ -24,7 +24,7 @@ Window_InventoryItems.prototype.initialize = function() {
 Window_InventoryItems.prototype.setActor = function(actor: any) {
     if (this._actor !== actor) {
         this._actor = actor;
-        this._items = TEW.DATABASE.ITEMS.ARRAY.filter(item => actor.hasItem(item[0])); // [<internal name>, {<item data>}]
+        this._items = TEW.DATABASE.ITEMS.ARRAY.filter( item => actor.hasItem(item[0])); // [<internal name>, {<item data>}]
         this._maxItems = this._items.length;
         this.refresh();
     }
