@@ -1,6 +1,6 @@
 // $PluginCompiler TEW_Menus.js
 
-import HalfWindow_DetailsCommand from "../HalfWindow_DetailsCommand";
+import HalfWindow_DetailsCommand from "../../base/HalfWindow_DetailsCommand";
 
 // $StartCompilation
 
