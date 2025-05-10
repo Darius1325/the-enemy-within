@@ -49,7 +49,7 @@ export interface Game_BattlerBase {
     hasItem: (itemId: string) => boolean;
     addItem: (itemId: string, quantity?: number) => void;
 
-    weapon: (weaponId: string) => ActorWeapon;
+    weapon: (index: number) => ActorWeapon;
     mainHand: () => ActorWeapon;
     secondHand: () => ActorWeapon;
     equipMainHand: (index: number) => void;
@@ -300,8 +300,8 @@ Game_BattlerBase.prototype.hasItem = function(itemId: string) {
 
 // Weapons
 
-Game_BattlerBase.prototype.weapon = function(weaponId: string) {
-    return this.weapons.find((weapon: ActorWeapon) => weapon.id === weaponId);
+Game_BattlerBase.prototype.weapon = function(index: number) {
+    return this.weapons[index];
 }
 
 Game_BattlerBase.prototype.mainHand = function() {

@@ -28,17 +28,17 @@ Window_InventoryWeaponCommand.prototype.makeCommandList = function() {
     this.addCommand(TextManager.inventoryWeaponReload, 'inventory_weapon_reload');
 };
 
-Window_InventoryWeaponCommand.prototype.refreshCommand = function(actor: any, weaponId = 0){
-    if (actor){
-        const weapon = actor.weapon(weaponId);
+Window_InventoryWeaponCommand.prototype.refreshCommand = function(actor: any, weaponIndex = 0){
+    if (actor) {
+        const weapon = actor.weapon(weaponIndex);
         this.clearCommandList();
-        if (weapon.isInMainHand || weapon.isInSecondHand){
+        if (weapon.isInMainHand || weapon.isInSecondHand) {
             this.addCommand(TextManager.inventoryWeaponUnequip, 'inventory_weapon_unequip');
         } else {
             this.addCommand(TextManager.inventoryWeaponEquip, 'inventory_weapon_equip');
         }
         this.addCommand(TextManager.inventoryWeaponTransfer, 'inventory_weapon_transfer');
-        if (weapon.isReloadable){
+        if (weapon.isReloadable) {
             this.addCommand(TextManager.inventoryWeaponReload, 'inventory_weapon_reload');
         } else {
             this.addCommand(TextManager.inventoryWeaponReload, 'inventory_weapon_reload', false);

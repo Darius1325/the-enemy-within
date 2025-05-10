@@ -47,41 +47,43 @@ Window_InventoryWeapons.prototype.initialize = function() {
 Window_InventoryWeapons.prototype.setActor = function(actor: Game_Actor) {
     if (this._actor !== actor) {
         this._actor = actor;
-
-        const displayedWeapons = actor.weapons.map((weapon: ActorWeapon, index: number): LoadedWeapon => {
-            const weaponData = Object.assign({},
-                TEW.DATABASE.WEAPONS.ARRAY.find(w => w[0] === weapon.id));
-            return {
-                ...weaponData[1],
-                ...weapon,
-                equipIndex: index,
-                equipIcon: weapon.isInMainHand
-                    ? TEW.DATABASE.ICONS.SET.EQUIPPED_MAIN_HAND
-                    : weapon.isInSecondHand
-                        ? TEW.DATABASE.ICONS.SET.EQUIPPED_SECOND_HAND
-                        : undefined
-            };
-        });
-
-        this._weapons = displayedWeapons // [<internal name>, {<item data>}]
-            .filter((weapon) => !weapon.isInMainHand && !weapon.isInSecondHand)
-            .map((weapon) => [weapon.id, weapon]);
-
-        this._maxItems = this._weapons.length;
-
-        this._mainHandWeapon = displayedWeapons.find((weapon) => weapon.isInMainHand);
-        if (this._mainHandWeapon) {
-            this._maxItems ++;
-        }
-
-        this._secondHandWeapon = displayedWeapons.find((weapon) => weapon.isInSecondHand);
-        if (this._secondHandWeapon) {
-            this._maxItems ++;
-        }
-
-        this.refresh();
+        this.syncActorWeapons();
     }
 };
+
+Window_InventoryWeapons.prototype.syncActorWeapons = function() {
+    const displayedWeapons = this._actor.weapons.map((weapon: ActorWeapon, index: number): LoadedWeapon => {
+        const weaponData = Object.assign({},
+            TEW.DATABASE.WEAPONS.ARRAY.find(w => w[0] === weapon.id));
+        return {
+            id: weaponData[0],
+            ...weaponData[1],
+            ...weapon,
+            equipIndex: index,
+            equipIcon: weapon.isInMainHand
+                ? TEW.DATABASE.ICONS.SET.EQUIPPED_MAIN_HAND
+                : weapon.isInSecondHand
+                    ? TEW.DATABASE.ICONS.SET.EQUIPPED_SECOND_HAND
+                    : undefined
+        };
+    });
+
+    this._weapons = displayedWeapons.filter((weapon) => !weapon.isInMainHand && !weapon.isInSecondHand);
+
+    this._maxItems = this._weapons.length;
+
+    this._mainHandWeapon = displayedWeapons.find((weapon) => weapon.isInMainHand);
+    if (this._mainHandWeapon) {
+        this._maxItems ++;
+    }
+
+    this._secondHandWeapon = displayedWeapons.find((weapon) => weapon.isInSecondHand);
+    if (this._secondHandWeapon) {
+        this._maxItems ++;
+    }
+
+    this.refresh();
+}
 
 Window_InventoryWeapons.prototype.drawAllItems = function() {
     var topIndex = this.topIndex();
@@ -99,12 +101,12 @@ Window_InventoryWeapons.prototype.drawItem = function(index: number) {
     const y = normalizedIndex * TEW.MENU.LINE_HEIGHT;
 
     const weapon = this.weaponFromIndex(index);
-
+    console.log("drawItem", this._weapons);
     if (weapon) {
         this.changeTextColor(this.systemColor());
-        this.drawIcon(weapon[1].equipIcon || 0, x - 32, y)
-        this.drawIcon(weapon[1].icon, x , y)
-        this.drawText(weapon[1].name, x + 32 + this._iconPadding, y, this.contentsWidth());
+        this.drawIcon(weapon.equipIcon || 0, x - 32, y)
+        this.drawIcon(weapon.icon, x , y)
+        this.drawText(weapon.name, x + 32 + this._iconPadding, y, this.contentsWidth());
         this.resetTextColor();
     }
 };
@@ -112,7 +114,7 @@ Window_InventoryWeapons.prototype.drawItem = function(index: number) {
 Window_InventoryWeapons.prototype.weaponFromIndex = function(index: number) {
     let weapon;
 
-    if (index === 0){
+    if (index === 0) {
         if (this._mainHandWeapon) {
             weapon = this._mainHandWeapon;
         }
@@ -122,7 +124,7 @@ Window_InventoryWeapons.prototype.weaponFromIndex = function(index: number) {
         else {
             weapon = this._weapons[0];
         }
-    } else if (index === 1){
+    } else if (index === 1) {
         if (this._mainHandWeapon && this._secondHandWeapon) {
             weapon = this._secondHandWeapon;
         }

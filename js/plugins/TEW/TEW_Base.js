@@ -426,8 +426,8 @@ Game_BattlerBase.prototype.hasItem = function (itemId) {
     return this.items[itemId] > 0;
 };
 // Weapons
-Game_BattlerBase.prototype.weapon = function (weaponId) {
-    return this.weapons.find((weapon) => weapon.id === weaponId);
+Game_BattlerBase.prototype.weapon = function (index) {
+    return this.weapons[index];
 };
 Game_BattlerBase.prototype.mainHand = function () {
     return this.weapons.find((weapon) => weapon.isInMainHand);

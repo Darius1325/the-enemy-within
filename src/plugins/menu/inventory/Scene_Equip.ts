@@ -414,9 +414,9 @@ Scene_Equip.prototype.showItemDetails = function(){
 }
 
 Scene_Equip.prototype.showWeaponDetails = function(){
-    const weapon = this._weaponsWindow.weaponFromIndex(this._weaponsWindow.index());
+    const weapon: LoadedWeapon = this._weaponsWindow.weaponFromIndex(this._weaponsWindow.index());
     this._weaponsDetailsWindow._weapon = weapon;
-    this._weaponsCommandWindow.refreshCommand(this._actor, weapon[0]);
+    this._weaponsCommandWindow.refreshCommand(this._actor, weapon.equipIndex);
     this._weaponsDetailsWindow.refresh();
 }
 
@@ -441,9 +441,9 @@ Scene_Equip.prototype.transferItem = function() {
 
 // Equipping a weapon - Triggered on the weapons window
 Scene_Equip.prototype.equipWeapon = function() {
-    const weapon: [string, LoadedWeapon] = this._weaponsWindow.weaponFromIndex(this._weaponsWindow.index());
-    if (weapon[1].group === WeaponGroup.PARRY
-        || weapon[1].qualities.some((quality) =>
+    const weapon: LoadedWeapon = this._weaponsWindow.weaponFromIndex(this._weaponsWindow.index());
+    if (weapon.group === WeaponGroup.PARRY
+        || weapon.qualities.some((quality) =>
             quality === WeaponQuality.SHIELD_1
             || quality === WeaponQuality.SHIELD_2
             || quality === WeaponQuality.SHIELD_3
@@ -451,11 +451,12 @@ Scene_Equip.prototype.equipWeapon = function() {
             || quality === WeaponQuality.SHIELD_5)
     ) {
         this._actor.unequipSecondHand();
-        this._actor.equipSecondHand(weapon[1].equipIndex);
+        this._actor.equipSecondHand(weapon.equipIndex);
     } else {
         this._actor.unequipMainHand();
-        this._actor.equipMainHand(weapon[1].equipIndex);
+        this._actor.equipMainHand(weapon.equipIndex);
     }
+    this._weaponsWindow.syncActorWeapons();
     this._weaponsCommandWindow.callHandler('cancel');
 }
 
@@ -467,6 +468,7 @@ Scene_Equip.prototype.unequipWeapon = function() {
     } else if (weaponIndex === 1) {
         this._actor.unequipSecondHand();
     }
+    this._weaponsWindow.syncActorWeapons();
     this._weaponsCommandWindow.callHandler('cancel');
 }
 

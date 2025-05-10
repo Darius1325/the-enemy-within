@@ -722,9 +722,9 @@ Window_InventoryWeaponCommand.prototype.makeCommandList = function () {
     this.addCommand(TextManager.inventoryWeaponTransfer, 'inventory_weapon_transfer');
     this.addCommand(TextManager.inventoryWeaponReload, 'inventory_weapon_reload');
 };
-Window_InventoryWeaponCommand.prototype.refreshCommand = function (actor, weaponId = 0) {
+Window_InventoryWeaponCommand.prototype.refreshCommand = function (actor, weaponIndex = 0) {
     if (actor) {
-        const weapon = actor.weapon(weaponId);
+        const weapon = actor.weapon(weaponIndex);
         this.clearCommandList();
         if (weapon.isInMainHand || weapon.isInSecondHand) {
             this.addCommand(TextManager.inventoryWeaponUnequip, 'inventory_weapon_unequip');
@@ -769,20 +769,20 @@ Window_InventoryWeaponDetails.prototype.refresh = function () {
 // Drawing the details
 Window_InventoryWeaponDetails.prototype.drawDetails = function (weapon) {
     // Title
-    this.drawUnderlinedText(weapon[1].name, 0, 0, this.contentsWidth(), "center");
+    this.drawUnderlinedText(weapon.name, 0, 0, this.contentsWidth(), "center");
     // Item's Icon
-    this.drawIcon(weapon[1].icon, 0, 0);
+    this.drawIcon(weapon.icon, 0, 0);
     // Availability Icon
-    this.drawIcon(weapon[1].availabilityIcon, this.contentsWidth() - 32, 0);
+    this.drawIcon(weapon.availabilityIcon, this.contentsWidth() - 32, 0);
     // Table
     this.drawTable2Columns(0, 80, this.contentsWidth(), 2, [
         // ["Owned :", "x" + item[1].quantity],
-        ["Group :", weapon[1].groupLabel],
-        ["Enc. :", weapon[1].enc]
+        ["Group :", weapon.groupLabel],
+        ["Enc. :", weapon.enc]
     ]);
     this.drawLine(200);
     // Description
-    this.drawWrappedTextManually(weapon[1].description, 0, 220, 24);
+    this.drawWrappedTextManually(weapon.description, 0, 220, 24);
 };
 // #endregion =========================== Window_InventoryWeaponDetails ============================== //
 // ============================== //
@@ -799,28 +799,29 @@ Window_InventoryWeapons.prototype.initialize = function () {
 Window_InventoryWeapons.prototype.setActor = function (actor) {
     if (this._actor !== actor) {
         this._actor = actor;
-        const displayedWeapons = actor.weapons.map((weapon, index) => {
-            const weaponData = Object.assign({}, TEW.DATABASE.WEAPONS.ARRAY.find(w => w[0] === weapon.id));
-            return Object.assign(Object.assign(Object.assign({}, weaponData[1]), weapon), { equipIndex: index, equipIcon: weapon.isInMainHand
-                    ? TEW.DATABASE.ICONS.SET.EQUIPPED_MAIN_HAND
-                    : weapon.isInSecondHand
-                        ? TEW.DATABASE.ICONS.SET.EQUIPPED_SECOND_HAND
-                        : undefined });
-        });
-        this._weapons = displayedWeapons // [<internal name>, {<item data>}]
-            .filter((weapon) => !weapon.isInMainHand && !weapon.isInSecondHand)
-            .map((weapon) => [weapon.id, weapon]);
-        this._maxItems = this._weapons.length;
-        this._mainHandWeapon = displayedWeapons.find((weapon) => weapon.isInMainHand);
-        if (this._mainHandWeapon) {
-            this._maxItems++;
-        }
-        this._secondHandWeapon = displayedWeapons.find((weapon) => weapon.isInSecondHand);
-        if (this._secondHandWeapon) {
-            this._maxItems++;
-        }
-        this.refresh();
+        this.syncActorWeapons();
     }
+};
+Window_InventoryWeapons.prototype.syncActorWeapons = function () {
+    const displayedWeapons = this._actor.weapons.map((weapon, index) => {
+        const weaponData = Object.assign({}, TEW.DATABASE.WEAPONS.ARRAY.find(w => w[0] === weapon.id));
+        return Object.assign(Object.assign(Object.assign({ id: weaponData[0] }, weaponData[1]), weapon), { equipIndex: index, equipIcon: weapon.isInMainHand
+                ? TEW.DATABASE.ICONS.SET.EQUIPPED_MAIN_HAND
+                : weapon.isInSecondHand
+                    ? TEW.DATABASE.ICONS.SET.EQUIPPED_SECOND_HAND
+                    : undefined });
+    });
+    this._weapons = displayedWeapons.filter((weapon) => !weapon.isInMainHand && !weapon.isInSecondHand);
+    this._maxItems = this._weapons.length;
+    this._mainHandWeapon = displayedWeapons.find((weapon) => weapon.isInMainHand);
+    if (this._mainHandWeapon) {
+        this._maxItems++;
+    }
+    this._secondHandWeapon = displayedWeapons.find((weapon) => weapon.isInSecondHand);
+    if (this._secondHandWeapon) {
+        this._maxItems++;
+    }
+    this.refresh();
 };
 Window_InventoryWeapons.prototype.drawAllItems = function () {
     var topIndex = this.topIndex();
@@ -836,11 +837,12 @@ Window_InventoryWeapons.prototype.drawItem = function (index) {
     const x = 48;
     const y = normalizedIndex * TEW.MENU.LINE_HEIGHT;
     const weapon = this.weaponFromIndex(index);
+    console.log("drawItem", this._weapons);
     if (weapon) {
         this.changeTextColor(this.systemColor());
-        this.drawIcon(weapon[1].equipIcon || 0, x - 32, y);
-        this.drawIcon(weapon[1].icon, x, y);
-        this.drawText(weapon[1].name, x + 32 + this._iconPadding, y, this.contentsWidth());
+        this.drawIcon(weapon.equipIcon || 0, x - 32, y);
+        this.drawIcon(weapon.icon, x, y);
+        this.drawText(weapon.name, x + 32 + this._iconPadding, y, this.contentsWidth());
         this.resetTextColor();
     }
 };
@@ -2164,7 +2166,7 @@ Scene_Equip.prototype.showItemDetails = function () {
 Scene_Equip.prototype.showWeaponDetails = function () {
     const weapon = this._weaponsWindow.weaponFromIndex(this._weaponsWindow.index());
     this._weaponsDetailsWindow._weapon = weapon;
-    this._weaponsCommandWindow.refreshCommand(this._actor, weapon[0]);
+    this._weaponsCommandWindow.refreshCommand(this._actor, weapon.equipIndex);
     this._weaponsDetailsWindow.refresh();
 };
 Scene_Equip.prototype.showArmorDetails = function () {
@@ -2186,19 +2188,20 @@ Scene_Equip.prototype.transferItem = function () {
 // Equipping a weapon - Triggered on the weapons window
 Scene_Equip.prototype.equipWeapon = function () {
     const weapon = this._weaponsWindow.weaponFromIndex(this._weaponsWindow.index());
-    if (weapon[1].group === 5 /* WeaponGroup.PARRY */
-        || weapon[1].qualities.some((quality) => quality === 10 /* WeaponQuality.SHIELD_1 */
+    if (weapon.group === 5 /* WeaponGroup.PARRY */
+        || weapon.qualities.some((quality) => quality === 10 /* WeaponQuality.SHIELD_1 */
             || quality === 11 /* WeaponQuality.SHIELD_2 */
             || quality === 12 /* WeaponQuality.SHIELD_3 */
             || quality === 13 /* WeaponQuality.SHIELD_4 */
             || quality === 14 /* WeaponQuality.SHIELD_5 */)) {
         this._actor.unequipSecondHand();
-        this._actor.equipSecondHand(weapon[1].equipIndex);
+        this._actor.equipSecondHand(weapon.equipIndex);
     }
     else {
         this._actor.unequipMainHand();
-        this._actor.equipMainHand(weapon[1].equipIndex);
+        this._actor.equipMainHand(weapon.equipIndex);
     }
+    this._weaponsWindow.syncActorWeapons();
     this._weaponsCommandWindow.callHandler('cancel');
 };
 // Unequipping a weapon - Triggered on the weapons window
@@ -2210,6 +2213,7 @@ Scene_Equip.prototype.unequipWeapon = function () {
     else if (weaponIndex === 1) {
         this._actor.unequipSecondHand();
     }
+    this._weaponsWindow.syncActorWeapons();
     this._weaponsCommandWindow.callHandler('cancel');
 };
 // Transfering a weapon - Triggered on the weapons window
