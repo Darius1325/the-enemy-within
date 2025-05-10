@@ -364,7 +364,7 @@ TEW.DATABASE.SPELLS.SET = {
             type: SpellTarget.SELF
         },
         duration: {
-            type: SpellRange.WILL,
+            type: SpellDuration.WILL,
             multiplier: 10
         },
         desc: "The magic flowing through your feet ensures any organic matter you tread upon remains undamaged: twigs do not break, grass springs back to its original position, and even delicate flowers are unharmed. Those seeking to use the Track skill to pursue you through rural terrain suffer a -30 penalty to their Tests."
@@ -443,7 +443,7 @@ TEW.DATABASE.SPELLS.SET = {
             type: SpellTarget.SELF
         },
         duration: {
-            type: SpellRange.WILL,
+            type: SpellDuration.WILL,
             multiplier: 10
         },
         desc: "You create a small light, roughly equivalent to a torch, which glows from your hand, staff or some other part of your person. While the spell is active, you may choose to increase the illumination to that of a lantern, or decrease it to that of a candle, if you pass a Average (+20) Channelling Test."
@@ -473,7 +473,7 @@ TEW.DATABASE.SPELLS.SET = {
             type: SpellTarget.SPECIAL
         },
         duration: {
-            type: SpellRange.WILL,
+            type: SpellDuration.WILL,
             multiplier: 10
         },
         desc: "You cast your voice at a point within Willpower yards, regardless of line of sight. Your voice sounds from this point, and all within earshot will hear it."

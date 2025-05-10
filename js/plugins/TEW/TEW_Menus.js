@@ -1507,6 +1507,7 @@ Window_StatusSpellDetails.prototype.refresh = function () {
 };
 // Drawing the details
 Window_StatusSpellDetails.prototype.drawDetails = function (spell) {
+    var _a;
     console.log("Drawing spell details", spell);
     // Title
     this.drawUnderlinedText(spell[1].name, 0, 0, this.contentsWidth(), "center");
@@ -1514,12 +1515,30 @@ Window_StatusSpellDetails.prototype.drawDetails = function (spell) {
     // this.drawIcon(weapon[1].icon, 0, 0);
     // // Availability Icon
     // this.drawIcon(weapon[1].availabilityIcon, this.contentsWidth() - 32, 0)
-    // // Table
-    // this.drawTable2Columns(0, 80, this.contentsWidth(), 2, [
-    //     // ["Owned :", "x" + item[1].quantity],
-    //     ["Group :", weapon[1].groupLabel],
-    //     ["Enc. :", weapon[1].enc]
-    // ]);
+    // Target text
+    const targetText = spell[1].target.type === "AoE" /* SpellTarget.AOE */
+        ? `${spell[1].target.type} (${spell[1].target.distance})`
+        : spell[1].target.type;
+    // Duration text
+    const duration = spell[1].duration;
+    let durationText;
+    if (duration.type === "Number" /* SpellDuration.NUMBER */) {
+        durationText = `${duration.duration} rounds`;
+    }
+    else if (duration.multiplier > 0) {
+        durationText = `${duration.type} x ${duration.multiplier}`;
+    }
+    else {
+        durationText = `${duration.type}`;
+    }
+    // Table
+    this.drawTable2Columns(0, 80, this.contentsWidth(), 5, [
+        ["Domain", spell[1].domain],
+        ["CN", spell[1].cn],
+        ["Target", targetText],
+        ["Range", ((_a = spell[1].range) === null || _a === void 0 ? void 0 : _a.type) || "N/A"],
+        ["Duration", durationText]
+    ]);
     // this.drawLine(200);
     // // Description
     // this.drawWrappedTextManually(weapon[1].description, 0, 220, 24);

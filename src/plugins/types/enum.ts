@@ -196,35 +196,35 @@ export const enum SpellType {
 }
 
 export const enum SpellDomain {
-    ARCANE,
-    FIRE,
-    PETTY
+    ARCANE = "Arcane",
+    FIRE = "Fire",
+    PETTY = "Petty"
 }
 
 export const enum SpellTarget {
-    SELF,
-    ONE,
-    AOE,
-    SPECIAL
+    SELF = "Self",
+    ONE = "One",
+    AOE = "AoE",
+    SPECIAL = "See Description"
 }
 
 export const enum SpellTargetRadius {
-    WILL_BONUS,
-    SPECIAL
+    WILL_BONUS = "Willpower Bonus",
+    SPECIAL = "Special"
 }
 
 export const enum SpellRange {
-    SELF,
-    WILL,
-    TOUCH,
-    ONE
+    SELF = "Self",
+    WILL = "Willpower",
+    TOUCH = "Touch",
+    ONE = "One"
 }
 
 export const enum SpellDuration {
-    INSTANT,
-    WILL_BONUS,
-    SPECIAL,
-    NUMBER,
-    INIT_BONUS,
-    WILL
+    INSTANT = "Instant",
+    WILL_BONUS = "Willpower Bonus",
+    SPECIAL = "Special",
+    NUMBER = "Number",
+    INIT_BONUS = "Initiative Bonus",
+    WILL = "Willpower",
 }

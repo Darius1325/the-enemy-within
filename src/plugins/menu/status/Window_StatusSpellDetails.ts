@@ -11,6 +11,7 @@
 // Imports
 // ----------------------
 
+import { SpellDuration, SpellTarget } from "../../types/enum";
 import { Spell } from "../../types/spell";
 import HalfWindow_Details from "../base/HalfWindow_Details";
 
@@ -50,12 +51,30 @@ Window_StatusSpellDetails.prototype.drawDetails = function (spell:[string, Spell
     // // Availability Icon
     // this.drawIcon(weapon[1].availabilityIcon, this.contentsWidth() - 32, 0)
 
-    // // Table
-    // this.drawTable2Columns(0, 80, this.contentsWidth(), 2, [
-    //     // ["Owned :", "x" + item[1].quantity],
-    //     ["Group :", weapon[1].groupLabel],
-    //     ["Enc. :", weapon[1].enc]
-    // ]);
+    // Target text
+    const targetText = spell[1].target.type === SpellTarget.AOE 
+        ? `${spell[1].target.type} (${spell[1].target.distance})`
+        : spell[1].target.type;
+
+    // Duration text
+    const duration = spell[1].duration;
+    let durationText: string;
+    if (duration.type === SpellDuration.NUMBER) {
+        durationText = `${(duration as { duration: number }).duration} rounds`;
+    } else if ((duration as { multiplier: number }).multiplier > 0) {
+        durationText = `${duration.type} x ${(duration as { multiplier: number }).multiplier}`;
+    } else {
+        durationText = `${duration.type}`;
+    }
+
+    // Table
+    this.drawTable2Columns(0, 80, this.contentsWidth(), 5, [
+        ["Domain", spell[1].domain],
+        ["CN", spell[1].cn],
+        ["Target", targetText],
+        ["Range", spell[1].range?.type || "N/A"],
+        ["Duration", durationText ]
+    ]);
 
     // this.drawLine(200);
 

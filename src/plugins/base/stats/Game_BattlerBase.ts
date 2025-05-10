@@ -141,6 +141,7 @@ Game_BattlerBase.prototype.initialize = function() {
     this.addSpell("AETHYRIC_ARMS");
     this.addSpell("DART");
     this.addSpell("BLAST");
+    this.addSpell("MUNDANE_AURA");
 
     // temp Items
     this.addItem("HEARTKILL");
