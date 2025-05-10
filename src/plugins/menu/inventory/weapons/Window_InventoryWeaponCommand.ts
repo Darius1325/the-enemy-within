@@ -22,6 +22,7 @@ Window_InventoryWeaponCommand.prototype.initialize = function() {
 };
 
 // Making the 3 lines
+// TODO REMOVE
 Window_InventoryWeaponCommand.prototype.makeCommandList = function() {
     this.addCommand(TextManager.inventoryWeaponEquip, 'inventory_weapon_equip');
     this.addCommand(TextManager.inventoryWeaponTransfer, 'inventory_weapon_transfer');

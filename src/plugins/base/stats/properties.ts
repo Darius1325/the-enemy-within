@@ -9,9 +9,17 @@ TEW.CHARACTERS.SET = {
     Cheplu: 2,
     Ciara: 3,
     Elja: 4,
-    Gala: 5,
+    Galaandril: 5,
     Wanda: 6
 };
+TEW.CHARACTERS.ARRAY = [
+    'Cécile',
+    'Cheplu',
+    'Ciara',
+    'Elja',
+    'Galaandril',
+    'Wanda'
+];
 
 TEW.CHARACTERS.STATS = {
     mhp: 0,

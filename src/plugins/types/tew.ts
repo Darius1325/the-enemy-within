@@ -212,6 +212,11 @@ const TEW: {
          * The SET property links character names to their respective ID.
          */
         SET?: Record<string, number>;
+
+        /**
+         * The Array property defines the character names.
+         */
+        ARRAY?: string[];
         /**
          * The STATS property links character stat IDs to their param number.
          */

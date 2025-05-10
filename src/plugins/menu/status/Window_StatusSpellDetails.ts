@@ -68,7 +68,7 @@ Window_StatusSpellDetails.prototype.drawDetails = function (spell:[string, Spell
     }
 
     // Table
-    this.drawTable2Columns(0, 80, this.contentsWidth(), 5, [
+    this.drawTable2Columns(0, 60, this.contentsWidth(), 5, [
         ["Domain", spell[1].domain],
         ["CN", spell[1].cn],
         ["Target", targetText],
@@ -76,8 +76,9 @@ Window_StatusSpellDetails.prototype.drawDetails = function (spell:[string, Spell
         ["Duration", durationText ]
     ]);
 
-    // this.drawLine(200);
+    this.drawLine(260);
 
-    // // Description
-    // this.drawWrappedTextManually(weapon[1].description, 0, 220, 24);
+    // Description
+    // const descPadding = 20;
+    this.drawWrappedText(spell[1].desc, 0, 280, this.width - 2 * this.standardPadding(), 20);
 };

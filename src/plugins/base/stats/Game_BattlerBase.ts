@@ -48,6 +48,7 @@ export interface Game_BattlerBase {
     item: (itemId: string) => number;
     hasItem: (itemId: string) => boolean;
     addItem: (itemId: string, quantity?: number) => void;
+    removeItem: (itemId: string, quantity?: number) => string;
 
     weapon: (index: number) => ActorWeapon;
     mainHand: () => ActorWeapon;
@@ -58,10 +59,13 @@ export interface Game_BattlerBase {
     unequipSecondHand: () => void;
     hasWeaponTEW: (weaponId: string) => boolean;
     addWeapon: (weaponId: string) => void;
+    transferWeapon: (weapon: ActorWeapon) => void;
+    removeWeapon: (index: number) => ActorWeapon;
 
     hasArmorTEW: (armorId: string) => boolean;
     hasArmorEquipped: (armorId: string) => boolean;
     addArmor: (armorId: string) => void;
+    removeArmor: (armorId: string) => string;
     equipArmor: (armorId: string) => void;
     unequipArmor: (armorId: string) => void;
     sortArmors: () => void;
@@ -142,6 +146,7 @@ Game_BattlerBase.prototype.initialize = function() {
     this.addSpell("DART");
     this.addSpell("BLAST");
     this.addSpell("MUNDANE_AURA");
+    this.addSpell("PURGE");
 
     // temp Items
     this.addItem("HEARTKILL");
@@ -295,6 +300,14 @@ Game_BattlerBase.prototype.addItem = function(itemId: string, quantity = 1) {
     this.items[itemId] = this.item(itemId) + quantity;
 }
 
+Game_BattlerBase.prototype.removeItem = function(itemId: string, quantity = 1) {
+    this.items[itemId] = this.item(itemId) - quantity;
+    if (this.item(itemId) <= 0) {
+        delete this.items[itemId];
+    }
+    return itemId;
+}
+
 Game_BattlerBase.prototype.hasItem = function(itemId: string) {
     return this.items[itemId] > 0;
 }
@@ -326,6 +339,21 @@ Game_BattlerBase.prototype.addWeapon = function(weaponId: string) {
         ammo: 0,
         ammoType: undefined // Ammo ID
     });
+    this.sortWeapons();
+}
+
+Game_BattlerBase.prototype.transferWeapon = function(weapon: ActorWeapon) {
+    this.weapons.push(weapon);
+    this.sortWeapons();
+}
+
+Game_BattlerBase.prototype.removeWeapon = function(index: number) {
+    const removed = this.weapons.splice(index, 1);
+    this.sortWeapons();
+    return removed;
+}
+
+Game_BattlerBase.prototype.sortWeapons = function() {
     this.weapons = this.weapons.sort((a: ActorWeapon, b: ActorWeapon) =>
         TEW.DATABASE.WEAPONS.IDS.indexOf(a.id) - TEW.DATABASE.WEAPONS.IDS.indexOf(b.id));
 }
@@ -361,6 +389,12 @@ Game_BattlerBase.prototype.unequipSecondHand = function() {
 Game_BattlerBase.prototype.addArmor = function(armorId: string) {
     this.armors.push(armorId);
     this.sortArmors();
+}
+
+Game_BattlerBase.prototype.removeArmor = function(armorId: string) {
+    const removed = this.armors.splice(this.armors.indexOf(armorId), 1);
+    this.sortArmors();
+    return removed[0];
 }
 
 Game_BattlerBase.prototype.hasArmorTEW = function(armorId: string) {

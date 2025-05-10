@@ -24,7 +24,8 @@ import Window_InventoryWeaponCommand from "./weapons/Window_InventoryWeaponComma
 import Window_InventoryWeaponDetails from "./weapons/Window_InventoryWeaponDetails";
 import Window_InventoryWeapons, { LoadedWeapon } from "./weapons/Window_InventoryWeapons";
 import Window_InventoryCommand from "./Window_InventoryCommand";
-import Window_InventoryHelp from "./Window_InventoryHelp";
+import Window_InventoryTransferCommand from "./Window_InventoryTransferCommand";
+import TEW from "../../types/tew";
 
 // ----------------------
 // $StartCompilation
@@ -72,6 +73,10 @@ Scene_Equip.prototype.create = function() {
     // this._armorsWindow.setHelpWindow(this._helpWindow);
     // // this._itemsWindow.setHelpWindow(this._helpWindow);
     // this._ammoWindow.setHelpWindow(this._helpWindow);
+
+    // Transfer weapon
+    this.createTransferCommandWindow();
+
     this.activateInventoryInfos(); // Deactivate all the windows, except the infos one
     this.refreshActor();
 };
@@ -93,7 +98,7 @@ Scene_Equip.prototype.refreshActor = function() {
 // }
 
 // Creating the commands for this scene
-Scene_Equip.prototype.createCommandWindow = function(){
+Scene_Equip.prototype.createCommandWindow = function() {
     var wx = 0;
     var wy = 0;
     var ww = Graphics.boxWidth;
@@ -112,14 +117,14 @@ Scene_Equip.prototype.createCommandWindow = function(){
 };
 
 // Creating the infos Window for the scene
-Scene_Equip.prototype.createInfosWindow = function(){
+Scene_Equip.prototype.createInfosWindow = function() {
     this._infosWindow = new Window_InventoryInfo();
     // this._statsWindow.reserveFaceImages();
     this.addWindow(this._infosWindow);
 };
 
 // Creating the weapons Window for the scene
-Scene_Equip.prototype.createWeaponsWindow = function(){
+Scene_Equip.prototype.createWeaponsWindow = function() {
     this._weaponsWindow = new Window_InventoryWeapons();
     this._weaponsWindow.setHandler('cancel', () => {
         this._commandWindow.activate();
@@ -133,7 +138,7 @@ Scene_Equip.prototype.createWeaponsWindow = function(){
 };
 
 // Creating the armors Window for the scene
-Scene_Equip.prototype.createArmorsWindow = function(){
+Scene_Equip.prototype.createArmorsWindow = function() {
     this._armorsWindow = new Window_InventoryArmors();
     this._armorsWindow.setHandler('cancel', () => {
         this._commandWindow.activate();
@@ -147,7 +152,7 @@ Scene_Equip.prototype.createArmorsWindow = function(){
 };
 
 // Creating the items Window for the scene
-Scene_Equip.prototype.createItemsWindow = function(){
+Scene_Equip.prototype.createItemsWindow = function() {
     this._itemsWindow = new Window_InventoryItems();
     this._itemsWindow.setHandler('cancel', () => {
         this._commandWindow.activate();
@@ -160,7 +165,7 @@ Scene_Equip.prototype.createItemsWindow = function(){
     this.addWindow(this._itemsWindow);
 };
 
-Scene_Equip.prototype.createItemsCommandWindow = function(){
+Scene_Equip.prototype.createItemsCommandWindow = function() {
     this._itemsCommandWindow = new Window_InventoryItemCommand();
     this._itemsCommandWindow.setHandler('cancel', () => {
         this._itemsCommandWindow.deactivate();
@@ -174,7 +179,7 @@ Scene_Equip.prototype.createItemsCommandWindow = function(){
     this.addWindow(this._itemsCommandWindow);
 };
 
-Scene_Equip.prototype.createWeaponsCommandWindow = function(){
+Scene_Equip.prototype.createWeaponsCommandWindow = function() {
     this._weaponsCommandWindow = new Window_InventoryWeaponCommand();
     this._weaponsCommandWindow.setHandler('cancel', () => {
         this._weaponsCommandWindow.deactivate();
@@ -190,7 +195,7 @@ Scene_Equip.prototype.createWeaponsCommandWindow = function(){
     this.addWindow(this._weaponsCommandWindow);
 };
 
-Scene_Equip.prototype.createArmorsCommandWindow = function(){
+Scene_Equip.prototype.createArmorsCommandWindow = function() {
     this._armorsCommandWindow = new Window_InventoryArmorCommand();
     this._armorsCommandWindow.setHandler('cancel', () => {
         this._armorsCommandWindow.deactivate();
@@ -206,7 +211,7 @@ Scene_Equip.prototype.createArmorsCommandWindow = function(){
 };
 
 // Creating the ammo Window for the scene
-Scene_Equip.prototype.createAmmoWindow = function(){
+Scene_Equip.prototype.createAmmoWindow = function() {
     this._ammoWindow = new Window_InventoryAmmo();
     this._ammoWindow.setHandler('cancel', () => {
         this._commandWindow.activate();
@@ -217,7 +222,7 @@ Scene_Equip.prototype.createAmmoWindow = function(){
 };
 
 // Creating the items details Window for the scene
-Scene_Equip.prototype.createItemsDetailsWindow = function(){
+Scene_Equip.prototype.createItemsDetailsWindow = function() {
     this._itemsDetailsWindow = new Window_InventoryItemDetails(
         this._itemsCommandWindow.fittingHeight(this._itemsCommandWindow._actionsNumber)
     );
@@ -229,7 +234,7 @@ Scene_Equip.prototype.createItemsDetailsWindow = function(){
 };
 
 // Creating the weapons details Window for the scene
-Scene_Equip.prototype.createWeaponsDetailsWindow = function(){
+Scene_Equip.prototype.createWeaponsDetailsWindow = function() {
     this._weaponsDetailsWindow = new Window_InventoryWeaponDetails(
         this._weaponsCommandWindow.fittingHeight(this._weaponsCommandWindow._actionsNumber)
     );
@@ -241,7 +246,7 @@ Scene_Equip.prototype.createWeaponsDetailsWindow = function(){
 };
 
 // Creating the armors details Window for the scene
-Scene_Equip.prototype.createArmorsDetailsWindow = function(){
+Scene_Equip.prototype.createArmorsDetailsWindow = function() {
     this._armorsDetailsWindow = new Window_InventoryArmorDetails(
         this._armorsCommandWindow.fittingHeight(this._armorsCommandWindow._actionsNumber)
     );
@@ -252,8 +257,27 @@ Scene_Equip.prototype.createArmorsDetailsWindow = function(){
     this.addWindow(this._armorsDetailsWindow);
 };
 
+// Creating the armors details Window for the scene
+Scene_Equip.prototype.createTransferCommandWindow = function() {
+    this._transferCommandWindow = new Window_InventoryTransferCommand();
+    this._transferCommandWindow.setHandler('cancel', () => {
+        this._transferCommandWindow.deactivate();
+        this._transferCommandWindow.deselect();
+        // TODO - need to switch depending on the type. fuck :)
+        this.activateInventoryItems(this._itemsWindow.index());
+    });
+    for (let i = 0; i < $gameActors.size; i++) {
+        this._transferCommandWindow.setHandler("inventory_transfer_to_" + i, () => {
+            this.doTransfer(i);
+        });
+    }
+    this._transferCommandWindow.hide();
+    this._transferCommandWindow.deselect();
+    this.addWindow(this._transferCommandWindow);
+};
+
 // Hiding all the windows
-Scene_Equip.prototype.hideAllWindows = function(){
+Scene_Equip.prototype.hideAllWindows = function() {
     this._infosWindow.hide();
     this._infosWindow.deactivate();
 
@@ -286,6 +310,9 @@ Scene_Equip.prototype.hideAllWindows = function(){
 
     this._ammoWindow.hide();
     this._ammoWindow.deactivate();
+
+    this._transferCommandWindow.hide();
+    this._transferCommandWindow.deactivate();
 };
 
 // Showing the corresponding window according to the current command window index
@@ -436,7 +463,9 @@ Scene_Equip.prototype.useItem = function() {
 // Transfering an item - Triggered on the items window
 Scene_Equip.prototype.transferItem = function() {
     console.log("Transfer item", this._itemsWindow.index());
-    this._itemsCommandWindow.callHandler('cancel');
+    this._transferCommandWindow.activate();
+    this._transferCommandWindow.show();
+    this._transferCommandWindow.select(0);
 }
 
 // Equipping a weapon - Triggered on the weapons window
@@ -475,7 +504,9 @@ Scene_Equip.prototype.unequipWeapon = function() {
 // Transfering a weapon - Triggered on the weapons window
 Scene_Equip.prototype.transferWeapon = function() {
     console.log("Transfer weapon", this._weaponsWindow.index());
-    this._weaponsCommandWindow.callHandler('cancel');
+    this._transferCommandWindow.activate();
+    this._transferCommandWindow.show();
+    this._transferCommandWindow.select(0);
 }
 
 // Reloading a weapon - Triggered on the weapons window
@@ -499,5 +530,25 @@ Scene_Equip.prototype.unequipArmor = function() {
 // Transfering a weapon - Triggered on the weapons window
 Scene_Equip.prototype.transferArmor = function() {
     console.log("Transfer armor", this._armorsWindow.index());
-    this._armorsCommandWindow.callHandler('cancel');
+    this._transferCommandWindow.activate();
+}
+
+Scene_Equip.prototype.doTransfer = function(actorIndex: number) {
+    let item: string | number;
+    switch (this._transferCommandWindow.type) {
+        case "item":
+            item = this._itemsWindow.item()[0];
+            break;
+        case "weapon":
+            item = this._weaponsWindow.item().equipIndex;
+            break;
+        case "armor":
+            item = this._armorsWindow.item()[0];
+            break;
+        case "ammo":
+            item = this._ammoWindow.item()[0];
+            break;
+    }
+    this._transferCommandWindow.doTransfer(TEW.CHARACTERS.ARRAY[actorIndex], item);
+    this._transferCommandWindow.callHandler('cancel');
 }

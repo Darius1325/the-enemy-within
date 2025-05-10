@@ -46,6 +46,12 @@ TEW.MENU.COMMAND_NAMES[82] = "Reload";
 TEW.MENU.COMMAND_NAMES[83] = "Equip";
 TEW.MENU.COMMAND_NAMES[84] = "Unequip";
 TEW.MENU.COMMAND_NAMES[85] = "Transfer";
+TEW.MENU.COMMAND_NAMES[86] = TEW.CHARACTERS.ARRAY[0];
+TEW.MENU.COMMAND_NAMES[87] = TEW.CHARACTERS.ARRAY[1];
+TEW.MENU.COMMAND_NAMES[88] = TEW.CHARACTERS.ARRAY[2];
+TEW.MENU.COMMAND_NAMES[89] = TEW.CHARACTERS.ARRAY[3];
+TEW.MENU.COMMAND_NAMES[90] = TEW.CHARACTERS.ARRAY[4];
+TEW.MENU.COMMAND_NAMES[91] = TEW.CHARACTERS.ARRAY[5];
 
 TEW.MENU.LINE_HEIGHT = 36;
 
@@ -106,4 +112,10 @@ Object.defineProperties(TextManager, {
     inventoryArmorEquip :       TextManager.getter('command', 83),
     inventoryArmorUnequip :     TextManager.getter('command', 84),
     inventoryArmorTransfer :    TextManager.getter('command', 85),
+    inventoryTransferTo0 :      TextManager.getter('command', 86),
+    inventoryTransferTo1 :      TextManager.getter('command', 87),
+    inventoryTransferTo2 :      TextManager.getter('command', 88),
+    inventoryTransferTo3 :      TextManager.getter('command', 89),
+    inventoryTransferTo4 :      TextManager.getter('command', 90),
+    inventoryTransferTo5 :      TextManager.getter('command', 91),
 });

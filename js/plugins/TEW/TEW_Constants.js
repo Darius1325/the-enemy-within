@@ -3197,7 +3197,7 @@ TEW.DATABASE.SPELLS.SET = {
         duration: {
             type: "Willpower Bonus" /* SpellDuration.WILL_BONUS */
         },
-        desc: "You funnel intense flame to burn away the taint and corruption in an area. Anything flammable is set alight, and any creatures in the area takes +SL Ablaze conditions. If the location contains a Corrupting Influence, such as Dhar , warpstone, or a Chaostainted object, it too will smoulder and blacken, beginning to burn. This spell may be maintained in subsequent rounds by passing a Challenging (+0) Channelling Test. The precise time needed to eliminate the Corrupting Influence will be determined by your GM. As a rough guideline, a small quantity (smaller than an acorn) of warpstone, or a minor Chaos-tainted object may require 10-Willpower Bonus Rounds (minimum of 1 Round). A larger quantity of warpstone - fist-sized - or a more potent Chaos-tainted object may require double this. A powerful Chaos Artefact may take hours, or even longer..."
+        desc: "You funnel intense flame to burn away the taint and corruption in an area. Anything flammable is set alight, and any creatures in the area takes +SL Ablaze conditions. If the location contains a Corrupting Influence, such as Dhar, warpstone, or a Chaostainted object, it too will smoulder and blacken, beginning to burn. This spell may be maintained in subsequent rounds by passing a Channelling Test. As a rough guideline, a small quantity of warpstone, or a minor Chaos-tainted object may require 10-Willpower Bonus Rounds (minimum of 1 Round). A larger quantity of warpstone or a more potent Chaos-tainted object may require double this. A powerful Chaos Artefact may take hours, or even longer..."
     }
 };
 // #endregion === SPELLS SET === //

@@ -18,9 +18,17 @@ TEW.CHARACTERS.SET = {
     Cheplu: 2,
     Ciara: 3,
     Elja: 4,
-    Gala: 5,
+    Galaandril: 5,
     Wanda: 6
 };
+TEW.CHARACTERS.ARRAY = [
+    'Cécile',
+    'Cheplu',
+    'Ciara',
+    'Elja',
+    'Galaandril',
+    'Wanda'
+];
 TEW.CHARACTERS.STATS = {
     mhp: 0,
     weas: 1,
@@ -298,6 +306,7 @@ Game_BattlerBase.prototype.initialize = function () {
     this.addSpell("DART");
     this.addSpell("BLAST");
     this.addSpell("MUNDANE_AURA");
+    this.addSpell("PURGE");
     // temp Items
     this.addItem("HEARTKILL");
     this.addItem("AMULET");
@@ -423,6 +432,13 @@ Game_BattlerBase.prototype.item = function (itemId) {
 Game_BattlerBase.prototype.addItem = function (itemId, quantity = 1) {
     this.items[itemId] = this.item(itemId) + quantity;
 };
+Game_BattlerBase.prototype.removeItem = function (itemId, quantity = 1) {
+    this.items[itemId] = this.item(itemId) - quantity;
+    if (this.item(itemId) <= 0) {
+        delete this.items[itemId];
+    }
+    return itemId;
+};
 Game_BattlerBase.prototype.hasItem = function (itemId) {
     return this.items[itemId] > 0;
 };
@@ -448,6 +464,18 @@ Game_BattlerBase.prototype.addWeapon = function (weaponId) {
         ammo: 0,
         ammoType: undefined // Ammo ID
     });
+    this.sortWeapons();
+};
+Game_BattlerBase.prototype.transferWeapon = function (weapon) {
+    this.weapons.push(weapon);
+    this.sortWeapons();
+};
+Game_BattlerBase.prototype.removeWeapon = function (index) {
+    const removed = this.weapons.splice(index, 1);
+    this.sortWeapons();
+    return removed;
+};
+Game_BattlerBase.prototype.sortWeapons = function () {
     this.weapons = this.weapons.sort((a, b) => TEW.DATABASE.WEAPONS.IDS.indexOf(a.id) - TEW.DATABASE.WEAPONS.IDS.indexOf(b.id));
 };
 Game_BattlerBase.prototype.hasWeaponTEW = function (weaponId) {
@@ -475,6 +503,11 @@ Game_BattlerBase.prototype.unequipSecondHand = function () {
 Game_BattlerBase.prototype.addArmor = function (armorId) {
     this.armors.push(armorId);
     this.sortArmors();
+};
+Game_BattlerBase.prototype.removeArmor = function (armorId) {
+    const removed = this.armors.splice(this.armors.indexOf(armorId), 1);
+    this.sortArmors();
+    return removed[0];
 };
 Game_BattlerBase.prototype.hasArmorTEW = function (armorId) {
     return this.armors.some((armor) => armor === armorId);

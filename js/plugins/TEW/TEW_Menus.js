@@ -38,6 +38,12 @@ TEW.MENU.COMMAND_NAMES[82] = "Reload";
 TEW.MENU.COMMAND_NAMES[83] = "Equip";
 TEW.MENU.COMMAND_NAMES[84] = "Unequip";
 TEW.MENU.COMMAND_NAMES[85] = "Transfer";
+TEW.MENU.COMMAND_NAMES[86] = TEW.CHARACTERS.ARRAY[0];
+TEW.MENU.COMMAND_NAMES[87] = TEW.CHARACTERS.ARRAY[1];
+TEW.MENU.COMMAND_NAMES[88] = TEW.CHARACTERS.ARRAY[2];
+TEW.MENU.COMMAND_NAMES[89] = TEW.CHARACTERS.ARRAY[3];
+TEW.MENU.COMMAND_NAMES[90] = TEW.CHARACTERS.ARRAY[4];
+TEW.MENU.COMMAND_NAMES[91] = TEW.CHARACTERS.ARRAY[5];
 TEW.MENU.LINE_HEIGHT = 36;
 // TextManager
 // Override commands
@@ -90,6 +96,12 @@ Object.defineProperties(TextManager, {
     inventoryArmorEquip: TextManager.getter('command', 83),
     inventoryArmorUnequip: TextManager.getter('command', 84),
     inventoryArmorTransfer: TextManager.getter('command', 85),
+    inventoryTransferTo0: TextManager.getter('command', 86),
+    inventoryTransferTo1: TextManager.getter('command', 87),
+    inventoryTransferTo2: TextManager.getter('command', 88),
+    inventoryTransferTo3: TextManager.getter('command', 89),
+    inventoryTransferTo4: TextManager.getter('command', 90),
+    inventoryTransferTo5: TextManager.getter('command', 91),
 });
 // #endregion =========================== properties ============================== //
 // ============================== //
@@ -361,6 +373,73 @@ HalfWindow_List.prototype.maxItems = function () {
 // Number of columns
 HalfWindow_List.prototype.maxCols = () => 1;
 // #endregion =========================== HalfWindow_List ============================== //
+// ============================== //
+// #region ============================== Window_InventoryTransferCommand ============================== //
+//-----------------------------------------------------------------------------
+// Window_InventoryTransferCommand
+//
+// Command window to choose which actor to transfer an item to
+function Window_InventoryTransferCommand() {
+    this.initialize.apply(this, arguments);
+}
+Window_InventoryTransferCommand.prototype = Object.create(Window_Command.prototype);
+Window_InventoryTransferCommand.prototype.constructor = Window_InventoryTransferCommand;
+// Initializing the command window
+Window_InventoryTransferCommand.prototype.initialize = function () {
+    this._windowWidth = Graphics.boxWidth / 4;
+    this._windowHeight = this.fittingHeight(5); // actor count - 1
+    this.type = 'item';
+    this._addAction = Game_Actor.prototype.addItem;
+    this._removeAction = Game_Actor.prototype.removeItem;
+    Window_Command.prototype.initialize.call(this, this._windowWidth * 3, Graphics.boxHeight - this._windowHeight);
+};
+Window_InventoryTransferCommand.prototype.windowWidth = function () {
+    return this._windowWidth;
+};
+Window_InventoryTransferCommand.prototype.windowHeight = function () {
+    return this._windowHeight;
+};
+Window_InventoryTransferCommand.prototype.setActor = function (actor) {
+    if (this._actor !== actor) {
+        this._actor = actor;
+    }
+};
+Window_InventoryTransferCommand.prototype.setItemType = function (type) {
+    this.type = type;
+    switch (type) {
+        case 'item':
+            this._addAction = Game_Actor.prototype.addItem;
+            this._removeAction = Game_Actor.prototype.removeItem;
+            break;
+        case 'weapon':
+            this._addAction = Game_Actor.prototype.transferWeapon;
+            this._removeAction = Game_Actor.prototype.removeWeapon;
+            break;
+        case 'armor':
+            this._addAction = Game_Actor.prototype.addArmor;
+            this._removeAction = Game_Actor.prototype.removeArmor;
+            break;
+        case 'ammo':
+            this._addAction = Game_Actor.prototype.addAmmo;
+            this._removeAction = Game_Actor.prototype.removeAmmo;
+            break;
+        default:
+            break;
+    }
+};
+Window_InventoryTransferCommand.prototype.doTransfer = function (targetActor, item) {
+    const removed = this._removeAction.call(this._actor, item);
+    this._addAction(targetActor, removed);
+};
+Window_InventoryTransferCommand.prototype.makeCommandList = function () {
+    for (let i = 0; i < $gameActors.size; i++) {
+        const targetName = TEW.CHARACTERS.ARRAY[i];
+        if (targetName !== this._actor._name) {
+            this.addCommand(TextManager["inventoryTransferTo" + i], "inventory_transfer_to_" + i);
+        }
+    }
+};
+// #endregion =========================== Window_InventoryTransferCommand ============================== //
 // ============================== //
 // #region ============================== Window_InventoryAmmo ============================== //
 //-----------------------------------------------------------------------------
@@ -717,6 +796,7 @@ Window_InventoryWeaponCommand.prototype.initialize = function () {
     HalfWindow_DetailsCommand.prototype.initialize.call(this, 3);
 };
 // Making the 3 lines
+// TODO REMOVE
 Window_InventoryWeaponCommand.prototype.makeCommandList = function () {
     this.addCommand(TextManager.inventoryWeaponEquip, 'inventory_weapon_equip');
     this.addCommand(TextManager.inventoryWeaponTransfer, 'inventory_weapon_transfer');
@@ -1532,16 +1612,17 @@ Window_StatusSpellDetails.prototype.drawDetails = function (spell) {
         durationText = `${duration.type}`;
     }
     // Table
-    this.drawTable2Columns(0, 80, this.contentsWidth(), 5, [
+    this.drawTable2Columns(0, 60, this.contentsWidth(), 5, [
         ["Domain", spell[1].domain],
         ["CN", spell[1].cn],
         ["Target", targetText],
         ["Range", ((_a = spell[1].range) === null || _a === void 0 ? void 0 : _a.type) || "N/A"],
         ["Duration", durationText]
     ]);
-    // this.drawLine(200);
-    // // Description
-    // this.drawWrappedTextManually(weapon[1].description, 0, 220, 24);
+    this.drawLine(260);
+    // Description
+    // const descPadding = 20;
+    this.drawWrappedText(spell[1].desc, 0, 280, this.width - 2 * this.standardPadding(), 20);
 };
 // #endregion =========================== Window_StatusSpellDetails ============================== //
 // ============================== //
@@ -1810,7 +1891,8 @@ Window_StatusTalents.prototype.maxItems = function () {
 // #endregion =========================== Window_StatusTalents ============================== //
 // ============================== //
 // #region ============================== Window_Base ============================== //
-Window_Base.prototype.drawWrappedText = function (text, x, y, width) {
+Window_Base.prototype.drawWrappedText = function (text, x, y, width, fontsize = this.contents.fontSize) {
+    this.contents.fontSize = fontsize;
     const words = text.split(" ");
     let line = "";
     let currentY = y;
@@ -1818,14 +1900,18 @@ Window_Base.prototype.drawWrappedText = function (text, x, y, width) {
         if (this.textWidth(line + word) > width) {
             this.drawText(line, x, currentY, width);
             line = word + " ";
-            currentY += this.lineHeight();
+            currentY += fontsize;
         }
         else {
             line += word + " ";
         }
     }
     this.drawText(line, x, currentY, width);
+    this.resetFontSettings();
 };
+// Window_Base.prototype.drawText = function(text, x, y, maxWidth, align, lineHeight = this.lineHeight()) {
+//     this.contents.drawText(text, x, y, maxWidth, lineHeight, align);
+// };
 // #endregion =========================== Window_Base ============================== //
 // ============================== //
 // #region ============================== Window_Selectable ============================== //
@@ -1880,6 +1966,8 @@ Scene_Equip.prototype.create = function () {
     // this._armorsWindow.setHelpWindow(this._helpWindow);
     // // this._itemsWindow.setHelpWindow(this._helpWindow);
     // this._ammoWindow.setHelpWindow(this._helpWindow);
+    // Transfer weapon
+    this.createTransferCommandWindow();
     this.activateInventoryInfos(); // Deactivate all the windows, except the infos one
     this.refreshActor();
 };
@@ -2039,6 +2127,24 @@ Scene_Equip.prototype.createArmorsDetailsWindow = function () {
     this._armorsDetailsWindow.hide();
     this.addWindow(this._armorsDetailsWindow);
 };
+// Creating the armors details Window for the scene
+Scene_Equip.prototype.createTransferCommandWindow = function () {
+    this._transferCommandWindow = new Window_InventoryTransferCommand();
+    this._transferCommandWindow.setHandler('cancel', () => {
+        this._transferCommandWindow.deactivate();
+        this._transferCommandWindow.deselect();
+        // TODO - need to switch depending on the type. fuck :)
+        this.activateInventoryItems(this._itemsWindow.index());
+    });
+    for (let i = 0; i < $gameActors.size; i++) {
+        this._transferCommandWindow.setHandler("inventory_transfer_to_" + i, () => {
+            this.doTransfer(i);
+        });
+    }
+    this._transferCommandWindow.hide();
+    this._transferCommandWindow.deselect();
+    this.addWindow(this._transferCommandWindow);
+};
 // Hiding all the windows
 Scene_Equip.prototype.hideAllWindows = function () {
     this._infosWindow.hide();
@@ -2063,6 +2169,8 @@ Scene_Equip.prototype.hideAllWindows = function () {
     this._itemsCommandWindow.deactivate();
     this._ammoWindow.hide();
     this._ammoWindow.deactivate();
+    this._transferCommandWindow.hide();
+    this._transferCommandWindow.deactivate();
 };
 // Showing the corresponding window according to the current command window index
 Scene_Equip.prototype.displayWindow = function () {
@@ -2202,7 +2310,9 @@ Scene_Equip.prototype.useItem = function () {
 // Transfering an item - Triggered on the items window
 Scene_Equip.prototype.transferItem = function () {
     console.log("Transfer item", this._itemsWindow.index());
-    this._itemsCommandWindow.callHandler('cancel');
+    this._transferCommandWindow.activate();
+    this._transferCommandWindow.show();
+    this._transferCommandWindow.select(0);
 };
 // Equipping a weapon - Triggered on the weapons window
 Scene_Equip.prototype.equipWeapon = function () {
@@ -2238,7 +2348,9 @@ Scene_Equip.prototype.unequipWeapon = function () {
 // Transfering a weapon - Triggered on the weapons window
 Scene_Equip.prototype.transferWeapon = function () {
     console.log("Transfer weapon", this._weaponsWindow.index());
-    this._weaponsCommandWindow.callHandler('cancel');
+    this._transferCommandWindow.activate();
+    this._transferCommandWindow.show();
+    this._transferCommandWindow.select(0);
 };
 // Reloading a weapon - Triggered on the weapons window
 Scene_Equip.prototype.reloadWeapon = function () {
@@ -2258,7 +2370,26 @@ Scene_Equip.prototype.unequipArmor = function () {
 // Transfering a weapon - Triggered on the weapons window
 Scene_Equip.prototype.transferArmor = function () {
     console.log("Transfer armor", this._armorsWindow.index());
-    this._armorsCommandWindow.callHandler('cancel');
+    this._transferCommandWindow.activate();
+};
+Scene_Equip.prototype.doTransfer = function (actorIndex) {
+    let item;
+    switch (this._transferCommandWindow.type) {
+        case "item":
+            item = this._itemsWindow.item()[0];
+            break;
+        case "weapon":
+            item = this._weaponsWindow.item().equipIndex;
+            break;
+        case "armor":
+            item = this._armorsWindow.item()[0];
+            break;
+        case "ammo":
+            item = this._ammoWindow.item()[0];
+            break;
+    }
+    this._transferCommandWindow.doTransfer(TEW.CHARACTERS.ARRAY[actorIndex], item);
+    this._transferCommandWindow.callHandler('cancel');
 };
 // #endregion =========================== Scene_Equip ============================== //
 // ============================== //
