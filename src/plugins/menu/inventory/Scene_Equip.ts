@@ -65,13 +65,13 @@ Scene_Equip.prototype.create = function() {
     // Ammo Windows
     this.createAmmoWindow();
 
-    // Help window
-    this.createHelpWindow();
-    this._helpWindow.hide();
-    this._weaponsWindow.setHelpWindow(this._helpWindow);
-    this._armorsWindow.setHelpWindow(this._helpWindow);
-    // this._itemsWindow.setHelpWindow(this._helpWindow);
-    this._ammoWindow.setHelpWindow(this._helpWindow);
+    // // Help window
+    // this.createHelpWindow();
+    // this._helpWindow.hide();
+    // this._weaponsWindow.setHelpWindow(this._helpWindow);
+    // this._armorsWindow.setHelpWindow(this._helpWindow);
+    // // this._itemsWindow.setHelpWindow(this._helpWindow);
+    // this._ammoWindow.setHelpWindow(this._helpWindow);
     this.activateInventoryInfos(); // Deactivate all the windows, except the infos one
     this.refreshActor();
 };
@@ -86,11 +86,11 @@ Scene_Equip.prototype.refreshActor = function() {
     this._ammoWindow.setActor(actor);
 };
 
-// Creating the help window
-Scene_Equip.prototype.createHelpWindow = function(){
-    this._helpWindow = new Window_InventoryHelp();
-    this.addWindow(this._helpWindow);
-}
+// // Creating the help window
+// Scene_Equip.prototype.createHelpWindow = function(){
+//     this._helpWindow = new Window_InventoryHelp();
+//     this.addWindow(this._helpWindow);
+// }
 
 // Creating the commands for this scene
 Scene_Equip.prototype.createCommandWindow = function(){

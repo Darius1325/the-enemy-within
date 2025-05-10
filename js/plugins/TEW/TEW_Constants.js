@@ -5049,7 +5049,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         strBonus: true,
         damage: 4,
         qualities: [5 /* WeaponQuality.DAMAGING */, 4 /* WeaponQuality.PRECISE */],
-        description: "empty"
+        description: "A bow made with the finests materials by the finests elven hands on Ulthuan."
     },
     LONGBOW: {
         name: "Longbow",
@@ -5065,7 +5065,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         strBonus: true,
         damage: 4,
         qualities: [5 /* WeaponQuality.DAMAGING */],
-        description: "empty"
+        description: "A bow often used by bretonnian archers for better range."
     },
     BOW: {
         name: "Bow",
@@ -5081,7 +5081,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         strBonus: true,
         damage: 3,
         qualities: [],
-        description: "empty"
+        description: "A classic bow to shoot arrows."
     },
     SHORTBOW: {
         name: "Shortbow",
@@ -5097,7 +5097,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         strBonus: true,
         damage: 2,
         qualities: [],
-        description: "empty"
+        description: "A lighter bow but with limited range and damage."
     },
     CROSSBOW_PISTOL: {
         name: "Crossbow Pistol",
@@ -5113,7 +5113,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         strBonus: false,
         damage: 7,
         qualities: [34 /* WeaponQuality.PISTOL */],
-        description: "empty"
+        description: "A small crossbow whitch can be used in close combat and has no need to reload."
     },
     HEAVY_CROSSBOW: {
         name: "Heavy Crossbow",
@@ -5129,7 +5129,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         strBonus: false,
         damage: 9,
         qualities: [5 /* WeaponQuality.DAMAGING */, 28 /* WeaponQuality.RELOAD_2 */],
-        description: "empty"
+        description: "A heavy crossbow, hard to reload but devastating."
     },
     CROSSBOW: {
         name: "Crossbow",
@@ -5145,7 +5145,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         strBonus: false,
         damage: 9,
         qualities: [27 /* WeaponQuality.RELOAD_1 */],
-        description: "empty"
+        description: "A classic crossbow to shoot bolts."
     },
     LASSO: {
         name: "Lasso",
@@ -5161,7 +5161,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         strBonus: false,
         damage: 0,
         qualities: [19 /* WeaponQuality.ENTANGLE */],
-        description: "empty"
+        description: "A rope with a sliding knot, often used to catch livestock."
     },
     WHIP: {
         name: "Whip",
@@ -5177,7 +5177,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         strBonus: true,
         damage: 2,
         qualities: [19 /* WeaponQuality.ENTANGLE */],
-        description: "empty"
+        description: "A whip, often used by tamers."
     },
     SLING: {
         name: "Sling" /* WeaponGroupLabel.SLING */,
@@ -5193,7 +5193,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         strBonus: false,
         damage: 6,
         qualities: [],
-        description: "empty"
+        description: "A Halfing's favorite weapon, after the saucage pick of course."
     },
     STAFF_SLING: {
         name: "Staff Sling",
@@ -5225,7 +5225,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         strBonus: true,
         damage: 0,
         qualities: [19 /* WeaponQuality.ENTANGLE */],
-        description: "empty"
+        description: "A weighted rope used to entangle people from a distance."
     },
     DART: {
         name: "Dart",
@@ -5241,7 +5241,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         strBonus: true,
         damage: 1,
         qualities: [2 /* WeaponQuality.IMPALE */],
-        description: "empty"
+        description: "A dart, mostly used in tavern games."
     },
     JAVELIN: {
         name: "Javelin",
@@ -5257,7 +5257,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         strBonus: true,
         damage: 3,
         qualities: [2 /* WeaponQuality.IMPALE */],
-        description: "empty"
+        description: "A weapon whitch could be used for sports."
     },
     ROCK: {
         name: "Rock",
@@ -5273,7 +5273,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         strBonus: true,
         damage: 0,
         qualities: [],
-        description: "empty"
+        description: "Just a pebble really."
     },
     THROWING_AXE: {
         name: "Throwing Axe",
@@ -5289,7 +5289,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         strBonus: true,
         damage: 3,
         qualities: [0 /* WeaponQuality.HACK */],
-        description: "empty"
+        description: "An axe balanced to be thrown rather than being used in close combat."
     },
     THROWING_KNIFE: {
         name: "Throwing Knife",
@@ -5305,7 +5305,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         strBonus: true,
         damage: 2,
         qualities: [],
-        description: "empty"
+        description: "That is not made to cut meat but more to thrw to an opponent."
     },
     BOMB: {
         name: "Bomb",
@@ -5321,7 +5321,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         strBonus: false,
         damage: 12,
         qualities: [42 /* WeaponQuality.BLAST_5 */, 25 /* WeaponQuality.DANGEROUS */, 16 /* WeaponQuality.IMPACT */],
-        description: "empty"
+        description: "Goes BOOM !"
     },
     INCENDIARY: {
         name: "Incendiary",
@@ -5337,7 +5337,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         strBonus: false,
         damage: 0, // TODO
         qualities: [41 /* WeaponQuality.BLAST_4 */, 25 /* WeaponQuality.DANGEROUS */],
-        description: "empty"
+        description: "A throwing bomb that sprays fire."
     },
     BLUNDERBUSS: {
         name: "Blunderbuss",

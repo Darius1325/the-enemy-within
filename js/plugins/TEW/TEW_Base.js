@@ -295,6 +295,8 @@ Game_BattlerBase.prototype.initialize = function () {
     this.addTalent("WEALTHY");
     // temp Spells
     this.addSpell("AETHYRIC_ARMS");
+    this.addSpell("DART");
+    this.addSpell("BLAST");
     // temp Items
     this.addItem("HEARTKILL");
     this.addItem("AMULET");

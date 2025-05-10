@@ -1,25 +1,32 @@
 // $PluginCompiler TEW_Menus.js
 
+// ----------------------
+
+// File : Window_StatusSpells.ts
+// Author : Ersokili, 7evy, Sebibebi67
+// Date : 03/05/2025
+// Description : This file contains the implementation of the Window_StatusSpells class, which is used to display the spells of a character in the status menu.
+
+// ----------------------
+// Imports
+// ----------------------
+
 import TEW from "../../types/tew";
+import HalfWindow_List from "../base/HalfWindow_List";
 
+// ----------------------
 // $StartCompilation
-
-// -----------------------------------------------------------------------------
-// Window_StatusSpells
-//
-// Spell list window
+// ----------------------
 
 function Window_StatusSpells() {
     this.initialize.apply(this, arguments);
 }
 
-export default Window_StatusSpells.prototype = Object.create(Window_Status.prototype);
+export default Window_StatusSpells.prototype = Object.create(HalfWindow_List.prototype);
 Window_StatusSpells.prototype.constructor = Window_StatusSpells;
 
 Window_StatusSpells.prototype.initialize = function() {
-    Window_Status.prototype.initialize.call(this);
-    this._helpWindow = null;
-    this.setHandler('ok', this.showHelpWindow.bind(this));
+    HalfWindow_List.prototype.initialize.call(this);
 };
 
 Window_StatusSpells.prototype.setActor = function(actor: any) {
@@ -31,7 +38,6 @@ Window_StatusSpells.prototype.setActor = function(actor: any) {
     }
 };
 
-Window_StatusSpells.prototype.maxCols = () => 2;
 
 Window_StatusSpells.prototype.drawAllItems = function() {
     var topIndex = this.topIndex();
@@ -45,8 +51,8 @@ Window_StatusSpells.prototype.drawAllItems = function() {
 
 Window_StatusSpells.prototype.drawItem = function(index: number) {
     const normalizedIndex = index - this.topIndex();
-    const x = index % 2 === 0 ? 48 : 432;
-    const y = Math.floor(normalizedIndex / 2) * TEW.MENU.LINE_HEIGHT;
+    const x = 48;
+    const y = normalizedIndex * TEW.MENU.LINE_HEIGHT;
 
     const spell = this.spellFromIndex(index);
 
@@ -59,18 +65,10 @@ Window_StatusSpells.prototype.spellFromIndex = function(index: number) {
     return this._spells[index];
 };
 
-Window_StatusSpells.prototype.item = function() {
-    const spell = this.spellFromIndex(this._index);
-    return spell[1].name + ': ' + spell[1].desc;
-};
-
 Window_StatusSpells.prototype.select = function(index: number) {
-    if (this._index !== index) {
-        this.hideHelpWindow();
-    }
     this._index = index;
     if (this._index >= 0) {
-        this._helpWindow.setText(this.item());
+        this.callHandler("show_spell_details");
     }
     this._stayCount = 0;
     this.ensureCursorVisible();
@@ -88,15 +86,3 @@ Window_StatusSpells.prototype.processOk = function() {
     }
 };
 
-Window_StatusSpells.prototype.isCurrentItemEnabled = function() {
-    return true; // TODO
-};
-
-Window_StatusSpells.prototype.showHelpWindow = function() {
-    if (this._helpWindow && this.active) {
-        this._helpWindow.show();
-        this._helpWindow.refresh();
-    }
-};
-
-Window_StatusSpells.prototype.updateHelp = () => {};

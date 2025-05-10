@@ -1,5 +1,16 @@
 // $PluginCompiler TEW_Menus.js
 
+// ----------------------
+
+// File : Window_InventoryWeapons.ts
+// Author : Ersokili, 7evy, Sebibebi67
+// Date : 03/05/2025
+// Description : This file contains the implementation of the Window_InventoryWeapons class, which is used to display the weapons of a character in the inventory menu.
+
+// ----------------------
+// Imports
+// ----------------------
+
 import { Game_Actor } from "../../../base/stats/Game_Actor";
 import { ActorWeapon } from "../../../base/stats/Game_BattlerBase";
 import { MeleeWeapon } from "../../../types/meleeWeapon";
@@ -7,17 +18,20 @@ import { RangedWeapon } from "../../../types/rangedWeapon";
 import TEW from "../../../types/tew";
 import HalfWindow_List from "../../base/HalfWindow_List";
 
+
+// ----------------------
+// Exports
+// ----------------------
+
 export type LoadedWeapon = (MeleeWeapon | RangedWeapon) & ActorWeapon & {
     equipIndex: number;
     equipIcon?: number;
 };
 
+// ----------------------
 // $StartCompilation
+// ----------------------
 
-//-----------------------------------------------------------------------------
-// Window_InventoryWeapons
-//
-// Weapons list window
 
 function Window_InventoryWeapons() {
     this.initialize.apply(this, arguments);
@@ -99,16 +113,29 @@ Window_InventoryWeapons.prototype.weaponFromIndex = function(index: number) {
     let weapon;
 
     if (index === 0){
-        if (this._mainHandWeapon){ weapon = this._mainHandWeapon; }
-        else if (this._secondHandWeapon) { weapon = this._secondHandWeapon; }
-        else { weapon = this._weapons[index] }
+        if (this._mainHandWeapon) {
+            weapon = this._mainHandWeapon;
+        }
+        else if (this._secondHandWeapon) {
+            weapon = this._secondHandWeapon;
+        }
+        else {
+            weapon = this._weapons[0];
+        }
     } else if (index === 1){
-        if (this._mainHandWeapon && this._secondHandWeapon) { weapon = this._secondHandWeapon; }
-        else { weapon = this._weapons[index - 1] }
+        if (this._mainHandWeapon && this._secondHandWeapon) {
+            weapon = this._secondHandWeapon;
+        }
+        else if (this._mainHandWeapon || this._secondHandWeapon) {
+            weapon = this._weapons[0];
+        }
+        else {
+            weapon = this._weapons[1];
+        }
     } else {
         let realIndex = index;
-        if (this._mainHandWeapon) { realIndex--; }
-        if (this._secondHandWeapon) { realIndex--; }
+        if (this._mainHandWeapon) realIndex--;
+        if (this._secondHandWeapon) realIndex--;
         weapon = this._weapons[realIndex];
     }
 
@@ -126,31 +153,6 @@ Window_InventoryWeapons.prototype.select = function(index: number) {
     this.callUpdateHelp();
 };
 
-// Window_InventoryWeapons.prototype.drawHelp = function(index) {
-//     // console.log(index, this.isCurrentItemEnabled());
-//     if (this.isCurrentItemEnabled()){
-//         const weapon = this.weaponFromIndex(index);
-//         const lineHeight = this._helpWindow.lineHeight();
-//         const group = 'Group : ' + weapon[1].group + '(';
-//         this._helpWindow.addText(weapon[1].name, 0, 0);
-//         this._helpWindow.addText(group, 0, lineHeight);
-//         this._helpWindow.addIcon(weapon[1].iconGroupId, this.textWidth(group), lineHeight)
-//         this._helpWindow.addText(')', this.textWidth(group) + 32, lineHeight)
-//         this._helpWindow.addText('Range : ' + weapon[1].range, 0, lineHeight * 2);
-//         this._helpWindow.addText('Damage : ' + weapon[1].damage, 0, lineHeight * 3);
-//         this._helpWindow.addText('Qualities : ' + weapon[1].qualities, 0, lineHeight * 4)
-//     }
-
-
-//     // const item = this.itemFromIndex(index)
-//     // const lineHeight = this._helpWindow.lineHeight();
-//     // const group = 'Group : ' + item[1].group + '(';
-//     // this._helpWindow.addTt(item[1].name, 0, 0);
-//     // this._helpWindow.addTextex(group, 0, lineHeight);
-//     // this._helpWindow.addIcon(item[1].iconGroupId, this.textWidth(group), lineHeight)
-//     // this._helpWindow.addText(')', this.textWidth(group) + 32, lineHeight);
-// };
-
 Window_InventoryWeapons.prototype.processOk = function() {
     if (this.isCurrentItemEnabled()) {
         this.playOkSound();
@@ -161,17 +163,3 @@ Window_InventoryWeapons.prototype.processOk = function() {
     }
 };
 
-// Window_InventoryWeapons.prototype.isCurrentItemEnabled = function() {
-//     return this.index() > 1
-//         || this.index() === 0 && this._mainHandWeapon
-//         || this.index() === 1 && this._secondHandWeapon;
-// };
-
-// Window_InventoryWeapons.prototype.showHelpWindow = function() {
-//     if (this._helpWindow && this.active) {
-//         this._helpWindow.show();
-//         this._helpWindow.refresh();
-//     }
-// };
-
-Window_InventoryWeapons.prototype.updateHelp = () => {};

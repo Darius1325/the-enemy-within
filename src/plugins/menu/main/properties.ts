@@ -27,6 +27,7 @@ TEW.MENU.COMMAND_NAMES[50] = "Stats";
 TEW.MENU.COMMAND_NAMES[51] = "Skills";
 TEW.MENU.COMMAND_NAMES[52] = "Talents";
 TEW.MENU.COMMAND_NAMES[53] = "Spells";
+TEW.MENU.COMMAND_NAMES[54] = "Cast";
 
 // Inventory Menu
 TEW.MENU.COMMAND_NAMES[70] = "InventoryNextChar";
@@ -86,6 +87,7 @@ Object.defineProperties(TextManager, {
     statusComps :               TextManager.getter('command', 51),
     statusTalents :             TextManager.getter('command', 52),
     statusSpells :              TextManager.getter('command', 53),
+    statusCastSpell :           TextManager.getter('command', 54),
 
     // Inventory Menu
     inventoryNextChar :         TextManager.getter('command', 70),

@@ -20,6 +20,7 @@ TEW.MENU.COMMAND_NAMES[50] = "Stats";
 TEW.MENU.COMMAND_NAMES[51] = "Skills";
 TEW.MENU.COMMAND_NAMES[52] = "Talents";
 TEW.MENU.COMMAND_NAMES[53] = "Spells";
+TEW.MENU.COMMAND_NAMES[54] = "Cast";
 // Inventory Menu
 TEW.MENU.COMMAND_NAMES[70] = "InventoryNextChar";
 TEW.MENU.COMMAND_NAMES[71] = "InventoryPreviousChar";
@@ -71,6 +72,7 @@ Object.defineProperties(TextManager, {
     statusComps: TextManager.getter('command', 51),
     statusTalents: TextManager.getter('command', 52),
     statusSpells: TextManager.getter('command', 53),
+    statusCastSpell: TextManager.getter('command', 54),
     // Inventory Menu
     inventoryNextChar: TextManager.getter('command', 70),
     inventoryPreviousChar: TextManager.getter('command', 71),
@@ -288,6 +290,32 @@ HalfWindow_Details.prototype.drawLine = function (y) {
 };
 // #endregion =========================== HalfWindow_Details ============================== //
 // ============================== //
+// #region ============================== HalfWindow_DetailsCommand ============================== //
+//-----------------------------------------------------------------------------
+// HalfWindow_DetailsCommand
+//
+// Super object to manage individual item command windows
+function HalfWindow_DetailsCommand() {
+    this.initialize.apply(this, arguments);
+}
+HalfWindow_DetailsCommand.prototype = Object.create(Window_Command.prototype);
+HalfWindow_DetailsCommand.prototype.constructor = HalfWindow_DetailsCommand;
+// Initializing the command window
+HalfWindow_DetailsCommand.prototype.initialize = function (actionsNumber = 2) {
+    this._actionsNumber = actionsNumber;
+    this._windowWidth = Graphics.boxWidth / 2;
+    this._windowHeight = this.fittingHeight(this._actionsNumber);
+    Window_Command.prototype.initialize.call(this, Graphics.boxWidth / 2, Graphics.boxHeight - this._windowHeight);
+};
+// Window Width
+HalfWindow_DetailsCommand.prototype.windowWidth = function () {
+    return this._windowWidth;
+};
+HalfWindow_DetailsCommand.prototype.addCommand = function (name, symbol, enabled = true, ext = null) {
+    this._list.push({ name: name, symbol: symbol, enabled: enabled, ext: ext });
+};
+// #endregion =========================== HalfWindow_DetailsCommand ============================== //
+// ============================== //
 // #region ============================== HalfWindow_List ============================== //
 //-----------------------------------------------------------------------------
 // HalfWindow_List
@@ -333,32 +361,6 @@ HalfWindow_List.prototype.maxItems = function () {
 // Number of columns
 HalfWindow_List.prototype.maxCols = () => 1;
 // #endregion =========================== HalfWindow_List ============================== //
-// ============================== //
-// #region ============================== HalfWindow_DetailsCommand ============================== //
-//-----------------------------------------------------------------------------
-// HalfWindow_DetailsCommand
-//
-// Super object to manage individual item command windows
-function HalfWindow_DetailsCommand() {
-    this.initialize.apply(this, arguments);
-}
-HalfWindow_DetailsCommand.prototype = Object.create(Window_Command.prototype);
-HalfWindow_DetailsCommand.prototype.constructor = HalfWindow_DetailsCommand;
-// Initializing the command window
-HalfWindow_DetailsCommand.prototype.initialize = function (actionsNumber = 2) {
-    this._actionsNumber = actionsNumber;
-    this._windowWidth = Graphics.boxWidth / 2;
-    this._windowHeight = this.fittingHeight(this._actionsNumber);
-    Window_Command.prototype.initialize.call(this, Graphics.boxWidth / 2, Graphics.boxHeight - this._windowHeight);
-};
-// Window Width
-HalfWindow_DetailsCommand.prototype.windowWidth = function () {
-    return this._windowWidth;
-};
-HalfWindow_DetailsCommand.prototype.addCommand = function (name, symbol, enabled = true, ext = null) {
-    this._list.push({ name: name, symbol: symbol, enabled: enabled, ext: ext });
-};
-// #endregion =========================== HalfWindow_DetailsCommand ============================== //
 // ============================== //
 // #region ============================== Window_InventoryAmmo ============================== //
 //-----------------------------------------------------------------------------
@@ -785,10 +787,7 @@ Window_InventoryWeaponDetails.prototype.drawDetails = function (weapon) {
 // #endregion =========================== Window_InventoryWeaponDetails ============================== //
 // ============================== //
 // #region ============================== Window_InventoryWeapons ============================== //
-//-----------------------------------------------------------------------------
-// Window_InventoryWeapons
-//
-// Weapons list window
+// ----------------------
 function Window_InventoryWeapons() {
     this.initialize.apply(this, arguments);
 }
@@ -855,25 +854,26 @@ Window_InventoryWeapons.prototype.weaponFromIndex = function (index) {
             weapon = this._secondHandWeapon;
         }
         else {
-            weapon = this._weapons[index];
+            weapon = this._weapons[0];
         }
     }
     else if (index === 1) {
         if (this._mainHandWeapon && this._secondHandWeapon) {
             weapon = this._secondHandWeapon;
         }
+        else if (this._mainHandWeapon || this._secondHandWeapon) {
+            weapon = this._weapons[0];
+        }
         else {
-            weapon = this._weapons[index - 1];
+            weapon = this._weapons[1];
         }
     }
     else {
         let realIndex = index;
-        if (this._mainHandWeapon) {
+        if (this._mainHandWeapon)
             realIndex--;
-        }
-        if (this._secondHandWeapon) {
+        if (this._secondHandWeapon)
             realIndex--;
-        }
         weapon = this._weapons[realIndex];
     }
     return weapon;
@@ -888,28 +888,6 @@ Window_InventoryWeapons.prototype.select = function (index) {
     this.updateCursor();
     this.callUpdateHelp();
 };
-// Window_InventoryWeapons.prototype.drawHelp = function(index) {
-//     // console.log(index, this.isCurrentItemEnabled());
-//     if (this.isCurrentItemEnabled()){
-//         const weapon = this.weaponFromIndex(index);
-//         const lineHeight = this._helpWindow.lineHeight();
-//         const group = 'Group : ' + weapon[1].group + '(';
-//         this._helpWindow.addText(weapon[1].name, 0, 0);
-//         this._helpWindow.addText(group, 0, lineHeight);
-//         this._helpWindow.addIcon(weapon[1].iconGroupId, this.textWidth(group), lineHeight)
-//         this._helpWindow.addText(')', this.textWidth(group) + 32, lineHeight)
-//         this._helpWindow.addText('Range : ' + weapon[1].range, 0, lineHeight * 2);
-//         this._helpWindow.addText('Damage : ' + weapon[1].damage, 0, lineHeight * 3);
-//         this._helpWindow.addText('Qualities : ' + weapon[1].qualities, 0, lineHeight * 4)
-//     }
-//     // const item = this.itemFromIndex(index)
-//     // const lineHeight = this._helpWindow.lineHeight();
-//     // const group = 'Group : ' + item[1].group + '(';
-//     // this._helpWindow.addTt(item[1].name, 0, 0);
-//     // this._helpWindow.addTextex(group, 0, lineHeight);
-//     // this._helpWindow.addIcon(item[1].iconGroupId, this.textWidth(group), lineHeight)
-//     // this._helpWindow.addText(')', this.textWidth(group) + 32, lineHeight);
-// };
 Window_InventoryWeapons.prototype.processOk = function () {
     if (this.isCurrentItemEnabled()) {
         this.playOkSound();
@@ -920,18 +898,6 @@ Window_InventoryWeapons.prototype.processOk = function () {
         this.playBuzzerSound();
     }
 };
-// Window_InventoryWeapons.prototype.isCurrentItemEnabled = function() {
-//     return this.index() > 1
-//         || this.index() === 0 && this._mainHandWeapon
-//         || this.index() === 1 && this._secondHandWeapon;
-// };
-// Window_InventoryWeapons.prototype.showHelpWindow = function() {
-//     if (this._helpWindow && this.active) {
-//         this._helpWindow.show();
-//         this._helpWindow.refresh();
-//     }
-// };
-Window_InventoryWeapons.prototype.updateHelp = () => { };
 // #endregion =========================== Window_InventoryWeapons ============================== //
 // ============================== //
 // #region ============================== Window_InventoryCommand ============================== //
@@ -1094,21 +1060,72 @@ Scene_Status.prototype.TALENTS_WINDOW_INDEX = 2;
 Scene_Status.prototype.SPELLS_WINDOW_INDEX = 3;
 // Creating the scene
 Scene_Status.prototype.create = function () {
+    // Init
     Scene_MenuBase.prototype.create.call(this);
+    // Command window
     this.createCommandWindow();
+    // Info window
     this.createStatsWindow();
+    // Competences window
     this.createCompsWindow();
+    // Talents windows
     this.createTalentsWindow();
     this.createTalentDescriptionWindow();
-    this.createSpellWindow();
-    this.createHelpWindow();
-    this._helpWindow.hide();
-    this._competencesWindow.setHelpWindow(this._helpWindow);
-    this._talentsWindow.setHelpWindow(this._helpWindow);
-    this._spellsWindow.setHelpWindow(this._helpWindow);
+    // Spells windows
+    this.createSpellsWindow();
+    this.createSpellCommandWindow();
+    this.createSpellDetailsWindow();
     this.activateStatusStats(); // Desactivate all the windows, except the stats one
     this.refreshActor();
 };
+// #region ====== All windows handling === //
+// Hiding all the windows
+Scene_Status.prototype.hideAllWindows = function () {
+    this._statsWindow.hide();
+    this._statsWindow.deactivate();
+    this._competencesWindow.hide();
+    this._competencesWindow.deactivate();
+    this._talentsWindow.hide();
+    this._talentsWindow.deactivate();
+    this._talentDescriptionWindow.hide();
+    this._talentDescriptionWindow.deactivate();
+    this._spellsWindow.hide();
+    this._spellsWindow.deactivate();
+    this._spellsCommandWindow.hide();
+    this._spellsCommandWindow.deactivate();
+    this._spellsDetailsWindow.hide();
+    this._spellsDetailsWindow.deactivate();
+};
+// Showing the corresponding window according to the current command window index
+Scene_Status.prototype.displayWindow = function () {
+    // hide all
+    this.hideAllWindows();
+    // Changing window
+    if (this._commandWindow.index() === this.STATS_WINDOW_INDEX) {
+        this._statsWindow.show();
+        this._statsWindow.refresh();
+    }
+    else if (this._commandWindow.index() === this.COMPS_WINDOW_INDEX) {
+        this._competencesWindow.show();
+        this._competencesWindow.refresh();
+    }
+    else if (this._commandWindow.index() === this.TALENTS_WINDOW_INDEX) {
+        this._talentsWindow.show();
+        this._talentsWindow.refresh();
+        this._talentDescriptionWindow.show();
+        this._talentDescriptionWindow.refresh();
+    }
+    else if (this._commandWindow.index() === this.SPELLS_WINDOW_INDEX) {
+        this._spellsWindow.show();
+        this._spellsDetailsWindow.show();
+        this._spellsCommandWindow.show();
+        this._spellsWindow.refresh();
+        this._spellsDetailsWindow.refresh();
+        this._spellsCommandWindow.refresh();
+    }
+};
+// #endregion === All windows handling === //
+// #region ====== Actor and command Window === //
 // Refreshing the actor
 Scene_Status.prototype.refreshActor = function () {
     var actor = this.actor();
@@ -1134,12 +1151,25 @@ Scene_Status.prototype.createCommandWindow = function () {
     this._commandWindow.setHandler('status_spells', this.activateStatusSpells.bind(this));
     this.addWindow(this._commandWindow);
 };
+// #endregion === Actor and command Window === //
+// === //
+// #region ====== Stats window === //
 // Creating the stats Window for the scene
 Scene_Status.prototype.createStatsWindow = function () {
     this._statsWindow = new Window_StatusStats();
     this._statsWindow.reserveFaceImages();
     this.addWindow(this._statsWindow);
 };
+// Activating the stats window
+Scene_Status.prototype.activateStatusStats = function () {
+    this.hideAllWindows();
+    this._statsWindow.show();
+    this._commandWindow.activate();
+    this._statsWindow.refresh();
+};
+// #endregion === Stats window === //
+// === //
+// #region ====== Competences window === //
 // Creating the competences Window for the scene
 Scene_Status.prototype.createCompsWindow = function () {
     this._competencesWindow = new Window_StatusCompetences();
@@ -1150,6 +1180,18 @@ Scene_Status.prototype.createCompsWindow = function () {
     this._competencesWindow.hide();
     this.addWindow(this._competencesWindow);
 };
+// Activating the competences window
+Scene_Status.prototype.activateStatusComps = function (index = 0) {
+    this.hideAllWindows();
+    this._competencesWindow.show();
+    this._commandWindow.deactivate();
+    this._competencesWindow.activate();
+    this._competencesWindow.select(index);
+    this._competencesWindow.refresh();
+};
+// #endregion === Competences window === //
+// === //
+// #region ====== Talents windows === //
 // Creating the talents Window for the scene
 Scene_Status.prototype.createTalentsWindow = function () {
     this._talentsWindow = new Window_StatusTalents();
@@ -1169,69 +1211,6 @@ Scene_Status.prototype.createTalentDescriptionWindow = function () {
     this._talentDescriptionWindow.hide();
     this.addWindow(this._talentDescriptionWindow);
 };
-// Creating the spells Window for the scene
-Scene_Status.prototype.createSpellWindow = function () {
-    this._spellsWindow = new Window_StatusSpells();
-    this._spellsWindow.setHandler('cancel', () => {
-        this._commandWindow.activate();
-        this._spellsWindow.deselect();
-    });
-    this._spellsWindow.hide();
-    this.addWindow(this._spellsWindow);
-};
-// Hiding all the windows
-Scene_Status.prototype.hideAllWindows = function () {
-    this._statsWindow.hide();
-    this._statsWindow.deactivate();
-    this._competencesWindow.hide();
-    this._competencesWindow.deactivate();
-    this._talentsWindow.hide();
-    this._talentsWindow.deactivate();
-    this._talentDescriptionWindow.hide();
-    this._talentDescriptionWindow.deactivate();
-    this._spellsWindow.hide();
-    this._spellsWindow.deactivate();
-};
-// Showing the corresponding window according to the current command window index
-Scene_Status.prototype.displayWindow = function () {
-    // hide all
-    this.hideAllWindows();
-    // Changing window
-    if (this._commandWindow.index() === this.STATS_WINDOW_INDEX) {
-        this._statsWindow.show();
-        this._statsWindow.refresh();
-    }
-    else if (this._commandWindow.index() === this.COMPS_WINDOW_INDEX) {
-        this._competencesWindow.show();
-        this._competencesWindow.refresh();
-    }
-    else if (this._commandWindow.index() === this.TALENTS_WINDOW_INDEX) {
-        this._talentsWindow.show();
-        this._talentsWindow.refresh();
-        this._talentDescriptionWindow.show();
-        this._talentDescriptionWindow.refresh();
-    }
-    else if (this._commandWindow.index() === this.SPELLS_WINDOW_INDEX) {
-        this._spellsWindow.show();
-        this._spellsWindow.refresh();
-    }
-};
-// Activating the stats window
-Scene_Status.prototype.activateStatusStats = function () {
-    this.hideAllWindows();
-    this._statsWindow.show();
-    this._commandWindow.activate();
-    this._statsWindow.refresh();
-};
-// Activating the competences window
-Scene_Status.prototype.activateStatusComps = function (index = 0) {
-    this.hideAllWindows();
-    this._competencesWindow.show();
-    this._commandWindow.deactivate();
-    this._competencesWindow.activate();
-    this._competencesWindow.select(index);
-    this._competencesWindow.refresh();
-};
 // Activating the talents window
 Scene_Status.prototype.activateStatusTalents = function (index = 0) {
     this.hideAllWindows();
@@ -1242,22 +1221,78 @@ Scene_Status.prototype.activateStatusTalents = function (index = 0) {
     this._talentsWindow.select(index);
     this._talentsWindow.refresh();
 };
-// Activating the spells window
-Scene_Status.prototype.activateStatusSpells = function () {
-    this.hideAllWindows();
-    this._spellsWindow.show();
-    this._commandWindow.deactivate();
-    this._spellsWindow.activate();
-    this._helpWindow.move(0, 70, Graphics.width, Graphics.height - 70);
-    this._spellsWindow.select(0);
-    this._spellsWindow.refresh();
-};
 // Showing the talent description
 Scene_Status.prototype.showTalentDescription = function () {
     const talent = this._talentsWindow.talentFromIndex(this._talentsWindow.index());
     this._talentDescriptionWindow._talent = talent;
     this._talentDescriptionWindow.refresh();
 };
+// #endregion === Talents windows === //
+// === //
+// #region ====== Spells windows === //
+// Creating the spells Window for the scene
+Scene_Status.prototype.createSpellsWindow = function () {
+    this._spellsWindow = new Window_StatusSpells();
+    this._spellsWindow.setHandler('cancel', () => {
+        this._commandWindow.activate();
+        this._spellsWindow.deselect();
+    });
+    this._spellsWindow.setHandler('ok', () => {
+        this.activateCommandWindowSpells();
+    });
+    this._spellsWindow.hide();
+    this.addWindow(this._spellsWindow);
+};
+Scene_Status.prototype.createSpellCommandWindow = function () {
+    this._spellsCommandWindow = new Window_StatusSpellCommand();
+    this._spellsCommandWindow.setHandler('cancel', () => {
+        this._spellsCommandWindow.deactivate();
+        this._spellsCommandWindow.deselect();
+        this.activateStatusSpells(this._spellsWindow.index());
+    });
+    this._spellsCommandWindow.setHandler('status_cast_spell', this.castSpell.bind(this));
+    this._spellsCommandWindow.hide();
+    this._spellsCommandWindow.deselect();
+    this.addWindow(this._spellsCommandWindow);
+};
+Scene_Status.prototype.createSpellDetailsWindow = function () {
+    this._spellsDetailsWindow = new Window_StatusSpellDetails(this._spellsCommandWindow.fittingHeight(this._spellsCommandWindow._actionsNumber));
+    this._spellsWindow.setHandler('show_spell_details', () => {
+        this.showSpellDetails();
+    });
+    this._spellsDetailsWindow.hide();
+    this.addWindow(this._spellsDetailsWindow);
+};
+// Activating the spells window
+Scene_Status.prototype.activateStatusSpells = function (index = 0) {
+    this.hideAllWindows();
+    this._spellsWindow.show();
+    this._commandWindow.deactivate();
+    this._spellsWindow.activate();
+    this._spellsDetailsWindow.show();
+    this._spellsCommandWindow.show();
+    this._spellsWindow.select(index);
+    this._spellsWindow.refresh();
+};
+Scene_Status.prototype.showSpellDetails = function () {
+    const spell = this._spellsWindow.spellFromIndex(this._spellsWindow.index());
+    this._spellsDetailsWindow._spell = spell;
+    this._spellsDetailsWindow.refresh();
+};
+// Casting a spell
+Scene_Status.prototype.castSpell = function () {
+    this._spellsCommandWindow.callHandler('cancel');
+};
+// Activating the command window for spells
+Scene_Status.prototype.activateCommandWindowSpells = function () {
+    if (this._spellsWindow.isOpenAndActive() && this._spellsWindow.index() >= 0) {
+        this._spellsWindow.deactivate();
+        this._spellsCommandWindow.show();
+        this._spellsCommandWindow.activate();
+        this._spellsCommandWindow.select(0);
+    }
+};
+// #endregion === Spells windows === //
 // #endregion =========================== Scene_Status ============================== //
 // ============================== //
 // #region ============================== Window_Status ============================== //
@@ -1269,7 +1304,6 @@ Window_Status.BASE_COMPETENCE_LINE_COUNT = Math.ceil(TEW.DATABASE.COMPS.BASE_ARR
 Window_Status.BASE_COMPETENCE_WINDOW_HEIGHT = (Window_Status.BASE_COMPETENCE_LINE_COUNT + 1) * TEW.MENU.LINE_HEIGHT;
 Window_Status.prototype.initialize = function () {
     Window_Selectable.prototype.initialize.call(this, 0, TEW.MENU.STATUS_WINDOW_TOPBAR_HEIGHT, Graphics.boxWidth, Graphics.boxHeight - TEW.MENU.STATUS_WINDOW_TOPBAR_HEIGHT);
-    console.log("Window_Status initialize");
     this._actor = null;
     this._maxItems = 0;
     this.activate();
@@ -1434,20 +1468,71 @@ Window_StatusCompetences.prototype.maxItems = function () {
 };
 // #endregion =========================== Window_StatusCompetences ============================== //
 // ============================== //
+// #region ============================== Window_StatusSpellCommand ============================== //
+// ----------------------
+function Window_StatusSpellCommand() {
+    this.initialize.apply(this, arguments);
+}
+Window_StatusSpellCommand.prototype = Object.create(HalfWindow_DetailsCommand.prototype);
+Window_StatusSpellCommand.prototype.constructor = Window_StatusSpellCommand;
+// Initializing the command window
+Window_StatusSpellCommand.prototype.initialize = function () {
+    HalfWindow_DetailsCommand.prototype.initialize.call(this, 1);
+};
+// Making the 3 lines
+Window_StatusSpellCommand.prototype.makeCommandList = function () {
+    this.addCommand(TextManager.statusCastSpell, 'status_cast_spell');
+};
+// #endregion =========================== Window_StatusSpellCommand ============================== //
+// ============================== //
+// #region ============================== Window_StatusSpellDetails ============================== //
+// ----------------------
+function Window_StatusSpellDetails() {
+    this.initialize.apply(this, arguments);
+}
+Window_StatusSpellDetails.prototype = Object.create(HalfWindow_Details.prototype);
+Window_StatusSpellDetails.prototype.constructor = Window_StatusSpellDetails;
+Window_StatusSpellDetails.prototype.initialize = function (commandWindowHeight = 0) {
+    HalfWindow_Details.prototype.initialize.call(this, commandWindowHeight);
+    this._spell = null;
+};
+// Refreshing the window
+Window_StatusSpellDetails.prototype.refresh = function () {
+    this.contents.clear();
+    if (this._spell) {
+        this.drawDetails(this._spell);
+    }
+};
+// Drawing the details
+Window_StatusSpellDetails.prototype.drawDetails = function (spell) {
+    console.log("Drawing spell details", spell);
+    // Title
+    this.drawUnderlinedText(spell[1].name, 0, 0, this.contentsWidth(), "center");
+    // // Item's Icon
+    // this.drawIcon(weapon[1].icon, 0, 0);
+    // // Availability Icon
+    // this.drawIcon(weapon[1].availabilityIcon, this.contentsWidth() - 32, 0)
+    // // Table
+    // this.drawTable2Columns(0, 80, this.contentsWidth(), 2, [
+    //     // ["Owned :", "x" + item[1].quantity],
+    //     ["Group :", weapon[1].groupLabel],
+    //     ["Enc. :", weapon[1].enc]
+    // ]);
+    // this.drawLine(200);
+    // // Description
+    // this.drawWrappedTextManually(weapon[1].description, 0, 220, 24);
+};
+// #endregion =========================== Window_StatusSpellDetails ============================== //
+// ============================== //
 // #region ============================== Window_StatusSpells ============================== //
-// -----------------------------------------------------------------------------
-// Window_StatusSpells
-//
-// Spell list window
+// ----------------------
 function Window_StatusSpells() {
     this.initialize.apply(this, arguments);
 }
-Window_StatusSpells.prototype = Object.create(Window_Status.prototype);
+Window_StatusSpells.prototype = Object.create(HalfWindow_List.prototype);
 Window_StatusSpells.prototype.constructor = Window_StatusSpells;
 Window_StatusSpells.prototype.initialize = function () {
-    Window_Status.prototype.initialize.call(this);
-    this._helpWindow = null;
-    this.setHandler('ok', this.showHelpWindow.bind(this));
+    HalfWindow_List.prototype.initialize.call(this);
 };
 Window_StatusSpells.prototype.setActor = function (actor) {
     if (this._actor !== actor) {
@@ -1457,7 +1542,6 @@ Window_StatusSpells.prototype.setActor = function (actor) {
         this.refresh();
     }
 };
-Window_StatusSpells.prototype.maxCols = () => 2;
 Window_StatusSpells.prototype.drawAllItems = function () {
     var topIndex = this.topIndex();
     for (var i = 0; i < this.maxPageItems(); i++) {
@@ -1469,8 +1553,8 @@ Window_StatusSpells.prototype.drawAllItems = function () {
 };
 Window_StatusSpells.prototype.drawItem = function (index) {
     const normalizedIndex = index - this.topIndex();
-    const x = index % 2 === 0 ? 48 : 432;
-    const y = Math.floor(normalizedIndex / 2) * TEW.MENU.LINE_HEIGHT;
+    const x = 48;
+    const y = normalizedIndex * TEW.MENU.LINE_HEIGHT;
     const spell = this.spellFromIndex(index);
     this.changeTextColor(this.systemColor());
     this.drawText(spell[1].name, x, y, 160);
@@ -1479,17 +1563,10 @@ Window_StatusSpells.prototype.drawItem = function (index) {
 Window_StatusSpells.prototype.spellFromIndex = function (index) {
     return this._spells[index];
 };
-Window_StatusSpells.prototype.item = function () {
-    const spell = this.spellFromIndex(this._index);
-    return spell[1].name + ': ' + spell[1].desc;
-};
 Window_StatusSpells.prototype.select = function (index) {
-    if (this._index !== index) {
-        this.hideHelpWindow();
-    }
     this._index = index;
     if (this._index >= 0) {
-        this._helpWindow.setText(this.item());
+        this.callHandler("show_spell_details");
     }
     this._stayCount = 0;
     this.ensureCursorVisible();
@@ -1506,16 +1583,6 @@ Window_StatusSpells.prototype.processOk = function () {
         this.playBuzzerSound();
     }
 };
-Window_StatusSpells.prototype.isCurrentItemEnabled = function () {
-    return true; // TODO
-};
-Window_StatusSpells.prototype.showHelpWindow = function () {
-    if (this._helpWindow && this.active) {
-        this._helpWindow.show();
-        this._helpWindow.refresh();
-    }
-};
-Window_StatusSpells.prototype.updateHelp = () => { };
 // #endregion =========================== Window_StatusSpells ============================== //
 // ============================== //
 // #region ============================== Window_StatusStats ============================== //
@@ -1785,13 +1852,13 @@ Scene_Equip.prototype.create = function () {
     this.createItemsDetailsWindow();
     // Ammo Windows
     this.createAmmoWindow();
-    // Help window
-    this.createHelpWindow();
-    this._helpWindow.hide();
-    this._weaponsWindow.setHelpWindow(this._helpWindow);
-    this._armorsWindow.setHelpWindow(this._helpWindow);
-    // this._itemsWindow.setHelpWindow(this._helpWindow);
-    this._ammoWindow.setHelpWindow(this._helpWindow);
+    // // Help window
+    // this.createHelpWindow();
+    // this._helpWindow.hide();
+    // this._weaponsWindow.setHelpWindow(this._helpWindow);
+    // this._armorsWindow.setHelpWindow(this._helpWindow);
+    // // this._itemsWindow.setHelpWindow(this._helpWindow);
+    // this._ammoWindow.setHelpWindow(this._helpWindow);
     this.activateInventoryInfos(); // Deactivate all the windows, except the infos one
     this.refreshActor();
 };
@@ -1804,11 +1871,11 @@ Scene_Equip.prototype.refreshActor = function () {
     this._itemsWindow.setActor(actor);
     this._ammoWindow.setActor(actor);
 };
-// Creating the help window
-Scene_Equip.prototype.createHelpWindow = function () {
-    this._helpWindow = new Window_InventoryHelp();
-    this.addWindow(this._helpWindow);
-};
+// // Creating the help window
+// Scene_Equip.prototype.createHelpWindow = function(){
+//     this._helpWindow = new Window_InventoryHelp();
+//     this.addWindow(this._helpWindow);
+// }
 // Creating the commands for this scene
 Scene_Equip.prototype.createCommandWindow = function () {
     var wx = 0;
