@@ -47,11 +47,11 @@ Window_InventoryWeapons.prototype.initialize = function() {
 Window_InventoryWeapons.prototype.setActor = function(actor: Game_Actor) {
     if (this._actor !== actor) {
         this._actor = actor;
-        this.syncActorWeapons();
+        this.syncActor();
     }
 };
 
-Window_InventoryWeapons.prototype.syncActorWeapons = function() {
+Window_InventoryWeapons.prototype.syncActor = function() {
     const displayedWeapons = this._actor.weapons.map((weapon: ActorWeapon, index: number): LoadedWeapon => {
         const weaponData = Object.assign({},
             TEW.DATABASE.WEAPONS.ARRAY.find(w => w[0] === weapon.id));
@@ -101,7 +101,6 @@ Window_InventoryWeapons.prototype.drawItem = function(index: number) {
     const y = normalizedIndex * TEW.MENU.LINE_HEIGHT;
 
     const weapon = this.weaponFromIndex(index);
-    console.log("drawItem", this._weapons);
     if (weapon) {
         this.changeTextColor(this.systemColor());
         this.drawIcon(weapon.equipIcon || 0, x - 32, y)
@@ -112,6 +111,7 @@ Window_InventoryWeapons.prototype.drawItem = function(index: number) {
 };
 
 Window_InventoryWeapons.prototype.weaponFromIndex = function(index: number) {
+    index = Math.min(index, this._weapons.length - 1);
     let weapon;
 
     if (index === 0) {
@@ -143,6 +143,11 @@ Window_InventoryWeapons.prototype.weaponFromIndex = function(index: number) {
 
     return weapon;
 };
+
+// Getting the current selected weapon
+Window_InventoryWeapons.prototype.item = function() {
+    return this.weaponFromIndex(this.index());
+}
 
 Window_InventoryWeapons.prototype.select = function(index: number) {
     this._index = index;

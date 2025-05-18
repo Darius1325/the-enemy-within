@@ -13,14 +13,15 @@ TEW.DICE.rollD100 = function() {
 
 TEW.DICE.displayDiceRoll = function() {
     const result = this.rollD100();
-    SceneManager._scene.addWindow(new Window_Dice(0, 0, Math.floor(result / 10), result % 10));
+    const windowDice = new Window_Dice(0, 0, Math.floor(result / 10), result % 10);
+    SceneManager._scene.addWindow(windowDice);
     return result;
 }
 
 Game_Interpreter.prototype.partySkillTest = function(compId: string, modifier: number) {
     const actorSkillBaseValues = [];
     // Select the best character for the job
-    for (let i = 0; i < $gameActors._data.length; i++) {
+    for (let i = 1; i < $gameActors._data.length; i++) {
         if ($gameActors._data[i]) {
             actorSkillBaseValues.push($gameActors._data[i][compId]);
         }
@@ -52,7 +53,7 @@ Game_Interpreter.prototype.partySkillTest = function(compId: string, modifier: n
 
 Game_Interpreter.prototype.opposedSkillTest = function(compIdPlayer: string, modifierPlayer: number, skillValueNPC: number) {
     const actorSkillBaseValues = [];
-    for (let i = 0; i < $gameActors._data.length; i++) {
+    for (let i = 1; i < $gameActors._data.length; i++) {
         if ($gameActors._data[i]) {
             actorSkillBaseValues.push($gameActors._data[i][compIdPlayer]);
         }
@@ -87,7 +88,7 @@ Game_Interpreter.prototype.opposedSkillTest = function(compIdPlayer: string, mod
     let criticalPlayer = rollPlayer % 11 === 0 || rollPlayer === 100;
     let criticalNPC = rollNPC % 11 === 0 || rollNPC === 100;
 
-    let success;
+    let success: boolean;
     if (successRollPlayer && criticalPlayer) {
         success = true;
     } else if (successRollNpc && criticalNPC) {

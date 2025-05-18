@@ -122,13 +122,14 @@ TEW.DICE.rollD100 = function () {
 };
 TEW.DICE.displayDiceRoll = function () {
     const result = this.rollD100();
-    SceneManager._scene.addWindow(new Window_Dice(0, 0, Math.floor(result / 10), result % 10));
+    const windowDice = new Window_Dice(0, 0, Math.floor(result / 10), result % 10);
+    SceneManager._scene.addWindow(windowDice);
     return result;
 };
 Game_Interpreter.prototype.partySkillTest = function (compId, modifier) {
     const actorSkillBaseValues = [];
     // Select the best character for the job
-    for (let i = 0; i < $gameActors._data.length; i++) {
+    for (let i = 1; i < $gameActors._data.length; i++) {
         if ($gameActors._data[i]) {
             actorSkillBaseValues.push($gameActors._data[i][compId]);
         }
@@ -155,7 +156,7 @@ Game_Interpreter.prototype.partySkillTest = function (compId, modifier) {
 // Opposed skill tests
 Game_Interpreter.prototype.opposedSkillTest = function (compIdPlayer, modifierPlayer, skillValueNPC) {
     const actorSkillBaseValues = [];
-    for (let i = 0; i < $gameActors._data.length; i++) {
+    for (let i = 1; i < $gameActors._data.length; i++) {
         if ($gameActors._data[i]) {
             actorSkillBaseValues.push($gameActors._data[i][compIdPlayer]);
         }
@@ -430,9 +431,11 @@ Game_BattlerBase.prototype.item = function (itemId) {
     return this.items[itemId] || 0;
 };
 Game_BattlerBase.prototype.addItem = function (itemId, quantity = 1) {
+    console.log("adding " + itemId + " to " + this.name());
     this.items[itemId] = this.item(itemId) + quantity;
 };
 Game_BattlerBase.prototype.removeItem = function (itemId, quantity = 1) {
+    console.log("removing " + itemId + " from " + this.name());
     this.items[itemId] = this.item(itemId) - quantity;
     if (this.item(itemId) <= 0) {
         delete this.items[itemId];

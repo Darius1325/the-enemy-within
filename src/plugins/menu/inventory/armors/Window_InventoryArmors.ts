@@ -68,8 +68,14 @@ Window_InventoryArmors.prototype.drawItem = function(index: number) {
 
 // Getting an item from its index
 Window_InventoryArmors.prototype.armorFromIndex = function(index: number) {
+    index = Math.min(index, this._armors.length - 1);
     return this._armors[index];
 };
+
+// // Getting the current selected armor
+// Window_InventoryArmors.prototype.item = function() {
+//     return this.armorFromIndex(this.index());
+// }
 
 Window_InventoryArmors.prototype.select = function(index: number) {
     this._index = index;

@@ -24,10 +24,14 @@ Window_InventoryItems.prototype.initialize = function() {
 Window_InventoryItems.prototype.setActor = function(actor: any) {
     if (this._actor !== actor) {
         this._actor = actor;
-        this._items = TEW.DATABASE.ITEMS.ARRAY.filter( item => actor.hasItem(item[0])); // [<internal name>, {<item data>}]
-        this._maxItems = this._items.length;
-        this.refresh();
+        this.syncActor();
     }
+};
+
+Window_InventoryItems.prototype.syncActor = function() {
+    this._items = TEW.DATABASE.ITEMS.ARRAY.filter( item => this._actor.hasItem(item[0])); // [<internal name>, {<item data>}]
+    this._maxItems = this._items.length;
+    this.refresh();
 };
 
 // Drawing all the items
@@ -57,8 +61,14 @@ Window_InventoryItems.prototype.drawItem = function(index: number) {
 
 // Getting an item from its index
 Window_InventoryItems.prototype.itemFromIndex = function(index: number) {
+    index = Math.min(index, this._items.length - 1);
     return this._items[index];
 };
+
+// Getting the current selected item
+Window_InventoryItems.prototype.item = function() {
+    return this.itemFromIndex(this.index());
+}
 
 // Selecting an item
 Window_InventoryItems.prototype.select = function(index: number) {

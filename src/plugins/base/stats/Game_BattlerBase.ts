@@ -297,10 +297,12 @@ Game_BattlerBase.prototype.item = function(itemId: string) {
 };
 
 Game_BattlerBase.prototype.addItem = function(itemId: string, quantity = 1) {
+    console.log("adding " + itemId + " to " + this.name());
     this.items[itemId] = this.item(itemId) + quantity;
 }
 
 Game_BattlerBase.prototype.removeItem = function(itemId: string, quantity = 1) {
+    console.log("removing " + itemId + " from " + this.name());
     this.items[itemId] = this.item(itemId) - quantity;
     if (this.item(itemId) <= 0) {
         delete this.items[itemId];

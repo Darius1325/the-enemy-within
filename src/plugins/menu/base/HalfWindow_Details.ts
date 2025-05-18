@@ -115,3 +115,9 @@ HalfWindow_Details.prototype.drawLine = function(y: number) {
         this.normalColor()
     );
 };
+
+HalfWindow_Details.prototype.clear = function() {
+    if (this.contents) {
+        this.contents.clear();
+    }
+}

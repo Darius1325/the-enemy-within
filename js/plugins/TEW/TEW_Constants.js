@@ -1166,7 +1166,7 @@ TEW.DATABASE.ITEMS.SET = {
         enc: 0,
         availability: 0 /* Availability.COMMON */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
-        description: "A brass amulent representing Sigmar."
+        description: "A brass amulet representing Sigmar."
     },
     BOOTS: {
         name: "Boots",

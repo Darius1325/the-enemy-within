@@ -32,3 +32,8 @@ HalfWindow_DetailsCommand.prototype.windowWidth = function() {
 HalfWindow_DetailsCommand.prototype.addCommand = function(name: string, symbol: string, enabled = true, ext = null) {
     this._list.push({ name: name, symbol: symbol, enabled: enabled, ext: ext});
 };
+
+HalfWindow_DetailsCommand.prototype.clear = function() {
+    this.clearCommandList();
+    Window_Selectable.prototype.refresh.call(this);
+}

@@ -300,6 +300,11 @@ HalfWindow_Details.prototype.drawLine = function (y) {
     const lineSize = 2;
     this.contents.fillRect((this.contentsWidth() - lineWidth) / 2, y, lineWidth, lineSize, this.normalColor());
 };
+HalfWindow_Details.prototype.clear = function () {
+    if (this.contents) {
+        this.contents.clear();
+    }
+};
 // #endregion =========================== HalfWindow_Details ============================== //
 // ============================== //
 // #region ============================== HalfWindow_DetailsCommand ============================== //
@@ -325,6 +330,10 @@ HalfWindow_DetailsCommand.prototype.windowWidth = function () {
 };
 HalfWindow_DetailsCommand.prototype.addCommand = function (name, symbol, enabled = true, ext = null) {
     this._list.push({ name: name, symbol: symbol, enabled: enabled, ext: ext });
+};
+HalfWindow_DetailsCommand.prototype.clear = function () {
+    this.clearCommandList();
+    Window_Selectable.prototype.refresh.call(this);
 };
 // #endregion =========================== HalfWindow_DetailsCommand ============================== //
 // ============================== //
@@ -402,6 +411,7 @@ Window_InventoryTransferCommand.prototype.windowHeight = function () {
 Window_InventoryTransferCommand.prototype.setActor = function (actor) {
     if (this._actor !== actor) {
         this._actor = actor;
+        this.makeCommandList();
     }
 };
 Window_InventoryTransferCommand.prototype.setItemType = function (type) {
@@ -428,15 +438,19 @@ Window_InventoryTransferCommand.prototype.setItemType = function (type) {
     }
 };
 Window_InventoryTransferCommand.prototype.doTransfer = function (targetActor, item) {
+    console.log("this should work if I was good at coding");
     const removed = this._removeAction.call(this._actor, item);
-    this._addAction(targetActor, removed);
+    this._addAction.call(targetActor, removed);
 };
 Window_InventoryTransferCommand.prototype.makeCommandList = function () {
-    for (let i = 0; i < $gameActors.size; i++) {
-        const targetName = TEW.CHARACTERS.ARRAY[i];
-        if (targetName !== this._actor._name) {
-            this.addCommand(TextManager["inventoryTransferTo" + i], "inventory_transfer_to_" + i);
+    if (this._actor != undefined) {
+        for (let i = 1; i < $gameActors._data.length; i++) {
+            const targetName = TEW.CHARACTERS.ARRAY[i - 1];
+            if (targetName !== this._actor._name) {
+                this.addCommand(TextManager["inventoryTransferTo" + (i - 1)], "inventory_transfer_to_" + (i - 1));
+            }
         }
+        Window_Selectable.prototype.refresh.call(this);
     }
 };
 // #endregion =========================== Window_InventoryTransferCommand ============================== //
@@ -596,8 +610,13 @@ Window_InventoryArmors.prototype.drawItem = function (index) {
 };
 // Getting an item from its index
 Window_InventoryArmors.prototype.armorFromIndex = function (index) {
+    index = Math.min(index, this._armors.length - 1);
     return this._armors[index];
 };
+// // Getting the current selected armor
+// Window_InventoryArmors.prototype.item = function() {
+//     return this.armorFromIndex(this.index());
+// }
 Window_InventoryArmors.prototype.select = function (index) {
     this._index = index;
     if (this._index >= 0) {
@@ -723,10 +742,13 @@ Window_InventoryItems.prototype.initialize = function () {
 Window_InventoryItems.prototype.setActor = function (actor) {
     if (this._actor !== actor) {
         this._actor = actor;
-        this._items = TEW.DATABASE.ITEMS.ARRAY.filter(item => actor.hasItem(item[0])); // [<internal name>, {<item data>}]
-        this._maxItems = this._items.length;
-        this.refresh();
+        this.syncActor();
     }
+};
+Window_InventoryItems.prototype.syncActor = function () {
+    this._items = TEW.DATABASE.ITEMS.ARRAY.filter(item => this._actor.hasItem(item[0])); // [<internal name>, {<item data>}]
+    this._maxItems = this._items.length;
+    this.refresh();
 };
 // Drawing all the items
 Window_InventoryItems.prototype.drawAllItems = function () {
@@ -752,7 +774,12 @@ Window_InventoryItems.prototype.drawItem = function (index) {
 };
 // Getting an item from its index
 Window_InventoryItems.prototype.itemFromIndex = function (index) {
+    index = Math.min(index, this._items.length - 1);
     return this._items[index];
+};
+// Getting the current selected item
+Window_InventoryItems.prototype.item = function () {
+    return this.itemFromIndex(this.index());
 };
 // Selecting an item
 Window_InventoryItems.prototype.select = function (index) {
@@ -879,10 +906,10 @@ Window_InventoryWeapons.prototype.initialize = function () {
 Window_InventoryWeapons.prototype.setActor = function (actor) {
     if (this._actor !== actor) {
         this._actor = actor;
-        this.syncActorWeapons();
+        this.syncActor();
     }
 };
-Window_InventoryWeapons.prototype.syncActorWeapons = function () {
+Window_InventoryWeapons.prototype.syncActor = function () {
     const displayedWeapons = this._actor.weapons.map((weapon, index) => {
         const weaponData = Object.assign({}, TEW.DATABASE.WEAPONS.ARRAY.find(w => w[0] === weapon.id));
         return Object.assign(Object.assign(Object.assign({ id: weaponData[0] }, weaponData[1]), weapon), { equipIndex: index, equipIcon: weapon.isInMainHand
@@ -917,7 +944,6 @@ Window_InventoryWeapons.prototype.drawItem = function (index) {
     const x = 48;
     const y = normalizedIndex * TEW.MENU.LINE_HEIGHT;
     const weapon = this.weaponFromIndex(index);
-    console.log("drawItem", this._weapons);
     if (weapon) {
         this.changeTextColor(this.systemColor());
         this.drawIcon(weapon.equipIcon || 0, x - 32, y);
@@ -927,6 +953,7 @@ Window_InventoryWeapons.prototype.drawItem = function (index) {
     }
 };
 Window_InventoryWeapons.prototype.weaponFromIndex = function (index) {
+    index = Math.min(index, this._weapons.length - 1);
     let weapon;
     if (index === 0) {
         if (this._mainHandWeapon) {
@@ -959,6 +986,10 @@ Window_InventoryWeapons.prototype.weaponFromIndex = function (index) {
         weapon = this._weapons[realIndex];
     }
     return weapon;
+};
+// Getting the current selected weapon
+Window_InventoryWeapons.prototype.item = function () {
+    return this.weaponFromIndex(this.index());
 };
 Window_InventoryWeapons.prototype.select = function (index) {
     this._index = index;
@@ -1979,6 +2010,7 @@ Scene_Equip.prototype.refreshActor = function () {
     this._armorsWindow.setActor(actor);
     this._itemsWindow.setActor(actor);
     this._ammoWindow.setActor(actor);
+    this._transferCommandWindow.setActor(actor);
 };
 // // Creating the help window
 // Scene_Equip.prototype.createHelpWindow = function(){
@@ -2133,11 +2165,24 @@ Scene_Equip.prototype.createTransferCommandWindow = function () {
     this._transferCommandWindow.setHandler('cancel', () => {
         this._transferCommandWindow.deactivate();
         this._transferCommandWindow.deselect();
-        // TODO - need to switch depending on the type. fuck :)
-        this.activateInventoryItems(this._itemsWindow.index());
+        switch (this._transferCommandWindow.type) {
+            case "item":
+                this.activateInventoryItems(this._itemsWindow.index());
+                break;
+            case "weapon":
+                this.activateInventoryWeapons(this._weaponsWindow.index());
+                break;
+            case "armor":
+                this.activateInventoryArmors(this._armorsWindow.index());
+                break;
+            case "ammo":
+                this.activateInventoryAmmo(this._ammoWindow.index());
+                break;
+        }
+        ;
     });
-    for (let i = 0; i < $gameActors.size; i++) {
-        this._transferCommandWindow.setHandler("inventory_transfer_to_" + i, () => {
+    for (let i = 1; i < $gameActors._data.length; i++) {
+        this._transferCommandWindow.setHandler("inventory_transfer_to_" + (i - 1), () => {
             this.doTransfer(i);
         });
     }
@@ -2219,6 +2264,7 @@ Scene_Equip.prototype.activateInventoryInfos = function () {
 };
 // Activating the weapons window
 Scene_Equip.prototype.activateInventoryWeapons = function (index = 0) {
+    index = Math.min(index, this._weaponsWindow._weapons.length - 1);
     this.hideAllWindows();
     this._weaponsWindow.show();
     this._commandWindow.deactivate();
@@ -2230,6 +2276,7 @@ Scene_Equip.prototype.activateInventoryWeapons = function (index = 0) {
 };
 // Activating the armors window
 Scene_Equip.prototype.activateInventoryArmors = function (index = 0) {
+    index = Math.min(index, this._armorsWindow._armors.length - 1);
     this.hideAllWindows();
     this._armorsWindow.show();
     this._commandWindow.deactivate();
@@ -2241,10 +2288,12 @@ Scene_Equip.prototype.activateInventoryArmors = function (index = 0) {
 };
 // Activating the items window
 Scene_Equip.prototype.activateInventoryItems = function (index = 0) {
+    index = Math.min(index, this._itemsWindow._items.length - 1);
     this.hideAllWindows();
     this._itemsWindow.show();
     this._itemsDetailsWindow.show();
     this._itemsCommandWindow.show();
+    this._itemsCommandWindow.deselect();
     this._commandWindow.deactivate();
     this._itemsWindow.activate();
     this._itemsWindow.select(index);
@@ -2252,6 +2301,7 @@ Scene_Equip.prototype.activateInventoryItems = function (index = 0) {
 };
 // Activating the ammo window
 Scene_Equip.prototype.activateInventoryAmmo = function (index = 0) {
+    index = Math.min(index, this._ammoWindow._ammo.length - 1);
     this.hideAllWindows();
     this._ammoWindow.show();
     this._commandWindow.deactivate();
@@ -2286,9 +2336,15 @@ Scene_Equip.prototype.activateCommandWindowArmor = function () {
 // Showing the item details - Triggered on the items window
 Scene_Equip.prototype.showItemDetails = function () {
     const item = this._itemsWindow.itemFromIndex(this._itemsWindow.index());
-    item[1].quantity = this._itemsWindow._actor.item(item[0]);
-    this._itemsDetailsWindow._item = item;
-    this._itemsDetailsWindow.refresh();
+    if (item) {
+        item[1].quantity = this._itemsWindow._actor.item(item[0]);
+        this._itemsDetailsWindow._item = item;
+        this._itemsDetailsWindow.refresh();
+    }
+    else {
+        this._itemsDetailsWindow.clear();
+        this._itemsCommandWindow.clear();
+    }
 };
 Scene_Equip.prototype.showWeaponDetails = function () {
     const weapon = this._weaponsWindow.weaponFromIndex(this._weaponsWindow.index());
@@ -2309,7 +2365,7 @@ Scene_Equip.prototype.useItem = function () {
 };
 // Transfering an item - Triggered on the items window
 Scene_Equip.prototype.transferItem = function () {
-    console.log("Transfer item", this._itemsWindow.index());
+    // console.log("Transfer item", this._itemsWindow.index());
     this._transferCommandWindow.activate();
     this._transferCommandWindow.show();
     this._transferCommandWindow.select(0);
@@ -2330,7 +2386,7 @@ Scene_Equip.prototype.equipWeapon = function () {
         this._actor.unequipMainHand();
         this._actor.equipMainHand(weapon.equipIndex);
     }
-    this._weaponsWindow.syncActorWeapons();
+    this._weaponsWindow.syncActor();
     this._weaponsCommandWindow.callHandler('cancel');
 };
 // Unequipping a weapon - Triggered on the weapons window
@@ -2342,7 +2398,7 @@ Scene_Equip.prototype.unequipWeapon = function () {
     else if (weaponIndex === 1) {
         this._actor.unequipSecondHand();
     }
-    this._weaponsWindow.syncActorWeapons();
+    this._weaponsWindow.syncActor();
     this._weaponsCommandWindow.callHandler('cancel');
 };
 // Transfering a weapon - Triggered on the weapons window
@@ -2374,21 +2430,27 @@ Scene_Equip.prototype.transferArmor = function () {
 };
 Scene_Equip.prototype.doTransfer = function (actorIndex) {
     let item;
+    let currentWindow;
     switch (this._transferCommandWindow.type) {
         case "item":
             item = this._itemsWindow.item()[0];
+            currentWindow = this._itemsWindow;
             break;
         case "weapon":
             item = this._weaponsWindow.item().equipIndex;
+            currentWindow = this._weaponsWindow;
             break;
         case "armor":
             item = this._armorsWindow.item()[0];
+            currentWindow = this._armorsWindow;
             break;
         case "ammo":
             item = this._ammoWindow.item()[0];
+            currentWindow = this._ammoWindow;
             break;
     }
-    this._transferCommandWindow.doTransfer(TEW.CHARACTERS.ARRAY[actorIndex], item);
+    this._transferCommandWindow.doTransfer($gameActors._data[actorIndex], item);
+    currentWindow.syncActor();
     this._transferCommandWindow.callHandler('cancel');
 };
 // #endregion =========================== Scene_Equip ============================== //

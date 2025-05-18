@@ -44,6 +44,7 @@ Window_InventoryTransferCommand.prototype.windowHeight = function() {
 Window_InventoryTransferCommand.prototype.setActor = function(actor: Game_Actor) {
     if (this._actor !== actor) {
         this._actor = actor;
+        this.makeCommandList();
     }
 };
 
@@ -72,15 +73,19 @@ Window_InventoryTransferCommand.prototype.setItemType = function(type: string) {
 }
 
 Window_InventoryTransferCommand.prototype.doTransfer = function(targetActor: Game_Actor, item: Removable) {
+    console.log("this should work if I was good at coding");
     const removed: ActorWeapon | string = this._removeAction.call(this._actor, item);
-    this._addAction(targetActor, removed);
+    this._addAction.call(targetActor, removed);
 }
 
 Window_InventoryTransferCommand.prototype.makeCommandList = function() {
-    for (let i = 0; i < $gameActors.size; i++) {
-        const targetName = TEW.CHARACTERS.ARRAY[i];
-        if (targetName !== this._actor._name) {
-            this.addCommand(TextManager["inventoryTransferTo" + i], "inventory_transfer_to_" + i);
+    if (this._actor != undefined) {
+        for (let i = 1; i < $gameActors._data.length; i++) {
+            const targetName = TEW.CHARACTERS.ARRAY[i-1];
+            if (targetName !== this._actor._name) {
+                this.addCommand(TextManager["inventoryTransferTo" + (i-1)], "inventory_transfer_to_" + (i-1));
+            }
         }
+        Window_Selectable.prototype.refresh.call(this);
     }
 }
