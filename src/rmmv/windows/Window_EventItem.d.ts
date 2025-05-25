@@ -3,7 +3,7 @@
 //
 // The window used for the event command [Select Item].
 
-declare class Window_EventItem extends Window_ItemList
+export declare class Window_EventItem extends Window_ItemList
 {
 	protected _messageWindow:Window_Message;
 

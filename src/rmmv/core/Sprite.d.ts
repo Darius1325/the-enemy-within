@@ -2,7 +2,7 @@
 // Sprite
 //
 // The basic object that is rendered to the game screen.
-declare class Sprite extends PIXI.Sprite
+export declare class Sprite extends PIXI.Sprite
 {
 	protected static _counter:number;
 	

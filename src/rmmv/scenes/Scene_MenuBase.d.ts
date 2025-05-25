@@ -2,7 +2,7 @@
 // Scene_MenuBase
 //
 // The superclass of all the menu-type scenes.
-declare class Scene_MenuBase extends Scene_Base
+export declare class Scene_MenuBase extends Scene_Base
 {
 	protected _actor:Game_Actor;
 	

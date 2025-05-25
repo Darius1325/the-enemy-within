@@ -2,7 +2,7 @@
 // ScreenSprite
 //
 // The sprite which covers the entire game screen.
-declare class ScreenSprite extends PIXI.Sprite
+export declare class ScreenSprite extends PIXI.Sprite
 {
 	public opacity:number;
 	

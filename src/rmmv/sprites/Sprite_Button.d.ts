@@ -2,7 +2,7 @@
 // Sprite_Button
 //
 // The sprite for displaying a button.
-declare class Sprite_Button extends Sprite
+export declare class Sprite_Button extends Sprite
 {
 	protected _touching:boolean;
     protected _coldFrame:Rectangle;

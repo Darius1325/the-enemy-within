@@ -3,7 +3,7 @@
 //
 // The game object class for a troop and the battle-related data.
 
-declare class Game_Troop extends Game_Unit
+export declare class Game_Troop extends Game_Unit
 {
 	public readonly LETTER_TABLE_HALF:string[];
 	public readonly LETTER_TABLE_FULL:string[];

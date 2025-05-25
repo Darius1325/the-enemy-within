@@ -3,7 +3,7 @@
 //
 // The wrapper class for an actor array.
 
-declare class Game_Actors
+export declare class Game_Actors
 {
 	protected _data:Game_Actor[];
 	

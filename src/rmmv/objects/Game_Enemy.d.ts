@@ -3,7 +3,7 @@
 //
 // The game object class for an enemy.
 
-declare class Game_Enemy extends Game_Battler
+export declare class Game_Enemy extends Game_Battler
 {
 	protected _enemyId:number;
     protected _letter:string;

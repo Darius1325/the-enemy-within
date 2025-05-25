@@ -3,7 +3,7 @@
 //
 // The window for displaying text messages.
 
-declare class Window_Message extends Window_Base
+export declare class Window_Message extends Window_Base
 {
 	protected _background:number;
 	protected _positionType:number;

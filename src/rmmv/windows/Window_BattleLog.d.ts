@@ -4,7 +4,7 @@
 // The window for displaying battle progress. No frame is displayed, but it is
 // handled as a window for convenience.
 
-declare class Window_BattleLog extends Window_Selectable
+export declare class Window_BattleLog extends Window_Selectable
 {
 	protected _lines:string[];
 	protected _methods:Method[];

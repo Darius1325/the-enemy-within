@@ -3,7 +3,7 @@
 //
 // The sprite for displaying the destination place of the touch input.
 
-declare class Sprite_Destination extends Sprite
+export declare class Sprite_Destination extends Sprite
 {
     protected _frameCount:number;
 

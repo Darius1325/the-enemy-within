@@ -2,7 +2,7 @@
 // WebAudio
 //
 // The audio object of Web Audio API.
-declare class WebAudio
+export declare class WebAudio
 {
 	protected static _createContext():void;
 	protected static _detectCodecs():void;

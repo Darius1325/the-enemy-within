@@ -2,7 +2,7 @@
 // TilingSprite
 //
 //  The sprite object for a tiling image.
-declare class TilingSprite extends PIXI.Container
+export declare class TilingSprite extends PIXI.Container
 {
 	public origin:Point;
 	public bitmap:Bitmap;

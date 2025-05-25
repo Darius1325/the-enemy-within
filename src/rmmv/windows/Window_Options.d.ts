@@ -3,7 +3,7 @@
 //
 // The window for changing various settings on the options screen.
 
-declare class Window_Options extends Window_Command
+export declare class Window_Options extends Window_Command
 {
 	public constructor();
 

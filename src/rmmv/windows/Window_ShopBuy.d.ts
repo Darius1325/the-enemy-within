@@ -3,7 +3,7 @@
 //
 // The window for selecting an item to buy on the shop screen.
 
-declare class Window_ShopBuy extends Window_Selectable
+export declare class Window_ShopBuy extends Window_Selectable
 {
 	protected _shopGoods:number[][];
 	protected _data:RPG_ItemBase[];

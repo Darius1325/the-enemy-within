@@ -1,6 +1,6 @@
 //-----------------------------------------------------------------------------
 // Math Extensions
-declare interface Math
+export declare interface Math
 {
     randomInt(max:number):number;
 }

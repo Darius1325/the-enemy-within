@@ -4,7 +4,7 @@
 // The window for displaying scrolling text. No frame is displayed, but it
 // is handled as a window for convenience.
 
-declare class Window_ScrollText extends Window_Base
+export declare class Window_ScrollText extends Window_Base
 {
 	protected _text:string;
 	protected _allTextHeight:number;

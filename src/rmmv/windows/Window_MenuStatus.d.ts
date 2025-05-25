@@ -3,7 +3,7 @@
 //
 // The window for displaying party member status on the menu screen.
 
-declare class Window_MenuStatus extends Window_Selectable
+export declare class Window_MenuStatus extends Window_Selectable
 {
 	protected _formationMode:boolean;
 	protected _pendingIndex:number;

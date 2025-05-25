@@ -2,7 +2,7 @@
 // Scene_Title
 //
 // The scene class of the title screen.
-declare class Scene_Title extends Scene_Base
+export declare class Scene_Title extends Scene_Base
 {
 	protected _commandWindow:Window_TitleCommand;
 

@@ -3,7 +3,7 @@
 //
 // The window for displaying switches and variables on the debug screen.
 
-declare class Window_DebugEdit extends Window_Selectable
+export declare class Window_DebugEdit extends Window_Selectable
 {
 	protected _mode:string;
 	protected _topId:number;

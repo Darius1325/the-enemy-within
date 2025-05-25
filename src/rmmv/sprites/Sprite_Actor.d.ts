@@ -2,7 +2,7 @@
 // Sprite_Actor
 //
 // The sprite for displaying an actor.
-declare class Sprite_Actor extends Sprite_Battler
+export declare class Sprite_Actor extends Sprite_Battler
 {
 	public static readonly MOTIONS:{ [state:string]: ActorMotion }
 
@@ -35,7 +35,7 @@ declare class Sprite_Actor extends Sprite_Battler
 	public setupWeaponAnimation():void;
 }
 
-declare class ActorMotion
+export declare class ActorMotion
 {
 	index:number;
 	loop:boolean;

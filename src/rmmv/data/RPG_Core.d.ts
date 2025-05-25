@@ -75,21 +75,21 @@ interface Damage
     variance:number
 }
 
-declare enum HorizontalAlign
+export declare enum HorizontalAlign
 {
 	LEFT,
 	MIDDLE,
 	RIGHT
 }
 
-declare enum VeritcalAlign
+export declare enum VeritcalAlign
 {
 	TOP,
 	MIDDLE,
 	BOTTOM
 }
 
-declare enum Direction
+export declare enum Direction
 {
 	UP_LEFT = 1,
 	UP = 2,

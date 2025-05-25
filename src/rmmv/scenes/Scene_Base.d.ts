@@ -2,7 +2,7 @@
 // Scene_Base
 //
 // The superclass of all scenes within the game.
-declare class Scene_Base extends Stage
+export declare class Scene_Base extends Stage
 {
 	protected _active:boolean;
 	protected _fadeSign:number;

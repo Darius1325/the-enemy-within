@@ -2,7 +2,7 @@
 // Scene_ItemBase
 //
 // The superclass of Scene_Item and Scene_Skill.
-declare class Scene_ItemBase extends Scene_MenuBase
+export declare class Scene_ItemBase extends Scene_MenuBase
 {
 	protected _actorWindow:Window_MenuActor;
 	

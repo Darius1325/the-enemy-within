@@ -3,7 +3,7 @@
 //
 // The sprite for displaying the timer.
 
-declare class Sprite_Timer extends Sprite
+export declare class Sprite_Timer extends Sprite
 {
 	protected _seconds:number;
 

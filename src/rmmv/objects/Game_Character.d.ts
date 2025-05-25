@@ -3,7 +3,7 @@
 //
 // The superclass of Game_Player, Game_Follower, GameVehicle, and Game_Event.
 
-declare class Game_Character extends Game_CharacterBase
+export declare class Game_Character extends Game_CharacterBase
 {
 	public static readonly ROUTE_END:number;
 	public static readonly ROUTE_MOVE_DOWN:number;

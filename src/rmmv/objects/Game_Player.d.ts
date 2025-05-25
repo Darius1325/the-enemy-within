@@ -4,7 +4,7 @@
 // The game object class for the player. It contains event starting
 // determinants and map scrolling functions.
 
-declare class Game_Player extends Game_Character
+export declare class Game_Player extends Game_Character
 {
 	protected _vehicleType:string;
 	protected _vehicleGettingOn:boolean;

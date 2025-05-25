@@ -3,7 +3,7 @@
 //
 // The window for selecting an equipment slot on the equipment screen.
 
-declare class Window_EquipSlot extends Window_Selectable
+export declare class Window_EquipSlot extends Window_Selectable
 {
 	protected _actor:Game_Actor;
 

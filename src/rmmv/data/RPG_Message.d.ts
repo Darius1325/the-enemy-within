@@ -1,11 +1,11 @@
-declare enum MessageBackgroundStyle
+export declare enum MessageBackgroundStyle
 {
 	WINDOW,
 	DIM,
 	TRANSPARENT
 }
 
-declare enum ChoiceDefaultType
+export declare enum ChoiceDefaultType
 {
 	NONE,
 	CHOICE_1,
@@ -16,7 +16,7 @@ declare enum ChoiceDefaultType
 	CHOICE_6
 }
 
-declare enum ChoiceCancelType
+export declare enum ChoiceCancelType
 {
 	BRANCH,
 	DISALLOW,

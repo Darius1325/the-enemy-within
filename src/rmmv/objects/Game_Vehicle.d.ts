@@ -3,7 +3,7 @@
 //
 // The game object class for a vehicle.
 
-declare class Game_Vehicle extends Game_Character
+export declare class Game_Vehicle extends Game_Character
 {
     protected _type:string;
     protected _mapId:number;

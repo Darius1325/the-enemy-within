@@ -3,7 +3,7 @@
 //
 // The window for selecting text characters on the name input screen.
 
-declare class Window_NameInput extends Window_Selectable
+export declare class Window_NameInput extends Window_Selectable
 {
 	public static readonly LATIN1:string[];
 	public static readonly LATIN2:string[];

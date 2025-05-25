@@ -3,7 +3,7 @@
 //
 // The window for displaying full status on the status screen.
 
-declare class Window_Status extends Window_Selectable
+export declare class Window_Status extends Window_Selectable
 {
 	protected _actor:Game_Actor;
 

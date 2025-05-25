@@ -3,7 +3,7 @@
 //
 // The window for selecting whether to fight or escape on the battle screen.
 
-declare class Window_PartyCommand extends Window_Command
+export declare class Window_PartyCommand extends Window_Command
 {
 	public constructor();
 

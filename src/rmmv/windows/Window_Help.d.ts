@@ -3,7 +3,7 @@
 //
 // The window for displaying the description of the selected item.
 
-declare class Window_Help extends Window_Base
+export declare class Window_Help extends Window_Base
 {
 	protected _text:string;
 

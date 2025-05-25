@@ -2,7 +2,7 @@
 // ImageManager
 //
 // The public static class that loads images, creates bitmap objects and retains them.
-declare class ImageManager
+export declare class ImageManager
 {
 	private static _cache:CacheMap;
 	

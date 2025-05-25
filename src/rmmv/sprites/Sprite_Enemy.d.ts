@@ -2,7 +2,7 @@
 // Sprite_Enemy
 //
 // The sprite for displaying an enemy.
-declare class Sprite_Enemy extends Sprite_Battler
+export declare class Sprite_Enemy extends Sprite_Battler
 {
 	protected _enemy:Game_Enemy;
     protected _appeared:boolean;

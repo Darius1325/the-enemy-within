@@ -3,7 +3,7 @@
 //
 // The window for selecting a skill type on the skill screen.
 
-declare class Window_SkillType extends Window_Command
+export declare class Window_SkillType extends Window_Command
 {
 	protected _actor:Game_Actor;
 

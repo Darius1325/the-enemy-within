@@ -1,8 +1,11 @@
 //-----------------------------------------------------------------------------
 // CacheEntry
 //
+
+import { CacheMap } from "./CacheMap";
+
 // The resource class. Allows to be collected as a garbage if not use for some time or ticks
-declare class CacheEntry
+export declare class CacheEntry
 {
     public cache:CacheMap;
     public key:string;

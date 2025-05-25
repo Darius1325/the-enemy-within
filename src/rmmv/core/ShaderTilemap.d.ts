@@ -2,7 +2,7 @@
 // ShaderTilemap
 //
 // The tilemap which displays 2D tile-based game map using shaders
-declare class ShaderTilemap extends Tilemap
+export declare class ShaderTilemap extends Tilemap
 {
 	public roundPixels:boolean;
 

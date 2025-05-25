@@ -2,7 +2,7 @@
 // DataManager
 //
 // The static class that manages the database and game objects.
-declare class DataManager
+export declare class DataManager
 {
 	private static _globalId:string;
 	private static _lastAccessedId:number;

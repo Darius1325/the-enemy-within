@@ -2,7 +2,7 @@
 // SceneManager
 //
 // The public static class that manages scene transitions.
-declare class SceneManager
+export declare class SceneManager
 {
 	private static _scene:Scene_Base;
 	private static _nextScene:Scene_Base;

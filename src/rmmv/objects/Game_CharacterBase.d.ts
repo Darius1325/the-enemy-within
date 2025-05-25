@@ -4,7 +4,7 @@
 // The superclass of Game_Character. It handles basic information, such as
 // coordinates and images, shared by all characters.
 
-declare class Game_CharacterBase
+export declare class Game_CharacterBase
 {
 	protected _x:number;
     protected _y:number;

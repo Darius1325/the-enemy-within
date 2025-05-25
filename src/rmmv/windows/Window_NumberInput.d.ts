@@ -3,7 +3,7 @@
 //
 // The window used for the event command [Input Number].
 
-declare class Window_NumberInput extends Window_Selectable
+export declare class Window_NumberInput extends Window_Selectable
 {
 	protected _messageWindow:Window_Message;
 	protected _buttons:Sprite_Button[];

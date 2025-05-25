@@ -3,7 +3,7 @@
 //
 // The window for displaying the status of party members on the battle screen.
 
-declare class Window_BattleStatus extends Window_Selectable
+export declare class Window_BattleStatus extends Window_Selectable
 {
 	public constructor();
 

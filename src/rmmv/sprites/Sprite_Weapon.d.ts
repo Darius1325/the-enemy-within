@@ -2,7 +2,7 @@
 // Sprite_Weapon
 //
 // The sprite for displaying a weapon image for attacking.
-declare class Sprite_Weapon extends Sprite_Base
+export declare class Sprite_Weapon extends Sprite_Base
 {
     protected _weaponImageId:number;
     protected _animationCount:number;

@@ -2,7 +2,7 @@
 // BattleManager
 //
 // The static class that manages battle progress.
-declare class BattleManager
+export declare class BattleManager
 {
 	private static _phase:string;
 	private static _canEscape:boolean;

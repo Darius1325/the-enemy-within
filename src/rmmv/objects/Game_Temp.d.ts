@@ -2,7 +2,7 @@
 // Game_Temp
 //
 // The game object class for temporary data that is not included in save data.
-declare class Game_Temp
+export declare class Game_Temp
 {
 	protected _isPlayTest:boolean;
 	protected _commonEventId:number;

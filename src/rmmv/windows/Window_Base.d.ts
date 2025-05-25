@@ -3,7 +3,7 @@
 //
 // The superclass of all windows within the game.
 
-declare class Window_Base extends Window
+export declare class Window_Base extends Window
 {
 	protected static readonly _iconWidth:number;
 	protected static readonly _iconHeight:number;

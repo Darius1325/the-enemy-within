@@ -1,8 +1,11 @@
 //-----------------------------------------------------------------------------
 // CacheMap
 //
+
+import { CacheEntry } from "./CacheEntry";
+
 // Cache for images, audio, or any other kind of resource
-declare class CacheMap
+export declare class CacheMap
 {
 	public manager:any;
     public updateTicks:number;

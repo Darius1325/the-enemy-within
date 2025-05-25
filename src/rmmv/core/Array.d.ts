@@ -1,6 +1,6 @@
 //-----------------------------------------------------------------------------
 // Array Extensions
-declare interface Array<T>
+export declare interface Array<T>
 {
     clone():ArrayConstructor;
     contains(element:any):boolean;

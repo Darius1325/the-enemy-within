@@ -4,7 +4,7 @@
 // The game object class for screen effect data, such as changes in color tone
 // and flashes.
 
-declare class Game_Screen
+export declare class Game_Screen
 {
 	protected _brightness:number;
 	protected _fadeOutDuration:number;

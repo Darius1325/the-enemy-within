@@ -3,7 +3,7 @@
 //
 // The window for selecting an equipment item on the equipment screen.
 
-declare class Window_EquipItem extends Window_ItemList
+export declare class Window_EquipItem extends Window_ItemList
 {
 	protected _actor:Game_Actor;
 	protected _slotId:number;

@@ -3,7 +3,7 @@
 //
 // The window for selecting an item on the item screen.
 
-declare class Window_ItemList extends Window_Selectable
+export declare class Window_ItemList extends Window_Selectable
 {
 	protected _category:string;
 	protected _data:RPG_ItemBase[];
