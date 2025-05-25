@@ -3,6 +3,9 @@
 //
 // The sprite for displaying a picture.
 
+import { Sprite } from "../core/Sprite";
+import { Game_Picture } from "../objects/Game_Picture";
+
 export declare class Sprite_Picture extends Sprite
 {
     protected _pictureId:number;

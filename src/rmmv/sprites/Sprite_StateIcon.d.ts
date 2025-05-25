@@ -1,6 +1,10 @@
 //-----------------------------------------------------------------------------
 // Sprite_StateIcon
 //
+
+import { Sprite } from "../core/Sprite";
+import { Game_Battler } from "../objects/Game_Battler";
+
 // The sprite for displaying state icons.
 export declare class Sprite_StateIcon extends Sprite
 {

@@ -3,6 +3,8 @@
 //
 // The sprite for displaying the timer.
 
+import { Sprite } from "../core/Sprite";
+
 export declare class Sprite_Timer extends Sprite
 {
 	protected _seconds:number;

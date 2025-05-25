@@ -1,6 +1,13 @@
 //-----------------------------------------------------------------------------
 // Sprite_Animation
 //
+
+import { Bitmap } from "../core/Bitmap";
+import { ScreenSprite } from "../core/ScreenSprite";
+import { Sprite } from "../core/Sprite";
+import { DataAnimation } from "../data/RPG_Core";
+import { Sprite_Base } from "./Sprite_Base";
+
 // The sprite for displaying an animation.
 export declare class Sprite_Animation extends Sprite
 {

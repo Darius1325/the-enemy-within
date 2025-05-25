@@ -1,6 +1,13 @@
 //-----------------------------------------------------------------------------
 // Sprite_Actor
 //
+
+import { Sprite } from "../core/Sprite";
+import { Sprite_Base } from "./Sprite_Base";
+import { Sprite_Battler } from "./Sprite_Battler";
+import { Sprite_StateOverlay } from "./Sprite_StateOverlay";
+import { Sprite_Weapon } from "./Sprite_Weapon";
+
 // The sprite for displaying an actor.
 export declare class Sprite_Actor extends Sprite_Battler
 {

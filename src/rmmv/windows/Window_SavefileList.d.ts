@@ -3,6 +3,9 @@
 //
 // The window for selecting a save file on the save and load screens.
 
+import { Savefile } from "../managers/DataManager";
+import { Window_Selectable } from "./Window_Selectable";
+
 export declare class Window_SavefileList extends Window_Selectable
 {
 	protected _mode:string;
