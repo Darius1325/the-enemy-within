@@ -1,3 +1,19 @@
+import { DataPlugin, DataAnimation, DataState, DataTileset } from "./data/RPG_Core";
+import { DataArmor, DataItem, DataSkill, DataWeapon } from "./data/RPG_Item";
+import { Game_Actors } from "./objects/Game_Actors";
+import { Game_Map } from "./objects/Game_Map";
+import { Game_Message } from "./objects/Game_Message";
+import { Game_Party } from "./objects/Game_Party";
+import { Game_Player } from "./objects/Game_Player";
+import { Game_Screen } from "./objects/Game_Screen";
+import { Game_SelfSwitches } from "./objects/Game_SelfSwitches";
+import { Game_Switches } from "./objects/Game_Switches";
+import { Game_System } from "./objects/Game_System";
+import { Game_Temp } from "./objects/Game_Temp";
+import { Game_Timer } from "./objects/Game_Timer";
+import { Game_Troop } from "./objects/Game_Troop";
+import { Game_Variables } from "./objects/Game_Variables";
+
 export declare var $plugins:DataPlugin[];
 
 export declare var $dataActors:DataActor[];

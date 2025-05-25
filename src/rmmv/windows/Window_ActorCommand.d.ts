@@ -8,9 +8,7 @@ import { Window_Command } from "./Window_Command";
 
 export declare class Window_ActorCommand extends Window_Command
 {
-	public openness:number;
-
-	protected _actor:Game_Actor;
+	public openness: number;
 	
 	public constructor();
 

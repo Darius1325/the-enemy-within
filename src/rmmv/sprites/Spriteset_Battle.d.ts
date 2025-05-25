@@ -3,6 +3,10 @@
 //
 // The set of sprites on the battle screen.
 
+import { Bitmap } from "../core/Bitmap";
+import { Sprite_Battler } from "./Sprite_Battler";
+import { Spriteset_Base } from "./Spriteset_Base";
+
 export declare class Spriteset_Battle extends Spriteset_Base
 {
 	protected _battlebackLocated:boolean;

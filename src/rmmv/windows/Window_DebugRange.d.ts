@@ -3,6 +3,9 @@
 //
 // The window for selecting a block of switches/variables on the debug screen.
 
+import { Window_DebugEdit } from "./Window_DebugEdit";
+import { Window_Selectable } from "./Window_Selectable";
+
 export declare class Window_DebugRange extends Window_Selectable
 {
 	public static readonly lastTopRow:number;

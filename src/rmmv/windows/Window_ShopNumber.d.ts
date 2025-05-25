@@ -4,6 +4,10 @@
 // The window for inputting quantity of items to buy or sell on the shop
 // screen.
 
+import { RPG_ItemBase } from "../data/RPG_Item";
+import { Sprite_Button } from "../sprites/Sprite_Button";
+import { Window_Selectable } from "./Window_Selectable";
+
 export declare class Window_ShopNumber extends Window_Selectable
 {
 	protected _item:RPG_ItemBase;

@@ -1,6 +1,11 @@
 //-----------------------------------------------------------------------------
 // Sprite_Battler
 //
+
+import { Game_Battler } from "../objects/Game_Battler";
+import { Sprite_Base } from "./Sprite_Base";
+import { Sprite_Damage } from "./Sprite_Damage";
+
 // The superclass of Sprite_Actor and Sprite_Enemy.
 export declare class Sprite_Battler extends Sprite_Base
 {

@@ -1,6 +1,10 @@
 //-----------------------------------------------------------------------------
 // Sprite_Base
 //
+
+import { Sprite } from "../core/Sprite";
+import { Sprite_Animation } from "./Sprite_Animation";
+
 // The sprite class with a feature which displays animations.
 export declare class Sprite_Base extends Sprite
 {

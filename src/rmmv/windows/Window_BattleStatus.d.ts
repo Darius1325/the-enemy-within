@@ -3,6 +3,10 @@
 //
 // The window for displaying the status of party members on the battle screen.
 
+import { Rectangle } from "../core/Rectangle";
+import { Game_Actor } from "../objects/Game_Actor";
+import { Window_Selectable } from "./Window_Selectable";
+
 export declare class Window_BattleStatus extends Window_Selectable
 {
 	public constructor();

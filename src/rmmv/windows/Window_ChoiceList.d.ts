@@ -3,6 +3,9 @@
 //
 // The window used for the event command [Show Choices].
 
+import { Window_Command } from './Window_Command';
+import { Window_Message } from './Window_Message';
+
 export declare class Window_ChoiceList extends Window_Command
 {
 	protected _messageWindow:Window_Message;

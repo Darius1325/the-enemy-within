@@ -3,6 +3,9 @@
 //
 // The window for editing an actor's name on the name input screen.
 
+import { Game_Actor } from "../objects/Game_Actor";
+import { Window_Base } from "./Window_Base";
+
 export declare class Window_NameEdit extends Window_Base
 {
 	protected _actor:Game_Actor;

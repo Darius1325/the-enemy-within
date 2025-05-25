@@ -3,6 +3,9 @@
 //
 // The window for displaying text messages.
 
+import { Bitmap } from "../core/Bitmap";
+import { Window_Base } from "./Window_Base";
+
 export declare class Window_Message extends Window_Base
 {
 	protected _background:number;

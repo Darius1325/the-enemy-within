@@ -1,6 +1,10 @@
 //-----------------------------------------------------------------------------
 // Sprite_Button
 //
+
+import { Rectangle } from "../core/Rectangle";
+import { Sprite } from "../core/Sprite";
+
 // The sprite for displaying a button.
 export declare class Sprite_Button extends Sprite
 {

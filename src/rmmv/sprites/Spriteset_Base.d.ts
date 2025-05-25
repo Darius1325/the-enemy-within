@@ -3,6 +3,8 @@
 //
 // The superclass of Spriteset_Map and Spriteset_Battle.
 
+import { Sprite } from "../core/Sprite";
+
 export declare class Spriteset_Base extends Sprite
 {
 	public createLowerLayer():void;

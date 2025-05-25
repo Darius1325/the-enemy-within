@@ -4,6 +4,10 @@
 // The window for displaying number of items in possession and the actor's
 // equipment on the shop screen.
 
+import { RPG_ItemBase, RPG_EquipBase } from "../data/RPG_Item";
+import { Game_Actor } from "../objects/Game_Actor";
+import { Window_Base } from "./Window_Base";
+
 export declare class Window_ShopStatus extends Window_Base
 {
 	protected _item:RPG_ItemBase;

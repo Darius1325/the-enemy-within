@@ -3,6 +3,9 @@
 //
 // The window for displaying parameter changes on the equipment screen.
 
+import { Game_Actor } from "../objects/Game_Actor";
+import { Window_Base } from "./Window_Base";
+
 export declare class Window_EquipStatus extends Window_Base
 {
 	protected _actor:Game_Actor;

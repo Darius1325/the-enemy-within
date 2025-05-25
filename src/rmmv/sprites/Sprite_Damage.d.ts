@@ -1,6 +1,11 @@
 //-----------------------------------------------------------------------------
 // Sprite_Damage
 //
+
+import { Bitmap } from "../core/Bitmap";
+import { Sprite } from "../core/Sprite";
+import { Game_Battler } from "../objects/Game_Battler";
+
 // The sprite for displaying a popup damage.
 export declare class Sprite_Damage extends Sprite
 {

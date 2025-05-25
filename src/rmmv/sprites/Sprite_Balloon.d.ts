@@ -3,6 +3,8 @@
 //
 // The sprite for displaying a balloon icon.
 
+import { Sprite_Base } from "./Sprite_Base";
+
 export declare class Sprite_Balloon extends Sprite_Base
 {
     protected _balloonId:number;

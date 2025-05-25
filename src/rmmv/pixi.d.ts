@@ -3403,6 +3403,6 @@ export declare namespace pixi {
 }
 
 //tslint:disable-next-line:no-single-declare-module
-export declare module "pixi.js" {
+declare module "pixi.js" {
     export = PIXI;
 }

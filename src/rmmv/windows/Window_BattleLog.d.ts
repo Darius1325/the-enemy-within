@@ -4,6 +4,12 @@
 // The window for displaying battle progress. No frame is displayed, but it is
 // handled as a window for convenience.
 
+import { RPG_ItemBase } from "../data/RPG_Item";
+import { Window_Selectable } from "./Window_Selectable";
+import { Game_Battler } from "../objects/Game_Battler";
+import { Game_Action } from "../objects/Game_Action";
+import { Spriteset_Battle } from "../sprites/Spriteset_Battle";
+
 export declare class Window_BattleLog extends Window_Selectable
 {
 	protected _lines:string[];
