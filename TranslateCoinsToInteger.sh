@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Variables
-file="Test.txt"
+file="src/plugins/constants/TEW_Items.ts"
 regex="[0-9]+\/[0-9]+\/[0-9]+"
 result_list=()
 
@@ -23,5 +23,5 @@ do
     # Retrieve the numbers
     IFS='/' read -r number1 number2 number3 <<< "$result"
     numberInt=$(($((number1 * 20 * 12)) + $((number2 * 12)) + number3))
-    sed -i "s|$result|$numberInt|g" "$file"
+    sed -i "s|\"$result\"|$numberInt|g" "$file"
 done
