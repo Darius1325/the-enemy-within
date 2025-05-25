@@ -1,6 +1,9 @@
 //-----------------------------------------------------------------------------
 // Sprite_Weapon
 //
+
+import { Sprite_Base } from "./Sprite_Base";
+
 // The sprite for displaying a weapon image for attacking.
 export declare class Sprite_Weapon extends Sprite_Base
 {

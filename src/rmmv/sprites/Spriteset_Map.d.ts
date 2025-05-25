@@ -3,6 +3,8 @@
 //
 // The set of sprites on the map screen.
 
+import { Spriteset_Base } from "./Spriteset_Base";
+
 export declare class Spriteset_Map extends Spriteset_Base
 {
 	public hideCharacters():void;

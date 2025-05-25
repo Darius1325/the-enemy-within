@@ -3,6 +3,8 @@
 //
 // The window for selecting a command on the menu screen.
 
+import { Window_Command } from "./Window_Command";
+
 export declare class Window_MenuCommand extends Window_Command
 {
 	protected static _lastCommandSymbol:string;

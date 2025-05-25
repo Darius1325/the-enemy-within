@@ -3,6 +3,8 @@
 //
 // The window for displaying the party's gold.
 
+import { Window_Base } from "./Window_Base";
+
 export declare class Window_Gold extends Window_Base
 {
 	public constructor(x:number, y:number)

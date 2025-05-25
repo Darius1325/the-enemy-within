@@ -3,6 +3,9 @@
 //
 // The window for selecting text characters on the name input screen.
 
+import { Window_NameEdit } from "./Window_NameEdit";
+import { Window_Selectable } from "./Window_Selectable";
+
 export declare class Window_NameInput extends Window_Selectable
 {
 	public static readonly LATIN1:string[];

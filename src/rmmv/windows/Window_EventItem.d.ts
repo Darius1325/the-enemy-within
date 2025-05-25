@@ -3,6 +3,9 @@
 //
 // The window used for the event command [Select Item].
 
+import { Window_ItemList } from "./Window_ItemList";
+import { Window_Message } from "./Window_Message";
+
 export declare class Window_EventItem extends Window_ItemList
 {
 	protected _messageWindow:Window_Message;

@@ -1,6 +1,12 @@
 //-----------------------------------------------------------------------------
 // Sprite_Enemy
 //
+
+import { Game_Battler } from "../objects/Game_Battler";
+import { Game_Enemy } from "../objects/Game_Enemy";
+import { Sprite_Battler } from "./Sprite_Battler";
+import { Sprite_StateIcon } from "./Sprite_StateIcon";
+
 // The sprite for displaying an enemy.
 export declare class Sprite_Enemy extends Sprite_Battler
 {
@@ -12,7 +18,7 @@ export declare class Sprite_Enemy extends Sprite_Battler
     protected _shake:number;
     protected _stateIconSprite:Sprite_StateIcon;
 
-	public setBattler(battler:Game_Enemy):void;
+	public setBattler<T extends Game_Battler>(battler: T): void;
 	public loadBitmap():void;
 	public initVisibility():void;
 

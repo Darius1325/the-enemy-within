@@ -3,6 +3,9 @@
 //
 // The window for selecting an item on the item screen.
 
+import { RPG_ItemBase } from "../data/RPG_Item";
+import { Window_Selectable } from "./Window_Selectable";
+
 export declare class Window_ItemList extends Window_Selectable
 {
 	protected _category:string;

@@ -3,6 +3,10 @@
 //
 // The window for selecting an item to buy on the shop screen.
 
+import { RPG_ItemBase } from "../data/RPG_Item";
+import { Window_Selectable } from "./Window_Selectable";
+import { Window_ShopStatus } from "./Window_ShopStatus";
+
 export declare class Window_ShopBuy extends Window_Selectable
 {
 	protected _shopGoods:number[][];

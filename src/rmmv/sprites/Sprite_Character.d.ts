@@ -1,6 +1,12 @@
 //-----------------------------------------------------------------------------
 // Sprite_Character
 //
+
+import { Bitmap } from "../core/Bitmap";
+import { Sprite } from "../core/Sprite";
+import { Game_Character } from "../objects/Game_Character";
+import { Sprite_Base } from "./Sprite_Base";
+
 // The sprite for displaying a character.
 export declare class Sprite_Character extends Sprite_Base
 {

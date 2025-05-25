@@ -3,6 +3,10 @@
 //
 // The window for selecting an equipment item on the equipment screen.
 
+import { Game_Actor } from "../objects/Game_Actor";
+import { Window_EquipStatus } from "./Window_EquipStatus";
+import { Window_ItemList } from "./Window_ItemList";
+
 export declare class Window_EquipItem extends Window_ItemList
 {
 	protected _actor:Game_Actor;

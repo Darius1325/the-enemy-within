@@ -3,6 +3,10 @@
 //
 // The window used for the event command [Input Number].
 
+import { Sprite_Button } from "../sprites/Sprite_Button";
+import { Window_Message } from "./Window_Message";
+import { Window_Selectable } from "./Window_Selectable";
+
 export declare class Window_NumberInput extends Window_Selectable
 {
 	protected _messageWindow:Window_Message;

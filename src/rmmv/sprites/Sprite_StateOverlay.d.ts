@@ -1,6 +1,10 @@
 //-----------------------------------------------------------------------------
 // Sprite_StateOverlay
 //
+
+import { Game_Battler } from "../objects/Game_Battler";
+import { Sprite_Base } from "./Sprite_Base";
+
 // The sprite for displaying an overlay image for a state.
 export declare class Sprite_StateOverlay extends Sprite_Base
 {
