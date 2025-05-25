@@ -3,6 +3,8 @@
 //
 // The superclass of Game_Battler. It mainly contains parameters calculation.
 
+import { DataSkill, RPG_ItemBase, DataItem } from "../data/RPG_Item";
+
 export declare class Game_BattlerBase
 {
 	public static readonly TRAIT_ELEMENT_RATE:number;

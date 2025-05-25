@@ -4,6 +4,8 @@
 // The game object class for handling skills, items, weapons, and armor. It is
 // required because save data should not include the database object itself.
 
+import { RPG_ItemBase } from "../data/RPG_Item";
+
 export declare class Game_Item
 {
 	protected _dataClass:String;

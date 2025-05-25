@@ -1,6 +1,18 @@
 //-----------------------------------------------------------------------------
 // Scene_Shop
 //
+
+import { RPG_ItemBase } from "../data/RPG_Item";
+import { Window_Base } from "../windows/Window_Base";
+import { Window_Gold } from "../windows/Window_Gold";
+import { Window_ItemCategory } from "../windows/Window_ItemCategory";
+import { Window_ShopBuy } from "../windows/Window_ShopBuy";
+import { Window_ShopCommand } from "../windows/Window_ShopCommand";
+import { Window_ShopNumber } from "../windows/Window_ShopNumber";
+import { Window_ShopSell } from "../windows/Window_ShopSell";
+import { Window_ShopStatus } from "../windows/Window_ShopStatus";
+import { Scene_MenuBase } from "./Scene_MenuBase";
+
 // The scene class of the shop screen.
 export declare class Scene_Shop extends Scene_MenuBase
 {

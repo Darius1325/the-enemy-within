@@ -1,6 +1,11 @@
 //-----------------------------------------------------------------------------
 // Weather
 //
+
+import { PIXI } from "../pixi";
+import { Point } from "./Point";
+import { Sprite } from "./Sprite";
+
 // The weather effect which displays rain, storm, or snow.
 export declare class Weather extends PIXI.Container
 {

@@ -1,3 +1,5 @@
+import { Damage, Trait } from "./RPG_Core";
+
 interface RPG_ItemBase
 {
 	description:string;

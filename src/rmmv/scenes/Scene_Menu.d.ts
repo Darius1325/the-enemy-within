@@ -1,6 +1,12 @@
 //-----------------------------------------------------------------------------
 // Scene_Menu
 //
+
+import { Window_Gold } from "../windows/Window_Gold";
+import { Window_MenuCommand } from "../windows/Window_MenuCommand";
+import { Window_MenuStatus } from "../windows/Window_MenuStatus";
+import { Scene_MenuBase } from "./Scene_MenuBase";
+
 // The scene class of the menu screen.
 export declare class Scene_Menu extends Scene_MenuBase
 {

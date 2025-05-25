@@ -1,6 +1,15 @@
 //-----------------------------------------------------------------------------
 // BattleManager
 //
+
+import { BGM_Cached, BGS_Cached } from "../data/RPG_Audio";
+import { RPG_ItemBase } from "../data/RPG_Item";
+import { Game_Action } from "../objects/Game_Action";
+import { Game_Battler } from "../objects/Game_Battler";
+import { Spriteset_Battle } from "../sprites/Spriteset_Battle";
+import { Window_BattleLog } from "../windows/Window_BattleLog";
+import { Window_BattleStatus } from "../windows/Window_BattleStatus";
+
 // The static class that manages battle progress.
 export declare class BattleManager
 {
@@ -55,7 +64,7 @@ export declare class BattleManager
 	public static canLose():boolean;
 	public static isEscaped():boolean;
 
-	public static actor():Game_Actor;
+	public static actor():Game_Action;
 	public static clearActor():void;
 	public static changeActor(newActorIndex:number, lastActorActionState:string):void;
 

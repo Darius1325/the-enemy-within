@@ -1,3 +1,5 @@
+import { Trait } from "./RPG_Core";
+
 interface DataActor
 {
 	battlerName:string;

@@ -1,3 +1,6 @@
+import { BGM, BGS } from "./RPG_Audio";
+import { EventItem } from "./RPG_Event";
+
 interface DataMap
 {
 	autoplayBgm:boolean;

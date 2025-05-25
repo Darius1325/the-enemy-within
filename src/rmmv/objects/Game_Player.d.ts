@@ -4,6 +4,11 @@
 // The game object class for the player. It contains event starting
 // determinants and map scrolling functions.
 
+import { Direction } from "../data/RPG_Core";
+import { Game_Character } from "./Game_Character";
+import { Game_Followers } from "./Game_Followers";
+import { Game_Vehicle } from "./Game_Vehicle";
+
 export declare class Game_Player extends Game_Character
 {
 	protected _vehicleType:string;

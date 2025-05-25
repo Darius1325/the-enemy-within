@@ -1,6 +1,10 @@
 //-----------------------------------------------------------------------------
 // Scene_Base
 //
+
+import { Sprite } from "../core/Sprite";
+import { Stage } from "../core/Stage";
+
 // The superclass of all scenes within the game.
 export declare class Scene_Base extends Stage
 {

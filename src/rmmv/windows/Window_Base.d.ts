@@ -3,6 +3,10 @@
 //
 // The superclass of all windows within the game.
 
+import { Sprite } from "../core/Sprite";
+import { RPG_ItemBase } from "../data/RPG_Item";
+import { Game_Actor } from "../objects/Game_Actor";
+
 export declare class Window_Base extends Window
 {
 	protected static readonly _iconWidth:number;

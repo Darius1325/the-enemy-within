@@ -1,6 +1,10 @@
 //-----------------------------------------------------------------------------
 // ScreenSprite
 //
+
+import { PIXI } from "../pixi";
+import { Bitmap } from "./Bitmap";
+
 // The sprite which covers the entire game screen.
 export declare class ScreenSprite extends PIXI.Sprite
 {

@@ -1,6 +1,10 @@
 //-----------------------------------------------------------------------------
 // ImageManager
 //
+
+import { Bitmap } from "../core/Bitmap";
+import { CacheMap } from "../core/CacheMap";
+
 // The public static class that loads images, creates bitmap objects and retains them.
 export declare class ImageManager
 {

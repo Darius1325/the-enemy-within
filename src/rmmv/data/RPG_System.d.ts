@@ -1,3 +1,6 @@
+import { DataActor } from "./RPG_Actor";
+import { BGM, ME, SE } from "./RPG_Audio";
+
 interface DataSystem
 {
 	airship:DataVehicle;
@@ -18,7 +21,7 @@ interface DataSystem
 	gameoverMe:ME;
 	locale:string;
 	magicSkills:number[];
-	menuCommands:boolean[]
+	menuCommands:boolean[];
 	optDisplayTp:boolean;
 	optDrawTitle:boolean;
 	optExtraExp:boolean;
@@ -27,11 +30,11 @@ interface DataSystem
 	optSideView:boolean;
 	optSlipDeath:boolean;
 	optTransparent:boolean;
-	partyMembers:number[]
+	partyMembers:number[];
 	ship:DataVehicle;
 	skillTypes:string[];
 	sounds:SE[];
-	startMapId: 1,
+	startMapId: 1;
 	startX:number;
 	startY:number;
 	switches:string[];
@@ -40,9 +43,9 @@ interface DataSystem
 	testTroopId:number;
 	title1Name:string;
 	title2Name:string,
-	titleBgm:BGM
-	variables:string[]
-	versionId:number,
+	titleBgm:BGM;
+	variables:string[];
+	versionId:number;
 	victoryMe:ME;
 	weaponTypes:string[];
 	windowTone:number[];

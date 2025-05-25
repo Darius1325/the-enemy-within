@@ -1,6 +1,22 @@
 //-----------------------------------------------------------------------------
 // Scene_Battle
 //
+
+import { RPG_ItemBase } from "../data/RPG_Item";
+import { Spriteset_Battle } from "../sprites/Spriteset_Battle";
+import { Window_ActorCommand } from "../windows/Window_ActorCommand";
+import { Window_BattleActor } from "../windows/Window_BattleActor";
+import { Window_BattleEnemy } from "../windows/Window_BattleEnemy";
+import { Window_BattleItem } from "../windows/Window_BattleItem";
+import { Window_BattleLog } from "../windows/Window_BattleLog";
+import { Window_BattleSkill } from "../windows/Window_BattleSkill";
+import { Window_BattleStatus } from "../windows/Window_BattleStatus";
+import { Window_Help } from "../windows/Window_Help";
+import { Window_Message } from "../windows/Window_Message";
+import { Window_PartyCommand } from "../windows/Window_PartyCommand";
+import { Window_ScrollText } from "../windows/Window_ScrollText";
+import { Scene_Base } from "./Scene_Base";
+
 // The scene class of the battle screen.
 export declare class Scene_Battle extends Scene_Base
 {

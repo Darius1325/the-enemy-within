@@ -4,6 +4,8 @@
 // The game object class for screen effect data, such as changes in color tone
 // and flashes.
 
+import { Game_Picture } from "./Game_Picture";
+
 export declare class Game_Screen
 {
 	protected _brightness:number;

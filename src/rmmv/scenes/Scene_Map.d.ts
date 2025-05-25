@@ -1,6 +1,9 @@
 //-----------------------------------------------------------------------------
 // Scene_Map
 //
+
+import { Scene_Base } from "./Scene_Base";
+
 // The scene class of the map screen.
 export declare class Scene_Map extends Scene_Base
 {

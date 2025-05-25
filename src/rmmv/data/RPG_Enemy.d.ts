@@ -1,3 +1,6 @@
+import { Trait } from "./RPG_Core";
+import { EventItem } from "./RPG_Event";
+
 interface DataEnemy
 {
     actions:EnemyAction[];

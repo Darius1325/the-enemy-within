@@ -3,6 +3,12 @@
 //
 // The game object class for an enemy.
 
+import { DataEnemy, EnemyAction } from "../data/RPG_Enemy";
+import { RPG_ItemBase } from "../data/RPG_Item";
+import { Game_Battler } from "./Game_Battler";
+import { Game_Party } from "./Game_Party";
+import { Game_Troop } from "./Game_Troop";
+
 export declare class Game_Enemy extends Game_Battler
 {
 	protected _enemyId:number;

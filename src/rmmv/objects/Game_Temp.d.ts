@@ -1,6 +1,9 @@
 //-----------------------------------------------------------------------------
 // Game_Temp
 //
+
+import { DataCommonEvent } from "../data/RPG_Event";
+
 // The game object class for temporary data that is not included in save data.
 export declare class Game_Temp
 {

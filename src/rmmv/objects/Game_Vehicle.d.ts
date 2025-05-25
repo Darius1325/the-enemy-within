@@ -3,6 +3,11 @@
 //
 // The game object class for a vehicle.
 
+import { BGM } from "../data/RPG_Audio";
+import { Direction } from "../data/RPG_Core";
+import { DataVehicle } from "../data/RPG_System";
+import { Game_Character } from "./Game_Character";
+
 export declare class Game_Vehicle extends Game_Character
 {
     protected _type:string;

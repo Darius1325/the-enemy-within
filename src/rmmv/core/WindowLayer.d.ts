@@ -1,6 +1,10 @@
 //-----------------------------------------------------------------------------
 // WindowLayer
 //
+
+import { PIXI } from "../pixi";
+import { Sprite } from "./Sprite";
+
 // The layer which contains game windows.
 export declare class WindowLayer extends PIXI.Container
 { 

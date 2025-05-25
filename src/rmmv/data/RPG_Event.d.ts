@@ -1,4 +1,4 @@
-interface DataCommonEvent
+export interface DataCommonEvent
 {
 	id:number;
 	list:EventItem[];
@@ -7,7 +7,7 @@ interface DataCommonEvent
 	trigger:number;
 }
 
-interface EventItem
+export interface EventItem
 {
     code:number;
     indent:number;

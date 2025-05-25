@@ -1,6 +1,13 @@
 //-----------------------------------------------------------------------------
 // Scene_Skill
 //
+
+import { RPG_ItemBase } from "../data/RPG_Item";
+import { Window_SkillList } from "../windows/Window_SkillList";
+import { Window_SkillStatus } from "../windows/Window_SkillStatus";
+import { Window_SkillType } from "../windows/Window_SkillType";
+import { Scene_ItemBase } from "./Scene_ItemBase";
+
 // The scene class of the skill screen.
 export declare class Scene_Skill extends Scene_ItemBase
 {

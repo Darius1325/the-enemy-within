@@ -3,6 +3,8 @@
 //
 // The game object class for the system data.
 
+import { BGM, BGS, ME } from "../data/RPG_Audio";
+
 export declare class Game_System
 {
 	protected _saveEnabled:boolean;

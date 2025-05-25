@@ -4,6 +4,8 @@
 // The superclass of Game_Character. It handles basic information, such as
 // coordinates and images, shared by all characters.
 
+import { Direction } from "../data/RPG_Core";
+
 export declare class Game_CharacterBase
 {
 	protected _x:number;

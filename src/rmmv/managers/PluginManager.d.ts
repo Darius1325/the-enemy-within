@@ -1,6 +1,9 @@
 //-----------------------------------------------------------------------------
 // PluginManager
 //
+
+import { DataPlugin } from "../data/RPG_Core";
+
 // The static class that manages the plugins.
 export declare class PluginManager
 {
