@@ -3,7 +3,7 @@
 //
 // The window for editing an actor's name on the name input screen.
 
-declare class Window_NameEdit extends Window_Base
+export declare class Window_NameEdit extends Window_Base
 {
 	protected _actor:Game_Actor;
 	protected _name:string;

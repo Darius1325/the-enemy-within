@@ -3,7 +3,7 @@
 //
 // The interpreter for running event commands.
 
-declare class Game_Interpreter
+export declare class Game_Interpreter
 {
 	protected _depth:number;
     protected _branch:{ [indent:number]: number};

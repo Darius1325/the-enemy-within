@@ -3,7 +3,7 @@
 //
 // The window for selecting a target enemy on the battle screen.
 
-declare class Window_BattleEnemy extends Window_Selectable
+export declare class Window_BattleEnemy extends Window_Selectable
 {
 	protected _enemies:Game_Enemy[];
 	

@@ -3,7 +3,7 @@
 //
 // The superclass of Game_Battler. It mainly contains parameters calculation.
 
-declare class Game_BattlerBase
+export declare class Game_BattlerBase
 {
 	public static readonly TRAIT_ELEMENT_RATE:number;
 	public static readonly TRAIT_DEBUFF_RATE:number;

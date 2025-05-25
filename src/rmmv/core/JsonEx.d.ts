@@ -2,7 +2,7 @@
 // JsonEx
 //
 // The static class that handles JSON with object information.
-declare class JsonEx
+export declare class JsonEx
 {
 	public static maxDepth:number;
 	

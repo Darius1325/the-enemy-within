@@ -2,7 +2,7 @@
 // ToneFilter
 //
 // The color matrix filter for WebGL.
-declare class ToneFilter extends PIXI.filters.ColorMatrixFilter
+export declare class ToneFilter extends PIXI.filters.ColorMatrixFilter
 {
 	public reset():void;
 	public adjustHue(value:number):void;

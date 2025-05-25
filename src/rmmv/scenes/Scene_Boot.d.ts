@@ -2,7 +2,7 @@
 // Scene_Boot
 //
 // The scene class for initializing the entire game.
-declare class Scene_Boot extends Scene_Base
+export declare class Scene_Boot extends Scene_Base
 {
 	protected _startDate:Date;
 	

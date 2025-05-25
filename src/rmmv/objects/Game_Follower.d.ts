@@ -4,7 +4,7 @@
 // The game object class for a follower. A follower is an allied character,
 // other than the front character, displayed in the party.
 
-declare class Game_Follower extends Game_Character
+export declare class Game_Follower extends Game_Character
 {
 	protected _memberIndex:number;
 

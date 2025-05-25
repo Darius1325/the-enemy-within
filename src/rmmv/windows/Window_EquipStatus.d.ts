@@ -3,7 +3,7 @@
 //
 // The window for displaying parameter changes on the equipment screen.
 
-declare class Window_EquipStatus extends Window_Base
+export declare class Window_EquipStatus extends Window_Base
 {
 	protected _actor:Game_Actor;
 

@@ -4,7 +4,7 @@
 // The game object class for the party. Information such as gold and items is
 // included.
 
-declare class Game_Party extends Game_Unit
+export declare class Game_Party extends Game_Unit
 {
 	public readonly ABILITY_ENCOUNTER_HALF:number;
 	public readonly ABILITY_ENCOUNTER_NONE:number;

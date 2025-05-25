@@ -1,6 +1,6 @@
 // FPSMeter 0.3.1 - 9th May 2013
 // https://github.com/Darsain/fpsmeter
-declare class FPSMeter
+export declare class FPSMeter
 {
 	public isPaused:boolean;
 

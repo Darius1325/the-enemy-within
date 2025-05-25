@@ -3,7 +3,7 @@
 //
 // The game object class for an actor.
 
-declare class Game_Actor extends Game_Battler
+export declare class Game_Actor extends Game_Battler
 {
 	protected _actorId:number;
     protected _name:string;

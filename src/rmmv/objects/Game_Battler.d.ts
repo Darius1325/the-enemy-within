@@ -4,7 +4,7 @@
 // The superclass of Game_Actor and Game_Enemy. It contains methods for sprites
 // and actions.
 
-declare class Game_Battler extends Game_BattlerBase
+export declare class Game_Battler extends Game_BattlerBase
 {
     protected _actions:Game_Action[];
     protected _speed:number;

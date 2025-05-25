@@ -2,7 +2,7 @@
 // Scene_Skill
 //
 // The scene class of the skill screen.
-declare class Scene_Skill extends Scene_ItemBase
+export declare class Scene_Skill extends Scene_ItemBase
 {
 	protected _statusWindow:Window_SkillStatus;
 	protected _itemWindow:Window_SkillList;

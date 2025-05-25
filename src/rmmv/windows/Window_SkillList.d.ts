@@ -3,7 +3,7 @@
 //
 // The window for selecting a skill on the skill screen.
 
-declare class Window_SkillList extends Window_Selectable
+export declare class Window_SkillList extends Window_Selectable
 {
 	protected _actor:Game_Actor;
 	protected _stypeId:number;

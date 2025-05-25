@@ -3,7 +3,7 @@
 //
 // The superclass of Game_Party and Game_Troop.
 
-declare class Game_Unit
+export declare class Game_Unit
 {
 	protected _inBattle:boolean;
 

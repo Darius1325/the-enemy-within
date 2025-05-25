@@ -2,7 +2,7 @@
 // Sprite_StateIcon
 //
 // The sprite for displaying state icons.
-declare class Sprite_StateIcon extends Sprite
+export declare class Sprite_StateIcon extends Sprite
 {
 	protected static _iconWidth:number;
 	protected static _iconHeight:number;

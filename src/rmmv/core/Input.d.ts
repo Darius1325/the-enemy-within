@@ -2,7 +2,7 @@
 // Input
 //
 // The static class that handles input data from the keyboard and gamepads.
-declare class Input
+export declare class Input
 {
 	public static keyRepeatWait:number;
 	public static keyRepeatInterval:number;

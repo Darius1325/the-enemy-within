@@ -3,7 +3,7 @@
 //
 // The game object class for variables.
 
-declare class Game_Variables
+export declare class Game_Variables
 {
 	protected _data:{ [n:number]:number };
 

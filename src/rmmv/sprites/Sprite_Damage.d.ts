@@ -2,7 +2,7 @@
 // Sprite_Damage
 //
 // The sprite for displaying a popup damage.
-declare class Sprite_Damage extends Sprite
+export declare class Sprite_Damage extends Sprite
 {
 	protected _duration:number;
     protected _flashColor:[number, number, number, number];

@@ -2,7 +2,7 @@
 // Scene_Shop
 //
 // The scene class of the shop screen.
-declare class Scene_Shop extends Scene_MenuBase
+export declare class Scene_Shop extends Scene_MenuBase
 {
 	protected _goods:[number, number][];
 	protected _purchaseOnly:boolean;

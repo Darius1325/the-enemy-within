@@ -3,7 +3,7 @@
 //
 // The window for selecting a save file on the save and load screens.
 
-declare class Window_SavefileList extends Window_Selectable
+export declare class Window_SavefileList extends Window_Selectable
 {
 	protected _mode:string;
 

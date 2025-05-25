@@ -28,7 +28,7 @@ interface RPG_UsableBase extends RPG_ItemBase
 	tpGain:number;
 }
 
-declare enum UsageScope
+export declare enum UsageScope
 {
 	NONE,
 	SINGLE_ENEMY,

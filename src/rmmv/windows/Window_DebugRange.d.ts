@@ -3,7 +3,7 @@
 //
 // The window for selecting a block of switches/variables on the debug screen.
 
-declare class Window_DebugRange extends Window_Selectable
+export declare class Window_DebugRange extends Window_Selectable
 {
 	public static readonly lastTopRow:number;
 	public static readonly lastIndex:number;

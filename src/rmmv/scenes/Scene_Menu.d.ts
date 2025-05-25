@@ -2,7 +2,7 @@
 // Scene_Menu
 //
 // The scene class of the menu screen.
-declare class Scene_Menu extends Scene_MenuBase
+export declare class Scene_Menu extends Scene_MenuBase
 {
 	protected _commandWindow:Window_MenuCommand;
 	protected _goldWindow:Window_Gold;

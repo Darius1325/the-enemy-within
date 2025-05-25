@@ -2,7 +2,7 @@
 // WindowLayer
 //
 // The layer which contains game windows.
-declare class WindowLayer extends PIXI.Container
+export declare class WindowLayer extends PIXI.Container
 { 
 	public width:number;
 	public height:number;

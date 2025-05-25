@@ -2,7 +2,12 @@
 // Bitmap
 //
 //The basic object that represents an image.
-declare class Bitmap
+
+import { PIXI } from '../pixi';
+import { Rectangle } from './Rectangle';
+import type  {Stage } from './Stage';
+
+export declare class Bitmap
 {
 	public static load(url:string):Bitmap;
 	public static snap(stage:Stage):Bitmap;

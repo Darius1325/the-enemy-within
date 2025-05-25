@@ -4,7 +4,7 @@
 // The game object class for a map. It contains scrolling and passage
 // determination functions.
 
-declare class Game_Map
+export declare class Game_Map
 {
 	protected _interpreter:Game_Interpreter;
 	protected _mapId:number;

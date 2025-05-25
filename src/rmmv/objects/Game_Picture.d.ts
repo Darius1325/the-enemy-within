@@ -3,7 +3,7 @@
 //
 // The game object class for a picture.
 
-declare class Game_Picture
+export declare class Game_Picture
 {
 	protected _name:string;
 	protected _origin:number;

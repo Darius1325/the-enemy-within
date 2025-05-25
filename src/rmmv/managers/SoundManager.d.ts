@@ -2,7 +2,7 @@
 // SoundManager
 //
 // The public static class that plays sound effects defined in the database.
-declare class SoundManager
+export declare class SoundManager
 {
 	public static preloadImportantSounds():void;
 	public static loadSystemSound(n:number):void;

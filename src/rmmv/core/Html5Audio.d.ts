@@ -2,7 +2,7 @@
 // Html5Audio
 //
 //The static class that handles HTML5 Audio.
-declare class Html5Audio
+export declare class Html5Audio
 {
 	public static url:string;
 	public static volume:number;

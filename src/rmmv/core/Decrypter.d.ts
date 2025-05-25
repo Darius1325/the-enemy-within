@@ -1,6 +1,9 @@
 //-----------------------------------------------------------------------------
+
+import { Bitmap } from "./Bitmap";
+
 // Decrypter
-declare class Decrypter
+export declare class Decrypter
 {
 	public static readonly SIGNATURE:string;
 	public static readonly VER:string;

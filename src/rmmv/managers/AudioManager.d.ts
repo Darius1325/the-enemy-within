@@ -2,7 +2,7 @@
 // AudioManager
 //
 // The static class that handles BGM, BGS, ME and SE.
-declare class AudioManager
+export declare class AudioManager
 {
 	public static bgmVolume:number;
 	public static bgsVolume:number;

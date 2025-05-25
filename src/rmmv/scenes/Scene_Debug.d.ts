@@ -1,5 +1,5 @@
 
-declare class Scene_Debug extends Scene_MenuBase
+export declare class Scene_Debug extends Scene_MenuBase
 {
 	protected _rangeWindow:Window_DebugRange;
 	protected _editWindow:Window_DebugEdit;

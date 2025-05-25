@@ -3,7 +3,7 @@
 //
 // The wrapper class for a follower array.
 
-declare class Game_Followers
+export declare class Game_Followers
 {
 	protected _visible:boolean;
 	protected _gathering:boolean;

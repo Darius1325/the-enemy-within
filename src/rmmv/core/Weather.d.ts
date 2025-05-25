@@ -2,7 +2,7 @@
 // Weather
 //
 // The weather effect which displays rain, storm, or snow.
-declare class Weather extends PIXI.Container
+export declare class Weather extends PIXI.Container
 {
 	public type:string;
 	public power:number;

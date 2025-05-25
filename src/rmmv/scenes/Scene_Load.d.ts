@@ -2,7 +2,7 @@
 // Scene_Load
 //
 // The scene class of the load screen.
-declare class Scene_Load extends Scene_File
+export declare class Scene_Load extends Scene_File
 {
 	protected _loadSuccess: boolean;
 	

@@ -3,7 +3,7 @@
 //
 // The sprite for displaying a picture.
 
-declare class Sprite_Picture extends Sprite
+export declare class Sprite_Picture extends Sprite
 {
     protected _pictureId:number;
     protected _pictureName:string;

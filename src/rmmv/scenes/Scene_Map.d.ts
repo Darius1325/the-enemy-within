@@ -2,7 +2,7 @@
 // Scene_Map
 //
 // The scene class of the map screen.
-declare class Scene_Map extends Scene_Base
+export declare class Scene_Map extends Scene_Base
 {
 	protected _waitCount:number;
 	protected _encounterEffectDuration:number;

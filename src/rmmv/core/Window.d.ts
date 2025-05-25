@@ -2,7 +2,7 @@
 // Window
 //
 // The window in the game.
-declare class Window extends PIXI.Container
+export declare class Window extends PIXI.Container
 {
 	public origin:Point;
 	public active:boolean;

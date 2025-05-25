@@ -2,7 +2,7 @@
 // Rectangle
 //
 // The rectangle class.
-declare class Rectangle extends PIXI.Rectangle
+export declare class Rectangle extends PIXI.Rectangle
 {
 	public static emptyRectangle():Rectangle;
 

@@ -3,7 +3,7 @@
 //
 // The game object class for a common event. It contains functionality for
 // running parallel process events.
-declare class Game_CommonEvent
+export declare class Game_CommonEvent
 {
 	protected _commonEventId:number;
 	

@@ -3,7 +3,7 @@
 //
 // The sprite for displaying a balloon icon.
 
-declare class Sprite_Balloon extends Sprite_Base
+export declare class Sprite_Balloon extends Sprite_Base
 {
     protected _balloonId:number;
     protected _duration:number;

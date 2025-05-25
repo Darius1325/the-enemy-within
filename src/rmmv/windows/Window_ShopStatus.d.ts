@@ -4,7 +4,7 @@
 // The window for displaying number of items in possession and the actor's
 // equipment on the shop screen.
 
-declare class Window_ShopStatus extends Window_Base
+export declare class Window_ShopStatus extends Window_Base
 {
 	protected _item:RPG_ItemBase;
 	protected _pageIndex:number;

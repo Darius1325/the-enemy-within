@@ -4,7 +4,7 @@
 // The game object class for an event. It contains functionality for event page
 // switching and running parallel process events.
 
-declare class Game_Event extends Game_Character
+export declare class Game_Event extends Game_Character
 {
 	protected _moveType:number;
 	protected _trigger:number;

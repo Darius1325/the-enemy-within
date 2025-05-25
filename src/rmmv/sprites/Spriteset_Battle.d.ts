@@ -3,7 +3,7 @@
 //
 // The set of sprites on the battle screen.
 
-declare class Spriteset_Battle extends Spriteset_Base
+export declare class Spriteset_Battle extends Spriteset_Base
 {
 	protected _battlebackLocated:boolean;
 	

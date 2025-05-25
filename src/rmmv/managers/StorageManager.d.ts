@@ -2,7 +2,7 @@
 // StorageManager
 //
 // The public static class that manages storage for saving game data.
-declare class StorageManager
+export declare class StorageManager
 {
 	public static save(savefileId:number, json:string):void;
 	public static load(savefileId:number):string;

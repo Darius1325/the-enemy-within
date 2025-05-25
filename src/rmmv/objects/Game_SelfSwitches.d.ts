@@ -3,7 +3,7 @@
 //
 // The game object class for self switches.
 
-declare class Game_SelfSwitches
+export declare class Game_SelfSwitches
 {
 	protected _data:{ [s:string]:boolean };
 

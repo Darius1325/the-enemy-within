@@ -2,7 +2,7 @@
 // PluginManager
 //
 // The static class that manages the plugins.
-declare class PluginManager
+export declare class PluginManager
 {
 	private static _path:string;
 	private static _scripts:string[];

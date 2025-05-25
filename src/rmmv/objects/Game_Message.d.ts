@@ -4,7 +4,7 @@
 // The game object class for the state of the message window that displays text
 // or selections, etc.
 
-declare class Game_Message
+export declare class Game_Message
 {
 	protected _texts:string[];
 	protected _choices:string[];

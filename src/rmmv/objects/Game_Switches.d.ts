@@ -3,7 +3,7 @@
 //
 // The game object class for switches.
 
-declare class Game_Switches
+export declare class Game_Switches
 {
 	protected _data:{ [n:number]:boolean };
 

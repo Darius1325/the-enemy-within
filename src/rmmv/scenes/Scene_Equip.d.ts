@@ -2,7 +2,7 @@
 // Scene_Equip
 //
 // The scene class of the equipment screen.
-declare class Scene_Equip extends Scene_MenuBase
+export declare class Scene_Equip extends Scene_MenuBase
 {
 	protected _statusWindow:Window_EquipStatus;
 	protected _commandWindow:Window_EquipCommand;

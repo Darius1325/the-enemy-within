@@ -1,6 +1,6 @@
 // LZ-based compression algorithm, version 1.4.4
 // https://github.com/pieroxy/lz-string
-declare module LZString
+export declare module LZString
 {
 	export function compressToBase64(input:string):string;
 	export function decompressFromBase64(input:string):string;

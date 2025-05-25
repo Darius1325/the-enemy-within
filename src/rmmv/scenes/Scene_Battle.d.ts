@@ -2,7 +2,7 @@
 // Scene_Battle
 //
 // The scene class of the battle screen.
-declare class Scene_Battle extends Scene_Base
+export declare class Scene_Battle extends Scene_Base
 {
 	protected _statusWindow:Window_BattleStatus;
 	protected _partyCommandWindow:Window_PartyCommand;

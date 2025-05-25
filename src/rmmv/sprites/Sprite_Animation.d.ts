@@ -2,7 +2,7 @@
 // Sprite_Animation
 //
 // The sprite for displaying an animation.
-declare class Sprite_Animation extends Sprite
+export declare class Sprite_Animation extends Sprite
 {
 	/**
 	 * { DataAnimation: boolean }

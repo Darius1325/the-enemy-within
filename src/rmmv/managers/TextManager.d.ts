@@ -2,7 +2,7 @@
 // TextManager
 //
 // The public static class that handles terms and messages.
-declare class TextManager
+export declare class TextManager
 {
 	public static currencyUnit:string;
 	public static level:string;

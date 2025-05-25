@@ -2,7 +2,7 @@
 // Sprite_StateOverlay
 //
 // The sprite for displaying an overlay image for a state.
-declare class Sprite_StateOverlay extends Sprite_Base
+export declare class Sprite_StateOverlay extends Sprite_Base
 {
 
 	protected _battler:Game_Battler;

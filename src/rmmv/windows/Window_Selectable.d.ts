@@ -3,7 +3,7 @@
 //
 // The window class with cursor movement and scroll functions.
 
-declare class Window_Selectable extends Window_Base
+export declare class Window_Selectable extends Window_Base
 {
 	protected _index:number;
 	protected _cursorFixed:boolean;

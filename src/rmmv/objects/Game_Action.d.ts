@@ -3,7 +3,7 @@
 //
 // The game object class for a battle action.
 
-declare class Game_Action
+export declare class Game_Action
 {
 	public static readonly EFFECT_RECOVER_HP:number;
 	public static readonly EFFECT_RECOVER_MP:number;

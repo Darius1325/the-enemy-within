@@ -2,7 +2,7 @@
 // Utils
 //
 // The public static class that defines utility methods.
-declare class Utils
+export declare class Utils
 {
 	public static readonly RPGMAKER_NAME:string;
 	public static readonly RPGMAKER_VERSION:string;

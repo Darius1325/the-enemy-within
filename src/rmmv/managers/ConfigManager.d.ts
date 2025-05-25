@@ -2,7 +2,7 @@
 // ConfigManager
 //
 // The public static class that manages the configuration data.
-declare class ConfigManager
+export declare class ConfigManager
 {
 	public static alwaysDash:boolean;
 	public static commandRemember:boolean;

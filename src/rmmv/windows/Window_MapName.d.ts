@@ -3,7 +3,7 @@
 //
 // The window for displaying the map name on the map screen.
 
-declare class Window_MapName extends Window_Base
+export declare class Window_MapName extends Window_Base
 {
 	protected _showCount:number;
 

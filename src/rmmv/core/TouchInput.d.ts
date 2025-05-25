@@ -2,7 +2,7 @@
 // TouchInput
 //
 //  The static class that handles input data from the mouse and touchscreen.
-declare class TouchInput
+export declare class TouchInput
 {
 	public static wheelX:number;
 	public static wheelY:number;

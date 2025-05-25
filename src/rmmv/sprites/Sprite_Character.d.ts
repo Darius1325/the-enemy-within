@@ -2,7 +2,7 @@
 // Sprite_Character
 //
 // The sprite for displaying a character.
-declare class Sprite_Character extends Sprite_Base
+export declare class Sprite_Character extends Sprite_Base
 {
     protected _character:Game_Character;
     protected _balloonDuration:number;

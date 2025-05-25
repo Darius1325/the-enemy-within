@@ -2,7 +2,7 @@
 // Tilemap
 //
 // The tilemap which displays 2D tile-based game map.
-declare class Tilemap extends PIXI.Container
+export declare class Tilemap extends PIXI.Container
 {
 	public static TILE_ID_B:number;
 	public static TILE_ID_C:number;

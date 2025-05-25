@@ -2,7 +2,7 @@
 // Graphics
 //
 // The static class that carries out graphics processing.
-declare class Graphics
+export declare class Graphics
 {
 	public static frameCount:number;
 	public static BLEND_NORMAL:number;

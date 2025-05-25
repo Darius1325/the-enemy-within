@@ -2,7 +2,7 @@
 // Sprite_Battler
 //
 // The superclass of Sprite_Actor and Sprite_Enemy.
-declare class Sprite_Battler extends Sprite_Base
+export declare class Sprite_Battler extends Sprite_Base
 {
 	protected _battler:Game_Battler;
 	protected _battlerName:string;

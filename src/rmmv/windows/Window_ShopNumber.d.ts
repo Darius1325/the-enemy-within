@@ -4,7 +4,7 @@
 // The window for inputting quantity of items to buy or sell on the shop
 // screen.
 
-declare class Window_ShopNumber extends Window_Selectable
+export declare class Window_ShopNumber extends Window_Selectable
 {
 	protected _item:RPG_ItemBase;
 	protected _max:number;
