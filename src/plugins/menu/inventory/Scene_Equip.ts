@@ -21,12 +21,16 @@ import Window_InventoryInfo from "./info/Window_InventoryInfo";
 import Window_InventoryItemCommand from "./items/Window_InventoryItemCommand";
 import Window_InventoryItemDetails from "./items/Window_InventoryItemDetails";
 import Window_InventoryItems from "./items/Window_InventoryItems";
-import Window_InventoryWeaponCommand from "./weapons/Window_InventoryWeaponCommand";
+import Window_InventoryWeaponCommand, { IWindow_InventoryWeaponCommand } from "./weapons/Window_InventoryWeaponCommand";
 import Window_InventoryWeaponDetails from "./weapons/Window_InventoryWeaponDetails";
 import Window_InventoryWeapons, { LoadedWeapon } from "./weapons/Window_InventoryWeapons";
 import Window_InventoryCommand from "./Window_InventoryCommand";
 import Window_InventoryTransferCommand from "./Window_InventoryTransferCommand";
-import TEW from "../../types/tew";
+
+
+export interface Scene_Equip {
+    _weaponsCommandWindow: IWindow_InventoryWeaponCommand;
+};
 
 // ----------------------
 // $StartCompilation
@@ -171,7 +175,6 @@ Scene_Equip.prototype.createItemsCommandWindow = function() {
     this._itemsCommandWindow = new Window_InventoryItemCommand();
     this._itemsCommandWindow.setHandler('cancel', () => {
         this._itemsCommandWindow.deactivate();
-        this._itemsCommandWindow.deselect();
         this.activateInventoryItems(this._itemsWindow.index());
     });
     this._itemsCommandWindow.setHandler('inventory_item_use', this.useItem.bind(this));
@@ -344,21 +347,21 @@ Scene_Equip.prototype.displayWindow = function() {
         this._weaponsCommandWindow.show();
         this._weaponsWindow.refresh();
         this._weaponsDetailsWindow.refresh();
-        this._weaponsCommandWindow.refresh();
+        this._weaponsCommandWindow.clear();
     } else if (this._commandWindow.index() == this.ARMORS_WINDOW_INDEX) {
         this._armorsWindow.show();
         this._armorsDetailsWindow.show();
         this._armorsCommandWindow.show();
         this._armorsWindow.refresh();
         this._armorsDetailsWindow.refresh();
-        this._armorsCommandWindow.refresh();
+        this._armorsCommandWindow.clear();
     } else if (this._commandWindow.index() == this.ITEMS_WINDOW_INDEX) {
         this._itemsWindow.show();
         this._itemsDetailsWindow.show();
         this._itemsCommandWindow.show();
         this._itemsWindow.refresh();
         this._itemsDetailsWindow.refresh();
-        this._itemsCommandWindow.refresh();
+        this._itemsCommandWindow.clear();
     } else if (this._commandWindow.index() == this.AMMO_WINDOW_INDEX) {
         this._ammoWindow.show();
         this._ammoWindow.refresh();
@@ -401,27 +404,42 @@ Scene_Equip.prototype.activateInventoryArmors = function(index = 0) {
 
 // Activating the items window
 Scene_Equip.prototype.activateInventoryItems = function(index = 0) {
-    index = Math.min(index, this._itemsWindow._items.length - 1);
+    const nbItems = this._itemsWindow._items.length;
+    console.log("activateInventoryItems - nbItems : ", nbItems)
     this.hideAllWindows();
     this._itemsWindow.show();
     this._itemsDetailsWindow.show();
     this._itemsCommandWindow.show();
     this._itemsCommandWindow.deselect();
-    this._commandWindow.deactivate();
-    this._itemsWindow.activate();
-    this._itemsWindow.select(index);
+    if (nbItems > 0){
+        index = Math.min(index, nbItems - 1);
+        this._commandWindow.deactivate();
+        this._itemsWindow.activate();
+        this._itemsWindow.select(index);
+        this._itemsCommandWindow.refresh();
+    } else {
+        this._commandWindow.activate();
+        this._itemsWindow.deselect();
+        this._itemsDetailsWindow.empty();
+        this._itemsDetailsWindow.clear();
+        this._itemsCommandWindow.clearCommandList();
+        this._itemsCommandWindow.clear();
+    }
     this._itemsWindow.refresh();
 };
 
 // Activating the ammo window
 Scene_Equip.prototype.activateInventoryAmmo = function(index = 0) {
-    index = Math.min(index, this._ammoWindow._ammo.length - 1);
-    this.hideAllWindows();
-    this._ammoWindow.show();
-    this._commandWindow.deactivate();
-    this._ammoWindow.activate();
-    this._ammoWindow.select(index);
-    this._ammoWindow.refresh();
+    const nbAmmo = this._ammoWindow._ammo.length; // TODO
+    if (nbAmmo > 0){
+        index = Math.min(index, nbAmmo - 1);
+        this.hideAllWindows();
+        this._ammoWindow.show();
+        this._commandWindow.deactivate();
+        this._ammoWindow.activate();
+        this._ammoWindow.select(index);
+        this._ammoWindow.refresh();
+    }
 };
 
 Scene_Equip.prototype.activateCommandWindowItem = function() {

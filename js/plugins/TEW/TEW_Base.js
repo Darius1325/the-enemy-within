@@ -310,20 +310,20 @@ Game_BattlerBase.prototype.initialize = function () {
     this.addSpell("PURGE");
     // temp Items
     this.addItem("HEARTKILL");
-    this.addItem("AMULET");
-    this.addItem("BOOTS");
-    this.addItem("BROOM");
-    this.addItem("WINE_GLASS");
-    this.addItem("WINE_GLASS");
-    this.addItem("WINE_GLASS");
-    this.addItem("HEARTKILL");
-    this.addItem("BOOTS");
-    this.addItem("LEAFLET");
-    this.addItem("BOOTS");
-    this.addItem("LEAFLET");
-    this.addItem("ROBES_STANDARD");
-    this.addItem("WINE_GLASS");
-    this.addItem("ROBES_ELABORATE");
+    // this.addItem("AMULET");
+    // this.addItem("BOOTS");
+    // this.addItem("BROOM");
+    // this.addItem("WINE_GLASS");
+    // this.addItem("WINE_GLASS");
+    // this.addItem("WINE_GLASS");
+    // this.addItem("HEARTKILL");
+    // this.addItem("BOOTS");
+    // this.addItem("LEAFLET");
+    // this.addItem("BOOTS");
+    // this.addItem("LEAFLET");
+    // this.addItem("ROBES_STANDARD");
+    // this.addItem("WINE_GLASS");
+    // this.addItem("ROBES_ELABORATE");
     // temp Weapons
     this.addWeapon("AXE");
     this.addWeapon("SHIELD");

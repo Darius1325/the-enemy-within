@@ -74,7 +74,7 @@ export interface Game_BattlerBase {
     ammoType: (ammoId: string) => number;
     hasAmmo: (ammoId: string) => boolean;
     addAmmo: (ammoId: string, quantity?: number) => void;
-}
+};
 
 // $StartCompilation
 
@@ -150,20 +150,20 @@ Game_BattlerBase.prototype.initialize = function() {
 
     // temp Items
     this.addItem("HEARTKILL");
-    this.addItem("AMULET");
-    this.addItem("BOOTS");
-    this.addItem("BROOM");
-    this.addItem("WINE_GLASS");
-    this.addItem("WINE_GLASS");
-    this.addItem("WINE_GLASS");
-    this.addItem("HEARTKILL");
-    this.addItem("BOOTS");
-    this.addItem("LEAFLET");
-    this.addItem("BOOTS");
-    this.addItem("LEAFLET");
-    this.addItem("ROBES_STANDARD");
-    this.addItem("WINE_GLASS");
-    this.addItem("ROBES_ELABORATE");
+    // this.addItem("AMULET");
+    // this.addItem("BOOTS");
+    // this.addItem("BROOM");
+    // this.addItem("WINE_GLASS");
+    // this.addItem("WINE_GLASS");
+    // this.addItem("WINE_GLASS");
+    // this.addItem("HEARTKILL");
+    // this.addItem("BOOTS");
+    // this.addItem("LEAFLET");
+    // this.addItem("BOOTS");
+    // this.addItem("LEAFLET");
+    // this.addItem("ROBES_STANDARD");
+    // this.addItem("WINE_GLASS");
+    // this.addItem("ROBES_ELABORATE");
 
     // temp Weapons
     this.addWeapon("AXE");

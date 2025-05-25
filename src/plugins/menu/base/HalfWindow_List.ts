@@ -1,6 +1,21 @@
 // $PluginCompiler TEW_Menus.js 10
 
+import { Game_Actor } from "../../base/stats/Game_Actor";
 import TEW from "../../types/tew";
+
+export interface IHalfWindow_List {
+    _actor: Game_Actor;
+    _maxItems: number;
+    _leftPadding: number;
+    _rightColumnWidth: number;
+    _rightColumnPosition: number;
+    _iconPadding: number;
+    
+    setActor: (actor: Game_Actor) => void;
+    refresh: () => void;
+    maxItems: () => number;
+    maxCols: () => number;
+};
 
 // $StartCompilation
 

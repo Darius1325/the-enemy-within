@@ -1,7 +1,5 @@
 // $PluginCompiler TEW_Menus.js
 
-import { MeleeWeapon } from "../../../types/meleeWeapon";
-import { RangedWeapon } from "../../../types/rangedWeapon";
 import HalfWindow_Details from "../../base/HalfWindow_Details";
 import { LoadedWeapon } from "./Window_InventoryWeapons";
 

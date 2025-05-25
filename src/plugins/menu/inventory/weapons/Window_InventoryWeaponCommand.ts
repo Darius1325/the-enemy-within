@@ -1,6 +1,12 @@
 // $PluginCompiler TEW_Menus.js
 
-import HalfWindow_DetailsCommand from "../../base/HalfWindow_DetailsCommand";
+import { Game_Actor } from "../../../base/stats/Game_Actor";
+import HalfWindow_DetailsCommand, { IHalfWindow_DetailsCommand } from "../../base/HalfWindow_DetailsCommand";
+
+export interface IWindow_InventoryWeaponCommand extends IHalfWindow_DetailsCommand {
+    makeCommandList: () => void;
+    refreshCommand: (actor: Game_Actor, weaponIndex?: number) => void;
+};
 
 // $StartCompilation
 
@@ -29,16 +35,17 @@ Window_InventoryWeaponCommand.prototype.makeCommandList = function() {
     this.addCommand(TextManager.inventoryWeaponReload, 'inventory_weapon_reload');
 };
 
-Window_InventoryWeaponCommand.prototype.refreshCommand = function(actor: any, weaponIndex = 0){
+Window_InventoryWeaponCommand.prototype.refreshCommand = function(actor: Game_Actor, weaponIndex = 0){
     if (actor) {
         const weapon = actor.weapon(weaponIndex);
         this.clearCommandList();
         if (weapon.isInMainHand || weapon.isInSecondHand) {
             this.addCommand(TextManager.inventoryWeaponUnequip, 'inventory_weapon_unequip');
+            this.addCommand(TextManager.inventoryWeaponTransfer, 'inventory_weapon_transfer', false);
         } else {
             this.addCommand(TextManager.inventoryWeaponEquip, 'inventory_weapon_equip');
+            this.addCommand(TextManager.inventoryWeaponTransfer, 'inventory_weapon_transfer');
         }
-        this.addCommand(TextManager.inventoryWeaponTransfer, 'inventory_weapon_transfer');
         if (weapon.isReloadable) {
             this.addCommand(TextManager.inventoryWeaponReload, 'inventory_weapon_reload');
         } else {

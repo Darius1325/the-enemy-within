@@ -1,4 +1,15 @@
 // $PluginCompiler TEW_Menus.js 10
+
+export interface IHalfWindow_DetailsCommand {
+    _actionsNumber: number;
+    _windowWidth: number;
+    _windowHeight: number;
+
+    windowWidth: () => number;
+    addCommand: (name: string, symbol: string, enabled?: boolean, ext?: string) => void;
+    clear: () => void;
+};
+
 // $StartCompilation
 
 //-----------------------------------------------------------------------------

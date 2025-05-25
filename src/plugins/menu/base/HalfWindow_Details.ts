@@ -1,6 +1,18 @@
 // $PluginCompiler TEW_Menus.js 10
 
+import { Game_Actor } from "../../base/stats/Game_Actor";
 import TEW from "../../types/tew";
+
+export interface IHalfWindowDetails {
+    width: number;
+
+    setActor: (actor: Game_Actor) => void;
+    drawUnderlinedtext: (text: string, x: number, y: number, width: number, align: string) => void;
+    drawTable2Columns: (x: number, y: number, width: number, rows: number, textArray: [string, string][]) => void;
+    drawWrappedtextManually: (text: string, x: number, y: number, fontSize: number) => void;
+    drawLine: (y: number) => void;
+    clear: () => void;
+};
 
 // $StartCompilation
 
@@ -28,7 +40,7 @@ HalfWindow_Details.prototype.initialize = function(commandWindowHeight: number) 
     this.refresh();
 };
 
-HalfWindow_Details.prototype.setActor = function(actor: any) {
+HalfWindow_Details.prototype.setActor = function(actor: Game_Actor) {
     if (this._actor !== actor) {
         this._actor = actor;
         this.refresh();

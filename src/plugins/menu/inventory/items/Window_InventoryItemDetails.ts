@@ -34,6 +34,11 @@ Window_InventoryItemDetails.prototype.refresh = function() {
     }
 };
 
+// Erase window content
+Window_InventoryItemDetails.prototype.empty = function() {
+    this._item = null;
+};
+
 // Drawing the details
 Window_InventoryItemDetails.prototype.drawDetails = function(item: [string, ItemWithQuantity]){
     // Title
