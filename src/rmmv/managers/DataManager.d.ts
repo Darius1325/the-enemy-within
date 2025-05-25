@@ -1,6 +1,19 @@
 //-----------------------------------------------------------------------------
 // DataManager
 //
+
+import { RPG_ItemBase } from "../data/RPG_Item";
+import { Game_Actors } from "../objects/Game_Actors";
+import { Game_Map } from "../objects/Game_Map";
+import { Game_Party } from "../objects/Game_Party";
+import { Game_Player } from "../objects/Game_Player";
+import { Game_Screen } from "../objects/Game_Screen";
+import { Game_SelfSwitches } from "../objects/Game_SelfSwitches";
+import { Game_Switches } from "../objects/Game_Switches";
+import { Game_System } from "../objects/Game_System";
+import { Game_Temp } from "../objects/Game_Temp";
+import { Game_Variables } from "../objects/Game_Variables";
+
 // The static class that manages the database and game objects.
 export declare class DataManager
 {

@@ -1,6 +1,12 @@
 //-----------------------------------------------------------------------------
 // Sprite
 //
+
+import { PIXI } from "../pixi";
+import { Bitmap } from "./Bitmap";
+import { Point } from "./Point";
+import { Rectangle } from "./Rectangle";
+
 // The basic object that is rendered to the game screen.
 export declare class Sprite extends PIXI.Sprite
 {

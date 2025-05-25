@@ -1,6 +1,9 @@
 //-----------------------------------------------------------------------------
 // Scene_Boot
 //
+
+import { Scene_Base } from "./Scene_Base";
+
 // The scene class for initializing the entire game.
 export declare class Scene_Boot extends Scene_Base
 {

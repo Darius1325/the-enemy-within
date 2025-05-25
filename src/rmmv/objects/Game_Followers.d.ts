@@ -3,6 +3,9 @@
 //
 // The wrapper class for a follower array.
 
+import { Direction } from "../data/RPG_Core";
+import { Game_Follower } from "./Game_Follower";
+
 export declare class Game_Followers
 {
 	protected _visible:boolean;

@@ -1,6 +1,10 @@
 //-----------------------------------------------------------------------------
 // SceneManager
 //
+
+import { Bitmap } from "../core/Bitmap";
+import { Scene_Base } from "../scenes/Scene_Base";
+
 // The public static class that manages scene transitions.
 export declare class SceneManager
 {
@@ -35,7 +39,7 @@ export declare class SceneManager
 	
 	public static setupErrorHandlers():void;
 	public static checkPluginErrors():void;
-	public static catchException(e:ExceptionInformation):void;
+	public static catchException(e:any):void;
 
 	public static onError(e:Event):void;
 	public static onKeyDown(event:KeyboardEvent):void;

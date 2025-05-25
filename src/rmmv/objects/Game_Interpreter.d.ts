@@ -3,6 +3,13 @@
 //
 // The interpreter for running event commands.
 
+import { EventItem } from "../data/RPG_Event";
+import { Game_Actor } from "./Game_Actor";
+import { Game_Battler } from "./Game_Battler";
+import { Game_BattlerBase } from "./Game_BattlerBase";
+import { Game_Character } from "./Game_Character";
+import { Game_Enemy } from "./Game_Enemy";
+
 export declare class Game_Interpreter
 {
 	protected _depth:number;

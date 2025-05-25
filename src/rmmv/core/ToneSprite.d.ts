@@ -1,6 +1,9 @@
 //-----------------------------------------------------------------------------
 // ToneSprite
 //
+
+import { PIXI } from "../pixi";
+
 // The sprite which changes the screen color in 2D canvas mode.
 export declare class ToneSprite extends PIXI.DisplayObject
 {

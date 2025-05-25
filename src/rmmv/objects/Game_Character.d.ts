@@ -3,6 +3,10 @@
 //
 // The superclass of Game_Player, Game_Follower, GameVehicle, and Game_Event.
 
+import { EventItem } from "../data/RPG_Event";
+import { MoveRoute } from "../data/RPG_Map";
+import { Game_CharacterBase } from "./Game_CharacterBase";
+
 export declare class Game_Character extends Game_CharacterBase
 {
 	public static readonly ROUTE_END:number;

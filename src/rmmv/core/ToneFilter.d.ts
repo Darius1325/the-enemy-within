@@ -1,6 +1,9 @@
 //-----------------------------------------------------------------------------
 // ToneFilter
 //
+
+import { PIXI } from "../pixi";
+
 // The color matrix filter for WebGL.
 export declare class ToneFilter extends PIXI.filters.ColorMatrixFilter
 {

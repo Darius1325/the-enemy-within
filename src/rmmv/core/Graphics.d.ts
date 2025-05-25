@@ -1,6 +1,11 @@
 //-----------------------------------------------------------------------------
 // Graphics
 //
+
+import { PIXI } from "../pixi";
+import { FPSMeter } from "./FPSMeter";
+import { Stage } from "./Stage";
+
 // The static class that carries out graphics processing.
 export declare class Graphics
 {

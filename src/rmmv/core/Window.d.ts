@@ -1,6 +1,13 @@
 //-----------------------------------------------------------------------------
 // Window
 //
+
+import { PIXI } from "../pixi";
+import { Bitmap } from "./Bitmap";
+import { Point } from "./Point";
+import { Rectangle } from "./Rectangle";
+import { Sprite } from "./Sprite";
+
 // The window in the game.
 export declare class Window extends PIXI.Container
 {

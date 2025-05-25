@@ -4,6 +4,11 @@
 // The superclass of Game_Actor and Game_Enemy. It contains methods for sprites
 // and actions.
 
+import { Game_Action } from "./Game_Action";
+import { Game_ActionResult } from "./Game_ActionResult";
+import { Game_BattlerBase } from "./Game_BattlerBase";
+import { Game_Item } from "./Game_Item";
+
 export declare class Game_Battler extends Game_BattlerBase
 {
     protected _actions:Game_Action[];

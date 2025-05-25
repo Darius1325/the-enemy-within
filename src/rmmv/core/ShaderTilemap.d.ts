@@ -1,6 +1,11 @@
 //-----------------------------------------------------------------------------
 // ShaderTilemap
 //
+
+import { PIXI } from "../pixi";
+import { Bitmap } from "./Bitmap";
+import { Tilemap } from "./Tilemap";
+
 // The tilemap which displays 2D tile-based game map using shaders
 export declare class ShaderTilemap extends Tilemap
 {

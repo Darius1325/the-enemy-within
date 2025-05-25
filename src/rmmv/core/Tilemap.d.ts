@@ -1,6 +1,11 @@
 //-----------------------------------------------------------------------------
 // Tilemap
 //
+
+import { PIXI } from "../pixi";
+import { Bitmap } from "./Bitmap";
+import { Point } from "./Point";
+
 // The tilemap which displays 2D tile-based game map.
 export declare class Tilemap extends PIXI.Container
 {

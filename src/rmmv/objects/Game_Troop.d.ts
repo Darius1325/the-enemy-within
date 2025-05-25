@@ -3,6 +3,11 @@
 //
 // The game object class for a troop and the battle-related data.
 
+import { DataTroop, DropItem, TroopEventPage } from "../data/RPG_Enemy";
+import { Game_Enemy } from "./Game_Enemy";
+import { Game_Interpreter } from "./Game_Interpreter";
+import { Game_Unit } from "./Game_Unit";
+
 export declare class Game_Troop extends Game_Unit
 {
 	public readonly LETTER_TABLE_HALF:string[];

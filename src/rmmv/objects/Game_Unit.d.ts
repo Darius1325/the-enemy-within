@@ -3,6 +3,8 @@
 //
 // The superclass of Game_Party and Game_Troop.
 
+import { Game_Battler } from "./Game_Battler";
+
 export declare class Game_Unit
 {
 	protected _inBattle:boolean;

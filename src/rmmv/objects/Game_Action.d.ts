@@ -3,6 +3,12 @@
 //
 // The game object class for a battle action.
 
+import { EnemyAction } from "../data/RPG_Enemy";
+import { RPG_ItemBase, Effect } from "../data/RPG_Item";
+import { Game_Battler } from "./Game_Battler";
+import { Game_Item } from "./Game_Item";
+import { Game_Unit } from "./Game_Unit";
+
 export declare class Game_Action
 {
 	public static readonly EFFECT_RECOVER_HP:number;

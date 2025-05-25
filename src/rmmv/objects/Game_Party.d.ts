@@ -4,6 +4,11 @@
 // The game object class for the party. Information such as gold and items is
 // included.
 
+import { DataArmor, DataItem, DataWeapon, RPG_EquipBase, RPG_ItemBase } from "../data/RPG_Item";
+import { Game_Actor } from "./Game_Actor";
+import { Game_Item } from "./Game_Item";
+import { Game_Unit } from "./Game_Unit";
+
 export declare class Game_Party extends Game_Unit
 {
 	public readonly ABILITY_ENCOUNTER_HALF:number;

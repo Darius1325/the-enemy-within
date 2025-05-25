@@ -1,6 +1,14 @@
 //-----------------------------------------------------------------------------
 // Scene_Equip
 //
+
+import { RPG_ItemBase } from "../data/RPG_Item";
+import { Window_EquipCommand } from "../windows/Window_EquipCommand";
+import { Window_EquipItem } from "../windows/Window_EquipItem";
+import { Window_EquipSlot } from "../windows/Window_EquipSlot";
+import { Window_EquipStatus } from "../windows/Window_EquipStatus";
+import { Scene_MenuBase } from "./Scene_MenuBase";
+
 // The scene class of the equipment screen.
 export declare class Scene_Equip extends Scene_MenuBase
 {

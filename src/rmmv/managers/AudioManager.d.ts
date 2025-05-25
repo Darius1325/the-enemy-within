@@ -1,6 +1,11 @@
 //-----------------------------------------------------------------------------
 // AudioManager
 //
+
+import { Html5Audio } from "../core/Html5Audio";
+import { WebAudio } from "../core/WebAudio";
+import { BGM, BGM_Cached, BGS, BGS_Cached, RPG_Audio } from "../data/RPG_Audio";
+
 // The static class that handles BGM, BGS, ME and SE.
 export declare class AudioManager
 {

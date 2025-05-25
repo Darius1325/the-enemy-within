@@ -4,6 +4,9 @@
 // The game object class for the state of the message window that displays text
 // or selections, etc.
 
+import { HorizontalAlign, VeritcalAlign } from "../data/RPG_Core";
+import { ChoiceCancelType, ChoiceDefaultType, MessageBackgroundStyle } from "../data/RPG_Message";
+
 export declare class Game_Message
 {
 	protected _texts:string[];

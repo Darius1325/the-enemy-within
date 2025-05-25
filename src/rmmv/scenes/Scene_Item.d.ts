@@ -1,6 +1,11 @@
 //-----------------------------------------------------------------------------
 // Scene_Item
 //
+
+import { Window_ItemCategory } from "../windows/Window_ItemCategory";
+import { Window_ItemList } from "../windows/Window_ItemList";
+import { Scene_ItemBase } from "./Scene_ItemBase";
+
 // The scene class of the item screen.
 export declare class Scene_Item extends Scene_ItemBase
 {

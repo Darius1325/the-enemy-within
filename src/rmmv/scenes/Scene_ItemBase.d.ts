@@ -1,6 +1,11 @@
 //-----------------------------------------------------------------------------
 // Scene_ItemBase
 //
+
+import { Game_Actor } from "../objects/Game_Actor";
+import { Window_MenuActor } from "../windows/Window_MenuActor";
+import { Scene_MenuBase } from "./Scene_MenuBase";
+
 // The superclass of Scene_Item and Scene_Skill.
 export declare class Scene_ItemBase extends Scene_MenuBase
 {

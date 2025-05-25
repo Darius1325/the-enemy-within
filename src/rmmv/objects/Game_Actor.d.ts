@@ -3,6 +3,15 @@
 //
 // The game object class for an actor.
 
+import { DataActor, DataClass } from "../data/RPG_Actor";
+import { DataState } from "../data/RPG_Core";
+import { RPG_EquipBase, DataWeapon, DataArmor, DataSkill, RPG_ItemBase } from "../data/RPG_Item";
+import { Game_Action } from "./Game_Action";
+import { Game_Battler } from "./Game_Battler";
+import { Game_Item } from "./Game_Item";
+import { Game_Party } from "./Game_Party";
+import { Game_Troop } from "./Game_Troop";
+
 export declare class Game_Actor extends Game_Battler
 {
 	protected _actorId:number;

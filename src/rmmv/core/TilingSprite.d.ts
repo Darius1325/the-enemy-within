@@ -1,6 +1,12 @@
 //-----------------------------------------------------------------------------
 // TilingSprite
 //
+
+import { PIXI } from "../pixi";
+import { Bitmap } from "./Bitmap";
+import { Point } from "./Point";
+import { Rectangle } from "./Rectangle";
+
 //  The sprite object for a tiling image.
 export declare class TilingSprite extends PIXI.Container
 {

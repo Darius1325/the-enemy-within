@@ -4,6 +4,10 @@
 // The game object class for an event. It contains functionality for event page
 // switching and running parallel process events.
 
+import { EventItem } from "../data/RPG_Event";
+import { MapEvent, MapEventPage } from "../data/RPG_Map";
+import { Game_Character } from "./Game_Character";
+
 export declare class Game_Event extends Game_Character
 {
 	protected _moveType:number;
