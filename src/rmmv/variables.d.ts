@@ -1,5 +1,10 @@
+import { DataActor, DataClass } from "./data/RPG_Actor";
 import { DataPlugin, DataAnimation, DataState, DataTileset } from "./data/RPG_Core";
+import { DataEnemy, DataTroop } from "./data/RPG_Enemy";
+import { DataCommonEvent } from "./data/RPG_Event";
 import { DataArmor, DataItem, DataSkill, DataWeapon } from "./data/RPG_Item";
+import { DataMap, DataMapInfo } from "./data/RPG_Map";
+import { DataSystem } from "./data/RPG_System";
 import { Game_Actors } from "./objects/Game_Actors";
 import { Game_Map } from "./objects/Game_Map";
 import { Game_Message } from "./objects/Game_Message";
