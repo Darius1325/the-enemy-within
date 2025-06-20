@@ -16,8 +16,7 @@ import { ActorWeapon } from "../../../base/stats/Game_BattlerBase";
 import { MeleeWeapon } from "../../../types/meleeWeapon";
 import { RangedWeapon } from "../../../types/rangedWeapon";
 import TEW from "../../../types/tew";
-import HalfWindow_List from "../../base/HalfWindow_List";
-
+import HalfWindow_List, { IHalfWindow_List } from "../../base/HalfWindow_List";
 
 // ----------------------
 // Exports
@@ -26,6 +25,21 @@ import HalfWindow_List from "../../base/HalfWindow_List";
 export type LoadedWeapon = (MeleeWeapon | RangedWeapon) & ActorWeapon & {
     equipIndex: number;
     equipIcon?: number;
+};
+
+export interface IWindow_InventoryWeapons extends IHalfWindow_List {
+    _weapons: LoadedWeapon[];
+    _mainHandWeapon: LoadedWeapon;
+    _secondHandWeapon: LoadedWeapon;
+    _stayCount: number;
+
+    syncActor: () => void;
+    drawAllItems: () => void;
+    drawItem: (index: number) => void;
+    weaponFromIndex: (index: number) => LoadedWeapon;
+    item: () => LoadedWeapon;
+    select: (index: number) => void;
+    processOk: () => void;
 };
 
 // ----------------------
@@ -64,7 +78,7 @@ Window_InventoryWeapons.prototype.syncActor = function() {
                 ? TEW.DATABASE.ICONS.SET.EQUIPPED_MAIN_HAND
                 : weapon.isInSecondHand
                     ? TEW.DATABASE.ICONS.SET.EQUIPPED_SECOND_HAND
-                    : undefined
+                    : 0
         };
     });
 
@@ -169,4 +183,3 @@ Window_InventoryWeapons.prototype.processOk = function() {
         this.playBuzzerSound();
     }
 };
-

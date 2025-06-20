@@ -1,7 +1,14 @@
 // $PluginCompiler TEW_Menus.js
 
-import HalfWindow_Details from "../../base/HalfWindow_Details";
+import HalfWindow_Details, { IHalfWindow_Details } from "../../base/HalfWindow_Details";
 import { LoadedWeapon } from "./Window_InventoryWeapons";
+
+export interface IWindow_InventoryWeaponDetails extends IHalfWindow_Details {
+    _weapon: LoadedWeapon;
+
+    refresh: () => void;
+    drawDetails: (weapon: LoadedWeapon) => void;
+};
 
 // $StartCompilation
 

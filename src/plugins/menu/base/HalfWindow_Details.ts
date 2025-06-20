@@ -3,7 +3,7 @@
 import { Game_Actor } from "../../base/stats/Game_Actor";
 import TEW from "../../types/tew";
 
-export interface IHalfWindowDetails {
+export interface IHalfWindow_Details {
     width: number;
 
     setActor: (actor: Game_Actor) => void;

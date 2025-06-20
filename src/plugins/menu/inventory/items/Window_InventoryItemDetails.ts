@@ -1,10 +1,18 @@
 // $PluginCompiler TEW_Menus.js
 
 import { Item } from "../../../types/item";
-import HalfWindow_Details from "../../base/HalfWindow_Details";
+import HalfWindow_Details, { IHalfWindow_Details } from "../../base/HalfWindow_Details";
 
 type ItemWithQuantity = Item & {
     quantity: number;
+};
+
+export interface IWindow_InventoryItemDetails extends IHalfWindow_Details {
+    _item: [string, ItemWithQuantity][];
+
+    refresh: () => void;
+    drawDetails: (item: [string, ItemWithQuantity]) => void;
+    empty: () => void;
 };
 
 // $StartCompilation

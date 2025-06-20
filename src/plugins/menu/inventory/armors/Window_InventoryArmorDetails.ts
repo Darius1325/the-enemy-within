@@ -1,7 +1,15 @@
 // $PluginCompiler TEW_Menus.js
 
 import { Armor } from "../../../types/armor";
-import HalfWindow_Details from "../../base/HalfWindow_Details";
+import HalfWindow_Details, { IHalfWindow_Details } from "../../base/HalfWindow_Details";
+import { LoadedWeapon } from "../weapons/Window_InventoryWeapons";
+
+export interface IWindow_InventoryArmorDetails extends IHalfWindow_Details {
+    _armor: [string, Armor];
+
+    refresh: () => void;
+    drawDetails: (weapon: LoadedWeapon) => void;
+};
 
 // $StartCompilation
 
@@ -31,7 +39,7 @@ Window_InventoryArmorDetails.prototype.refresh = function() {
 };
 
 // Drawing the details
-Window_InventoryArmorDetails.prototype.drawDetails = function(armor: [string, Armor]){
+Window_InventoryArmorDetails.prototype.drawDetails = function(armor: [string, Armor]) {
     // Title
     this.drawUnderlinedText(armor[1].name, 0, 0, this.contentsWidth(), "center");
 

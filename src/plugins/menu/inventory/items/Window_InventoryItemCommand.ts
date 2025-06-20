@@ -1,6 +1,10 @@
 // $PluginCompiler TEW_Menus.js
 
-import HalfWindow_DetailsCommand from "../../base/HalfWindow_DetailsCommand";
+import HalfWindow_DetailsCommand, { IHalfWindow_DetailsCommand } from "../../base/HalfWindow_DetailsCommand";
+
+export interface IWindow_InventoryItemCommand extends IHalfWindow_DetailsCommand {
+    makeCommandList: () => void;
+};
 
 // $StartCompilation
 

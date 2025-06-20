@@ -12,31 +12,81 @@
 // ----------------------
 
 import { WeaponGroup, WeaponQuality } from "../../types/enum";
-import HalfWindow_List, {IHalfWindow_List} from "../base/HalfWindow_List";
 import Window_InventoryAmmo from "./ammo/Window_InventoryAmmo";
-import Window_InventoryArmorCommand, {IWindow_InventoryArmorCommand} from "./armors/Window_InventoryArmorCommand";
-import Window_InventoryArmorDetails from "./armors/Window_InventoryArmorDetails";
-import Window_InventoryArmors, {IWindow_InventoryArmors} from "./armors/Window_InventoryArmors";
+import Window_InventoryArmorCommand, { IWindow_InventoryArmorCommand } from "./armors/Window_InventoryArmorCommand";
+import Window_InventoryArmorDetails, { IWindow_InventoryArmorDetails } from "./armors/Window_InventoryArmorDetails";
+import Window_InventoryArmors, { IWindow_InventoryArmors } from "./armors/Window_InventoryArmors";
 import Window_InventoryInfo from "./info/Window_InventoryInfo";
-import Window_InventoryItemCommand from "./items/Window_InventoryItemCommand";
-import Window_InventoryItemDetails from "./items/Window_InventoryItemDetails";
-import Window_InventoryItems from "./items/Window_InventoryItems";
+import Window_InventoryItemCommand, {IWindow_InventoryItemCommand} from "./items/Window_InventoryItemCommand";
+import Window_InventoryItemDetails, {IWindow_InventoryItemDetails} from "./items/Window_InventoryItemDetails";
+import Window_InventoryItems, {IWindow_InventoryItems} from "./items/Window_InventoryItems";
 import Window_InventoryWeaponCommand, { IWindow_InventoryWeaponCommand } from "./weapons/Window_InventoryWeaponCommand";
-import Window_InventoryWeaponDetails from "./weapons/Window_InventoryWeaponDetails";
-import Window_InventoryWeapons, { LoadedWeapon } from "./weapons/Window_InventoryWeapons";
+import Window_InventoryWeaponDetails, { IWindow_InventoryWeaponDetails } from "./weapons/Window_InventoryWeaponDetails";
+import Window_InventoryWeapons, { IWindow_InventoryWeapons, LoadedWeapon } from "./weapons/Window_InventoryWeapons";
 import Window_InventoryCommand from "./Window_InventoryCommand";
 import Window_InventoryTransferCommand from "./Window_InventoryTransferCommand";
-import {Armor} from "../../types/armor";
-import {Game_Actor} from "../../base/stats/Game_Actor";
-
+import { Armor } from "../../types/armor";
+import { Game_Actor } from "../../base/stats/Game_Actor";
 
 export interface Scene_Equip {
     _actor: Game_Actor;
 
+    _itemsWindow: IWindow_InventoryItems;
+    _itemDetailsWindow: IWindow_InventoryItemDetails;
+    _itemsCommandWindow: IWindow_InventoryItemCommand;
+
+    _weaponsWindow: IWindow_InventoryWeapons;
+    _weaponDetailsWindow: IWindow_InventoryWeaponDetails;
     _weaponsCommandWindow: IWindow_InventoryWeaponCommand;
 
     _armorsWindow: IWindow_InventoryArmors;
+    _armorDetailsWindow: IWindow_InventoryArmorDetails;
     _armorsCommandWindow: IWindow_InventoryArmorCommand;
+
+    createCommandWindow: () => void;
+    createWeaponsWindow: () => void;
+    createWeaponsCommandWindow: () => void;
+    createWeaponsDetailsWindow: () => void;
+    createArmorsWindow: () => void;
+    createArmorsCommandWindow: () => void;
+    createArmorsDetailsWindow: () => void;
+    createItemsWindow: () => void;
+    createItemsCommandWindow: () => void;
+    createItemsDetailsWindow: () => void;
+    createAmmoWindow: () => void;
+    createTransferCommandWindow: () => void;
+
+    hideAllWindows: () => void;
+    displayWindow: () => void;
+
+    activateInventoryInfos: () => void;
+    activateInventoryWeapons: () => void;
+    activateInventoryArmors: () => void;
+    activateInventoryItems: () => void;
+    activateInventoryAmmo: () => void;
+    activateCommandWindowItem: () => void;
+    activateCommandWindowWeapon: () => void;
+    activateCommandWindowArmor: () => void;
+
+    showItemDetails: () => void;
+    showWeaponDetails: () => void;
+    showArmorDetails: () => void;
+
+    useItem: () => void;
+    transferItem: () => void;
+
+    equipWeapon: () => void;
+    unequipWeapon: () => void;
+    transferWeapon: () => void;
+    reloadWeapon: () => void;
+
+    equipArmor: () => void;
+    unequipArmor: () => void;
+    transferArmor: () => void;
+
+    doTransfer: (actorIndex: number) => void;
+
+    refreshActor: () => void;
 };
 
 // ----------------------
@@ -247,26 +297,26 @@ Scene_Equip.prototype.createItemsDetailsWindow = function() {
 
 // Creating the weapons details Window for the scene
 Scene_Equip.prototype.createWeaponsDetailsWindow = function() {
-    this._weaponsDetailsWindow = new Window_InventoryWeaponDetails(
+    this._weaponDetailsWindow = new Window_InventoryWeaponDetails(
         this._weaponsCommandWindow.fittingHeight(this._weaponsCommandWindow._actionsNumber)
     );
     this._weaponsWindow.setHandler('show_weapon_details', () => {
         this.showWeaponDetails();
     });
-    this._weaponsDetailsWindow.hide();
-    this.addWindow(this._weaponsDetailsWindow);
+    this._weaponDetailsWindow.hide();
+    this.addWindow(this._weaponDetailsWindow);
 };
 
 // Creating the armors details Window for the scene
 Scene_Equip.prototype.createArmorsDetailsWindow = function() {
-    this._armorsDetailsWindow = new Window_InventoryArmorDetails(
+    this._armorDetailsWindow = new Window_InventoryArmorDetails(
         this._armorsCommandWindow.fittingHeight(this._armorsCommandWindow._actionsNumber)
     );
     this._armorsWindow.setHandler('show_armor_details', () => {
         this.showArmorDetails();
     });
-    this._armorsDetailsWindow.hide();
-    this.addWindow(this._armorsDetailsWindow);
+    this._armorDetailsWindow.hide();
+    this.addWindow(this._armorDetailsWindow);
 };
 
 // Creating the armors details Window for the scene
@@ -308,8 +358,8 @@ Scene_Equip.prototype.hideAllWindows = function() {
     this._weaponsWindow.hide();
     this._weaponsWindow.deactivate();
 
-    this._weaponsDetailsWindow.hide();
-    this._weaponsDetailsWindow.deactivate();
+    this._weaponDetailsWindow.hide();
+    this._weaponDetailsWindow.deactivate();
 
     this._weaponsCommandWindow.hide();
     this._weaponsCommandWindow.deactivate();
@@ -317,8 +367,8 @@ Scene_Equip.prototype.hideAllWindows = function() {
     this._armorsWindow.hide();
     this._armorsWindow.deactivate();
 
-    this._armorsDetailsWindow.hide();
-    this._armorsDetailsWindow.deactivate();
+    this._armorDetailsWindow.hide();
+    this._armorDetailsWindow.deactivate();
 
     this._armorsCommandWindow.hide();
     this._armorsCommandWindow.deactivate();
@@ -350,17 +400,17 @@ Scene_Equip.prototype.displayWindow = function() {
         this._infosWindow.refresh();
     } else if (this._commandWindow.index() == this.WEAPONS_WINDOW_INDEX) {
         this._weaponsWindow.show();
-        this._weaponsDetailsWindow.show();
+        this._weaponDetailsWindow.show();
         this._weaponsCommandWindow.show();
         this._weaponsWindow.refresh();
-        this._weaponsDetailsWindow.refresh();
+        this._weaponDetailsWindow.refresh();
         this._weaponsCommandWindow.clear();
     } else if (this._commandWindow.index() == this.ARMORS_WINDOW_INDEX) {
         this._armorsWindow.show();
-        this._armorsDetailsWindow.show();
+        this._armorDetailsWindow.show();
         this._armorsCommandWindow.show();
         this._armorsWindow.refresh();
-        this._armorsDetailsWindow.refresh();
+        this._armorDetailsWindow.refresh();
         this._armorsCommandWindow.clear();
     } else if (this._commandWindow.index() == this.ITEMS_WINDOW_INDEX) {
         this._itemsWindow.show();
@@ -390,7 +440,7 @@ Scene_Equip.prototype.activateInventoryWeapons = function(index = 0) {
     this._weaponsWindow.show();
     this._commandWindow.deactivate();
     this._weaponsWindow.activate();
-    this._weaponsDetailsWindow.show();
+    this._weaponDetailsWindow.show();
     this._weaponsCommandWindow.show();
     this._weaponsWindow.select(index);
     this._weaponsWindow.refresh();
@@ -403,7 +453,7 @@ Scene_Equip.prototype.activateInventoryArmors = function(index = 0) {
     this._armorsWindow.show();
     this._commandWindow.deactivate();
     this._armorsWindow.activate();
-    this._armorsDetailsWindow.show();
+    this._armorDetailsWindow.show();
     this._armorsCommandWindow.show();
     this._armorsWindow.select(index);
     this._armorsWindow.refresh();
@@ -491,16 +541,16 @@ Scene_Equip.prototype.showItemDetails = function() {
 
 Scene_Equip.prototype.showWeaponDetails = function() {
     const weapon: LoadedWeapon = this._weaponsWindow.weaponFromIndex(this._weaponsWindow.index());
-    this._weaponsDetailsWindow._weapon = weapon;
+    this._weaponDetailsWindow._weapon = weapon;
     this._weaponsCommandWindow.refreshCommand(this._actor, weapon.equipIndex);
-    this._weaponsDetailsWindow.refresh();
+    this._weaponDetailsWindow.refresh();
 }
 
 Scene_Equip.prototype.showArmorDetails = function() {
     const armor = this._armorsWindow.armorFromIndex(this._armorsWindow.index());
-    this._armorsDetailsWindow._armor = armor;
+    this._armorDetailsWindow._armor = armor;
     this._armorsCommandWindow.refreshCommand(this._actor, armor[0]);
-    this._armorsDetailsWindow.refresh();
+    this._armorDetailsWindow.refresh();
 }
 
 // Using an item - Triggered on the items window
