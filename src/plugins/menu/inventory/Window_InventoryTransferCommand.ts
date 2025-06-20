@@ -73,7 +73,6 @@ Window_InventoryTransferCommand.prototype.setItemType = function(type: string) {
 }
 
 Window_InventoryTransferCommand.prototype.doTransfer = function(targetActor: Game_Actor, item: Removable) {
-    console.log("this should work if I was good at coding");
     const removed: ActorWeapon | string = this._removeAction.call(this._actor, item);
     this._addAction.call(targetActor, removed);
 }
