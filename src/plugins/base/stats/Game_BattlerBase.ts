@@ -1,7 +1,8 @@
 // $PluginCompiler TEW_Base.js
 
-import { StatName, WeaponGroup } from "../../types/enum";
+import {BodyLocation, StatName, WeaponGroup} from "../../types/enum";
 import TEW from "../../types/tew";
+import {Armor} from "../../types/armor";
 
 export type ActorWeapon = {
     id: string;
@@ -68,6 +69,8 @@ export interface Game_BattlerBase {
     removeArmor: (armorId: string) => string;
     equipArmor: (armorId: string) => void;
     unequipArmor: (armorId: string) => void;
+    armorsAtLocation: (location: BodyLocation) => Armor[];
+    armorsAtLocations: (locations: BodyLocation[]) => Armor[];
     sortArmors: () => void;
     sortEquippedArmors: () => void;
 
@@ -417,6 +420,16 @@ Game_BattlerBase.prototype.unequipArmor = function(armorId: string) {
     this.armors.push(armorId);
     this.equippedArmors.splice(this.equippedArmors.indexOf(armorId), 1);
     this.sortArmors();
+}
+
+Game_BattlerBase.prototype.armorsAtLocation = function(location: BodyLocation) {
+    return this.equippedArmors.map((armor: string) => TEW.DATABASE.ARMORS.SET[armor])
+        .filter((armor: Armor) => armor.locations.includes(location));
+}
+
+Game_BattlerBase.prototype.armorsAtLocations = function(locations: BodyLocation[]) {
+    return this.equippedArmors.map((armor: string) => TEW.DATABASE.ARMORS.SET[armor])
+        .filter((armor: Armor) => armor.locations.some(location => locations.includes(location)));
 }
 
 Game_BattlerBase.prototype.sortArmors = function() {

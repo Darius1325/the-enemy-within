@@ -1,7 +1,22 @@
 // $PluginCompiler TEW_Menus.js
 
 import TEW from "../../../types/tew";
-import HalfWindow_List from "../../base/HalfWindow_List";
+import HalfWindow_List, { IHalfWindow_List } from "../../base/HalfWindow_List";
+import { Game_Actor } from "../../../base/stats/Game_Actor";
+import { Armor } from "../../../types/armor";
+
+export interface IWindow_InventoryArmors extends IHalfWindow_List {
+    _armors: [string, Armor][];
+    _stayCount: number;
+
+    syncActor: () => void;
+    drawAllItems: () => void;
+    drawItem: (index: number) => void;
+    armorFromIndex: (index: number) => [string, Armor];
+    item: () => [string, Armor];
+    select: (index: number) => void;
+    processOk: () => void;
+};
 
 // $StartCompilation
 
@@ -21,26 +36,30 @@ Window_InventoryArmors.prototype.initialize = function() {
     HalfWindow_List.prototype.initialize.call(this);
 };
 
-Window_InventoryArmors.prototype.setActor = function(actor: any) {
+Window_InventoryArmors.prototype.setActor = function(actor: Game_Actor) {
     if (this._actor !== actor) {
         this._actor = actor;
-        this._armors = [];
-
-        actor.equippedArmors.forEach((armor: string) => {
-            this._armors.push(TEW.DATABASE.ARMORS.ARRAY.find(a => a[0] === armor));
-        });
-        actor.armors.forEach((armor: string) => {
-            this._armors.push(TEW.DATABASE.ARMORS.ARRAY.find(a => a[0] === armor));
-        });
-        this._maxItems = this._armors.length;
-        this.refresh();
+        this.syncActor(actor);
     }
 };
 
+Window_InventoryArmors.prototype.syncActor = function() {
+    this._armors = [];
+
+    this.actor.equippedArmors.forEach((armor: string) => {
+        this._armors.push(TEW.DATABASE.ARMORS.ARRAY.find(a => a[0] === armor));
+    });
+    this.actor.armors.forEach((armor: string) => {
+        this._armors.push(TEW.DATABASE.ARMORS.ARRAY.find(a => a[0] === armor));
+    });
+    this._maxItems = this._armors.length;
+    this.refresh();
+};
+
 Window_InventoryArmors.prototype.drawAllItems = function() {
-    var topIndex = this.topIndex();
-    for (var i = 0; i < this.maxPageItems(); i++) {
-        var index = topIndex + i;
+    const topIndex = this.topIndex();
+    for (let i = 0; i < this.maxPageItems(); i++) {
+        const index = topIndex + i;
         if (index < this.maxItems()) {
             this.drawItem(index);
         }
@@ -73,9 +92,9 @@ Window_InventoryArmors.prototype.armorFromIndex = function(index: number) {
 };
 
 // // Getting the current selected armor
-// Window_InventoryArmors.prototype.item = function() {
-//     return this.armorFromIndex(this.index());
-// }
+Window_InventoryArmors.prototype.item = function() {
+    return this._armors(this.index());
+}
 
 Window_InventoryArmors.prototype.select = function(index: number) {
     this._index = index;

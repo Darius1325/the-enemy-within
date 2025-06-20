@@ -12,11 +12,11 @@
 // ----------------------
 
 import { WeaponGroup, WeaponQuality } from "../../types/enum";
-import HalfWindow_List from "../base/HalfWindow_List";
+import HalfWindow_List, {IHalfWindow_List} from "../base/HalfWindow_List";
 import Window_InventoryAmmo from "./ammo/Window_InventoryAmmo";
-import Window_InventoryArmorCommand from "./armors/Window_InventoryArmorCommand";
+import Window_InventoryArmorCommand, {IWindow_InventoryArmorCommand} from "./armors/Window_InventoryArmorCommand";
 import Window_InventoryArmorDetails from "./armors/Window_InventoryArmorDetails";
-import Window_InventoryArmors from "./armors/Window_InventoryArmors";
+import Window_InventoryArmors, {IWindow_InventoryArmors} from "./armors/Window_InventoryArmors";
 import Window_InventoryInfo from "./info/Window_InventoryInfo";
 import Window_InventoryItemCommand from "./items/Window_InventoryItemCommand";
 import Window_InventoryItemDetails from "./items/Window_InventoryItemDetails";
@@ -26,10 +26,17 @@ import Window_InventoryWeaponDetails from "./weapons/Window_InventoryWeaponDetai
 import Window_InventoryWeapons, { LoadedWeapon } from "./weapons/Window_InventoryWeapons";
 import Window_InventoryCommand from "./Window_InventoryCommand";
 import Window_InventoryTransferCommand from "./Window_InventoryTransferCommand";
+import {Armor} from "../../types/armor";
+import {Game_Actor} from "../../base/stats/Game_Actor";
 
 
 export interface Scene_Equip {
+    _actor: Game_Actor;
+
     _weaponsCommandWindow: IWindow_InventoryWeaponCommand;
+
+    _armorsWindow: IWindow_InventoryArmors;
+    _armorsCommandWindow: IWindow_InventoryArmorCommand;
 };
 
 // ----------------------
@@ -504,7 +511,6 @@ Scene_Equip.prototype.useItem = function() {
 
 // Transfering an item - Triggered on the items window
 Scene_Equip.prototype.transferItem = function() {
-    // console.log("Transfer item", this._itemsWindow.index());
     this._transferCommandWindow.activate();
     this._transferCommandWindow.show();
     this._transferCommandWindow.select(0);
@@ -545,7 +551,6 @@ Scene_Equip.prototype.unequipWeapon = function() {
 
 // Transfering a weapon - Triggered on the weapons window
 Scene_Equip.prototype.transferWeapon = function() {
-    console.log("Transfer weapon", this._weaponsWindow.index());
     this._transferCommandWindow.activate();
     this._transferCommandWindow.show();
     this._transferCommandWindow.select(0);
@@ -557,22 +562,42 @@ Scene_Equip.prototype.reloadWeapon = function() {
     this._weaponsCommandWindow.callHandler('cancel');
 }
 
-// Equipping a weapon - Triggered on the weapons window
+// Equipping an armor - Triggered on the armors window
 Scene_Equip.prototype.equipArmor = function() {
-    console.log("Equip armor : ", this._armorsWindow.index());
-    this._armorsCommandWindow.callHandler('cancel');
+    const armor: [string, Armor] = this._armorsWindow.armorFromIndex(this._armorsWindow.index());
+
+    // Check compatibility with all armor groups equipped at relevant locations
+    const locations = armor[1].locations;
+    const overlappingArmors: Armor[] = locations.length === 1
+        ? this._actor.armorsAtLocation(locations[0])
+        : this._actor.armorsAtLocations(locations);
+    const overlappingGroups = overlappingArmors.map(armor => armor.group);
+    const canEquip = [...armor[1].forbiddenWith, armor[1].group]
+        .some(group => overlappingGroups.includes(group));
+
+    if (canEquip) {
+        this._actor.equipArmor(armor[0]);
+        this._armorsWindow.syncActor();
+        // play BGM
+        this._armorsCommandWindow.callHandler('cancel');
+    } else {
+        // play BGM
+    }
 }
 
-// Unequipping a weapon - Triggered on the weapons window
+// Unequipping an armor - Triggered on the armors window
 Scene_Equip.prototype.unequipArmor = function() {
-    console.log("Unequip armor : ", this._armorsWindow.index());
+    this._actor.unequipArmor(this._armorsWindow.item()[0])
+    this._armorsWindow.syncActor();
+    // play BGM
     this._armorsCommandWindow.callHandler('cancel');
 }
 
-// Transfering a weapon - Triggered on the weapons window
+// Transferring an armor - Triggered on the armors window
 Scene_Equip.prototype.transferArmor = function() {
-    console.log("Transfer armor", this._armorsWindow.index());
     this._transferCommandWindow.activate();
+    this._transferCommandWindow.show();
+    this._transferCommandWindow.select(0);
 }
 
 Scene_Equip.prototype.doTransfer = function(actorIndex: number) {
