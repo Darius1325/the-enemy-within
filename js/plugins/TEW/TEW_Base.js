@@ -326,11 +326,11 @@ Game_BattlerBase.prototype.initialize = function () {
     // this.addItem("ROBES_ELABORATE");
     // temp Weapons
     this.addWeapon("AXE");
-    this.addWeapon("SHIELD");
-    this.addWeapon("CLUB");
-    this.addWeapon("CANE_PISTOL");
-    this.addWeapon("CANE_PISTOL");
-    this.addWeapon("HOCHLAND_LONG_RIFLE");
+    // this.addWeapon("SHIELD");
+    // this.addWeapon("CLUB");
+    // this.addWeapon("CANE_PISTOL");
+    // this.addWeapon("CANE_PISTOL");
+    // this.addWeapon("HOCHLAND_LONG_RIFLE");
     // this.equipMainHand(0);
     // this.equipSecondHand(2);
     // temp Armor
@@ -527,6 +527,21 @@ Game_BattlerBase.prototype.unequipArmor = function (armorId) {
     this.armors.push(armorId);
     this.equippedArmors.splice(this.equippedArmors.indexOf(armorId), 1);
     this.sortArmors();
+};
+Game_BattlerBase.prototype.unequipArmors = function (armorIds) {
+    armorIds.forEach(id => {
+        this.armors.push(id);
+        this.equippedArmors.splice(this.equippedArmors.indexOf(id), 1);
+    });
+    this.sortArmors();
+};
+Game_BattlerBase.prototype.armorsAtLocation = function (location) {
+    return this.equippedArmors.map((armor) => TEW.DATABASE.ARMORS.SET[armor])
+        .filter((armor) => armor.locations.includes(location));
+};
+Game_BattlerBase.prototype.armorsAtLocations = function (locations) {
+    return this.equippedArmors.map((armor) => TEW.DATABASE.ARMORS.SET[armor])
+        .filter((armor) => armor.locations.some(location => locations.includes(location)));
 };
 Game_BattlerBase.prototype.sortArmors = function () {
     this.armors = this.armors.sort((a, b) => TEW.DATABASE.ARMORS.IDS.indexOf(a) - TEW.DATABASE.ARMORS.IDS.indexOf(b));

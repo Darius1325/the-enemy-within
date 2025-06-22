@@ -81,7 +81,7 @@ Window_InventoryItems.prototype.itemFromIndex = function(index: number) {
 
 // Getting the current selected item
 Window_InventoryItems.prototype.item = function() {
-    return this._items(this.index());
+    return this._items[this.index()];
 }
 
 // Selecting an item

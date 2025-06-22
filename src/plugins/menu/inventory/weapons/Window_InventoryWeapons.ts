@@ -33,6 +33,7 @@ export interface IWindow_InventoryWeapons extends IHalfWindow_List {
     _secondHandWeapon: LoadedWeapon;
     _stayCount: number;
 
+    length: () => number;
     syncActor: () => void;
     drawAllItems: () => void;
     drawItem: (index: number) => void;
@@ -65,8 +66,15 @@ Window_InventoryWeapons.prototype.setActor = function(actor: Game_Actor) {
     }
 };
 
+Window_InventoryWeapons.prototype.length = function() {
+    return this._weapons.length
+        + (this._mainHandWeapon != undefined ? 1 : 0)
+        + (this._secondHandWeapon != undefined ? 1 : 0);
+};
+
 Window_InventoryWeapons.prototype.syncActor = function() {
-    const displayedWeapons = this._actor.weapons.map((weapon: ActorWeapon, index: number): LoadedWeapon => {
+    const actor: Game_Actor = this._actor;
+    const displayedWeapons = actor.weapons.map((weapon: ActorWeapon, index: number): LoadedWeapon => {
         const weaponData = Object.assign({},
             TEW.DATABASE.WEAPONS.ARRAY.find(w => w[0] === weapon.id));
         return {

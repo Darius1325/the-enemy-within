@@ -5,7 +5,7 @@ import { Game_Actor } from "../../../base/stats/Game_Actor";
 
 export interface IWindow_InventoryArmorCommand extends IHalfWindow_DetailsCommand {
     makeCommandList: () => void;
-    refreshCommand: (actor: Game_Actor, armorId?: string) => void;
+    refreshCommand: (equipped: boolean, armorId?: string) => void;
 };
 
 // $StartCompilation
@@ -34,10 +34,10 @@ Window_InventoryArmorCommand.prototype.makeCommandList = function() {
     this.addCommand(TextManager.inventoryWeaponTransfer, 'inventory_armor_transfer');
 };
 
-Window_InventoryArmorCommand.prototype.refreshCommand = function(actor: Game_Actor, armorId?: string){
-    if (actor) {
+Window_InventoryArmorCommand.prototype.refreshCommand = function(equipped: boolean, armorId?: string){
+    if (armorId) {
         this.clearCommandList();
-        if (actor.hasArmorEquipped(armorId)) {
+        if (equipped) {
             this.addCommand(TextManager.inventoryArmorUnequip, 'inventory_armor_unequip');
             this.addCommand(TextManager.inventoryArmorTransfer, 'inventory_armor_transfer', false);
         } else {

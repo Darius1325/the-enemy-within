@@ -7,6 +7,7 @@ export interface IWindow_InventoryWeaponDetails extends IHalfWindow_Details {
     _weapon: LoadedWeapon;
 
     refresh: () => void;
+    empty: () => void;
     drawDetails: (weapon: LoadedWeapon) => void;
 };
 
@@ -35,6 +36,11 @@ Window_InventoryWeaponDetails.prototype.refresh = function () {
     if (this._weapon) {
         this.drawDetails(this._weapon);
     }
+};
+
+// Erase window content
+Window_InventoryWeaponDetails.prototype.empty = function() {
+    this._weapon = null;
 };
 
 // Drawing the details

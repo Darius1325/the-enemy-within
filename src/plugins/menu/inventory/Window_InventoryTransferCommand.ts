@@ -20,6 +20,11 @@ function Window_InventoryTransferCommand() {
 export default Window_InventoryTransferCommand.prototype = Object.create(Window_Command.prototype);
 Window_InventoryTransferCommand.prototype.constructor = Window_InventoryTransferCommand;
 
+Window_InventoryTransferCommand.ITEM = 'item';
+Window_InventoryTransferCommand.WEAPON = 'weapon';
+Window_InventoryTransferCommand.ARMOR = 'armor';
+Window_InventoryTransferCommand.AMMO = 'ammo';
+
 // Initializing the command window
 Window_InventoryTransferCommand.prototype.initialize = function() {
     this._windowWidth = Graphics.boxWidth / 4;
@@ -51,19 +56,19 @@ Window_InventoryTransferCommand.prototype.setActor = function(actor: Game_Actor)
 Window_InventoryTransferCommand.prototype.setItemType = function(type: string) {
     this.type = type;
     switch (type) {
-        case 'item':
+        case Window_InventoryTransferCommand.ITEM:
             this._addAction = Game_Actor.prototype.addItem;
             this._removeAction = Game_Actor.prototype.removeItem;
             break;
-        case 'weapon':
+        case Window_InventoryTransferCommand.WEAPON:
             this._addAction = Game_Actor.prototype.transferWeapon;
             this._removeAction = Game_Actor.prototype.removeWeapon;
             break;
-        case 'armor':
+        case Window_InventoryTransferCommand.ARMOR:
             this._addAction = Game_Actor.prototype.addArmor;
             this._removeAction = Game_Actor.prototype.removeArmor;
             break;
-        case 'ammo':
+        case Window_InventoryTransferCommand.AMMO:
             this._addAction = Game_Actor.prototype.addAmmo;
             this._removeAction = Game_Actor.prototype.removeAmmo;
             break;
@@ -72,9 +77,9 @@ Window_InventoryTransferCommand.prototype.setItemType = function(type: string) {
     }
 }
 
-Window_InventoryTransferCommand.prototype.doTransfer = function(targetActor: Game_Actor, item: Removable) {
-    const removed: ActorWeapon | string = this._removeAction.call(this._actor, item);
-    this._addAction.call(targetActor, removed);
+Window_InventoryTransferCommand.prototype.doTransfer = function(targetActor: Game_Actor, item: Removable, quantity = 1) {
+    const removed: ActorWeapon | string = this._removeAction.call(this._actor, item, quantity);
+    this._addAction.call(targetActor, removed, quantity);
 }
 
 Window_InventoryTransferCommand.prototype.makeCommandList = function() {

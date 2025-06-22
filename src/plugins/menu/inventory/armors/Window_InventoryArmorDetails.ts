@@ -8,6 +8,7 @@ export interface IWindow_InventoryArmorDetails extends IHalfWindow_Details {
     _armor: [string, Armor];
 
     refresh: () => void;
+    empty: () => void;
     drawDetails: (weapon: LoadedWeapon) => void;
 };
 
@@ -36,6 +37,11 @@ Window_InventoryArmorDetails.prototype.refresh = function() {
     if (this._armor){
         this.drawDetails(this._armor);
     }
+};
+
+// Erase window content
+Window_InventoryArmorDetails.prototype.empty = function() {
+    this._armor = null;
 };
 
 // Drawing the details

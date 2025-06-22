@@ -69,6 +69,7 @@ export interface Game_BattlerBase {
     removeArmor: (armorId: string) => string;
     equipArmor: (armorId: string) => void;
     unequipArmor: (armorId: string) => void;
+    unequipArmors: (armorIds: string[]) => void;
     armorsAtLocation: (location: BodyLocation) => Armor[];
     armorsAtLocations: (locations: BodyLocation[]) => Armor[];
     sortArmors: () => void;
@@ -170,11 +171,11 @@ Game_BattlerBase.prototype.initialize = function() {
 
     // temp Weapons
     this.addWeapon("AXE");
-    this.addWeapon("SHIELD");
-    this.addWeapon("CLUB");
-    this.addWeapon("CANE_PISTOL");
-    this.addWeapon("CANE_PISTOL");
-    this.addWeapon("HOCHLAND_LONG_RIFLE");
+    // this.addWeapon("SHIELD");
+    // this.addWeapon("CLUB");
+    // this.addWeapon("CANE_PISTOL");
+    // this.addWeapon("CANE_PISTOL");
+    // this.addWeapon("HOCHLAND_LONG_RIFLE");
     // this.equipMainHand(0);
     // this.equipSecondHand(2);
 
@@ -419,6 +420,14 @@ Game_BattlerBase.prototype.equipArmor = function(armorId: string) {
 Game_BattlerBase.prototype.unequipArmor = function(armorId: string) {
     this.armors.push(armorId);
     this.equippedArmors.splice(this.equippedArmors.indexOf(armorId), 1);
+    this.sortArmors();
+}
+
+Game_BattlerBase.prototype.unequipArmors = function(armorIds: string[]) {
+    armorIds.forEach(id => {
+        this.armors.push(id)
+        this.equippedArmors.splice(this.equippedArmors.indexOf(id), 1);
+    });
     this.sortArmors();
 }
 

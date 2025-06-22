@@ -341,7 +341,7 @@ TEW.DATABASE.ARMORS.SET = {
         ap: 3,
         qualities: [2 /* ArmorQuality.IMPENETRABLE */, 6 /* ArmorQuality.REQUIRES_KIT */, 5 /* ArmorQuality.WEAKPOINTS */],
         forbiddenWith: [1 /* ArmorGroup.BOILED_LEATHER */, 4 /* ArmorGroup.CHAINMAIL */, 5 /* ArmorGroup.BRIGANDINE */],
-        description: "Plate armour is painstakingly crafted from sheets of iron or steel. It is tailor made and close-fitting, so may not normally be worn over other types of armour. These bracers will protect yout arms."
+        description: "Plate armour is painstakingly crafted from sheets of iron or steel. It is tailor made and close-fitting, so may not normally be worn over other types of armour. These bracers will protect your arms."
     },
     OPEN_HELM: {
         name: "Open Helm",
