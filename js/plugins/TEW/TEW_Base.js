@@ -567,6 +567,34 @@ Game_Interpreter.prototype.setBaseStat = function (playerName, statName, value) 
     const player = $gameActors._data[TEW.CHARACTERS.SET[playerName]];
     player._paramBase[TEW.CHARACTERS.STATS[statName]] = value;
 };
+Game_Interpreter.prototype.partyHasItem = function (itemId) {
+    const actors = $gameParty._actors.map((id) => $gameActors.actor(id));
+    console.log(actors);
+    for (let i = 0; i < actors.length; i++) {
+        if (actors[i].hasItem(itemId)) {
+            return true;
+        }
+    }
+    return false;
+};
+Game_Interpreter.prototype.addItemToParty = function (itemId, quantity = 1) {
+    const leadActor = $gameParty.leader();
+    leadActor.addItem(itemId, quantity);
+};
+Game_Interpreter.prototype.removeItemFromParty = function (itemId, quantity = 1) {
+    const actors = $gameParty._actors.map((id) => $gameActors.actor(id));
+    let totalRemoved = 0;
+    for (let i = 0; i < actors.length; i++) {
+        const quantityToRemove = Math.min(actors[i].item(itemId), quantity);
+        if (quantityToRemove > 0) {
+            actors[i].removeItem(itemId, quantityToRemove);
+            totalRemoved += quantityToRemove;
+            if (totalRemoved >= quantity) {
+                break;
+            }
+        }
+    }
+};
 // #endregion =========================== Game_Interpreter ============================== //
 // ============================== //
 // #region ============================== TextManager ============================== //
