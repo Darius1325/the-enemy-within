@@ -30,6 +30,8 @@ Window_InventoryTransferCommand.prototype.initialize = function() {
     this._windowWidth = Graphics.boxWidth / 4;
     this._windowHeight = this.fittingHeight(5); // actor count - 1
     this.type = 'item';
+    this.item = '';
+    this.targetActor = undefined;
     this._addAction = Game_Actor.prototype.addItem;
     this._removeAction = Game_Actor.prototype.removeItem;
     Window_Command.prototype.initialize.call(
@@ -77,9 +79,9 @@ Window_InventoryTransferCommand.prototype.setItemType = function(type: string) {
     }
 }
 
-Window_InventoryTransferCommand.prototype.doTransfer = function(targetActor: Game_Actor, item: Removable, quantity = 1) {
-    const removed: ActorWeapon | string = this._removeAction.call(this._actor, item, quantity);
-    this._addAction.call(targetActor, removed, quantity);
+Window_InventoryTransferCommand.prototype.doTransfer = function(quantity = 1) {
+    const removed: ActorWeapon | string = this._removeAction.call(this._actor, this.item, quantity);
+    this._addAction.call(this.targetActor, removed, quantity);
 }
 
 Window_InventoryTransferCommand.prototype.makeCommandList = function() {

@@ -28,6 +28,16 @@ Window_InventoryTransferSpinner.prototype.initialize = function() {
         Graphics.boxHeight - this._windowHeight);
 };
 
+Window_InventoryTransferSpinner.prototype.activate = function() {
+    Window_Selectable.prototype.activate.call(this);
+    this._number = 1;
+};
+
+Window_InventoryTransferSpinner.prototype.deactivate = function() {
+    Window_Selectable.prototype.deactivate.call(this);
+    this._number = 1;
+};
+
 Window_InventoryTransferSpinner.prototype.createButtons = function() {
     var bitmap = ImageManager.loadSystem('ButtonSet');
     var buttonWidth = 48;
@@ -134,8 +144,8 @@ Window_InventoryTransferSpinner.prototype.processNumberChange = function() {
     }
 };
 
-Window_InventoryTransferSpinner.prototype.changeNumber = function(amount) {
-    var lastNumber = this._number;
+Window_InventoryTransferSpinner.prototype.changeNumber = function(amount: number) {
+    const lastNumber = this._number;
     this._number = (this._number + amount).clamp(1, this._max);
     if (this._number !== lastNumber) {
         SoundManager.playCursor();
