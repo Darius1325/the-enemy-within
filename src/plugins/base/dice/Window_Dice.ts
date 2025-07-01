@@ -1,4 +1,4 @@
-// $PluginCompiler TEW_Constants.js
+// $PluginCompiler TEW_Base.js
 // $StartCompilation
 
 //---------------------------------------
@@ -37,4 +37,11 @@ Window_Dice.prototype.refresh = function() {
 Window_Dice.prototype.open = function() {
     this.refresh();
     Window_Base.prototype.open.call(this);
+};
+
+Window_Dice.prototype.update = function() {
+    Window_Base.prototype.update.call(this);
+    if (Input.isAnyKeyTriggered()) {
+        this.close();
+    }
 };
