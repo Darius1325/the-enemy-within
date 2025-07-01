@@ -1,6 +1,6 @@
 // $PluginCompiler TEW_Menus.js
 
-import { Armor } from "../../../types/armor";
+import { Armor } from "../../../_types/armor";
 import HalfWindow_Details, { IHalfWindow_Details } from "../../base/HalfWindow_Details";
 import { LoadedWeapon } from "../weapons/Window_InventoryWeapons";
 

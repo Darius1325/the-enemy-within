@@ -13,9 +13,9 @@
 
 import { Game_Actor } from "../../../base/stats/Game_Actor";
 import { ActorWeapon } from "../../../base/stats/Game_BattlerBase";
-import { MeleeWeapon } from "../../../types/meleeWeapon";
-import { RangedWeapon } from "../../../types/rangedWeapon";
-import TEW from "../../../types/tew";
+import { MeleeWeapon } from "../../../_types/meleeWeapon";
+import { RangedWeapon } from "../../../_types/rangedWeapon";
+import TEW from "../../../_types/tew";
 import HalfWindow_List, { IHalfWindow_List } from "../../base/HalfWindow_List";
 
 // ----------------------

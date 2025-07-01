@@ -1,14 +1,25 @@
 // $PluginCompiler TEW_Combat.js 2
 
-import TEW from "../types/tew";
-import { ArmorGroup, WeaponGroup, WeaponQuality } from "../types/enum";
+import TEW from "../../_types/tew";
+import { ArmorGroup, WeaponGroup, WeaponQuality } from "../../_types/enum";
 
 // $StartCompilation
 
 //-----------------------------------------------------------------------------
 // Utilities
 
-// Retrieving Weapon info
+// String to boolean conversion
+String.prototype.toBoolean = function() {
+    const s = String(this);
+    switch (s) {
+        case 'false':
+            return false;
+        default:
+            return true;
+    }
+};
+
+// Retrieve weapon info
 TEW.COMBAT.getWeaponQualityEffects = (weaponId: string) => {
     const weapon = TEW.COMBAT.getWeaponFromId(weaponId);
 
@@ -95,7 +106,7 @@ TEW.COMBAT.getWeaponQualityEffects = (weaponId: string) => {
     };
 };
 
-// Retrieving Armor infos
+// Retrieve armor info
 TEW.COMBAT.getArmorInfos = (armorIds: string[]) => {
     return {
         headModifier : [{

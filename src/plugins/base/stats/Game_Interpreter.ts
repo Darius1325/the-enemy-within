@@ -1,7 +1,7 @@
 // $PluginCompiler TEW_Base.js
 
-import TEW from "../../types/tew";
-import {StatName} from "../../types/enum";
+import TEW from "../../_types/tew";
+import {StatName} from "../../_types/enum";
 import { Game_Actor } from "./Game_Actor";
 
 // $StartCompilation

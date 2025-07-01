@@ -10,8 +10,8 @@
 // ----------------------
 // Imports
 // ----------------------
-import TEW from "../types/tew";
-import { Status } from "../types/enum";
+import TEW from "../_types/tew";
+import { Status } from "../_types/enum";
 
 // ----------------------
 // $StartCompilation

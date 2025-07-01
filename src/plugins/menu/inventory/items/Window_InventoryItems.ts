@@ -1,8 +1,8 @@
 // $PluginCompiler TEW_Menus.js
 
-import TEW from "../../../types/tew";
+import TEW from "../../../_types/tew";
 import HalfWindow_List, { IHalfWindow_List } from "../../base/HalfWindow_List";
-import { Item } from "../../../types/item";
+import { Item } from "../../../_types/item";
 
 export interface IWindow_InventoryItems extends IHalfWindow_List {
     _items: [string, Item][];

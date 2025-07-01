@@ -1,6 +1,6 @@
 // $PluginCompiler TEW_Menus.js
 
-import { Item } from "../../../types/item";
+import { Item } from "../../../_types/item";
 import HalfWindow_Details, { IHalfWindow_Details } from "../../base/HalfWindow_Details";
 
 type ItemWithQuantity = Item & {

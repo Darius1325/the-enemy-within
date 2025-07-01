@@ -1,6 +1,6 @@
 // $PluginCompiler TEW_Base.js
 
-import TEW from "../../types/tew";
+import TEW from "../../_types/tew";
 import Window_Dice from "./Window_Dice";
 
 // $StartCompilation

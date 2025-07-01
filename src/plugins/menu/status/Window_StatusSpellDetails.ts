@@ -11,8 +11,8 @@
 // Imports
 // ----------------------
 
-import { SpellDuration, SpellTarget } from "../../types/enum";
-import { Spell } from "../../types/spell";
+import { SpellDuration, SpellTarget } from "../../_types/enum";
+import { Spell } from "../../_types/spell";
 import HalfWindow_Details from "../base/HalfWindow_Details";
 
 // ----------------------

@@ -14,7 +14,7 @@
 import { Scene_Equip } from "../Scene_Equip";
 import Window_InventoryWeapons, {LoadedWeapon} from "./Window_InventoryWeapons";
 import Window_InventoryWeaponDetails from "./Window_InventoryWeaponDetails";
-import {WeaponGroup, WeaponQuality} from "../../../types/enum";
+import {WeaponGroup, WeaponQuality} from "../../../_types/enum";
 import Window_InventoryTransferCommand from "../Window_InventoryTransferCommand";
 import Window_InventoryWeaponCommand from "./Window_InventoryWeaponCommand";
 

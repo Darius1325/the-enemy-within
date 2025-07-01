@@ -94,7 +94,6 @@ declare global {
     var Game_Troop: any;
     var Game_Party: any;
     var Game_Unit: any;
-    var PluginManager: any;
     var Sprite_Base: any;
     var Sprite_Character: any;
     var Sprite_Damage: any;

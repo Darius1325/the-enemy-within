@@ -1,8 +1,8 @@
 // $PluginCompiler TEW_Base.js
 
-import {BodyLocation, StatName, WeaponGroup} from "../../types/enum";
-import TEW from "../../types/tew";
-import {Armor} from "../../types/armor";
+import {BodyLocation, StatName, WeaponGroup} from "../../_types/enum";
+import TEW from "../../_types/tew";
+import {Armor} from "../../_types/armor";
 
 export type ActorWeapon = {
     id: string;

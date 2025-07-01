@@ -12,10 +12,10 @@
 // ----------------------
 
 import { Scene_Equip } from "../Scene_Equip";
-import { Armor } from "../../../types/armor";
-import { ArmorGroup, ArmorQuality } from "../../../types/enum";
+import { Armor } from "../../../_types/armor";
+import { ArmorGroup, ArmorQuality } from "../../../_types/enum";
 import { Game_Actor } from "../../../base/stats/Game_Actor";
-import TEW from "../../../types/tew";
+import TEW from "../../../_types/tew";
 import Window_InventoryTransferCommand from "../Window_InventoryTransferCommand";
 import Window_InventoryArmorDetails from "./Window_InventoryArmorDetails";
 import Window_InventoryArmorCommand from "./Window_InventoryArmorCommand";

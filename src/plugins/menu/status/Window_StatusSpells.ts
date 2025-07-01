@@ -11,7 +11,7 @@
 // Imports
 // ----------------------
 
-import TEW from "../../types/tew";
+import TEW from "../../_types/tew";
 import HalfWindow_List from "../base/HalfWindow_List";
 
 // ----------------------

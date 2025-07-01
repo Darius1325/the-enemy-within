@@ -11,8 +11,8 @@
 // Imports
 // ----------------------
 
-import { ArmorGroup, ArmorGroupLabel, BodyLocation, ArmorQuality, Availability } from "../types/enum";
-import TEW from "../types/tew";
+import { ArmorGroup, ArmorGroupLabel, BodyLocation, ArmorQuality, Availability } from "../_types/enum";
+import TEW from "../_types/tew";
 
 // ----------------------
 // $StartCompilation

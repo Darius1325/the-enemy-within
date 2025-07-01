@@ -1,6 +1,6 @@
 // $PluginCompiler TEW_Menus.js 10
 
-import TEW from "../../types/tew";
+import TEW from "../../_types/tew";
 import { Game_Actor } from "../../base/stats/Game_Actor";
 import { ActorWeapon } from "../../base/stats/Game_BattlerBase";
 

@@ -11,8 +11,8 @@
 // Imports
 // ----------------------
 
-import { Availability, ItemGroup, ItemGroupLabel } from "../types/enum";
-import TEW from "../types/tew";
+import { Availability, ItemGroup, ItemGroupLabel } from "../_types/enum";
+import TEW from "../_types/tew";
 
 // ----------------------
 // $StartCompilation

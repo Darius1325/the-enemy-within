@@ -1,9 +1,9 @@
 // $PluginCompiler TEW_Menus.js
 
-import TEW from "../../../types/tew";
+import TEW from "../../../_types/tew";
 import HalfWindow_List, { IHalfWindow_List } from "../../base/HalfWindow_List";
 import { Game_Actor } from "../../../base/stats/Game_Actor";
-import { Armor } from "../../../types/armor";
+import { Armor } from "../../../_types/armor";
 
 type DisplayedArmor = [string, Armor & { equipped: boolean }];
 
