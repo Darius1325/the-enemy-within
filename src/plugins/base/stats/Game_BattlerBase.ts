@@ -232,11 +232,11 @@ Game_BattlerBase.prototype.clearParamPlus = function() {
 };
 
 Game_BattlerBase.prototype.param = function(paramId: number) {
-    var value = this.paramBase(paramId) + this.paramPlus(paramId);
-    return Math.round(value < 0 ? 0 : value);
+    const value = this.paramBase(paramId) + this.paramPlus(paramId);
+    return Math.max(0, value);
 };
 
-Game_BattlerBase.prototype.paramByName = function(paramName: string) {
+Game_BattlerBase.prototype.paramByName = function(paramName: StatName) {
     return this.param(TEW.CHARACTERS.STATS[paramName.toLowerCase()]);
 };
 

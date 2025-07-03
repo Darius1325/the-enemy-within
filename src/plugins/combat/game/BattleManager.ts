@@ -6,7 +6,9 @@
 //
 // The static class that manages tactics progress.
 
-BattleManager.setup = function(troopId, canEscape, canLose) {
+import {Game_Actor} from "../../base/stats/Game_Actor";
+
+BattleManager.setup = function(troopId: number, canEscape: boolean, canLose: boolean) {
     this.initMembers();
     this._canEscape = canEscape;
     this._canLose = canLose;
@@ -14,9 +16,7 @@ BattleManager.setup = function(troopId, canEscape, canLose) {
     $gameTroop.setup(troopId);
     $gameSwitches.update();
     $gameVariables.update();
-    var x = $gamePlayer.x;
-    var y = $gamePlayer.y;
-    $gameSelector.performTransfer(x, y);
+    $gameSelector.performTransfer($gamePlayer.x, $gamePlayer.y);
     this._phase = 'startPhase';
 };
 
@@ -47,8 +47,8 @@ BattleManager.initMembers = function() {
 };
 
 BattleManager.createGameObjects = function() {
-    for (var i = 0; i < $gameMap.events().length; i++) {
-        var event = $gameMap.events()[i];
+    for (let i = 0; i < $gameMap.events().length; i++) {
+        const event = $gameMap.events()[i];
         if (event.tparam('Actor') > 0) {
             this.addGameActor(event);
         } else if (event.tparam('Party') > 0) {
@@ -57,39 +57,29 @@ BattleManager.createGameObjects = function() {
             this.addGameEnemy(event);
         } else if (event.tparam('Troop') > 0) {
             this.addGameTroop(event);
-        } else {
-            continue;
         }
     }
 };
 
 BattleManager.addGameActor = function(event) {
-    var actorId = Number(event.tparam('Actor'));
+    const actorId = Number(event.tparam('Actor'));
     $gamePartyTs.addActor(actorId, event);
 };
 
 BattleManager.addGameParty = function(event) {
-    var partyId = Number(event.tparam('Party'));
-    var actorId = $gameParty.memberId(partyId);
+    const partyId = Number(event.tparam('Party'));
+    const actorId = $gameParty.memberId(partyId);
     $gamePartyTs.addActor(actorId, event, true);
 };
 
 BattleManager.addGameEnemy = function(event) {
-    var enemyId = Number(event.tparam('Enemy'));
+    const enemyId = Number(event.tparam('Enemy'));
     $gameTroopTs.addEnemy(enemyId, event);
 };
 
 BattleManager.addGameTroop = function(event) {
-    var index = Number(event.tparam('Troop'));
+    const index = Number(event.tparam('Troop'));
     $gameTroopTs.addTroop(index, event);
-};
-
-BattleManager.setEventCallback = function(callback) {
-    this._eventCallback = callback;
-};
-
-BattleManager.setLogWindow = function(logWindow) {
-    this._logWindow = logWindow;
 };
 
 BattleManager.setCommandWindow = function(commandWindow) {
@@ -106,10 +96,6 @@ BattleManager.setEnemyWindow = function(enemyWindow) {
 
 BattleManager.setInfoWindow = function(infoWindow) {
     this._infoWindow = infoWindow;
-};
-
-BattleManager.setSpriteset = function(spriteset) {
-    this._spriteset = spriteset;
 };
 
 BattleManager.onEncounter = function() {
@@ -144,6 +130,7 @@ BattleManager.isActive = function() {
     return false;
 };
 
+// TODO remove
 BattleManager.makeEscapeRatio = function() {
     this._escapeRatio = 0.5 * $gameParty.agility() / $gameTroop.agility();
 };
@@ -213,6 +200,7 @@ BattleManager.isBusy = function() {
 };
 
 BattleManager.updateEvent = function() {
+    // why is this a switch ???
     switch (this._phase) {
         case 'startPhase':
         case 'playerPhase':
@@ -232,6 +220,8 @@ BattleManager.isActionForced = function() {
     return false;
 };
 
+// RMMV function names are as useful as a hedgehog in a condom factory
+// Wdym "updateEventMain" returns false, this makes less sense than the fucking Tenet movie
 BattleManager.updateEventMain = function() {
     $gameTroop.updateInterpreter();
     $gameParty.requestMotionRefresh();
@@ -296,7 +286,7 @@ BattleManager.isEscaped = function() {
     return this._escaped;
 };
 
-BattleManager.allBattlerMembers = function() {
+BattleManager.allBattleMembers = function() {
     return $gamePartyTs.members().concat($gameTroopTs.members());
 };
 
@@ -304,24 +294,33 @@ BattleManager.actor = function() {
     return this._actorIndex >= 0 ? $gamePartyTs.members()[this._actorIndex] : null;
 };
 
+// TODO remove
 BattleManager.makePlayerOrders = function() {
     this._playersOrder = $gamePartyTs.restrictedMembers();
 };
 
+ // TODO remove
 BattleManager.makeEnemyOrders = function() {
     this._enemiesOrder = $gameTroopTs.battleMembers();
 };
 
+// TODO call once when battle starts
+BattleManager.makeTurnOrder = function() {
+    this._turnOrder = this.allBattleMembers()
+        .map((actor: Game_Actor) => TEW.DICE.rollInitiative(actor))
+        .sort((a: number, b: number) => a - b).reverse();
+};
+
 BattleManager.updateStartPhase = function() {
-    this.makePlayerOrders();
+    this.makePlayerOrders(); // TODO remove
     $gameTroop.increaseTurn();
-    $gameTroopTs.onTurnStart();
-    $gamePartyTs.onTurnStart();
+    $gameTroopTs.onTurnStart(); // why the fuck are enemies moving first ???
+    $gamePartyTs.onTurnStart(); // TODO change flow from here
     $gameSelector.setTransparent(true);
     this._logWindow.startTurn();
     this._phase = 'playerPhase';
     this._battlePhase = 'start';
-    $gameSelector.updateSelect();
+    $gameSelector.updateSelect(); // select active battler instead
     this.refreshMoveTiles();
 };
 
@@ -379,11 +378,10 @@ BattleManager.updateSelect = function() {
 BattleManager.previousSelect = function() {
     this._battlePhase = 'explore';
     this._subject.restorePosition();
-    var select = $gameSelector.select();
     this._subject = null;
     $gameSelector.updateSelect();
     this.refreshMoveTiles();
-    var select = $gameSelector.select();
+    const select = $gameSelector.select();
     if (select && select.isAlive()) {
         this._actorWindow.open(select);
     } else {
@@ -487,6 +485,8 @@ BattleManager.updateStart = function() {
     }
 };
 
+// TODO trigger battle menu here?
+// We need to decide when to trigger the explore phase (maybe just cancel from the battle menu?)
 BattleManager.updateStartPlayer = function() {
     this._subject = this._playersOrder.shift();
     if (this._subject) {
@@ -499,9 +499,10 @@ BattleManager.updateStartPlayer = function() {
     }
 };
 
+// TODO understand this
 BattleManager.restrictedPhase = function() {
     this._battlePhase = 'move';
-    this._subject.makeMoves();
+    this._subject.makeMoves(); // only for AI?
     this._subject.makeActions();
     $gameParty.setupTactics([this._subject]);
     $gameMap.clearTiles();
@@ -733,6 +734,10 @@ BattleManager.setupCombat = function(action) {
 };
 
 BattleManager.refreshRedCells = function(action) {
+
+BattleManager.setEventCallback = function(callback) {
+    this._eventCallback = callback;
+};
     $gameMap.clearTiles();
     BattleManager.setupCombat(action);
     $gameMap.setActionColor(action);

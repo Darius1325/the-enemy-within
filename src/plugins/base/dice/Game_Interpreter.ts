@@ -2,21 +2,30 @@
 
 import TEW from "../../_types/tew";
 import Window_Dice from "./Window_Dice";
+import {Game_Actor} from "../stats/Game_Actor";
 
 // $StartCompilation
 
 // Game_Interpreter
 
-TEW.DICE.rollD100 = function() {
-    return Math.floor(Math.random() * 99) + 1;
+TEW.DICE.bonus = function(value: number) {
+    return Math.floor(value / 10);
 };
 
-TEW.DICE.displayDiceRoll = function() {
-    const result = this.rollD100();
+TEW.DICE.roll = function(range = 100) {
+    return Math.floor(Math.random() * (range - 1)) + 1;
+};
+
+TEW.DICE.displayDiceRoll = function(range = 100) {
+    const result = TEW.DICE.roll(range);
     const windowDice = new Window_Dice(0, 0, Math.floor(result / 10), result % 10);
     SceneManager._scene.addWindow(windowDice);
     return result;
-}
+};
+
+TEW.DICE.rollInitiative = function(actor: Game_Actor) {
+    return TEW.DICE.roll(10) + TEW.DICE.bonus(actor.paramByName("INIT"));
+};
 
 Game_Interpreter.prototype.partySkillTest = function(compId: string, modifier: number) {
     const actorSkillBaseValues = [];
@@ -61,7 +70,7 @@ Game_Interpreter.prototype.opposedSkillTest = function(compIdPlayer: string, mod
     const maxPartySkill = Math.max(...actorSkillBaseValues) + modifierPlayer;
 
     const rollPlayer = TEW.DICE.displayDiceRoll();
-    const rollNPC = TEW.DICE.rollD100();
+    const rollNPC = TEW.DICE.roll();
 
     let drPlayer = Math.floor(maxPartySkill / 10) - Math.floor(rollPlayer / 10);
     let drNPC = Math.floor(skillValueNPC / 10) - Math.floor(rollNPC / 10);

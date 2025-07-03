@@ -31,3 +31,23 @@ Game_Troop.prototype.meetsConditions = function(page) {
         return TacticsSystem.Game_Troop_meetsConditions.call(this, page);
     }
 };
+
+// TODO never call this
+Game_Troop.prototype.expTotal = function() {
+    return 0;
+};
+
+// TODO never call this
+Game_Troop.prototype.goldTotal = function() {
+    return 0;
+};
+
+// TODO never call this
+Game_Troop.prototype.goldRate = function() {
+    return 0;
+};
+
+// TODO never call this
+Game_Troop.prototype.makeDropItems = function() {
+    return [];
+};

@@ -19,6 +19,7 @@ import { MeleeWeapon } from "./meleeWeapon";
 import { RangedWeapon } from "./rangedWeapon";
 import { Ammunition } from "./ammunition";
 import { ArmorGroup, Stat, WeaponGroup, WeaponQuality } from "./enum";
+import {Game_Actor} from "../base/stats/Game_Actor";
 
 /**
  * The TEW object contains various constants and methods related to the game "The Enemy Within".
@@ -241,7 +242,12 @@ const TEW: {
          */
         DIE_10_POINTS?: [number, number][];
         /**
-         * drawLine is a function that draws a line on the canvas.
+         * bonus returns the bonus value associated with a stat, i.e. Math.floor(stat / 10)
+         * @returns stat bonus
+         */
+        bonus?: (value: number) => number;
+        /**
+         * drawLine draws a line on the canvas.
          * It takes a context, start and end points as parameters.
          * @param context the canvas context
          * @param start the starting point of the line
@@ -250,15 +256,21 @@ const TEW: {
          */
         drawLine?: (context: any, start: [number, number], end: [number, number]) => void;
         /**
-         * displayDiceRoll is a function that displays the result of a dice roll.
-         * @returns void
+         * displayDiceRoll displays the result of a dice roll.
+         * @returns the roll's result
          */
-        displayDiceRoll?: () => number;
+        displayDiceRoll?: (range?: number) => number;
         /**
-         * rollD100 is a function that rolls a 100-sided die.
+         * roll rolls a range-sided die.
+         * @returns the result between 1 and range included
+         */
+        roll?: (range?: number) => number;
+        /**
+         * rollInitiative rolls a 10-sided die and adds the result to the actor's initiative bonus.
+         * Used to determine turn order
          * @returns void
          */
-        rollD100?: () => number;
+        rollInitiative?: (actor: Game_Actor) => number;
     }
 
     /**

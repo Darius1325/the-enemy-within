@@ -81,7 +81,7 @@ Game_Selector.prototype.update = function() {
     this._isMoving = false;
     this.moveByDestination();
     this.updateMove();
-    // don't update scrool here if destination...
+    // don't update scroll here if destination...
     if (!$gameMap.isDestinationValid()) {
         this.updateScroll(this._scrolledX, this._scrolledY);
     }
@@ -192,8 +192,8 @@ Game_Selector.prototype.battlers = function() {
 
 Game_Selector.prototype.updateSelect = function() {
     this._selectIndex = -1;
-    for (var i = 0; i < this.battlers().length; i++) {
-        var battler = this.battlers()[i];
+    for (let i = 0; i < this.battlers().length; i++) {
+        const battler = this.battlers()[i];
         if (this.pos(battler.x, battler.y)) {
             if (battler.isAlive()) {
                 this._selectIndex = i;
@@ -202,11 +202,11 @@ Game_Selector.prototype.updateSelect = function() {
     }
 };
 
-Game_Selector.prototype.updateScroll = function(lastScrolledX, lastScrolledY) {
-    var x1 = lastScrolledX;
-    var y1 = lastScrolledY;
-    var x2 = this.scrolledX();
-    var y2 = this.scrolledY();
+Game_Selector.prototype.updateScroll = function(lastScrolledX: number, lastScrolledY: number) {
+    const x1 = lastScrolledX;
+    const y1 = lastScrolledY;
+    const x2 = this.scrolledX();
+    const y2 = this.scrolledY();
     if (y2 > y1 && y2 > this.centerY()) {
         $gameMap.scrollDown(y2 - y1);
     }
