@@ -192,8 +192,6 @@ Game_BattlerBase.prototype.initialize = function() {
     this.addAmmo("ARROW", 64);
     this.addAmmo("LEAD_BULLET", 98);
     this.addAmmo("BULLET_AND_POWDER", 50);
-
-    // console.log(this);
 };
 
 Object.defineProperties(Game_BattlerBase.prototype, {
@@ -301,12 +299,10 @@ Game_BattlerBase.prototype.item = function(itemId: string) {
 };
 
 Game_BattlerBase.prototype.addItem = function(itemId: string, quantity = 1) {
-    console.log("adding " + itemId + " to " + this.name());
     this.items[itemId] = this.item(itemId) + quantity;
 }
 
 Game_BattlerBase.prototype.removeItem = function(itemId: string, quantity = 1) {
-    console.log("removing " + itemId + " from " + this.name());
     this.items[itemId] = this.item(itemId) - quantity;
     if (this.item(itemId) <= 0) {
         delete this.items[itemId];

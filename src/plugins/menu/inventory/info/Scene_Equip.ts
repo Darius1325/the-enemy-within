@@ -11,7 +11,7 @@
 // Imports
 // ----------------------
 
-import { Scene_Equip } from "../Scene_Equip";
+import { Scene_Equip } from "../_types/Scene_Equip";
 import Window_InventoryInfo from "./Window_InventoryInfo";
 
 // ----------------------

@@ -11,7 +11,7 @@
 // Imports
 // ----------------------
 
-import { Scene_Equip } from "../Scene_Equip";
+import { Scene_Equip } from "../_types/Scene_Equip";
 import Window_InventoryItems from "./Window_InventoryItems";
 import Window_InventoryItemDetails from "./Window_InventoryItemDetails";
 import Window_InventoryItemCommand from "./Window_InventoryItemCommand";
@@ -60,7 +60,6 @@ Scene_Equip.prototype.createItemsCommandWindow = function() {
 
 Scene_Equip.prototype.activateInventoryItems = function(index = 0) {
     const nbItems = this._itemsWindow._items.length;
-    console.log("activateInventoryItems - nbItems : ", nbItems)
     this.hideAllWindows();
     this._currentMainWindow = this._itemsWindow;
     this._itemsWindow.show();

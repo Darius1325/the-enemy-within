@@ -3,6 +3,7 @@
 //
 // The superclass of windows for selecting a command.
 
+import { CommandData } from "../interfaces";
 import { Window_Selectable } from "./Window_Selectable";
 
 export declare class Window_Command extends Window_Selectable

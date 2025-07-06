@@ -145,6 +145,8 @@ Scene_Equip.prototype.createTransferSpinnerWindow = function() {
     this._transferSpinnerWindow = new Window_InventoryTransferSpinner();
     this._transferSpinnerWindow.setHandler('ok', () => {
         this.doTransfer();
+    });
+    this._transferSpinnerWindow.setHandler('cancel', () => {
         this._transferSpinnerWindow.deactivate(); // TODO needed ?
         this._transferSpinnerWindow.deselect(); // TODO needed ?
         this._transferCommandWindow.callHandler('cancel');

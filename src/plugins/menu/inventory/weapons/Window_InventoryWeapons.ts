@@ -133,8 +133,8 @@ Window_InventoryWeapons.prototype.drawItem = function(index: number) {
 };
 
 Window_InventoryWeapons.prototype.weaponFromIndex = function(index: number) {
-    index = Math.min(index, this._weapons.length - 1);
-    let weapon;
+    index = Math.min(index, this.maxItems() - 1);
+    let weapon: LoadedWeapon;
 
     if (index === 0) {
         if (this._mainHandWeapon) {

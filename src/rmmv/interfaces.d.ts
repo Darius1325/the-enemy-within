@@ -1,4 +1,4 @@
-interface CommandData
+export interface CommandData
 {
 	name:string;
 	symbol:string;
@@ -6,7 +6,7 @@ interface CommandData
 	ext:any;
 }
 
-interface Rect
+export interface Rect
 {
 	x:number;
 	y:number;
@@ -14,7 +14,7 @@ interface Rect
 	height:number;
 }
 
-interface TextState
+export interface TextState
 {
 	index:number;
 	text:string;

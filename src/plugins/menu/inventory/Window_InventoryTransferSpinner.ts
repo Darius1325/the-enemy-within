@@ -13,7 +13,7 @@ function Window_InventoryTransferSpinner() {
     this.initialize.apply(this, arguments);
 }
 
-export default Window_InventoryTransferSpinner.prototype = Object.create(Window_Selectable.prototype);
+export default Window_InventoryTransferSpinner.prototype = Object.create(Window_Command.prototype);
 Window_InventoryTransferSpinner.prototype.constructor = Window_InventoryTransferSpinner;
 
 // Initializing the command window

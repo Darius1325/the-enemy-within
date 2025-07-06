@@ -41,7 +41,6 @@ Window_StatusSpellDetails.prototype.refresh = function () {
 
 // Drawing the details
 Window_StatusSpellDetails.prototype.drawDetails = function (spell:[string, Spell]) {
-    console.log("Drawing spell details", spell);
     // Title
     this.drawUnderlinedText(spell[1].name, 0, 0, this.contentsWidth(), "center");
 

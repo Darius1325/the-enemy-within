@@ -11,7 +11,7 @@
 // Imports
 // ----------------------
 
-import { Scene_Equip } from "../Scene_Equip";
+import { Scene_Equip } from "../_types/Scene_Equip";
 import Window_InventoryWeapons, {LoadedWeapon} from "./Window_InventoryWeapons";
 import Window_InventoryWeaponDetails from "./Window_InventoryWeaponDetails";
 import {WeaponGroup, WeaponQuality} from "../../../_types/enum";
@@ -64,7 +64,6 @@ Scene_Equip.prototype.createWeaponsCommandWindow = function() {
 
 Scene_Equip.prototype.activateInventoryWeapons = function(index = 0) {
     const nbWeapons = this._weaponsWindow.length();
-    console.log("activateInventoryWeapons - nbWeapons : ", nbWeapons)
     this.hideAllWindows();
     this._currentMainWindow = this._weaponsWindow;
     this._weaponsWindow.show();

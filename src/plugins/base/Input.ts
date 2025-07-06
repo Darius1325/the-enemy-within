@@ -1,4 +1,4 @@
-// $PluginCompiler TEW_Base.js
+// $PluginCompiler TEW_Base.js 10
 // $StartCompilation
 
 //----------------------------------
@@ -6,6 +6,7 @@
 //
 // Key inputs detection and history.
 
-Input.prototype.isAnyKeyTriggered = function() {
-    return this._currentState.some((key: any) => !!key) && this._pressedTime === 0;
+Input.isAnyKeyTriggered = function() {
+    return Object.keys(this._currentState).some((key: string) => this._currentState[key])
+            && this._pressedTime === 0;
 };

@@ -1,3 +1,5 @@
+// $PluginCompiler TEW_Menus.js 1
+
 import {Game_Actor} from "../../../base/stats/Game_Actor";
 import {IWindow_InventoryItems} from "../items/Window_InventoryItems";
 import {IWindow_InventoryItemDetails} from "../items/Window_InventoryItemDetails";
@@ -80,3 +82,5 @@ export interface Scene_Equip {
 
     refreshActor: () => void;
 }
+
+// $StartCompilation

@@ -5,6 +5,7 @@
 
 import { Window_Base } from "./Window_Base";
 import { Window_Help } from "./Window_Help";
+import { Rect } from "../interfaces";
 
 export declare class Window_Selectable extends Window_Base
 {

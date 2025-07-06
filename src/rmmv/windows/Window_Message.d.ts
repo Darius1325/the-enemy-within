@@ -4,6 +4,7 @@
 // The window for displaying text messages.
 
 import { Bitmap } from "../core/Bitmap";
+import { TextState } from "../interfaces";
 import { Window_Base } from "./Window_Base";
 
 export declare class Window_Message extends Window_Base

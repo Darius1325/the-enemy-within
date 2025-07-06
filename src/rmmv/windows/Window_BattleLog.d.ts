@@ -9,6 +9,7 @@ import { Window_Selectable } from "./Window_Selectable";
 import { Game_Battler } from "../objects/Game_Battler";
 import { Game_Action } from "../objects/Game_Action";
 import { Spriteset_Battle } from "../sprites/Spriteset_Battle";
+import { Rect } from "../interfaces";
 
 export declare class Window_BattleLog extends Window_Selectable
 {

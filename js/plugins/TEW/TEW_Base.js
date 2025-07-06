@@ -62,6 +62,17 @@ TEW.CHARACTERS.BASE_COMP_VALUES = TEW.DATABASE.COMPS.IDS.reduce((acc, compId) =>
 }, []);
 // #endregion =========================== properties ============================== //
 // ============================== //
+// #region ============================== Input ============================== //
+//----------------------------------
+// Input
+//
+// Key inputs detection and history.
+Input.isAnyKeyTriggered = function () {
+    return Object.keys(this._currentState).some((key) => this._currentState[key])
+        && this._pressedTime === 0;
+};
+// #endregion =========================== Input ============================== //
+// ============================== //
 // #region ============================== Bitmap ============================== //
 // Bitmap
 TEW.DICE.DIE_10_POINTS = [
@@ -117,38 +128,44 @@ Bitmap.prototype.drawDie = function (x, size, value, edgeColor, fillColor) {
 // ============================== //
 // #region ============================== Game_Interpreter ============================== //
 // Game_Interpreter
-TEW.DICE.rollD100 = function () {
-    return Math.floor(Math.random() * 99) + 1;
+TEW.DICE.bonus = function (value) {
+    return Math.floor(value / 10);
 };
-TEW.DICE.displayDiceRoll = function () {
-    const result = this.rollD100();
+TEW.DICE.roll = function (range = 100) {
+    return Math.floor(Math.random() * (range - 1)) + 1;
+};
+TEW.DICE.displayDiceRoll = function (range = 100) {
+    const result = TEW.DICE.roll(range);
     const windowDice = new Window_Dice(0, 0, Math.floor(result / 10), result % 10);
     SceneManager._scene.addWindow(windowDice);
     return result;
 };
-Game_Interpreter.prototype.partySkillTest = function (compId, modifier) {
+TEW.DICE.rollInitiative = function (actor) {
+    return TEW.DICE.roll(10) + TEW.DICE.bonus(actor.paramByName("INIT"));
+};
+Game_Interpreter.prototype.partySkillTest = function (compId, modifier, hidden = false) {
     const actorSkillBaseValues = [];
     // Select the best character for the job
     for (let i = 1; i < $gameActors._data.length; i++) {
         if ($gameActors._data[i]) {
-            actorSkillBaseValues.push($gameActors._data[i][compId]);
+            actorSkillBaseValues.push($gameActors._data[i].comp(compId));
         }
     }
     const maxPartySkill = Math.max(...actorSkillBaseValues) + modifier;
-    const roll = TEW.DICE.displayDiceRoll();
+    const roll = hidden ? TEW.DICE.roll() : TEW.DICE.displayDiceRoll();
     let success = maxPartySkill >= roll;
-    let dr = Math.floor(maxPartySkill / 10) - Math.floor(roll / 10);
+    let sl = Math.floor(maxPartySkill / 10) - Math.floor(roll / 10);
     // Special rules : 5 or below is always a success, 96 or above is always a failure
     if (roll <= 5) {
         success = true;
-        dr = dr > 0 ? dr : 0;
+        sl = sl > 0 ? sl : 0;
     }
     else if (roll >= 96) {
         success = false;
-        dr = dr < 0 ? dr : 0;
+        sl = sl < 0 ? sl : 0;
     }
     return {
-        dr,
+        sl,
         success,
         critical: roll % 11 === 0 || roll === 100,
     };
@@ -158,31 +175,31 @@ Game_Interpreter.prototype.opposedSkillTest = function (compIdPlayer, modifierPl
     const actorSkillBaseValues = [];
     for (let i = 1; i < $gameActors._data.length; i++) {
         if ($gameActors._data[i]) {
-            actorSkillBaseValues.push($gameActors._data[i][compIdPlayer]);
+            actorSkillBaseValues.push($gameActors._data[i].comp(compIdPlayer));
         }
     }
     const maxPartySkill = Math.max(...actorSkillBaseValues) + modifierPlayer;
     const rollPlayer = TEW.DICE.displayDiceRoll();
-    const rollNPC = TEW.DICE.rollD100();
-    let drPlayer = Math.floor(maxPartySkill / 10) - Math.floor(rollPlayer / 10);
-    let drNPC = Math.floor(skillValueNPC / 10) - Math.floor(rollNPC / 10);
+    const rollNPC = TEW.DICE.roll();
+    let slPlayer = Math.floor(maxPartySkill / 10) - Math.floor(rollPlayer / 10);
+    let slNPC = Math.floor(skillValueNPC / 10) - Math.floor(rollNPC / 10);
     let successRollPlayer = maxPartySkill >= rollPlayer;
     let successRollNpc = skillValueNPC >= rollNPC;
     if (rollPlayer <= 5) {
         successRollPlayer = true;
-        drPlayer = drPlayer > 0 ? drPlayer : 0;
+        slPlayer = slPlayer > 0 ? slPlayer : 0;
     }
     else if (rollPlayer >= 96) {
         successRollPlayer = false;
-        drPlayer = drPlayer < 0 ? drPlayer : 0;
+        slPlayer = slPlayer < 0 ? slPlayer : 0;
     }
     if (rollNPC <= 5) {
         successRollNpc = true;
-        drNPC = drNPC > 0 ? drNPC : 0;
+        slNPC = slNPC > 0 ? slNPC : 0;
     }
     else if (rollNPC >= 96) {
         successRollNpc = true;
-        drNPC = drNPC < 0 ? drNPC : 0;
+        slNPC = slNPC < 0 ? slNPC : 0;
     }
     let criticalPlayer = rollPlayer % 11 === 0 || rollPlayer === 100;
     let criticalNPC = rollNPC % 11 === 0 || rollNPC === 100;
@@ -193,17 +210,17 @@ Game_Interpreter.prototype.opposedSkillTest = function (compIdPlayer, modifierPl
     else if (successRollNpc && criticalNPC) {
         success = false;
     }
-    else if (drPlayer > drNPC) {
+    else if (slPlayer > slNPC) {
         success = true;
     }
-    else if (drNPC > drPlayer) {
+    else if (slNPC > slPlayer) {
         success = false;
     }
     else {
         success = (maxPartySkill >= skillValueNPC);
     }
     return {
-        dr: drPlayer - drNPC,
+        sl: slPlayer - slNPC,
         success,
         criticalPlayer
     };
@@ -230,6 +247,48 @@ Game_Interpreter.prototype.opposedSkillTest = function (compIdPlayer, modifierPl
 //     this._diceWindow.refresh();
 // };
 // #endregion =========================== Game_Interpreter ============================== //
+// ============================== //
+// #region ============================== Window_Dice ============================== //
+//---------------------------------------
+// Window_Dice
+//
+// The window for displaying a dice roll.
+function Window_Dice() {
+    this.initialize.apply(this, arguments);
+}
+Window_Dice.prototype = Object.create(Window_Base.prototype);
+Window_Dice.prototype.constructor = Window_Dice;
+Window_Dice.prototype.initialize = function (x, y, tens, units) {
+    Window_Base.prototype.initialize.call(this, x, y, 240, 110); // temp !!
+    this._tens = tens;
+    this._units = units;
+    setTimeout(() => {
+        this.close();
+    }, 2000);
+    this.refresh();
+};
+Window_Dice.prototype.windowWidth = function () {
+    return 340;
+};
+Window_Dice.prototype.windowHeight = function () {
+    return 100;
+};
+Window_Dice.prototype.refresh = function () {
+    this.contents.clear();
+    this.contents.drawDie(0, 1, this._tens, 'black', 'darkgreen');
+    this.contents.drawDie(100, 1, this._units, 'black', 'darkgreen');
+};
+Window_Dice.prototype.open = function () {
+    this.refresh();
+    Window_Base.prototype.open.call(this);
+};
+Window_Dice.prototype.update = function () {
+    Window_Base.prototype.update.call(this);
+    if (Input.isAnyKeyTriggered()) {
+        this.close();
+    }
+};
+// #endregion =========================== Window_Dice ============================== //
 // ============================== //
 // #region ============================== Game_Actor ============================== //
 // Game_Actor
@@ -345,7 +404,6 @@ Game_BattlerBase.prototype.initialize = function () {
     this.addAmmo("ARROW", 64);
     this.addAmmo("LEAD_BULLET", 98);
     this.addAmmo("BULLET_AND_POWDER", 50);
-    // console.log(this);
 };
 Object.defineProperties(Game_BattlerBase.prototype, {
     // Max wounds
@@ -379,8 +437,8 @@ Game_BattlerBase.prototype.clearParamPlus = function () {
     this._paramPlus = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 };
 Game_BattlerBase.prototype.param = function (paramId) {
-    var value = this.paramBase(paramId) + this.paramPlus(paramId);
-    return Math.round(value < 0 ? 0 : value);
+    const value = this.paramBase(paramId) + this.paramPlus(paramId);
+    return Math.max(0, value);
 };
 Game_BattlerBase.prototype.paramByName = function (paramName) {
     return this.param(TEW.CHARACTERS.STATS[paramName.toLowerCase()]);
@@ -431,11 +489,9 @@ Game_BattlerBase.prototype.item = function (itemId) {
     return this.items[itemId] || 0;
 };
 Game_BattlerBase.prototype.addItem = function (itemId, quantity = 1) {
-    console.log("adding " + itemId + " to " + this.name());
     this.items[itemId] = this.item(itemId) + quantity;
 };
 Game_BattlerBase.prototype.removeItem = function (itemId, quantity = 1) {
-    console.log("removing " + itemId + " from " + this.name());
     this.items[itemId] = this.item(itemId) - quantity;
     if (this.item(itemId) <= 0) {
         delete this.items[itemId];
@@ -569,7 +625,6 @@ Game_Interpreter.prototype.setBaseStat = function (playerName, statName, value) 
 };
 Game_Interpreter.prototype.partyHasItem = function (itemId) {
     const actors = $gameParty._actors.map((id) => $gameActors.actor(id));
-    console.log(actors);
     for (let i = 0; i < actors.length; i++) {
         if (actors[i].hasItem(itemId)) {
             return true;

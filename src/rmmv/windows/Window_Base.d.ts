@@ -8,6 +8,7 @@ import type { Window as RM_Window } from '../core/Window';
 import { Game_Actor } from '../objects/Game_Actor';
 import type { RPG_ItemBase } from '../data/RPG_Item';
 import type { MessageBackgroundStyle } from '../data/RPG_Message';
+import { TextState } from '../interfaces';
 
 export declare class Window_Base extends RM_Window
 {

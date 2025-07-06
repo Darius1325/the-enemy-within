@@ -11,7 +11,7 @@
 // Imports
 // ----------------------
 
-import { Scene_Equip } from "../Scene_Equip";
+import { Scene_Equip } from "../_types/Scene_Equip";
 import { Armor } from "../../../_types/armor";
 import { ArmorGroup, ArmorQuality } from "../../../_types/enum";
 import { Game_Actor } from "../../../base/stats/Game_Actor";

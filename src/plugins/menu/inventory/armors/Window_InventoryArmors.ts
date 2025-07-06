@@ -59,9 +59,6 @@ Window_InventoryArmors.prototype.syncActor = function() {
         this._armors.push(TEW.DATABASE.ARMORS.ARRAY.find(a => a[0] === armor));
     });
 
-    console.log(this._equippedArmors);
-    console.log(this._armors);
-
     this._maxItems = this._armors.length + this._equippedArmors.length;
     this.refresh();
 };

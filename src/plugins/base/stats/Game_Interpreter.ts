@@ -15,7 +15,6 @@ Game_Interpreter.prototype.setBaseStat = function(playerName: string, statName: 
 
 Game_Interpreter.prototype.partyHasItem = function(itemId: string) {
     const actors: Game_Actor[] = $gameParty._actors.map((id: number) => $gameActors.actor(id));
-    console.log(actors);
     for (let i = 0; i < actors.length; i++) {
         if (actors[i].hasItem(itemId)) {
             return true;

@@ -11,8 +11,8 @@
 // Imports
 // ----------------------
 
-import Window_InventoryAmmo from "./Window_InventoryAmmo";
 import { Scene_Equip } from "../_types/Scene_Equip";
+import Window_InventoryAmmo from "./Window_InventoryAmmo";
 
 // ----------------------
 // $StartCompilation
