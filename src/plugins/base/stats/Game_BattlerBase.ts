@@ -154,13 +154,16 @@ Game_BattlerBase.prototype.initialize = function() {
 
     // temp Items
     this.addItem("HEARTKILL");
-    // this.addItem("AMULET");
+    this.addItem("HEARTKILL");
+    this.addItem("HEARTKILL");
+    this.addItem("HEARTKILL");
+    this.addItem("HEARTKILL");
+    this.addItem("AMULET");
     // this.addItem("BOOTS");
     // this.addItem("BROOM");
     // this.addItem("WINE_GLASS");
     // this.addItem("WINE_GLASS");
     // this.addItem("WINE_GLASS");
-    // this.addItem("HEARTKILL");
     // this.addItem("BOOTS");
     // this.addItem("LEAFLET");
     // this.addItem("BOOTS");

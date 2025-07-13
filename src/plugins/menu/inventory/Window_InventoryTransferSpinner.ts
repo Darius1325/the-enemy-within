@@ -1,6 +1,6 @@
 // $PluginCompiler TEW_Menus.js 101
 
-import { Sprite_Button } from '../../../rmmv/sprites/Sprite_Button';
+import { Window_NumberInput } from '../../../rmmv/windows/Window_NumberInput';
 
 // $StartCompilation
 
@@ -13,106 +13,43 @@ function Window_InventoryTransferSpinner() {
     this.initialize.apply(this, arguments);
 }
 
-export default Window_InventoryTransferSpinner.prototype = Object.create(Window_Command.prototype);
+export default Window_InventoryTransferSpinner.prototype = Object.create(Window_NumberInput.prototype);
 Window_InventoryTransferSpinner.prototype.constructor = Window_InventoryTransferSpinner;
 
-// Initializing the command window
 Window_InventoryTransferSpinner.prototype.initialize = function() {
-    this._windowWidth = Graphics.boxWidth / 4;
-    this._windowHeight = this.fittingHeight(3);
-    this.type = 'item';
+    const width = 100;
+    const height = 80;
+    Window_Selectable.prototype.initialize.call(this,
+        Graphics.boxWidth - width,
+        Graphics.boxHeight - this.fittingHeight(5) - height,
+        width, height
+    );
     this._number = 1;
-    Window_Command.prototype.initialize.call(
-        this,
-        this._windowWidth * 3,
-        Graphics.boxHeight - this._windowHeight);
+    this._max = 1;
+    this._maxDigits = 2;
+    this.openness = 0;
+    this.createButtons();
+    this.deactivate();
 };
 
-Window_InventoryTransferSpinner.prototype.activate = function() {
-    Window_Selectable.prototype.activate.call(this);
+Window_InventoryTransferSpinner.prototype.setMax = function(max: number) {
+    this._max = max;
+}
+
+Window_InventoryTransferSpinner.prototype.start = function() {
     this._number = 1;
+    this.placeButtons();
+    this.updateButtonsVisiblity();
+    this.createContents();
+    this.refresh();
+    this.open();
+    this.activate();
+    this.show();
+    this.select(0);
 };
 
-Window_InventoryTransferSpinner.prototype.deactivate = function() {
-    Window_Selectable.prototype.deactivate.call(this);
-    this._number = 1;
-};
-
-Window_InventoryTransferSpinner.prototype.createButtons = function() {
-    var bitmap = ImageManager.loadSystem('ButtonSet');
-    var buttonWidth = 48;
-    var buttonHeight = 48;
-    this._buttons = [];
-    for (var i = 0; i < 5; i++) {
-        var button = new Sprite_Button();
-        var x = buttonWidth * i;
-        var w = buttonWidth * (i === 4 ? 2 : 1);
-        button.bitmap = bitmap;
-        button.setColdFrame(x, 0, w, buttonHeight);
-        button.setHotFrame(x, buttonHeight, w, buttonHeight);
-        button.visible = false;
-        this._buttons.push(button);
-        this.addChild(button);
-    }
-    this._buttons[0].setClickHandler(this.onButtonDown2.bind(this));
-    this._buttons[1].setClickHandler(this.onButtonDown.bind(this));
-    this._buttons[2].setClickHandler(this.onButtonUp.bind(this));
-    this._buttons[3].setClickHandler(this.onButtonUp2.bind(this));
-    this._buttons[4].setClickHandler(this.onButtonOk.bind(this));
-};
-
-Window_InventoryTransferSpinner.prototype.placeButtons = function() {
-    var numButtons = this._buttons.length;
-    var spacing = 16;
-    var totalWidth = -spacing;
-    for (var i = 0; i < numButtons; i++) {
-        totalWidth += this._buttons[i].width + spacing;
-    }
-    var x = (this.width - totalWidth) / 2;
-    for (var j = 0; j < numButtons; j++) {
-        var button = this._buttons[j];
-        button.x = x;
-        button.y = this.buttonY();
-        x += button.width + spacing;
-    }
-};
-
-Window_InventoryTransferSpinner.prototype.drawMultiplicationSign = function() {
-    var sign = '\u00d7';
-    var width = this.textWidth(sign);
-    var x = this.cursorX() - width * 2;
-    var y = this.itemY();
-    this.resetTextColor();
-    this.drawText(sign, x, y, width);
-};
-
-Window_InventoryTransferSpinner.prototype.drawNumber = function() {
-    var x = this.cursorX();
-    var y = this.itemY();
-    var width = this.cursorWidth() - this.textPadding();
-    this.resetTextColor();
-    this.drawText(this._number, x, y, width, 'right');
-};
-
-Window_InventoryTransferSpinner.prototype.itemY = function() {
-    return Math.round(this.contentsHeight() / 2 - this.lineHeight() * 1.5);
-};
-
-Window_InventoryTransferSpinner.prototype.buttonY = function() {
-    return Math.round(this.lineHeight() * 2.5);
-};
-
-Window_InventoryTransferSpinner.prototype.cursorWidth = function() {
-    var digitWidth = this.textWidth('0');
-    return this.maxDigits() * digitWidth + this.textPadding() * 2;
-};
-
-Window_InventoryTransferSpinner.prototype.cursorX = function() {
-    return this.contentsWidth() - this.cursorWidth() - this.textPadding();
-};
-
-Window_InventoryTransferSpinner.prototype.maxDigits = function() {
-    return 2;
+Window_NumberInput.prototype.buttonY = function() {
+    return this.height + 8;
 };
 
 Window_InventoryTransferSpinner.prototype.update = function() {
@@ -120,25 +57,146 @@ Window_InventoryTransferSpinner.prototype.update = function() {
     this.processNumberChange();
 };
 
-Window_InventoryTransferSpinner.prototype.isOkTriggered = function() {
-    return Input.isTriggered('ok');
+Window_InventoryTransferSpinner.prototype.isCancelEnabled = function() {
+    return true;
 };
 
-Window_InventoryTransferSpinner.prototype.playOkSound = function() {
+Window_InventoryTransferSpinner.prototype.processOk = function() {
+    SoundManager.playOk();
+    this.updateInputData();
+    this.callOkHandler();
+    this.deactivate();
+    this.hide();
 };
+
+// export default Window_InventoryTransferSpinner.prototype = Object.create(Window_Selectable.prototype);
+// Window_InventoryTransferSpinner.prototype.constructor = Window_InventoryTransferSpinner;
+
+// // Initializing the command window
+// Window_InventoryTransferSpinner.prototype.initialize = function() {
+//     this._windowWidth = Graphics.boxWidth / 4;
+//     this._windowHeight = this.fittingHeight(3);
+//     this.type = 'item';
+//     this._number = 1;
+//     Window_Selectable.prototype.initialize.call(
+//         this,
+//         this._windowWidth * 3,
+//         Graphics.boxHeight - this._windowHeight);
+//     this.createButtons();
+// };
+
+// Window_InventoryTransferSpinner.prototype.activate = function() {
+//     Window_Selectable.prototype.activate.call(this);
+//     this._number = 1;
+// };
+
+// Window_InventoryTransferSpinner.prototype.deactivate = function() {
+//     Window_Selectable.prototype.deactivate.call(this);
+//     this._number = 1;
+// };
+
+// Window_InventoryTransferSpinner.prototype.createButtons = function() {
+//     var bitmap = ImageManager.loadSystem('ButtonSet');
+//     var buttonWidth = 48;
+//     var buttonHeight = 48;
+//     this._buttons = [];
+//     for (var i = 0; i < 5; i++) {
+//         var button = new Sprite_Button();
+//         var x = buttonWidth * i;
+//         var w = buttonWidth * (i === 4 ? 2 : 1);
+//         button.bitmap = bitmap;
+//         button.setColdFrame(x, 0, w, buttonHeight);
+//         button.setHotFrame(x, buttonHeight, w, buttonHeight);
+//         button.visible = false;
+//         this._buttons.push(button);
+//         this.addChild(button);
+//     }
+//     this._buttons[0].setClickHandler(this.onButtonDown2.bind(this));
+//     this._buttons[1].setClickHandler(this.onButtonDown.bind(this));
+//     this._buttons[2].setClickHandler(this.onButtonUp.bind(this));
+//     this._buttons[3].setClickHandler(this.onButtonUp2.bind(this));
+//     this._buttons[4].setClickHandler(this.onButtonOk.bind(this));
+// };
+
+// Window_InventoryTransferSpinner.prototype.placeButtons = function() {
+//     var numButtons = this._buttons.length;
+//     var spacing = 16;
+//     var totalWidth = -spacing;
+//     for (var i = 0; i < numButtons; i++) {
+//         totalWidth += this._buttons[i].width + spacing;
+//     }
+//     var x = (this.width - totalWidth) / 2;
+//     for (var j = 0; j < numButtons; j++) {
+//         var button = this._buttons[j];
+//         button.x = x;
+//         button.y = this.buttonY();
+//         x += button.width + spacing;
+//     }
+// };
+
+// Window_InventoryTransferSpinner.prototype.drawMultiplicationSign = function() {
+//     var sign = '\u00d7';
+//     var width = this.textWidth(sign);
+//     var x = this.cursorX() - width * 2;
+//     var y = this.itemY();
+//     this.resetTextColor();
+//     this.drawText(sign, x, y, width);
+// };
+
+// Window_InventoryTransferSpinner.prototype.drawNumber = function() {
+//     var x = this.cursorX();
+//     var y = this.itemY();
+//     var width = this.cursorWidth() - this.textPadding();
+//     this.resetTextColor();
+//     this.drawText(this._number, x, y, width, 'right');
+// };
+
+// Window_InventoryTransferSpinner.prototype.itemY = function() {
+//     return Math.round(this.contentsHeight() / 2 - this.lineHeight() * 1.5);
+// };
+
+// Window_InventoryTransferSpinner.prototype.buttonY = function() {
+//     return Math.round(this.lineHeight() * 2.5);
+// };
+
+// Window_InventoryTransferSpinner.prototype.cursorWidth = function() {
+//     var digitWidth = this.textWidth('0');
+//     return this.maxDigits() * digitWidth + this.textPadding() * 2;
+// };
+
+// Window_InventoryTransferSpinner.prototype.cursorX = function() {
+//     return this.contentsWidth() - this.cursorWidth() - this.textPadding();
+// };
+
+// Window_InventoryTransferSpinner.prototype.maxDigits = function() {
+//     return 2;
+// };
+
+// Window_InventoryTransferSpinner.prototype.update = function() {
+//     Window_Selectable.prototype.update.call(this);
+//     this.processNumberChange();
+// };
+
+// Window_InventoryTransferSpinner.prototype.isOkTriggered = function() {
+//     return Input.isTriggered('ok');
+// };
+
+// Window_InventoryTransferSpinner.prototype.playOkSound = function() {
+// };
 
 Window_InventoryTransferSpinner.prototype.processNumberChange = function() {
     if (this.isOpenAndActive()) {
-        if (Input.isRepeated('right')) {
+        if (Input.isRepeated('up')) {
+            console.log('up is repeated');
             this.changeNumber(1);
         }
-        if (Input.isRepeated('left')) {
+        if (Input.isRepeated('down')) {
             this.changeNumber(-1);
         }
-        if (Input.isRepeated('up')) {
+        if (Input.isRepeated('right')) {
             this.changeNumber(10);
         }
-        if (Input.isRepeated('down')) {
+        if (Input.isRepeated('left')) {
             this.changeNumber(-10);
         }
     }
@@ -153,10 +211,10 @@ Window_InventoryTransferSpinner.prototype.changeNumber = function(amount: number
     }
 };
 
-Window_InventoryTransferSpinner.prototype.updateCursor = function() {
-    this.setCursorRect(this.cursorX(), this.itemY(),
-                       this.cursorWidth(), this.lineHeight());
-};
+// Window_InventoryTransferSpinner.prototype.updateCursor = function() {
+//     this.setCursorRect(this.cursorX(), this.itemY(),
+//                        this.cursorWidth(), this.lineHeight());
+// };
 
 Window_InventoryTransferSpinner.prototype.onButtonUp = function() {
     this.changeNumber(1);
@@ -174,6 +232,6 @@ Window_InventoryTransferSpinner.prototype.onButtonDown2 = function() {
     this.changeNumber(-10);
 };
 
-Window_InventoryTransferSpinner.prototype.onButtonOk = function() {
-    this.processOk();
-};
+// Window_InventoryTransferSpinner.prototype.onButtonOk = function() {
+//     this.processOk();
+// };

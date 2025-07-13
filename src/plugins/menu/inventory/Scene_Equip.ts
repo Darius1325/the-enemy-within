@@ -113,7 +113,7 @@ Scene_Equip.prototype.createTransferCommandWindow = function() {
     this._transferCommandWindow = new Window_InventoryTransferCommand();
     this._transferCommandWindow.setHandler('cancel', () => {
         this._transferCommandWindow.deactivate();
-        this._transferCommandWindow.deselect();
+        this._transferCommandWindow.hide();
         switch (this._transferCommandWindow.type) {
             case Window_InventoryTransferCommand.ITEM:
                 this.activateInventoryItems(this._itemsWindow.index());
@@ -147,10 +147,10 @@ Scene_Equip.prototype.createTransferSpinnerWindow = function() {
         this.doTransfer();
     });
     this._transferSpinnerWindow.setHandler('cancel', () => {
-        this._transferSpinnerWindow.deactivate(); // TODO needed ?
-        this._transferSpinnerWindow.deselect(); // TODO needed ?
+        this._transferSpinnerWindow.deselect();
         this._transferCommandWindow.callHandler('cancel');
     });
+    this.addWindow(this._transferSpinnerWindow);
 }
 
 // Hide all the windows
@@ -234,9 +234,11 @@ Scene_Equip.prototype.displayWindow = function() {
 Scene_Equip.prototype.initTransfer = function() {
     switch (this._transferCommandWindow.type) {        
         case Window_InventoryTransferCommand.ITEM:
-            this._transferCommandWindow.item = this._itemsWindow.item()[0];
-            this._transferSpinnerWindow.activate();
-            this._transferSpinnerWindow.show();
+            const selectedItem = this._itemsWindow.item()[0];
+            this._transferCommandWindow.item = selectedItem;
+            this._transferCommandWindow.deactivate();
+            this._transferSpinnerWindow.setMax(this._actor.item(selectedItem));
+            this._transferSpinnerWindow.start();
             break;
         case Window_InventoryTransferCommand.WEAPON:
             this._transferCommandWindow.item = this._weaponsWindow.item().equipIndex;
