@@ -1,12 +1,13 @@
 // $PluginCompiler TEW_Combat.js
+
+import { Game_Actor } from "../../base/stats/Game_Actor";
+
 // $StartCompilation
 
 //-----------------------------------------------------------------------------
 // BattleManager
 //
 // The static class that manages tactics progress.
-
-import {Game_Actor} from "../../base/stats/Game_Actor";
 
 BattleManager.setup = function(troopId: number, canEscape: boolean, canLose: boolean) {
     this.initMembers();

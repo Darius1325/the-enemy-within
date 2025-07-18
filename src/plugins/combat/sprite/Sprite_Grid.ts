@@ -10,7 +10,7 @@ function Sprite_Grid() {
     this.initialize.apply(this, arguments);
 }
 
-Sprite_Grid.prototype = Object.create(Sprite_Base.prototype);
+export default Sprite_Grid.prototype = Object.create(Sprite_Base.prototype);
 Sprite_Grid.prototype.constructor = Sprite_Grid;
 
 Sprite_Grid.prototype.initialize = function() {

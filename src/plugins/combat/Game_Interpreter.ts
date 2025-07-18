@@ -1,4 +1,7 @@
 // $PluginCompiler TEW_Combat.js
+
+import {Scene_Battle} from "../../rmmv/scenes/Scene_Battle";
+
 // $StartCompilation
 
 //-----------------------------------------------------------------------------
@@ -6,7 +9,7 @@
 //
 // The interpreter for running event commands.
 
-import {Scene_Battle} from "../../rmmv/scenes/Scene_Battle";
+
 
 TacticsSystem.Game_Interpreter_pluginCommand = Game_Interpreter.prototype.pluginCommand;
 Game_Interpreter.prototype.pluginCommand = function(command, args) {

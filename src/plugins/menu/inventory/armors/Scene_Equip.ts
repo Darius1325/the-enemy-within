@@ -145,7 +145,7 @@ Scene_Equip.prototype.unequipArmor = function() {
     const actor: Game_Actor = this._actor;
     const armor: [string, Armor] = this._armorsWindow.item();
     if (armor[1].group === ArmorGroup.SOFT_KIT) {
-        actor.unequipArmors([armor[0], ...actor.equippedArmors.filter(
+        actor.unequipArmors([armor[0], ...actor._equippedArmors.filter(
             armorId => TEW.DATABASE.ARMORS.SET[armorId].qualities.includes(ArmorQuality.REQUIRES_KIT))]);
     } else {
         actor.unequipArmor(armor[0]);

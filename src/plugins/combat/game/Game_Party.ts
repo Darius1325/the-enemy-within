@@ -1,4 +1,7 @@
 // $PluginCompiler TEW_Combat.js
+
+import { Game_Actor } from "../../../rmmv/objects/Game_Actor";
+
 // $StartCompilation
 
 //-----------------------------------------------------------------------------
@@ -6,9 +9,6 @@
 //
 // The game object class for the party. Information such as gold and items is
 // included.
-
-
-import {Game_Actor} from "../../../rmmv/objects/Game_Actor";
 
 Game_Party.prototype.setupTactics = function(actors: Game_Actor[]) {
     const actorIds = actors.map(actor => actor.actorId());

@@ -74,7 +74,7 @@ Window_InventoryWeapons.prototype.length = function() {
 
 Window_InventoryWeapons.prototype.syncActor = function() {
     const actor: Game_Actor = this._actor;
-    const displayedWeapons = actor.weapons.map((weapon: ActorWeapon, index: number): LoadedWeapon => {
+    const displayedWeapons = actor._weapons.map((weapon: ActorWeapon, index: number): LoadedWeapon => {
         const weaponData = Object.assign({},
             TEW.DATABASE.WEAPONS.ARRAY.find(w => w[0] === weapon.id));
         return {

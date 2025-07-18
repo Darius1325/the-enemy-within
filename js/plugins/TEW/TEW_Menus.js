@@ -592,10 +592,10 @@ Window_InventoryArmors.prototype.setActor = function (actor) {
 Window_InventoryArmors.prototype.syncActor = function () {
     this._armors = [];
     this._equippedArmors = [];
-    this._actor.equippedArmors.forEach((armor) => {
+    this._actor._equippedArmors.forEach((armor) => {
         this._equippedArmors.push(TEW.DATABASE.ARMORS.ARRAY.find(a => a[0] === armor));
     });
-    this._actor.armors.forEach((armor) => {
+    this._actor._armors.forEach((armor) => {
         this._armors.push(TEW.DATABASE.ARMORS.ARRAY.find(a => a[0] === armor));
     });
     this._maxItems = this._armors.length + this._equippedArmors.length;
@@ -956,7 +956,7 @@ Window_InventoryWeapons.prototype.length = function () {
 };
 Window_InventoryWeapons.prototype.syncActor = function () {
     const actor = this._actor;
-    const displayedWeapons = actor.weapons.map((weapon, index) => {
+    const displayedWeapons = actor._weapons.map((weapon, index) => {
         const weaponData = Object.assign({}, TEW.DATABASE.WEAPONS.ARRAY.find(w => w[0] === weapon.id));
         return Object.assign(Object.assign(Object.assign({ id: weaponData[0] }, weaponData[1]), weapon), { equipIndex: index, equipIcon: weapon.isInMainHand
                 ? TEW.DATABASE.ICONS.SET.EQUIPPED_MAIN_HAND
@@ -1159,25 +1159,6 @@ Window_InventoryHelp.prototype.refresh = function () {
 // ============================== //
 // #region ============================== Window_MenuCommand ============================== //
 // ----------------------
-function Window_MenuCommand() {
-    this.initialize.apply(this, arguments);
-}
-Window_MenuCommand.prototype = Object.create(Window_Command.prototype);
-Window_MenuCommand.prototype.constructor = Window_MenuCommand;
-Window_MenuCommand.prototype.initialize = function (x, y) {
-    Window_Command.prototype.initialize.call(this, x, y);
-    this.selectLast();
-};
-Window_MenuCommand._lastCommandSymbol = null;
-Window_MenuCommand.initCommandPosition = function () {
-    this._lastCommandSymbol = null;
-};
-Window_MenuCommand.prototype.windowWidth = function () {
-    return 240;
-};
-Window_MenuCommand.prototype.numVisibleRows = function () {
-    return this.maxItems();
-};
 Window_MenuCommand.prototype.makeCommandList = function () {
     this.addMainCommands();
     this.addFormationCommand();
@@ -2559,7 +2540,7 @@ Scene_Equip.prototype.unequipArmor = function () {
     const actor = this._actor;
     const armor = this._armorsWindow.item();
     if (armor[1].group === 0 /* ArmorGroup.SOFT_KIT */) {
-        actor.unequipArmors([armor[0], ...actor.equippedArmors.filter(armorId => TEW.DATABASE.ARMORS.SET[armorId].qualities.includes(6 /* ArmorQuality.REQUIRES_KIT */))]);
+        actor.unequipArmors([armor[0], ...actor._equippedArmors.filter(armorId => TEW.DATABASE.ARMORS.SET[armorId].qualities.includes(6 /* ArmorQuality.REQUIRES_KIT */))]);
     }
     else {
         actor.unequipArmor(armor[0]);

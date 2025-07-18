@@ -10,6 +10,7 @@ function Game_Selector() {
     this.initialize.apply(this);
 }
 
+export default Game_Selector.prototype = Object.create(Object.prototype);
 Game_Selector.prototype.constructor = Game_Selector;
 
 Object.defineProperties(Game_Selector.prototype, {

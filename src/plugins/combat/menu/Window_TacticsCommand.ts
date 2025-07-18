@@ -10,7 +10,7 @@ function Window_TacticsCommand() {
     this.initialize.apply(this, arguments);
 }
 
-Window_TacticsCommand.prototype = Object.create(Window_ActorCommand.prototype);
+export default Window_TacticsCommand.prototype = Object.create(Window_ActorCommand.prototype);
 Window_TacticsCommand.prototype.constructor = Window_TacticsCommand;
 
 Window_TacticsCommand.prototype.initialize = function() {

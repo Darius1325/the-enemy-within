@@ -10,7 +10,7 @@ function Sprite_Selector() {
     this.initialize.apply(this, arguments);
 }
 
-Sprite_Selector.prototype = Object.create(Sprite_Base.prototype);
+export default Sprite_Selector.prototype = Object.create(Sprite_Base.prototype);
 Sprite_Selector.prototype.constructor = Sprite_Selector;
 
 Sprite_Selector.prototype.initialize = function() {

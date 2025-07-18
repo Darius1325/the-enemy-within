@@ -10,7 +10,7 @@ function Sprite_Start() {
     this.initialize.apply(this, arguments);
 };
 
-Sprite_Start.prototype = Object.create(Sprite_Base.prototype);
+export default Sprite_Start.prototype = Object.create(Sprite_Base.prototype);
 Sprite_Start.prototype.constructor = Sprite_Start;
 
 Sprite_Start.prototype.initialize = function() {

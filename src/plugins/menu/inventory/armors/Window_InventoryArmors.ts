@@ -52,10 +52,10 @@ Window_InventoryArmors.prototype.syncActor = function() {
     this._armors = [];
     this._equippedArmors = [];
 
-    this._actor.equippedArmors.forEach((armor: string) => {
+    this._actor._equippedArmors.forEach((armor: string) => {
         this._equippedArmors.push(TEW.DATABASE.ARMORS.ARRAY.find(a => a[0] === armor));
     });
-    this._actor.armors.forEach((armor: string) => {
+    this._actor._armors.forEach((armor: string) => {
         this._armors.push(TEW.DATABASE.ARMORS.ARRAY.find(a => a[0] === armor));
     });
 

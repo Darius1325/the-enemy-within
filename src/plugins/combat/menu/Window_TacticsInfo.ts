@@ -10,7 +10,7 @@ function Window_TacticsInfo() {
     this.initialize.apply(this, arguments);
 }
 
-Window_TacticsInfo.prototype = Object.create(Window_Status.prototype);
+export default Window_TacticsInfo.prototype = Object.create(Window_Status.prototype);
 Window_TacticsInfo.prototype.constructor = Window_TacticsInfo;
 
 Window_TacticsInfo.prototype.initialize = function() {

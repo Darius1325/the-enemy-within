@@ -1,4 +1,9 @@
 // $PluginCompiler TEW_Combat.js
+
+import Game_PartyTs from "./Game_PartyTs";
+import Game_Selector from "./Game_Selector";
+import Game_TroopTs from "./Game_TroopTs";
+
 // $StartCompilation
 
 //-----------------------------------------------------------------------------

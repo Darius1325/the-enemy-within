@@ -1,6 +1,9 @@
 // $PluginCompiler TEW_Combat.js
 
 import Sprite_BattlerTs from "./Sprite_BattlerTs";
+import Sprite_Grid from "./Sprite_Grid";
+import Sprite_Selector from "./Sprite_Selector";
+import Sprite_Start from "./Sprite_Start";
 
 // $StartCompilation
 

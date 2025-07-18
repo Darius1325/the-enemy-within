@@ -57,9 +57,10 @@ declare global {
     var Scene_MenuBase: any;
     var Scene_Status: any;
     var Scene_Options: any;
+    var Scene_Battle: any;
+    var Scene_Equip: any;
     var Scene_GameEnd: any;
     var Scene_Skill: any;
-    var Scene_Equip: any;
     var Scene_Title: any;
     var Scene_Gameover: any;
     var Scene_Map: any;

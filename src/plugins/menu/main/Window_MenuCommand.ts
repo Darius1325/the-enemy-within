@@ -11,32 +11,6 @@
 // $StartCompilation
 // ----------------------
 
-function Window_MenuCommand() {
-    this.initialize.apply(this, arguments);
-}
-
-export default Window_MenuCommand.prototype = Object.create(Window_Command.prototype);
-Window_MenuCommand.prototype.constructor = Window_MenuCommand;
-
-Window_MenuCommand.prototype.initialize = function (x: number, y: number) {
-    Window_Command.prototype.initialize.call(this, x, y);
-    this.selectLast();
-};
-
-Window_MenuCommand._lastCommandSymbol = null;
-
-Window_MenuCommand.initCommandPosition = function () {
-    this._lastCommandSymbol = null;
-};
-
-Window_MenuCommand.prototype.windowWidth = function () {
-    return 240;
-};
-
-Window_MenuCommand.prototype.numVisibleRows = function () {
-    return this.maxItems();
-};
-
 Window_MenuCommand.prototype.makeCommandList = function () {
     this.addMainCommands();
     this.addFormationCommand();

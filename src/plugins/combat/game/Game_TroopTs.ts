@@ -1,4 +1,7 @@
 // $PluginCompiler TEW_Combat.js
+
+import Game_UnitTs from "./Game_UnitTs";
+
 // $StartCompilation
 
 //-----------------------------------------------------------------------------
@@ -10,7 +13,7 @@ function Game_TroopTs() {
     this.initialize.apply(this, arguments);
 }
 
-Game_TroopTs.prototype = Object.create(Game_UnitTs.prototype);
+export default Game_TroopTs.prototype = Object.create(Game_UnitTs.prototype);
 Game_TroopTs.prototype.constructor = Game_TroopTs;
 
 Game_TroopTs.prototype.initialize = function() {
