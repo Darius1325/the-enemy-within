@@ -7,9 +7,9 @@
 // The game object class for an event. It contains functionality for event page
 // switching and running parallel process events.
 
-TacticsSystem.Game_Event_initMembers = Game_Event.prototype.initMembers;
+TEW.MEMORY.gameEventInitMembers = Game_Event.prototype.initMembers;
 Game_Event.prototype.initMembers = function() {
-    TacticsSystem.Game_Event_initMembers.call(this);
+    TEW.MEMORY.gameEventInitMembers.call(this);
     this._battlerId = null;
     this._actor = null;
 };
@@ -43,13 +43,13 @@ Game_Event.prototype.tparam = function(paramString) {
     return param
 };
 
-TacticsSystem.Game_Event_isCollidedWithEvents = Game_Event.prototype.isCollidedWithEvents;
+TEW.MEMORY.gameEventIsCollidedWithEvents = Game_Event.prototype.isCollidedWithEvents;
 Game_Event.prototype.isCollidedWithEvents = function(x, y) {
     // for an actor to pass through an actor
     if (this.isActor() || this.isEnemy()) {
         return Game_Character.prototype.isCollidedWithEvents.call(this, x, y)
     } else {
-        return TacticsSystem.Game_Event_isCollidedWithEvents.call(this, x, y);
+        return TEW.MEMORY.gameEventIsCollidedWithEvents.call(this, x, y);
     }
 };
 
@@ -57,10 +57,10 @@ Game_Event.prototype.isAppeared = function() {
     return this.findProperPageIndex() !== -1 && !this._erased;
 };
 
-TacticsSystem.Game_Event_update = Game_Event.prototype.update;
+TEW.MEMORY.gameEventUpdate = Game_Event.prototype.update;
 Game_Event.prototype.update = function() {
     this.updateAppeared();
-    TacticsSystem.Game_Event_update.call(this);
+    TEW.MEMORY.gameEventUpdate.call(this);
 };
 
 Game_Event.prototype.updateAppeared = function() {

@@ -2,6 +2,8 @@
 
 import TEW from "../../_types/tew";
 import { ArmorGroup, WeaponGroup, WeaponQuality } from "../../_types/enum";
+import {Game_Battler} from "../../../rmmv/objects/Game_Battler";
+import {Game_BattlerBase} from "../../base/stats/Game_BattlerBase";
 
 // $StartCompilation
 
@@ -106,7 +108,7 @@ TEW.COMBAT.getWeaponQualityEffects = (weaponId: string) => {
     };
 };
 
-// Retrieve armor info
+// Retrieve armor info // TODO
 TEW.COMBAT.getArmorInfos = (armorIds: string[]) => {
     return {
         headModifier : [{
@@ -117,21 +119,21 @@ TEW.COMBAT.getArmorInfos = (armorIds: string[]) => {
             modifier : 2
         }],
         bodyModifier : [{
-            type : ArmorGroup.PLATE, // CHAINMAIL, PLATE, BREASTPLATE
+            type : ArmorGroup.PLATE,
             modifier : 2
         }, {
             type : ArmorGroup.CHAINMAIL,
             modifier : 2
         }],
         armsModifier : [{
-            type : ArmorGroup.PLATE, // CHAINMAIL, PLATE, BREASTPLATE
+            type : ArmorGroup.PLATE,
             modifier : 2
         }, {
             type : ArmorGroup.CHAINMAIL,
             modifier : 2
         }],
         legsModifier : [{
-            type : ArmorGroup.PLATE, // CHAINMAIL, PLATE, BREASTPLATE
+            type : ArmorGroup.PLATE,
             modifier : 2
         }, {
             type : ArmorGroup.CHAINMAIL,
@@ -141,7 +143,7 @@ TEW.COMBAT.getArmorInfos = (armorIds: string[]) => {
 };
 
 // Get battler's stat value for combat depending on the wielded weapon's group
-TEW.COMBAT.getCombatCompOrDefault = (battler, weaponGroup: WeaponGroup, isMelee: boolean) => {
+TEW.COMBAT.getCombatCompOrDefault = (battler: Game_BattlerBase, weaponGroup: WeaponGroup, isMelee: boolean) => {
     const compName = isMelee ? 'MELEE' : 'RANGED' + '_' + TEW.DATABASE.WEAPONS.GROUP_IDS[weaponGroup];
     if (battler.hasComp(compName)) {
         return {

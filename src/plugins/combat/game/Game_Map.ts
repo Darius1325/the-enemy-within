@@ -7,9 +7,9 @@
 // The game object class for a map. It contains scrolling and passage
 // determination functions.
 
-TacticsSystem.Game_Map_intialize = Game_Map.prototype.initialize;
+TEW.MEMORY.gameMapInit = Game_Map.prototype.initialize;
 Game_Map.prototype.initialize = function() {
-    TacticsSystem.Game_Map_intialize.call(this);
+    TEW.MEMORY.gameMapInit.call(this);
     this._tiles = [];
     this._color = '';
     this._destinationX = null;
@@ -49,7 +49,7 @@ Game_Map.prototype.isOnTiles = function(x, y) {
 };
 
 Game_Map.prototype.setMoveColor = function() {
-    this._color = TacticsSystem.moveScopeColor;
+    this._color = TEW.COMBAT.SYSTEM.moveScopeColor;
 };
 
 Game_Map.prototype.setActionColor = function(action) {
@@ -77,7 +77,7 @@ Game_Map.prototype.isDestinationValid = function() {
     return this._destinationX !== null;
 };
 
-TacticsSystem.Game_Map_updateScroll = Game_Map.prototype.updateScroll;
+TEW.MEMORY.gameMapUpdateScroll = Game_Map.prototype.updateScroll;
 Game_Map.prototype.updateScroll = function() {
     if (this.isDestinationValid()) {
         var x = Math.max(this._displayX, 0);
@@ -102,7 +102,7 @@ Game_Map.prototype.updateScroll = function() {
             this.clearDestination();
         }
     } else {
-        TacticsSystem.Game_Map_updateScroll.call(this);
+        TEW.MEMORY.gameMapUpdateScroll.call(this);
     }
 };
 

@@ -12,7 +12,7 @@ Game_BattlerBase.TPARAM  = {
 };
 
 Game_BattlerBase.prototype.move = function() {
-    return Math.max((Number(this.tparam('Move')) || TacticsSystem.mvp) +
+    return Math.max((Number(this.tparam('Move')) || TEW.COMBAT.SYSTEM.mvp) +
         this.traitsSum(Game_BattlerBase.TRAIT_TPARAM, 0), 1);
 };
 
@@ -39,19 +39,19 @@ Game_BattlerBase.prototype.noteTraits = function(obj) {
     return trait || [];
 };
 
-TacticsSystem.Game_BattlerBase_allTraits = Game_BattlerBase.prototype.allTraits;
+TEW.MEMORY.gameBattlerBaseAllTraits = Game_BattlerBase.prototype.allTraits;
 Game_BattlerBase.prototype.allTraits = function() {
-    return TacticsSystem.Game_BattlerBase_allTraits.call(this).concat(this.tparamTraits());
+    return TEW.MEMORY.gameBattlerBaseAllTraits.call(this).concat(this.tparamTraits());
 };
 
-TacticsSystem.Game_BattlerBase_canUse = Game_BattlerBase.prototype.canUse;
+TEW.MEMORY.gameBattlerBaseCanUse = Game_BattlerBase.prototype.canUse;
 Game_BattlerBase.prototype.canUse = function(item) {
     if ($gamePartyTs.inBattle()) {
         if (!this.isItemRangeValid(item)) {
             return false;
         }
     }
-    return TacticsSystem.Game_BattlerBase_canUse.call(this, item);
+    return TEW.MEMORY.gameBattlerBaseCanUse.call(this, item);
 };
 
 Game_BattlerBase.prototype.isOccasionOk = function(item) {
@@ -63,5 +63,5 @@ Game_BattlerBase.prototype.isOccasionOk = function(item) {
 };
 
 Game_BattlerBase.prototype.waitSkillId = function() {
-    return TacticsSystem.waitSkillId;
+    return TEW.COMBAT.SYSTEM.waitSkillId;
 };

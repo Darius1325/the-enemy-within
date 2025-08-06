@@ -6,9 +6,9 @@
 //
 // The game object class for an actor.
 
-TacticsSystem.Game_Actor_initMembers = Game_Actor.prototype.initMembers;
+TEW.MEMORY.gameActorInitMembers = Game_Actor.prototype.initMembers;
 Game_Actor.prototype.initMembers = function() {
-    TacticsSystem.Game_Actor_initMembers.call(this);
+    TEW.MEMORY.gameActorInitMembers.call(this);
     this._actionsButton = [];
 };
 
@@ -105,27 +105,27 @@ Game_Actor.prototype.checkEventTriggerTouch = function() {
     return false;
 };
 
-TacticsSystem.Game_Actor_inputtingAction = Game_Actor.prototype.inputtingAction;
+TEW.MEMORY.gameActorInputtingAction = Game_Actor.prototype.inputtingAction;
 Game_Actor.prototype.inputtingAction = function() {
     if ($gamePartyTs.inBattle()) {
         return this.action(this._actionIndex);
     } else {
-        return TacticsSystem.Game_Actor_inputtingAction.call(this);
+        return TEW.MEMORY.gameActorInputtingAction.call(this);
     }
 };
 
-TacticsSystem.Game_Actor_performCollapse = Game_Actor.prototype.performCollapse;
+TEW.MEMORY.gameActorPerformCollapse = Game_Actor.prototype.performCollapse;
 Game_Actor.prototype.performCollapse = function() {
-    TacticsSystem.Game_Actor_performCollapse.call(this);
+    TEW.MEMORY.gameActorPerformCollapse.call(this);
     this.requestEffect('bossCollapse');
 };
 
-TacticsSystem.Game_Actor_isBattleMember = Game_Actor.prototype.isBattleMember;
+TEW.MEMORY.gameActorIsBattleMember = Game_Actor.prototype.isBattleMember;
 Game_Actor.prototype.isBattleMember = function() {
     if ($gamePartyTs.inBattle()) {
         return $gamePartyTs.members().contains(this);
     } else {
-        return TacticsSystem.Game_Actor_isBattleMember.call(this);
+        return TEW.MEMORY.gameActorIsBattleMember.call(this);
     }
 };
 

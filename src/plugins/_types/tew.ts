@@ -18,8 +18,9 @@ import { Talent } from "./talent";
 import { MeleeWeapon } from "./meleeWeapon";
 import { RangedWeapon } from "./rangedWeapon";
 import { Ammunition } from "./ammunition";
-import { ArmorGroup, Stat, WeaponGroup, WeaponQuality } from "./enum";
+import { ArmorGroup, WeaponGroup, WeaponQuality } from "./enum";
 import {Game_Actor} from "../base/stats/Game_Actor";
+import {Game_BattlerBase} from "../base/stats/Game_BattlerBase";
 
 /**
  * The TEW object contains various constants and methods related to the game "The Enemy Within".
@@ -40,7 +41,7 @@ const TEW: {
              * The SET property links each icon's ID to an index indicating its position in img/system/IconSet.png
              */
             SET?: Record<string, number>;
-        }
+        };
         
         /**
          * The ARMORS property contains a set of armors used in the game.
@@ -58,7 +59,7 @@ const TEW: {
              * The ARRAY property contains the pre-computed decoupled entries of the SET for performance purposes.
              */
             ARRAY?: [string, Armor][];
-        }
+        };
 
         /**
          * The WEAPONS property contains a set of weapons used in the game.
@@ -88,7 +89,7 @@ const TEW: {
              * The IDS property is a list of all weapon group IDs.
              */
             GROUP_IDS?: string[];
-        }
+        };
 
         /**
          * The COMPS property contains a set of competences used in the game.
@@ -110,7 +111,7 @@ const TEW: {
              * The ADVANCED_ARRAY property contains the pre-computed decoupled entries where isBase == false, for performance purposes.
              */
             ADVANCED_ARRAY?: [string, Competence][];
-        }
+        };
 
         /**
          * The ITEMS property contains a set of items used in the game.
@@ -128,7 +129,7 @@ const TEW: {
              * The ARRAY property contains the pre-computed decoupled entries of the SET for performance purposes.
              */
             ARRAY?: [string, Item][];
-        }
+        };
 
         /**
          * The SPELLS property contains a set of spells used in the game.
@@ -146,7 +147,7 @@ const TEW: {
              * The ARRAY property contains the pre-computed decoupled entries of the SET for performance purposes.
              */
             ARRAY?: [string, Spell][];
-        }
+        };
         
         /**
          * The TALENTS property contains a set of talents used in the game.
@@ -164,7 +165,7 @@ const TEW: {
              * The ARRAY property contains the pre-computed decoupled entries of the SET for performance purposes.
              */
             ARRAY?: [string, Talent][];
-        }
+        };
 
         /**
          * The NPCS property contains a set of non-player characters (NPCs) used in the game.
@@ -174,8 +175,8 @@ const TEW: {
              * The SET property contains a set of NPCs identified by their names.
              */
             SET?: Record<string, NPC>;
-        }
-    }
+        };
+    };
 
     /**
      * The MENU property contains various constants related to the game's menus.
@@ -203,7 +204,7 @@ const TEW: {
          * The INVENTORY_WINDOW_TOPBAR_HEIGHT property specifies the height of the inventory window's command window.
          */
         INVENTORY_WINDOW_TOPBAR_HEIGHT?: number;
-    }
+    };
 
     /**
      * The CHARACTERS property contains various constants related to the game's characters.
@@ -231,7 +232,7 @@ const TEW: {
          * 0 for innate competences and -1 (unavailable) for acquired ones.
          */
         BASE_COMP_VALUES?: number[];
-    }
+    };
 
     /**
      * The DICE property contains various constants related to the game's dice mechanics.
@@ -271,146 +272,205 @@ const TEW: {
          * @returns void
          */
         rollInitiative?: (actor: Game_Actor) => number;
-    }
+    };
 
     /**
      * The COMBAT property contains various constants and methods related to the game's combat mechanics.
      */
     COMBAT?: {
+        /** Constants to control the battle system */
+        SYSTEM?: {
+            /** Default range for actions, spells and items */
+            actionRange?: string;
+
+            /** Max movement in one turn */
+            mvp?: number;
+
+            /** ??? */
+            durationStartSprite?: number;
+
+            /** Opacity of the tile grid */
+            gridOpacity?: number;
+
+            /** Selector PNG filename without extension */
+            selectorFile?: string;
+
+            /** How fast the selector moves when maintaining arrow keys */
+            selectorSpeed?: number;
+
+            /** Color for highlighting tiles with allies */
+            allyScopeColor?: string;
+
+            /** Color for highlighting tiles with enemies */
+            enemyScopeColor?: string;
+
+            /** Color for highlighting possible movement */
+            moveScopeColor?: string;
+
+            /** Whether to end turn automatically after all characters acted */
+            autoTurnEnd?: boolean;
+
+            /** Whether victory requires killing all enemies */
+            clearAll?: boolean;
+
+            /** ??? */
+            fadeOutEnd?: boolean;
+
+            /** ??? */
+            setTransparentUnit?: boolean;
+
+            /** Whether to display text during the transition from map to battle */
+            showBattleStart?: boolean;
+
+            /** ??? */
+            showFaceUnit?: boolean;
+
+            /** Whether to show HP gauges under battlers */
+            showHpGauge?: boolean;
+
+            /** ??? */
+            showInformationWindow?: boolean;
+
+            /** Whether to display icons for status */
+            showStateIcon?: boolean;
+
+            /** Text displayed during the battle start transition */
+            battleStartTerm?: string;
+
+            /** Unused */
+            criticalRateTerm?: string;
+
+            /** Unused */
+            damageTerm?: string;
+
+            /** Unused */
+            drainTerm?: string;
+
+            /** Unused */
+            endTurnTerm?: string;
+
+            /** Unused */
+            hitRateTerm?: string;
+
+            /** Unused */
+            recoverTerm?: string;
+
+            /** Wait action name */
+            wait?: string;
+
+            /** Wait skill ID */
+            waitSkillId?: number;
+
+            /** ??? */
+            battleStartId?: number;
+
+            /** ??? */
+            enemyPhaseId?: number;
+
+            /** ??? */
+            playerPhaseId?: number;
+
+            /** Which game variable stores ??? */
+            phaseVarId?: number;
+
+            /** Which game variable stores ??? */
+            battlePhaseVarId?: number;
+
+            /** ??? */
+            playerPhaseVarId?: number;
+
+            /** Which game variable stores the ongoing/last battle's turn count */
+            turnCountVarId?: number;
+
+            /** Whether the battle is lost */
+            isDefeated?: boolean;
+        }
         /**
-         * The getArmorQualityEffects function returns the effects of armor quality.
-         * @param armorId the ID of the armor
-         * @returns an object containing the effects of armor quality
+         * Extract effects from a weapon's qualities.
+         * @param weaponId from TEW.DATABASE.WEAPONS.IDS
+         * @returns Weapon's in-battle effects
          */
-        getWeaponQualityEffects: (weaponId: string) => {
-            /**
-             * The attackMod property specifies the weapon's bonus to attack rolls.
-             */
+        getWeaponQualityEffects?: (weaponId: string) => {
+            /** Modifier applied to dice rolls when attacking (before success/failure) */
             attackMod: number;
-            /**
-             * The defenceMod property specifies the weapon's bonus to defence rolls.
-             */
+
+            /** Modifier applied to dice rolls when defending (before success/failure) */
             defenceMod: number;
-            /**
-             * The attackBonusDR property specifies the weapon's bonus DR for attack rolls ('Degré de Réussite' in french).
-             */
-            attackBonusDR: number;
-            /**
-             * The defenceBonusDR property specifies the weapon's bonus DR for defence rolls ('Degré de Réussite' in french).
-             */
-            defenceBonusDR: number;
-            /**
-             * The bonusPA property specifies the bonus points of armor.
-             */
+
+            /** Modifier applied to SL when attacking (after success) */
+            attackBonusDR: number; // TODO rename to SL
+
+            /** Modifier applied to SL when defending (after success/failure) */
+            defenceBonusDR: number; // TODO rename to SL
+
+            /** Bonus armor points when defending */
             bonusPA: number;
-            /**
-             * The ignoredPA property specifies the ignored points of armor.
-             */
+
+            /** Ignored armor points when attacking */
             ignoredPA: number;
-            /**
-             * The ignoredArmorTypes property specifies the types of armor that are ignored.
-             */
+
+            /** Ignored armor types when attacking */
             ignoredArmorTypes: ArmorGroup[];
-            /**
-             * The effects property specifies some weapon qualities that have special effects.
-             * Each effect is represented by a key-value pair, where the key is the name of the effect and the value is a boolean indicating whether the effect is active or not.
-             */
+
+            /** Standalone effects to be checked for at different steps of the battle phase */
             effects: Partial<Record<keyof typeof WeaponQuality, boolean>>;
-            /**
-             * The slashLevel property specifies the level of a weapon's SLASH quality.
-             */
+
+            /** SLASH quality level */
             slashLevel: number;
         };
 
         /**
-         * getArmorInfos is a function that returns the armor information based on the provided armor IDs.
-         * @param armorIds the IDs of the armors
-         * @returns 
+         * Extract battle info from a combination of armors
+         * @param armorIds from TEW.DATABASE.ARMORS.IDS
+         * @returns Armor types and PAs for each location
          */
-        getArmorInfos: (armorIds: string[]) => {
-            /**
-             * The headModifier property contains all head armor modifiers.
-             * Each modifier is represented by an object containing the type of armor group and the corresponding modifier value.
-             */
+        getArmorInfos?: (armorIds: string[]) => {
             headModifier: {
-                /**
-                 * The type property specifies the armor's group.
-                 */
                 type: ArmorGroup;
-                /**
-                 * The modifier property specifies the armor piece's PA.
-                 */
                 modifier: number;
             }[];
-            /**
-             * The bodyModifier property contains all body armor modifiers.
-             * Each modifier is represented by an object containing the type of armor group and the corresponding modifier value.
-             */
             bodyModifier: {
-                /**
-                 * The type property specifies the armor's group.
-                 */
                 type: ArmorGroup;
-                /**
-                 * The modifier property specifies the armor piece's PA.
-                 */
                 modifier: number;
             }[];
-            /**
-             * The legsModifier property contains all leg armor modifiers.
-             * Each modifier is represented by an object containing the type of armor group and the corresponding modifier value.
-             */
             legsModifier: {
-                /**
-                 * The type property specifies the armor's group.
-                 */
                 type: ArmorGroup;
-                /**
-                 * The modifier property specifies the armor piece's PA.
-                 */
                 modifier: number;
             }[];
-            /**
-             * The armsModifier property contains all arm armor modifiers.
-             * Each modifier is represented by an object containing the type of armor group and the corresponding modifier value.
-             */
             armsModifier: {
-                /**
-                 * The type property specifies the armor's group.
-                 */
                 type: ArmorGroup;
-                /**
-                 * The modifier property specifies the armor piece's PA.
-                 */
                 modifier: number;
             }[];
         };
 
         /**
-         * getCombatCompOrDefault is a function that returns the competence value associated with a weapon group.
+         * Find the competence value associated with a weapon group.
          * If the battler does not have that competence, this function returns its base weapon or ballistic skill.
-         * @param battler the battler object
-         * @param weaponGroup the group of the weapon
+         * @param battler Game_BattlerBase
+         * @param weaponGroup from TEW.DATABASE.WEAPONS.GROUP_IDS
          * @param isMelee true if the weapon is melee, false if it is ranged
-         * @returns match and value properties
+         * @returns Whether the battler has the right competence and the effective value
          */
-        getCombatCompOrDefault: (battler: any, weaponGroup: WeaponGroup, isMelee: boolean) => {
+        getCombatCompOrDefault?: (battler: Game_BattlerBase, weaponGroup: WeaponGroup, isMelee: boolean) => {
             /**
-             * The match property specifies whether the battler has a competence for this weapon group.
+             * True if the battler has the competence matching weaponGroup
              */
             match: boolean;
             /**
-             * The value property specifies the competence value.
+             * Competence value used by the battler when fighting with this weaponGroup
              */
             value: number;
         };
 
         /**
-         * getWeaponFromId is a function that returns the weapon object based on the provided weapon ID.
-         * @param weaponId the ID of the weapon
-         * @returns the weapon object
+         * Find the weapon object from its ID.
+         * @param weaponId from TEW.DATABASE.WEAPONS.IDS
+         * @returns A weapon object
          */
-        getWeaponFromId: (weaponId: string) => MeleeWeapon | RangedWeapon;
-    }
+        getWeaponFromId?: (weaponId: string) => MeleeWeapon | RangedWeapon;
+    };
+
+    /** RMMV base functions stored for overriding */
+    MEMORY?: Record<string, any>;
 } = {};
 export default TEW;

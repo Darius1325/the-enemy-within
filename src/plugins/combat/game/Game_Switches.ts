@@ -11,14 +11,14 @@ Game_Switches.prototype.update = function() {
 };
 
 Game_Switches.prototype.updatePhase = function() {
-    this.setValue(TacticsSystem.playerPhaseId, false);
-    this.setValue(TacticsSystem.enemyPhaseId, false);
+    this.setValue(TEW.COMBAT.SYSTEM.playerPhaseId, false);
+    this.setValue(TEW.COMBAT.SYSTEM.enemyPhaseId, false);
     switch (BattleManager.phase()) {
         case 'playerPhase':
-            this.setValue(TacticsSystem.playerPhaseId, true);
+            this.setValue(TEW.COMBAT.SYSTEM.playerPhaseId, true);
             break;
         case 'enemyPhase':
-            this.setValue(TacticsSystem.enemyPhaseId, true);
+            this.setValue(TEW.COMBAT.SYSTEM.enemyPhaseId, true);
             break
     }
 };

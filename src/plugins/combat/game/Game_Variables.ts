@@ -32,7 +32,7 @@ Game_Variables.prototype.updatePhase = function() {
             var value = 0;
             break;
     }
-    this.setValue(TacticsSystem.phaseVarId, value);
+    this.setValue(TEW.COMBAT.SYSTEM.phaseVarId, value);
 };
 
 Game_Variables.prototype.updatePlayerPhase = function() {
@@ -50,7 +50,7 @@ Game_Variables.prototype.updatePlayerPhase = function() {
             var value = 0;
             break;
     }
-    this.setValue(TacticsSystem.playerPhaseVarId, value);
+    this.setValue(TEW.COMBAT.SYSTEM.playerPhaseVarId, value);
 };
 
 Game_Variables.prototype.updateBattlePhase = function() {
@@ -71,9 +71,9 @@ Game_Variables.prototype.updateBattlePhase = function() {
             var value = 0;
             break;
     }
-    this.setValue(TacticsSystem.battlePhaseVarId, value);
+    this.setValue(TEW.COMBAT.SYSTEM.battlePhaseVarId, value);
 };
 
 Game_Variables.prototype.updateTurnCount = function() {
-    this.setValue(TacticsSystem.turnCountVarId, $gameTroop.turnCount());
+    this.setValue(TEW.COMBAT.SYSTEM.turnCountVarId, $gameTroop.turnCount());
 };

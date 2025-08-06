@@ -18,7 +18,7 @@ Sprite_Grid.prototype.initialize = function() {
     this.setFrame(0, 0, Graphics.width, Graphics.height);
     this.createBitmap();
     this.z = 1;
-    this.opacity = TacticsSystem.gridOpacity || 60;
+    this.opacity = TEW.COMBAT.SYSTEM.gridOpacity || 60;
 };
 
 Sprite_Grid.prototype.createBitmap = function() {

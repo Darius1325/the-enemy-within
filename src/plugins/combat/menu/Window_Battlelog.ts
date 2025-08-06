@@ -7,7 +7,7 @@
 // The window for displaying battle progress. No frame is displayed, but it is
 // handled as a window for convenience.
 
-TacticsSystem.Window_BattleLog_showNormalAnimation = Window_BattleLog.prototype.showNormalAnimation;
+const windowBattleLogShowNormalAnimation = Window_BattleLog.prototype.showNormalAnimation;
 Window_BattleLog.prototype.showNormalAnimation = function(targets, animationId, mirror) {
     if ($gamePartyTs.inBattle()) {
         var animation = $dataAnimations[animationId];
@@ -17,6 +17,6 @@ Window_BattleLog.prototype.showNormalAnimation = function(targets, animationId, 
             });
         }
     } else {
-        TacticsSystem.Window_BattleLog_showNormalAnimation.call(this, targets, animationId, mirror);
+        windowBattleLogShowNormalAnimation.call(this, targets, animationId, mirror);
     }
 };

@@ -6,9 +6,9 @@
 //
 // The game object class for temporary data that is not included in save data.
 
-TacticsSystem.Game_Temp_initialize = Game_Temp.prototype.initialize;
+TEW.MEMORY.gameTempInit = Game_Temp.prototype.initialize;
 Game_Temp.prototype.initialize = function() {
-    TacticsSystem.Game_Temp_initialize.call(this);
+    TEW.MEMORY.gameTempInit.call(this);
     this._positionX = null;
     this._positionY = null;
     this._direction = null;

@@ -190,7 +190,7 @@ Scene_Battle.prototype.commandCancelMapWindow = function() {
 };
 
 Scene_Battle.prototype.start = function() {
-    $gameSwitches.setValue(TacticsSystem.battleStartId, true);
+    $gameSwitches.setValue(TEW.COMBAT.SYSTEM.battleStartId, true);
     $gamePlayer.setThrough(true);
     Scene_Base.prototype.start.call(this);
     BattleManager.startBattle();

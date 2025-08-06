@@ -60,7 +60,7 @@ Window_TacticsStatus.prototype.drawBattlerStatus = function() {
 };
 
 Window_TacticsStatus.prototype.drawActorFrame = function() {
-    if (TacticsSystem.showFaceUnit) {
+    if (TEW.COMBAT.SYSTEM.showFaceUnit) {
         this.drawActorFace(this._battler, 0, 0, Window_Base._faceWidth, Window_Base._faceHeight);
     } else {
         this.drawActorCharacter(this._battler, 48+24, 48*2);
@@ -68,7 +68,7 @@ Window_TacticsStatus.prototype.drawActorFrame = function() {
 };
 
 Window_TacticsStatus.prototype.drawEnemyFrame = function() {
-    if (TacticsSystem.showFaceUnit) {
+    if (TEW.COMBAT.SYSTEM.showFaceUnit) {
         this.drawEnemyImage(this._battler, 0, 0);
     } else {
         var event = this._battler.event();

@@ -67,18 +67,18 @@ Window_TacticsInfo.prototype.drawDamageType = function(actor, x, y) {
     var action = BattleManager.inputtingAction();
     this.changeTextColor(this.systemColor());
     if (action.isDamage()) {
-        this.drawText(TacticsSystem.damageTerm, x, y, 160);
+        this.drawText(TEW.COMBAT.SYSTEM.damageTerm, x, y, 160);
     } else if (action.isRecover()) {
-        this.drawText(TacticsSystem.recoverTerm, x, y, 160);
+        this.drawText(TEW.COMBAT.SYSTEM.recoverTerm, x, y, 160);
     } else {
-        this.drawText(TacticsSystem.drainTerm, x, y, 160);
+        this.drawText(TEW.COMBAT.SYSTEM.drainTerm, x, y, 160);
     }
     this.resetTextColor();
 };
 
 Window_TacticsInfo.prototype.drawHit = function(actor, x, y) {
     this.changeTextColor(this.systemColor());
-    this.drawText(TacticsSystem.hitRateTerm, x, y, 160);
+    this.drawText(TEW.COMBAT.SYSTEM.hitRateTerm, x, y, 160);
     this.resetTextColor();
     var action = BattleManager.inputtingAction();
     var hit = action.itemHit(actor) * 100 + '%';
@@ -87,7 +87,7 @@ Window_TacticsInfo.prototype.drawHit = function(actor, x, y) {
 
 Window_TacticsInfo.prototype.drawCri = function(actor, x, y) {
     this.changeTextColor(this.systemColor());
-    this.drawText(TacticsSystem.criticalRateTerm, x, y, 160);
+    this.drawText(TEW.COMBAT.SYSTEM.criticalRateTerm, x, y, 160);
     this.resetTextColor();
     var action = BattleManager.inputtingAction();
     var crit = Math.round(action.itemCri(actor) * 100) + '%';

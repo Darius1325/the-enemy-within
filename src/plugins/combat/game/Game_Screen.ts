@@ -7,20 +7,20 @@
 // The game object class for screen effect data, such as changes in color tone
 // and flashes.
 
-TacticsSystem.Game_Screen_clear = Game_Screen.prototype.clear;
+TEW.MEMORY.gameScreenClear = Game_Screen.prototype.clear;
 Game_Screen.prototype.clear = function() {
-    TacticsSystem.Game_Screen_clear.call(this);
+    TEW.MEMORY.gameScreenClear.call(this);
     this._battleStart = true;
 };
 
-TacticsSystem.Game_Screen_onBattleStart = Game_Screen.prototype.onBattleStart;
+TEW.MEMORY.gameScreenOnBattleStart = Game_Screen.prototype.onBattleStart;
 Game_Screen.prototype.onBattleStart = function() {
-    TacticsSystem.Game_Screen_onBattleStart.call(this);
+    TEW.MEMORY.gameScreenOnBattleStart.call(this);
     this.clearStart();
 };
 
 Game_Screen.prototype.clearStart = function() {
-    this._startDuration = this._battleStart ? TacticsSystem.durationStartSprite : 0;
+    this._startDuration = this._battleStart ? TEW.COMBAT.SYSTEM.durationStartSprite : 0;
     this._battleStart = false;
 };
 
@@ -28,9 +28,9 @@ Game_Screen.prototype.startDuration = function() {
     return this._startDuration;
 };
 
-TacticsSystem.Game_Screen_update = Game_Screen.prototype.update;
+TEW.MEMORY.gameScreenUpdate = Game_Screen.prototype.update;
 Game_Screen.prototype.update = function() {
-    TacticsSystem.Game_Screen_update.call(this);
+    TEW.MEMORY.gameScreenUpdate.call(this);
     this.updateStart();
 };
 
@@ -42,7 +42,7 @@ Game_Screen.prototype.updateStart = function() {
 
 Game_Screen.prototype.onBattleEnd = function() {
     this._battleStart = true;
-    if (TacticsSystem.fadeOutEnd) {
+    if (TEW.COMBAT.SYSTEM.fadeOutEnd) {
         this.startFadeOut(this.fadeSpeed());
     }
 };

@@ -6,9 +6,9 @@
 //
 // The superclass of Game_Party and Game_Troop.
 
-TacticsSystem.Game_Unit_onBattleStart = Game_Unit.prototype.onBattleStart;
+TEW.MEMORY.gameUnitOnBattleStart = Game_Unit.prototype.onBattleStart;
 Game_Unit.prototype.onBattleStart = function() {
-    TacticsSystem.Game_Unit_onBattleStart.call(this);
+    TEW.MEMORY.gameUnitOnBattleStart.call(this);
     if ($gamePartyTs.inBattle()) {
         this._inBattle = false;
     }

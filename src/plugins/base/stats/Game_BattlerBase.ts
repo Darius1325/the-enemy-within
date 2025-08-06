@@ -30,6 +30,18 @@ export interface Game_BattlerBase {
     _equippedArmors: string[];
     _ammo: Record<string, number>;
 
+    mhp: number;
+    weas: number;
+    bals: number;
+    strg: number;
+    toug: number;
+    init: number;
+    agil: number;
+    dext: number;
+    intl: number;
+    will: number;
+    felw: number;
+
     param: (paramId: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10) => number;
     paramByName: (paramName: StatName) => number;
 
@@ -78,7 +90,7 @@ export interface Game_BattlerBase {
     ammoType: (ammoId: string) => number;
     hasAmmo: (ammoId: string) => boolean;
     addAmmo: (ammoId: string, quantity?: number) => void;
-};
+}
 
 // $StartCompilation
 
@@ -111,9 +123,9 @@ Object.defineProperties(Game_BattlerBase.prototype, {
 });
 
 // Base stats
-const battlerBaseInit = Game_BattlerBase.prototype.initialize;
+TEW.MEMORY.battlerBaseInit = Game_BattlerBase.prototype.initialize;
 Game_BattlerBase.prototype.initialize = function() {
-    battlerBaseInit.call(this);
+    TEW.MEMORY.battlerBaseInit.call(this);
     this._paramBase = [1,0,0,0,0,0,0,0,0,0,0];
     this._competences = TEW.CHARACTERS.BASE_COMP_VALUES.slice();
     this._spells = [];

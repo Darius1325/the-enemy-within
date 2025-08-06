@@ -56,5 +56,5 @@ Window_TacticsCommand.prototype.addActionCommand = function() {
 };
 
 Window_TacticsCommand.prototype.addWaitCommand = function() {
-    this.addCommand(TacticsSystem.wait, 'wait', true);
+    this.addCommand(TEW.COMBAT.SYSTEM.wait, 'wait', true);
 };

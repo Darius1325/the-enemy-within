@@ -1,7 +1,4 @@
 // $PluginCompiler TEW_Menus.js
-
-var Window_Base: any;
-
 // $StartCompilation
 
 Window_Base.prototype.drawWrappedText= function(text, x, y, width, fontsize = this.contents.fontSize) {

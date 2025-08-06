@@ -35,7 +35,7 @@ Spriteset_Tactics.prototype.createLowerLayer = function() {
 Spriteset_Tactics.prototype.createBaseTiles = function() {
     this._tilesSprite = new Sprite_Base();
     this._tilesSprite.z = 1;
-    this._rangeTilesSprite = this.createTiles(TacticsSystem.moveScopeColor);
+    this._rangeTilesSprite = this.createTiles(TEW.COMBAT.SYSTEM.moveScopeColor);
     this._tilemap.addChild(this._tilesSprite);
 };
 

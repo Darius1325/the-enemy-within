@@ -19,7 +19,7 @@ Sprite_Selector.prototype.initialize = function() {
 };
 
 Sprite_Selector.prototype.loadBitmap = function() {
-    this.bitmap = ImageManager.loadSystem(TacticsSystem.selectorFile);
+    this.bitmap = ImageManager.loadSystem(TEW.COMBAT.SYSTEM.selectorFile);
 };
 
 Sprite_Selector.prototype.update = function() {

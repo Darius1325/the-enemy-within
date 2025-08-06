@@ -6,6 +6,7 @@ Imported.TEW_Combat = true;
 var TEW = TEW || {};
 TEW.COMBAT = TEW.COMBAT || {};
 
+// TODO remove
 /*:
  * @plugindesc A Tactical Battle System designed for RPG Maker.
  * @author Bilal El Moussaoui (https://twitter.com/arleq1n)
@@ -306,7 +307,7 @@ TEW.COMBAT = TEW.COMBAT || {};
  *     Move immediately the selector to position at event of eventId.
  *
  * TacticsSystem.ClearAll on/off
- *     Activate or desactivate clear all condition victory.
+ *     Activate or deactivate clear all condition victory.
  *
  * TacticsSystem.BattlerEndAction
  *     Ends the subject's turn.
@@ -317,40 +318,44 @@ TEW.COMBAT = TEW.COMBAT || {};
  *     https://forums.rpgmakerweb.com/index.php?threads/tactics-system-1-0.117600/
  */
 
-var TacticsSystem = TacticsSystem || {};
+TEW.COMBAT.SYSTEM = TEW.COMBAT.SYSTEM || {};
 
-TacticsSystem.Parameters = PluginManager.parameters('TEW_Tactics_Basic');
-TacticsSystem.clearAll = true; // in game system
-TacticsSystem.selectorFile =          String(TacticsSystem.Parameters['Selector File']);
-TacticsSystem.selectorSpeed =         Number(TacticsSystem.Parameters['Selector Speed']);
-TacticsSystem.gridOpacity =           Number(TacticsSystem.Parameters['Grid Opacity']);
-TacticsSystem.mvp =                   Number(TacticsSystem.Parameters['Move Points']);
-TacticsSystem.actionRange =           String(TacticsSystem.Parameters['Action Range']);
-TacticsSystem.waitSkillId =           Number(TacticsSystem.Parameters['Wait Skill Id']);
-TacticsSystem.autoTurnEnd =           String(TacticsSystem.Parameters['Auto Turn End']).toBoolean();
-TacticsSystem.moveScopeColor =        String(TacticsSystem.Parameters['Move Scope Color']);
-TacticsSystem.allyScopeColor =        String(TacticsSystem.Parameters['Ally Scope Color']);
-TacticsSystem.enemyScopeColor =       String(TacticsSystem.Parameters['Enemy Scope Color']);
-TacticsSystem.showHpGauge =           String(TacticsSystem.Parameters['Show Hp Gauge']).toBoolean();
-TacticsSystem.showStateIcon =         String(TacticsSystem.Parameters['Show State Icon']).toBoolean();
-TacticsSystem.showBattleStart =       String(TacticsSystem.Parameters['Show Battle Start']).toBoolean();
-TacticsSystem.durationStartSprite =   Number(TacticsSystem.Parameters['Duration Start Sprite']);
-TacticsSystem.showInformationWindow = String(TacticsSystem.Parameters['Show Information Window']).toBoolean();
-TacticsSystem.fadeOutEnd =            String(TacticsSystem.Parameters['Fade Out End']).toBoolean();
-TacticsSystem.setTransparentUnit =    String(TacticsSystem.Parameters['Set Transparent Unit']).toBoolean();
-TacticsSystem.showFaceUnit =          String(TacticsSystem.Parameters['Show Face Unit']).toBoolean();
-TacticsSystem.battleStartTerm =       String(TacticsSystem.Parameters['Battle Start Term']);
-TacticsSystem.endTurnTerm =           String(TacticsSystem.Parameters['End Turn Term']);
-TacticsSystem.damageTerm =            String(TacticsSystem.Parameters['Damage Term']);
-TacticsSystem.recoverTerm =           String(TacticsSystem.Parameters['Recover Term']);
-TacticsSystem.drainTerm =             String(TacticsSystem.Parameters['Drain Term']);
-TacticsSystem.hitRateTerm =           String(TacticsSystem.Parameters['Hit Rate Term']);
-TacticsSystem.criticalRateTerm =      String(TacticsSystem.Parameters['Critical Rate Term']);
-TacticsSystem.wait =                  String(TacticsSystem.Parameters['Wait Command Name']);
-TacticsSystem.battleStartId =         Number(TacticsSystem.Parameters['Battle Start Id']);
-TacticsSystem.playerPhaseId =         Number(TacticsSystem.Parameters['Player Phase Id']);
-TacticsSystem.enemyPhaseId =          Number(TacticsSystem.Parameters['Enemy Phase Id']);
-TacticsSystem.phaseVarId =            Number(TacticsSystem.Parameters['Current Phase Id']);
-TacticsSystem.playerPhaseVarId =      Number(TacticsSystem.Parameters['Current Player Phase Id']);
-TacticsSystem.battlePhaseVarId =      Number(TacticsSystem.Parameters['Current Battle Phase Id']);
-TacticsSystem.turnCountVarId =        Number(TacticsSystem.Parameters['Turn Count Id']);
+TEW.COMBAT.SYSTEM.actionRange = '1'; // TODO should be a number ?
+TEW.COMBAT.SYSTEM.mvp = 4; // TODO should be removed eventually
+
+TEW.COMBAT.SYSTEM.durationStartSprite = 1; // TODO should be removed eventually
+TEW.COMBAT.SYSTEM.gridOpacity = 1;
+TEW.COMBAT.SYSTEM.selectorFile = 'Selector';
+TEW.COMBAT.SYSTEM.selectorSpeed = 1;
+
+TEW.COMBAT.SYSTEM.allyScopeColor = '#008000';
+TEW.COMBAT.SYSTEM.enemyScopeColor = '#B22222';
+TEW.COMBAT.SYSTEM.moveScopeColor = '#0066CC';
+
+TEW.COMBAT.SYSTEM.autoTurnEnd = true; // TODO should be removed eventually
+TEW.COMBAT.SYSTEM.clearAll = true; // TODO should be removed eventually
+TEW.COMBAT.SYSTEM.fadeOutEnd = true;
+TEW.COMBAT.SYSTEM.setTransparentUnit = true;
+TEW.COMBAT.SYSTEM.showBattleStart = true;
+TEW.COMBAT.SYSTEM.showFaceUnit = true;
+TEW.COMBAT.SYSTEM.showHpGauge = true;
+TEW.COMBAT.SYSTEM.showInformationWindow = true;
+TEW.COMBAT.SYSTEM.showStateIcon = true;
+
+TEW.COMBAT.SYSTEM.battleStartTerm = 'Start';
+TEW.COMBAT.SYSTEM.criticalRateTerm = 'Crit rate'; // TODO should be removed eventually
+TEW.COMBAT.SYSTEM.damageTerm = 'Damage'; // TODO should be removed eventually
+TEW.COMBAT.SYSTEM.drainTerm = 'Drain'; // TODO should be removed eventually
+TEW.COMBAT.SYSTEM.endTurnTerm = 'End'; // TODO should be removed eventually
+TEW.COMBAT.SYSTEM.hitRateTerm = 'Hit rate'; // TODO should be removed eventually
+TEW.COMBAT.SYSTEM.recoverTerm = 'Recovery'; // TODO should be removed eventually
+TEW.COMBAT.SYSTEM.wait = 'Wait';
+
+TEW.COMBAT.SYSTEM.waitSkillId = 7;
+TEW.COMBAT.SYSTEM.battleStartId = 1;
+TEW.COMBAT.SYSTEM.enemyPhaseId = 3; // TODO should be removed eventually
+TEW.COMBAT.SYSTEM.playerPhaseId = 2; // TODO should be removed eventually
+TEW.COMBAT.SYSTEM.phaseVarId = 1;
+TEW.COMBAT.SYSTEM.battlePhaseVarId = 3;
+TEW.COMBAT.SYSTEM.playerPhaseVarId = 2;
+TEW.COMBAT.SYSTEM.turnCountVarId = 4;

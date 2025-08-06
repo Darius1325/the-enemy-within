@@ -492,7 +492,7 @@ BattleManager.updateStartPlayer = function() {
     this._subject = this._playersOrder.shift();
     if (this._subject) {
         this.restrictedPhase();
-    } else if ($gamePartyTs.isPhase() || !TacticsSystem.autoTurnEnd) {
+    } else if ($gamePartyTs.isPhase() || !TEW.COMBAT.SYSTEM.autoTurnEnd) {
         $gameSelector.setTransparent(false);
         this._battlePhase = 'explore';
     } else {
@@ -762,7 +762,7 @@ BattleManager.checkBattleEnd = function() {
         if ($gamePartyTs.isAllDead()) {
             this.processDefeat();
             return true;
-        } else if ($gameTroopTs.isAllDead() && TacticsSystem.clearAll) {
+        } else if ($gameTroopTs.isAllDead() && TEW.COMBAT.SYSTEM.clearAll) {
             this.processVictory();
             return true;
         }
@@ -901,7 +901,7 @@ BattleManager.gainDropItems = function() {
 };
 
 BattleManager.updateBattleEnd = function() {
-    if (!this._escaped && $gameParty.isAllDead() || TacticsSystem.isDefeated) {
+    if (!this._escaped && $gameParty.isAllDead() || TEW.COMBAT.SYSTEM.isDefeated) {
         if (this._canLose) {
             $gameParty.reviveBattleMembers();
             SceneManager.pop();
@@ -929,7 +929,7 @@ BattleManager.terminate = function() {
 };
 
 BattleManager.clear = function() {
-    $gameSwitches.setValue(TacticsSystem.battleStartId, false);
+    $gameSwitches.setValue(TEW.COMBAT.SYSTEM.battleStartId, false);
     $gamePartyTs.onClear();
     $gameTroopTs.onClear();
 };

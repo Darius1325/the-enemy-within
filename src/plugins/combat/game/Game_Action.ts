@@ -6,21 +6,20 @@
 //
 // The game object class for a battle action.
 
-TacticsSystem.Game_Action_initialize = Game_Action.prototype.initialize;
+TEW.MEMORY.gameActionInit = Game_Action.prototype.initialize;
 Game_Action.prototype.initialize = function(subject, forcing) {
-    TacticsSystem.Game_Action_initialize.call(this, subject, forcing);
+    TEW.MEMORY.gameActionInit.call(this, subject, forcing);
     this._moveRoute = 0;
 };
 
 Game_Action.prototype.combatOpponentsUnit = function(battler) {
     var units = battler.opponentsUnitTS().aliveMembers();
-    var battlers = this.searchBattlers(battler, units);
-    return battlers;
+    return this.searchBattlers(battler, units);
 };
 
 Game_Action.prototype.combatFriendsUnit = function(battler) {
     var friends = battler.friendsUnitTS().aliveMembers();
-    var battlers = [battler]; // first for the user keeps the same index !
+    var battlers = [battler]; // first since the user keeps the same index !
     if (this.isForFriend()) {
         battlers = battlers.concat(this.searchBattlers(battler, friends));
     }
@@ -69,7 +68,7 @@ Game_Action.prototype.updateRange = function(item, x, y) {
 };
 
 Game_Action.prototype.extractRangeData = function (object) {
-    var data = object.meta['Range'] || TacticsSystem.actionRange;
+    var data = object.meta['Range'] || TEW.COMBAT.SYSTEM.actionRange;
     return data.trim().split(' ');
 };
 
@@ -111,7 +110,7 @@ Game_Action.prototype.showRange = function() {
 };
 
 Game_Action.prototype.color = function() {
-    return this.isForFriend() ? TacticsSystem.allyScopeColor : TacticsSystem.enemyScopeColor;
+    return this.isForFriend() ? TEW.COMBAT.SYSTEM.allyScopeColor : TEW.COMBAT.SYSTEM.enemyScopeColor;
 }
 
 Game_Action.prototype.testDamageMinMaxValue = function(target, minMax) {
@@ -169,20 +168,21 @@ Game_Action.prototype.isWait = function() {
     return this.item() === $dataSkills[this.subject().waitSkillId()];
 };
 
-TacticsSystem.Game_Action_subject = Game_Action.prototype.subject;
+// TODO fishy
+TEW.MEMORY.gameActionSubject = Game_Action.prototype.subject;
 Game_Action.prototype.subject = function() {
-    TacticsSystem.Game_Action_subject.call(this);
+    TEW.MEMORY.gameActionSubject.call(this);
     if ($gamePartyTs.inBattle()) {
         if (this._subjectActorId <= 0) {
             return $gameTroopTs.members()[this._subjectEnemyIndex];
         }
     }
-    return TacticsSystem.Game_Action_subject.call(this);
+    return TEW.MEMORY.gameActionSubject.call(this);
 };
 
-TacticsSystem.Game_Action_setSubject = Game_Action.prototype.setSubject;
+TEW.MEMORY.gameActionSetSubject = Game_Action.prototype.setSubject;
 Game_Action.prototype.setSubject = function(subject) {
-    TacticsSystem.Game_Action_setSubject.call(this, subject);
+    TEW.MEMORY.gameActionSetSubject.call(this, subject);
     // For enemy restriction attack an ally...
     if ($gamePartyTs.inBattle()) {
         if (!subject.isActor()) {

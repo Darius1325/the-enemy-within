@@ -15,7 +15,7 @@ Game_CharacterBase.prototype.isActor = function() {
     return this._isActor;
 };
 
-TacticsSystem.Game_CharacterBase_isCollidedWithEvents = Game_CharacterBase.prototype.isCollidedWithEvents;
+TEW.MEMORY.gameCharacterBaseIsCollidedWithEvents = Game_CharacterBase.prototype.isCollidedWithEvents;
 Game_CharacterBase.prototype.isCollidedWithEvents = function(x, y) {
     // for an actor to pass through an actor
     if (this.isActor()) {
@@ -24,6 +24,6 @@ Game_CharacterBase.prototype.isCollidedWithEvents = function(x, y) {
             return event.isNormalPriority() && !event.isActor();
         });
     } else {
-        return TacticsSystem.Game_CharacterBase_isCollidedWithEvents.call(this, x, y);
+        return TEW.MEMORY.gameCharacterBaseIsCollidedWithEvents.call(this, x, y);
     }
 };

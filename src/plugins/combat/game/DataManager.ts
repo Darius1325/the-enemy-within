@@ -11,10 +11,10 @@ import Game_TroopTs from "./Game_TroopTs";
 //
 // The static class that manages the database and game objects.
 
-TacticsSystem.DataManager_createGameObjects = DataManager.createGameObjects;
+TEW.MEMORY.dataManagerCreateGameObjects = DataManager.createGameObjects;
 DataManager.createGameObjects = function() {
     $gameSelector = new Game_Selector();
     $gameTroopTs  = new Game_TroopTs();
     $gamePartyTs  = new Game_PartyTs();
-    TacticsSystem.DataManager_createGameObjects.call(this);
+    TEW.MEMORY.dataManagerCreateGameObjects.call(this);
 };

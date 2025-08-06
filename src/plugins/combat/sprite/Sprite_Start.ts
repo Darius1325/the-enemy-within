@@ -17,7 +17,7 @@ Sprite_Start.prototype.initialize = function() {
     Sprite_Base.prototype.initialize.call(this);
     this.bitmap = new Bitmap(Graphics.width, Graphics.height);
     this._delay = 0;
-    this._maxDuration = TacticsSystem.durationStartSprite;
+    this._maxDuration = TEW.COMBAT.SYSTEM.durationStartSprite;
     this.z = 8;
     this.opacity = 0;
 };
@@ -50,7 +50,7 @@ Sprite_Start.prototype.drawStart = function() {
     this.bitmap.outlineColor = 'black';
     this.bitmap.outlineWidth = 8;
     this.bitmap.fontSize = 86;
-    var startTerm = TacticsSystem.battleStartTerm;
+    var startTerm = TEW.COMBAT.SYSTEM.battleStartTerm;
     this.bitmap.drawText(startTerm, x, y, maxWidth, 48, 'center');
     this.bitmap.outlineWidth = 4;
     this.bitmap.fontSize = 28;

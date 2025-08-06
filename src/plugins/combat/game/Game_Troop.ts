@@ -15,7 +15,7 @@ Game_Troop.prototype.setupTactics = function(enemies) {
     }, this)
 };
 
-TacticsSystem.Game_Troop_meetsConditions = Game_Troop.prototype.meetsConditions;
+TEW.MEMORY.gameTroopMeetsCondition = Game_Troop.prototype.meetsConditions;
 Game_Troop.prototype.meetsConditions = function(page) {
     var c = page.conditions;
     if (c.enemyValid) {
@@ -28,7 +28,7 @@ Game_Troop.prototype.meetsConditions = function(page) {
         }
     } else {
         page.conditions.enemyValid = false;
-        return TacticsSystem.Game_Troop_meetsConditions.call(this, page);
+        return TEW.MEMORY.gameTroopMeetsCondition.call(this, page);
     }
 };
 

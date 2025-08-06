@@ -36,7 +36,7 @@ Window_TacticsMap.prototype.numVisibleRows = function() {
 
 Window_TacticsMap.prototype.addMainCommands = function() {
     var enabled = this.areMainCommandsEnabled();
-    this.addCommand(TacticsSystem.endTurnTerm, 'endTurn');
+    this.addCommand(TEW.COMBAT.SYSTEM.endTurnTerm, 'endTurn');
     if (this.needsCommand('equip')) {
         this.addCommand(TextManager.equip, 'equip', enabled);
     }

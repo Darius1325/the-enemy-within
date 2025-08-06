@@ -20,9 +20,9 @@ Object.defineProperties(Game_Battler.prototype, {
     mvp: { get: function() { return this.move(); }, configurable: true }
 });
 
-TacticsSystem.Game_Battler_initMembers = Game_Battler.prototype.initMembers;
+TEW.MEMORY.gameBattlerInitMembers = Game_Battler.prototype.initMembers;
 Game_Battler.prototype.initMembers = function() {
-    TacticsSystem.Game_Battler_initMembers.call(this);
+    TEW.MEMORY.gameBattlerInitMembers.call(this);
     this._tx = 0;
     this._ty = 0;
     this._eventId = 0;
@@ -155,18 +155,18 @@ Game_Battler.prototype.nextAction = function() {
     }
 };
 
-TacticsSystem.Game_Battler_currentAction = Game_Battler.prototype.currentAction;
+TEW.MEMORY.gameBattlerCurrentAction = Game_Battler.prototype.currentAction;
 Game_Battler.prototype.currentAction = function() {
     if ($gamePartyTs.inBattle()) {
         return this._actions[this._actionIndex];
     } else {
-        return TacticsSystem.Game_Battler_currentAction.call(this);
+        return TEW.MEMORY.gameBattlerCurrentAction.call(this);
     }
 };
 
-TacticsSystem.Game_Battler_clearActions = Game_Battler.prototype.clearActions;
+TEW.MEMORY.gameBattlerClearAction  = Game_Battler.prototype.clearActions;
 Game_Battler.prototype.clearActions = function() {
-    TacticsSystem.Game_Battler_clearActions.call(this);
+    TEW.MEMORY.gameBattlerClearAction.call(this);
     this._actionIndex = 0;
 };
 
@@ -304,7 +304,7 @@ Game_Battler.prototype.canNextAction = function() {
 };
 
 Game_Battler.prototype.onClear = function() {
-    if (TacticsSystem.setTransparentUnit) {
+    if (TEW.COMBAT.SYSTEM.setTransparentUnit) {
         this.event().setTransparent(true);
         this.event().setThrough(true);
     }

@@ -9,11 +9,10 @@ import {Scene_Battle} from "../../rmmv/scenes/Scene_Battle";
 //
 // The interpreter for running event commands.
 
-
-
-TacticsSystem.Game_Interpreter_pluginCommand = Game_Interpreter.prototype.pluginCommand;
+// TODO command names
+TEW.MEMORY.gameInterpreterPluginCommand = Game_Interpreter.prototype.pluginCommand;
 Game_Interpreter.prototype.pluginCommand = function(command, args) {
-    TacticsSystem.Game_Interpreter_pluginCommand.call(this, command, args);
+    TEW.MEMORY.gameInterpreterPluginCommand.call(this, command, args);
     switch(command) {
         case 'TacticsSystem.BattleProcessing':
             this.battleProcessing(args[0]);
@@ -58,12 +57,8 @@ Game_Interpreter.prototype.pluginCommand = function(command, args) {
 };
 
 // Clear All
-Game_Interpreter.prototype.clearAll = function(active) {
-    if (active.toLowerCase() === 'off') {
-        TacticsSystem.clearAll = false;
-    } else {
-        TacticsSystem.clearAll = true;
-    }
+Game_Interpreter.prototype.clearAll = function(active: string) {
+    TEW.COMBAT.SYSTEM.clearAll = active.toLowerCase() !== 'off';
 };
 
 // Process Victory
@@ -73,12 +68,12 @@ Game_Interpreter.prototype.processVictory = function() {
 
 // Process Defeat
 Game_Interpreter.prototype.processDefeat = function() {
-    TacticsSystem.isDefeated = true;
+    TEW.COMBAT.SYSTEM.isDefeated = true;
     BattleManager.processDefeat();
 };
 
 // Selector Active
-Game_Interpreter.prototype.selectorActive = function(active) {
+Game_Interpreter.prototype.selectorActive = function(active: string) {
     if (active.toLowerCase() === 'off') {
         $gameSelector.deactivate();
     } else {
@@ -89,20 +84,20 @@ Game_Interpreter.prototype.selectorActive = function(active) {
 // Selector Transfer
 Game_Interpreter.prototype.selectorTransfer = function(x, y) {
     $gameSelector.performTransfer(Number(x), Number(y));
-    this.setWaitMode('TacticsSystem.selector');
+    this.setWaitMode('TEW_Combat.selector');
 };
 
 // Selector Move To
 Game_Interpreter.prototype.selectorMoveTo = function(x, y) {
     $gameSelector.moveTo(Number(x), Number(y));
-    this.setWaitMode('TacticsSystem.selector');
+    this.setWaitMode('TEW_Combat.selector');
 };
 
 // Selector Event
 Game_Interpreter.prototype.selectorEvent = function(eventId) {
     var event = $gameMap.event(Number(eventId));
     $gameSelector.performTransfer(event.x, event.y);
-    this.setWaitMode('TacticsSystem.selector');
+    this.setWaitMode('TEW_Combat.selector');
 };
 
 // Selector Save
@@ -130,21 +125,21 @@ Game_Interpreter.prototype.mapClearTiles = function() {
     $gameMap.clearTiles();
 };
 
-TacticsSystem.Game_Interpreter_updateWaitMode = Game_Interpreter.prototype.updateWaitMode;
+TEW.MEMORY.gameInterpreterUpdateWaitMode = Game_Interpreter.prototype.updateWaitMode;
 Game_Interpreter.prototype.updateWaitMode = function() {
     var waiting = false;
     switch (this._waitMode) {
-        case 'TacticsSystem.battle':
+        case 'TEW_Combat.battle':
             waiting = SceneManager.isCurrentScene(Scene_Battle) || SceneManager.isSceneChanging();
             break;
-        case 'TacticsSystem.selector':
+        case 'TEW_Combat.selector':
             waiting = $gameSelector.isBusy();
             break;
         default:
-            return TacticsSystem.Game_Interpreter_updateWaitMode.call(this);
+            return TEW.MEMORY.gameInterpreterUpdateWaitMode.call(this);
     }
     if (!waiting) {
-        if (this._waitMode === 'TacticsSystem.battle') {
+        if (this._waitMode === 'TEW_Combat.battle') {
             BattleManager.clear();
         }
         this._waitMode = '';
@@ -152,7 +147,7 @@ Game_Interpreter.prototype.updateWaitMode = function() {
     return waiting;
 };
 
-TacticsSystem.Game_Interpreter_iterateEnemyIndex = Game_Interpreter.prototype.iterateEnemyIndex;
+TEW.MEMORY.gameInterpreterIterateEnemyIndex = Game_Interpreter.prototype.iterateEnemyIndex;
 Game_Interpreter.prototype.iterateEnemyIndex = function(param, callback) {
     if ($gamePartyTs.inBattle()) {
         if (param < 0) {
@@ -164,13 +159,13 @@ Game_Interpreter.prototype.iterateEnemyIndex = function(param, callback) {
             }
         }
     } else {
-        TacticsSystem.Game_Interpreter_iterateEnemyIndex.call(this, param, callback);
+        TEW.MEMORY.gameInterpreterIterateEnemyIndex.call(this, param, callback);
     }
 };
 
 // Battle Processing
-TacticsSystem.Game_Interpreter_command301 = Game_Interpreter.prototype.command301;
+TEW.MEMORY.gameInterpreterCommand301 = Game_Interpreter.prototype.command301;
 Game_Interpreter.prototype.command301 = function() {
-    this.setWaitMode('TacticsSystem.battle');
-    return TacticsSystem.Game_Interpreter_command301.call(this);
+    this.setWaitMode('TEW_Combat.battle');
+    return TEW.MEMORY.gameInterpreterCommand301.call(this);
 };

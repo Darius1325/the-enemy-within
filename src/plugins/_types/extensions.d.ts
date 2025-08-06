@@ -51,7 +51,6 @@ declare global {
     var SoundManager: any;
     var AudioManager: any;
     var Game_Interpreter: any;
-    var TacticsSystem: any;
     var Graphics: any;
     var Scene_Base: any;
     var Scene_MenuBase: any;

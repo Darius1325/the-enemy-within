@@ -6,7 +6,6 @@
 //
 // The scene class of the map screen.
 
-TacticsSystem.Scene_Map_launchBattle = Scene_Map.prototype.launchBattle;
 Scene_Map.prototype.launchBattle = function() {
     BattleManager.saveBgmAndBgs();
     this.stopAudioOnBattleStart();
@@ -32,7 +31,6 @@ Scene_Map.prototype.updateEncounterEffect = function() {
     }
 };
 
-TacticsSystem.Scene_Map_encounterEffectSpeed = Scene_Map.prototype.encounterEffectSpeed;
 Scene_Map.prototype.encounterEffectSpeed = function() {
     return 180;
 };
