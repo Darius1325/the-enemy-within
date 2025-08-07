@@ -22,261 +22,169 @@ import { ArmorGroup, WeaponGroup, WeaponQuality } from "./enum";
 import {Game_Actor} from "../base/stats/Game_Actor";
 import {Game_BattlerBase} from "../base/stats/Game_BattlerBase";
 
-/**
- * The TEW object contains various constants and methods related to the game "The Enemy Within".
- * It includes information about the database, menus, characters, dice, and combat mechanics.
- */
+/** Storage object for all TEW plugins */
 const TEW: {
     /**
-     * The DATABASE property contains various sets of data related to the game.
-     * It includes icons, armors, weapons, items, spells, talents, and NPCs.
+     * Fixed game data, duplicated in various data structures to improve performance
+     * All entities are referenced by their name in all caps as ID
      */
     DATABASE?: {
     
-        /**
-         * The ICONS property contains a set of icons used in the game.
-         */
+        /** Icon references for readability */
         ICONS?: {
-            /**
-             * The SET property links each icon's ID to an index indicating its position in img/system/IconSet.png
-             */
             SET?: Record<string, number>;
         };
         
-        /**
-         * The ARMORS property contains a set of armors used in the game.
-         */
+        /** Equipable armors */
         ARMORS?: {
-            /**
-             * The SET property contains a set of armors identified by their names.
-             */
+            /** All armors by ID */
             SET?: Record<string, Armor>;
-            /**
-             * The IDS property is a list of all armor IDs.
-             */
             IDS?: string[];
-            /**
-             * The ARRAY property contains the pre-computed decoupled entries of the SET for performance purposes.
-             */
+            /** Decoupled map of armors */
             ARRAY?: [string, Armor][];
         };
 
         /**
-         * The WEAPONS property contains a set of weapons used in the game.
+         * Equipable weapons
+         * No duplicate ID between melee and ranged weapons
          */
         WEAPONS?: {
-            /**
-             * The SET property contains a set of melee weapons identified by their names.
-             */
+            /** All melee weapons by ID (based on weapon skill) */
             MELEE_SET?: Record<string, MeleeWeapon>;
-            /**
-             * The SET property contains a set of ranged weapons identified by their names.
-             */
+            /** All ranged weapons by ID (based on ballistic skill) */
             RANGED_SET?: Record<string, RangedWeapon>;
-            /**
-             * The SET property contains a set of ammunition identified by their names.
-             */
+            /** All ammunition by ID (for weapons with the RELOAD/RELOAD_X quality */
             AMMO_SET?: Record<string, Ammunition>;
-            /**
-             * The IDS property is a list of all weapon IDs.
-             */
+            /** All weapon IDs */
             IDS?: string[];
-            /**
-             * The ARRAY property contains the pre-computed decoupled entries of MELEE_SET and RANGED_SET, for performance purposes.
-             */
+            /** Decoupled map of all weapons */
             ARRAY?: [string, MeleeWeapon | RangedWeapon][];
-            /**
-             * The IDS property is a list of all weapon group IDs.
-             */
+            /** Weapon group IDs */
             GROUP_IDS?: string[];
         };
 
         /**
-         * The COMPS property contains a set of competences used in the game.
+         * Skills for every PC and NPC
+         * Called 'competences' or 'comps' internally to avoid conflicts with base RMMV skills
          */
         COMPS?: {
-            /**
-             * The SET property contains a set of competences identified by their names.
-             */
+            /** All skills by ID */
             SET?: Record<string, Competence>;
-            /**
-             * The IDS property is a list of all competence IDs.
-             */
             IDS?: string[];
-            /**
-             * The BASE_ARRAY property contains the pre-computed decoupled entries where isBase == true, for performance purposes.
-             */
+            /** Decoupled map of base skills (available to every character) */
             BASE_ARRAY?: [string, Competence][];
-            /**
-             * The ADVANCED_ARRAY property contains the pre-computed decoupled entries where isBase == false, for performance purposes.
-             */
+            /** Decoupled map of advanced skills (unavailable if not unlocked) */
             ADVANCED_ARRAY?: [string, Competence][];
         };
 
-        /**
-         * The ITEMS property contains a set of items used in the game.
-         */
+        /** Carriable items */
         ITEMS?: {
-            /**
-             * The SET property contains a set of items identified by their names.
-             */
+            /** All items by ID */
             SET?: Record<string, Item>;
-            /**
-             * The IDS property is a list of all item IDs.
-             */
             IDS?: string[];
-            /**
-             * The ARRAY property contains the pre-computed decoupled entries of the SET for performance purposes.
-             */
+            /** Decoupled map of items */
             ARRAY?: [string, Item][];
         };
 
-        /**
-         * The SPELLS property contains a set of spells used in the game.
-         */
+        /** Usable spells */
         SPELLS?: {
-            /**
-             * The SET property contains a set of spells identified by their names.
-             */
+            /** All spells by ID */
             SET?: Record<string, Spell>;
-            /**
-             * The IDS property is a list of all spell IDs.
-             */
             IDS?: string[];
-            /**
-             * The ARRAY property contains the pre-computed decoupled entries of the SET for performance purposes.
-             */
+            /** Decoupled map of spells */
             ARRAY?: [string, Spell][];
         };
         
-        /**
-         * The TALENTS property contains a set of talents used in the game.
-         */
+        /** Learnable talents */
         TALENTS?: {
-            /**
-             * The SET property contains a set of talents identified by their names.
-             */
+            /** All talents by ID */
             SET?: Record<string, Talent>;
-            /**
-             * The IDS property is a list of all talent IDs.
-             */
             IDS?: string[];
-            /**
-             * The ARRAY property contains the pre-computed decoupled entries of the SET for performance purposes.
-             */
+            /** Decoupled map of talents */
             ARRAY?: [string, Talent][];
         };
 
-        /**
-         * The NPCS property contains a set of non-player characters (NPCs) used in the game.
-         */
+        /** Relevant data for NPCs */
         NPCS?: {
-            /**
-             * The SET property contains a set of NPCs identified by their names.
-             */
+            /** All NPCs by ID */
             SET?: Record<string, NPC>;
         };
     };
 
-    /**
-     * The MENU property contains various constants related to the game's menus.
-     * It includes command names and menu constants.
-     */
+    /** Constants used in menu plugins for readability */
     MENU?: {
-        /**
-         * The COMMAND_NAMES property links internal command number to their respective human-readable name.
-         */
+        /** Links commands (used to control interactions with windows) to human-readable names */
         COMMAND_NAMES?: Record<number, string>;
-        /**
-         * The LINE_HEIGHT property specifies the height of a common line in the menu.
-         */
+        /** Common line height for several menus */
         LINE_HEIGHT?: number;
-        /**
-         * The STATUS_WINDOW_TOPBAR_HEIGHT property specifies the height of the status window's command window.
-         */
-        STATUS_WINDOW_TOPBAR_HEIGHT?: number;
 
-        /**
-         * the STATUS_WINDOW_BOTTOM_DESCRIPTION_HEIGHT property specifies the height of the status window's bottom bar.
-         */
+        /** Status menu tab switch height */
+        STATUS_WINDOW_TOPBAR_HEIGHT?: number;
+        /** Common height for footer help windows */
         STATUS_WINDOW_BOTTOM_DESCRIPTION_HEIGHT?: number;
-        /**
-         * The INVENTORY_WINDOW_TOPBAR_HEIGHT property specifies the height of the inventory window's command window.
-         */
+
+        /** Inventory menu tab switch height */
         INVENTORY_WINDOW_TOPBAR_HEIGHT?: number;
     };
 
-    /**
-     * The CHARACTERS property contains various constants related to the game's characters.
-     */
+    /** Playable character data */
     CHARACTERS?: {
-        /**
-         * The SET property links character names to their respective ID.
-         */
+        /** Associates PC names to their party number in RMMV's database */
         SET?: Record<string, number>;
 
-        /**
-         * The Array property defines the character names.
-         */
+        /** PC names */
         ARRAY?: string[];
-        /**
-         * The STATS property links character stat IDs to their param number.
-         */
+        /** Associates stat IDs to their param number (0 through 10) */
         STATS?: Record<string, number>;
-        /**
-         * The STATS_VERBOSE property contains the display names of character stats.
-         */
+        /** Stat full names ordered by param number */
         STATS_VERBOSE?: string[];
         /**
-         * The BASE_COMP_VALUES property contains base competence values:
-         * 0 for innate competences and -1 (unavailable) for acquired ones.
+         * Skill values for a new character
+         * Array of 0 (for base skills) and -1 (for advanced)
          */
         BASE_COMP_VALUES?: number[];
     };
 
-    /**
-     * The DICE property contains various constants related to the game's dice mechanics.
-     */
+    /** Dice utilities */
     DICE?: {
-        /**
-         * The DIE_10_POINTS property contains a set of points for a 10-sided die.
-         */
+        /** Set of points to draw a 10-sided die */
         DIE_10_POINTS?: [number, number][];
         /**
-         * bonus returns the bonus value associated with a stat, i.e. Math.floor(stat / 10)
-         * @returns stat bonus
+         * Compute a stat bonus
+         * @param value character's stat value
+         * @returns the tens digit
          */
         bonus?: (value: number) => number;
         /**
-         * drawLine draws a line on the canvas.
-         * It takes a context, start and end points as parameters.
-         * @param context the canvas context
-         * @param start the starting point of the line
-         * @param end the ending point of the line
+         * Draw a line on the canvas
+         * @param context the canvas
+         * @param start the start point
+         * @param end the end point
          * @returns void
          */
         drawLine?: (context: any, start: [number, number], end: [number, number]) => void;
         /**
-         * displayDiceRoll displays the result of a dice roll.
+         * Display the result of a dice roll
+         * @param range max value of the roll
          * @returns the roll's result
          */
         displayDiceRoll?: (range?: number) => number;
         /**
-         * roll rolls a range-sided die.
+         * Roll a range-sided die
+         * @param range max value of the roll
          * @returns the result between 1 and range included
          */
         roll?: (range?: number) => number;
         /**
-         * rollInitiative rolls a 10-sided die and adds the result to the actor's initiative bonus.
+         * Roll a 10-sided die and add the result to the actor's initiative bonus.
          * Used to determine turn order
+         * @param actor the battler to roll initiative for
          * @returns void
          */
         rollInitiative?: (actor: Game_Actor) => number;
     };
 
-    /**
-     * The COMBAT property contains various constants and methods related to the game's combat mechanics.
-     */
+    /** Battle system constants and utilities */
     COMBAT?: {
         /** Constants to control the battle system */
         SYSTEM?: {
