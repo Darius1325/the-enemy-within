@@ -1,4 +1,7 @@
 // $PluginCompiler TEW_Combat.js
+
+export default Game_UnitTs.prototype;
+
 // $StartCompilation
 
 //-----------------------------------------------------------------------------

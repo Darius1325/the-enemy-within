@@ -4,6 +4,9 @@ import Spriteset_Tactics from "../sprite/Spriteset_Tactics";
 import Window_TacticsSkill from "./Window_TacticsSkill";
 import Window_TacticsItem from "./Window_TacticsItem";
 import Window_TacticsMap from "./Window_TacticsMap";
+import Window_TacticsStatus from "./Window_TacticsStatus";
+import Window_TacticsCommand from "./Window_TacticsCommand";
+import Window_TacticsInfo from "./Window_TacticsInfo";
 
 // $StartCompilation
 

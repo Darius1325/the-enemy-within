@@ -4,6 +4,7 @@ Imported.TEW_Base = true;
 var TEW = TEW || {};
 TEW.DICE = TEW.DICE || {};
 TEW.CHARACTERS = TEW.CHARACTERS || {};
+TEW.MEMORY = TEW.MEMORY || {};
 // SceneManager
 SceneManager = SceneManager || {};
 SceneManager._screenWidth = 1280;
@@ -329,9 +330,9 @@ Object.defineProperties(Game_BattlerBase.prototype, {
     luk: { get: function () { return 0; }, configurable: true }
 });
 // Base stats
-const battlerBaseInit = Game_BattlerBase.prototype.initialize;
+TEW.MEMORY.battlerBaseInit = Game_BattlerBase.prototype.initialize;
 Game_BattlerBase.prototype.initialize = function () {
-    battlerBaseInit.call(this);
+    TEW.MEMORY.battlerBaseInit.call(this);
     this._paramBase = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     this._competences = TEW.CHARACTERS.BASE_COMP_VALUES.slice();
     this._spells = [];
