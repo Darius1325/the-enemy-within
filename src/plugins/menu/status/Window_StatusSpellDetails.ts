@@ -11,8 +11,8 @@
 // Imports
 // ----------------------
 
-import { SpellDuration, SpellTarget } from "../../types/enum";
-import { Spell } from "../../types/spell";
+import { SpellDuration, SpellTarget } from "../../_types/enum";
+import { Spell } from "../../_types/spell";
 import HalfWindow_Details from "../base/HalfWindow_Details";
 
 // ----------------------
@@ -41,7 +41,6 @@ Window_StatusSpellDetails.prototype.refresh = function () {
 
 // Drawing the details
 Window_StatusSpellDetails.prototype.drawDetails = function (spell:[string, Spell]) {
-    console.log("Drawing spell details", spell);
     // Title
     this.drawUnderlinedText(spell[1].name, 0, 0, this.contentsWidth(), "center");
 

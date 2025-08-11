@@ -25,10 +25,10 @@ Sprite_BattlerTs.prototype.initialize = function(character) {
     this._effectDuration = 0;
     this._battler = character.battler();
     this.createStateIconSprite();
-    if (TacticsSystem.showStateIcon) {
+    if (TEW.COMBAT.SYSTEM.showStateIcon) {
         this.createStateIconSprite();
     }
-    if (TacticsSystem.showHpGauge) {
+    if (TEW.COMBAT.SYSTEM.showHpGauge) {
         this.createHpGaugeSprite();
     }
     // if the battler's dead and back on the tactical scene.

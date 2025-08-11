@@ -1,0 +1,26 @@
+//-----------------------------------------------------------------------------
+// Sprite_StateOverlay
+//
+
+import { Game_Battler } from "../objects/Game_Battler";
+import { Sprite_Base } from "./Sprite_Base";
+
+// The sprite for displaying an overlay image for a state.
+export declare class Sprite_StateOverlay extends Sprite_Base
+{
+
+	protected _battler:Game_Battler;
+    protected _overlayIndex:number;
+    protected _animationCount:number;
+    protected _pattern:number;
+
+	public initMembers():void;
+	public loadBitmap():void;
+
+	public setup(battler:Game_Battler):void;
+
+	public animationWait():number;
+
+	public updatePattern():void;
+	public updateFrame():void;
+}

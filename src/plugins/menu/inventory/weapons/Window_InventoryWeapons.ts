@@ -13,11 +13,10 @@
 
 import { Game_Actor } from "../../../base/stats/Game_Actor";
 import { ActorWeapon } from "../../../base/stats/Game_BattlerBase";
-import { MeleeWeapon } from "../../../types/meleeWeapon";
-import { RangedWeapon } from "../../../types/rangedWeapon";
-import TEW from "../../../types/tew";
-import HalfWindow_List from "../../base/HalfWindow_List";
-
+import { MeleeWeapon } from "../../../_types/meleeWeapon";
+import { RangedWeapon } from "../../../_types/rangedWeapon";
+import TEW from "../../../_types/tew";
+import HalfWindow_List, { IHalfWindow_List } from "../../base/HalfWindow_List";
 
 // ----------------------
 // Exports
@@ -26,6 +25,22 @@ import HalfWindow_List from "../../base/HalfWindow_List";
 export type LoadedWeapon = (MeleeWeapon | RangedWeapon) & ActorWeapon & {
     equipIndex: number;
     equipIcon?: number;
+};
+
+export interface IWindow_InventoryWeapons extends IHalfWindow_List {
+    _weapons: LoadedWeapon[];
+    _mainHandWeapon: LoadedWeapon;
+    _secondHandWeapon: LoadedWeapon;
+    _stayCount: number;
+
+    length: () => number;
+    syncActor: () => void;
+    drawAllItems: () => void;
+    drawItem: (index: number) => void;
+    weaponFromIndex: (index: number) => LoadedWeapon;
+    item: () => LoadedWeapon;
+    select: (index: number) => void;
+    processOk: () => void;
 };
 
 // ----------------------
@@ -51,8 +66,15 @@ Window_InventoryWeapons.prototype.setActor = function(actor: Game_Actor) {
     }
 };
 
+Window_InventoryWeapons.prototype.length = function() {
+    return this._weapons.length
+        + (this._mainHandWeapon != undefined ? 1 : 0)
+        + (this._secondHandWeapon != undefined ? 1 : 0);
+};
+
 Window_InventoryWeapons.prototype.syncActor = function() {
-    const displayedWeapons = this._actor.weapons.map((weapon: ActorWeapon, index: number): LoadedWeapon => {
+    const actor: Game_Actor = this._actor;
+    const displayedWeapons = actor._weapons.map((weapon: ActorWeapon, index: number): LoadedWeapon => {
         const weaponData = Object.assign({},
             TEW.DATABASE.WEAPONS.ARRAY.find(w => w[0] === weapon.id));
         return {
@@ -64,7 +86,7 @@ Window_InventoryWeapons.prototype.syncActor = function() {
                 ? TEW.DATABASE.ICONS.SET.EQUIPPED_MAIN_HAND
                 : weapon.isInSecondHand
                     ? TEW.DATABASE.ICONS.SET.EQUIPPED_SECOND_HAND
-                    : undefined
+                    : 0
         };
     });
 
@@ -111,8 +133,8 @@ Window_InventoryWeapons.prototype.drawItem = function(index: number) {
 };
 
 Window_InventoryWeapons.prototype.weaponFromIndex = function(index: number) {
-    index = Math.min(index, this._weapons.length - 1);
-    let weapon;
+    index = Math.min(index, this.maxItems() - 1);
+    let weapon: LoadedWeapon;
 
     if (index === 0) {
         if (this._mainHandWeapon) {
@@ -169,4 +191,3 @@ Window_InventoryWeapons.prototype.processOk = function() {
         this.playBuzzerSound();
     }
 };
-

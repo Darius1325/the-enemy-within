@@ -1,0 +1,22 @@
+//-----------------------------------------------------------------------------
+// Scene_Title
+//
+
+import { Window_TitleCommand } from "../windows/Window_TitleCommand";
+import { Scene_Base } from "./Scene_Base";
+
+// The scene class of the title screen.
+export declare class Scene_Title extends Scene_Base
+{
+	protected _commandWindow:Window_TitleCommand;
+
+	public createBackground():void;
+	public createForeground():void;
+	public drawGameTitle():void;
+	public centerSprite():void;
+	public createCommandWindow():void;
+	public commandNewGame():void;
+	public commandContinue():void;
+	public commandOptions():void;
+	public playTitleMusic():void;
+}

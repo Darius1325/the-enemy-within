@@ -1,7 +1,7 @@
 // $PluginCompiler TEW_Menus.js 10
 
 import { Game_Actor } from "../../base/stats/Game_Actor";
-import TEW from "../../types/tew";
+import TEW from "../../_types/tew";
 
 export interface IHalfWindow_List {
     _actor: Game_Actor;

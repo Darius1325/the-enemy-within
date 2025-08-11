@@ -11,8 +11,8 @@
 // Imports
 // ----------------------
 
-import { WeaponGroup, WeaponGroupLabel, WeaponQuality, Availability } from "../types/enum";
-import TEW from "../types/tew";
+import { WeaponGroup, WeaponGroupLabel, WeaponQuality, Availability } from "../_types/enum";
+import TEW from "../_types/tew";
 
 // ----------------------
 // $StartCompilation

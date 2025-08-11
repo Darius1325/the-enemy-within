@@ -4386,7 +4386,7 @@
         },
         {
             "id": 6,
-            "name": "EV006",
+            "name": "Hultz",
             "note": "",
             "pages": [
                 {
@@ -4446,7 +4446,7 @@
         },
         {
             "id": 7,
-            "name": "EV007",
+            "name": "Gunnar",
             "note": "",
             "pages": [
                 {
@@ -4468,12 +4468,728 @@
                     "directionFix": false,
                     "image": {
                         "tileId": 0,
-                        "characterName": "People1",
+                        "characterName": "Ratchett_Coachmen",
                         "direction": 4,
                         "pattern": 1,
                         "characterIndex": 0
                     },
                     "list": [
+                        {
+                            "code": 111,
+                            "indent": 0,
+                            "parameters": [
+                                2,
+                                "A",
+                                0
+                            ]
+                        },
+                        {
+                            "code": 101,
+                            "indent": 1,
+                            "parameters": [
+                                "",
+                                0,
+                                0,
+                                2
+                            ]
+                        },
+                        {
+                            "code": 401,
+                            "indent": 1,
+                            "parameters": [
+                                "Are there two more empty mugs on the table now?"
+                            ]
+                        },
+                        {
+                            "code": 0,
+                            "indent": 1,
+                            "parameters": []
+                        },
+                        {
+                            "code": 411,
+                            "indent": 0,
+                            "parameters": []
+                        },
+                        {
+                            "code": 101,
+                            "indent": 1,
+                            "parameters": [
+                                "",
+                                0,
+                                0,
+                                2
+                            ]
+                        },
+                        {
+                            "code": 401,
+                            "indent": 1,
+                            "parameters": [
+                                "These drunkards seem to know each other by the way they talk together."
+                            ]
+                        },
+                        {
+                            "code": 401,
+                            "indent": 1,
+                            "parameters": [
+                                "One has a receding line of sandy hair and a joyful expression, laughing at his"
+                            ]
+                        },
+                        {
+                            "code": 401,
+                            "indent": 1,
+                            "parameters": [
+                                "dark-bearded companion's joke. They both hold full tankards of ale... not their"
+                            ]
+                        },
+                        {
+                            "code": 401,
+                            "indent": 1,
+                            "parameters": [
+                                "first ones, judging by their red noses and boisterousness."
+                            ]
+                        },
+                        {
+                            "code": 101,
+                            "indent": 1,
+                            "parameters": [
+                                "",
+                                0,
+                                0,
+                                2
+                            ]
+                        },
+                        {
+                            "code": 401,
+                            "indent": 1,
+                            "parameters": [
+                                "Their vests are marked with the same label as one of the coaches outside:"
+                            ]
+                        },
+                        {
+                            "code": 401,
+                            "indent": 1,
+                            "parameters": [
+                                "it reads 'Ratchett Lines'."
+                            ]
+                        },
+                        {
+                            "code": 0,
+                            "indent": 1,
+                            "parameters": []
+                        },
+                        {
+                            "code": 412,
+                            "indent": 0,
+                            "parameters": []
+                        },
+                        {
+                            "code": 102,
+                            "indent": 0,
+                            "parameters": [
+                                [
+                                    "Enter the conversation",
+                                    "Leave them to their drinks"
+                                ],
+                                1,
+                                0,
+                                2,
+                                0
+                            ]
+                        },
+                        {
+                            "code": 402,
+                            "indent": 0,
+                            "parameters": [
+                                0,
+                                "Enter the conversation"
+                            ]
+                        },
+                        {
+                            "code": 122,
+                            "indent": 1,
+                            "parameters": [
+                                20,
+                                20,
+                                0,
+                                4,
+                                "'ALE_PINT'"
+                            ]
+                        },
+                        {
+                            "code": 122,
+                            "indent": 1,
+                            "parameters": [
+                                21,
+                                21,
+                                0,
+                                0,
+                                1
+                            ]
+                        },
+                        {
+                            "code": 117,
+                            "indent": 1,
+                            "parameters": [
+                                2
+                            ]
+                        },
+                        {
+                            "code": 111,
+                            "indent": 1,
+                            "parameters": [
+                                0,
+                                2,
+                                0
+                            ]
+                        },
+                        {
+                            "code": 101,
+                            "indent": 2,
+                            "parameters": [
+                                "",
+                                0,
+                                0,
+                                2
+                            ]
+                        },
+                        {
+                            "code": 401,
+                            "indent": 2,
+                            "parameters": [
+                                "You sit down with a full tankard of ale."
+                            ]
+                        },
+                        {
+                            "code": 101,
+                            "indent": 2,
+                            "parameters": [
+                                "Ratchett_Coachmen",
+                                0,
+                                0,
+                                2
+                            ]
+                        },
+                        {
+                            "code": 401,
+                            "indent": 2,
+                            "parameters": [
+                                "Balding coachman: Cheers! I'm Gunnar, that's Hultz! What you here for?"
+                            ]
+                        },
+                        {
+                            "code": 102,
+                            "indent": 2,
+                            "parameters": [
+                                [
+                                    "We're looking for a ride",
+                                    "Any interesting news on the road?"
+                                ],
+                                1,
+                                0,
+                                2,
+                                0
+                            ]
+                        },
+                        {
+                            "code": 402,
+                            "indent": 2,
+                            "parameters": [
+                                0,
+                                "We're looking for a ride"
+                            ]
+                        },
+                        {
+                            "code": 101,
+                            "indent": 3,
+                            "parameters": [
+                                "Ratchett_Coachmen",
+                                0,
+                                0,
+                                2
+                            ]
+                        },
+                        {
+                            "code": 401,
+                            "indent": 3,
+                            "parameters": [
+                                "Gunnar: You might be outta luck, unless you're willing to sit on the roof."
+                            ]
+                        },
+                        {
+                            "code": 401,
+                            "indent": 3,
+                            "parameters": [
+                                "I don't think we have room left for six people tomorrow... But if you're paying,"
+                            ]
+                        },
+                        {
+                            "code": 401,
+                            "indent": 3,
+                            "parameters": [
+                                "we'll find a way! Ha! That'd be... six shillings each."
+                            ]
+                        },
+                        {
+                            "code": 401,
+                            "indent": 3,
+                            "parameters": [
+                                "I'm on my seventh pint, so do the math yourselves!"
+                            ]
+                        },
+                        {
+                            "code": 122,
+                            "indent": 3,
+                            "parameters": [
+                                51,
+                                51,
+                                0,
+                                0,
+                                36
+                            ]
+                        },
+                        {
+                            "code": 111,
+                            "indent": 3,
+                            "parameters": [
+                                2,
+                                "B",
+                                1
+                            ]
+                        },
+                        {
+                            "code": 102,
+                            "indent": 4,
+                            "parameters": [
+                                [
+                                    "Pay \\V[51] shillings",
+                                    "Try to haggle",
+                                    "I'll be right back with the money"
+                                ],
+                                1,
+                                0,
+                                2,
+                                0
+                            ]
+                        },
+                        {
+                            "code": 402,
+                            "indent": 4,
+                            "parameters": [
+                                0,
+                                "Pay \\V[51] shillings"
+                            ]
+                        },
+                        {
+                            "code": 122,
+                            "indent": 5,
+                            "parameters": [
+                                20,
+                                20,
+                                0,
+                                1,
+                                51
+                            ]
+                        },
+                        {
+                            "code": 122,
+                            "indent": 5,
+                            "parameters": [
+                                20,
+                                20,
+                                3,
+                                0,
+                                12
+                            ]
+                        },
+                        {
+                            "code": 117,
+                            "indent": 5,
+                            "parameters": [
+                                3
+                            ]
+                        },
+                        {
+                            "code": 111,
+                            "indent": 5,
+                            "parameters": [
+                                0,
+                                2,
+                                0
+                            ]
+                        },
+                        {
+                            "code": 125,
+                            "indent": 6,
+                            "parameters": [
+                                1,
+                                1,
+                                20
+                            ]
+                        },
+                        {
+                            "code": 101,
+                            "indent": 6,
+                            "parameters": [
+                                "Ratchett_Coachmen",
+                                0,
+                                0,
+                                2
+                            ]
+                        },
+                        {
+                            "code": 401,
+                            "indent": 6,
+                            "parameters": [
+                                "Gunnar: Many thanks! See you tomorrow at nine!"
+                            ]
+                        },
+                        {
+                            "code": 101,
+                            "indent": 6,
+                            "parameters": [
+                                "",
+                                0,
+                                0,
+                                2
+                            ]
+                        },
+                        {
+                            "code": 401,
+                            "indent": 6,
+                            "parameters": [
+                                "Hutlz: Bartender! Two more, before we sober up!"
+                            ]
+                        },
+                        {
+                            "code": 0,
+                            "indent": 6,
+                            "parameters": []
+                        },
+                        {
+                            "code": 411,
+                            "indent": 5,
+                            "parameters": []
+                        },
+                        {
+                            "code": 101,
+                            "indent": 6,
+                            "parameters": [
+                                "",
+                                0,
+                                0,
+                                2
+                            ]
+                        },
+                        {
+                            "code": 401,
+                            "indent": 6,
+                            "parameters": [
+                                "Hultz: You have'ny other pocket? 'Cause I don' see \\V[51]!"
+                            ]
+                        },
+                        {
+                            "code": 0,
+                            "indent": 6,
+                            "parameters": []
+                        },
+                        {
+                            "code": 412,
+                            "indent": 5,
+                            "parameters": []
+                        },
+                        {
+                            "code": 0,
+                            "indent": 5,
+                            "parameters": []
+                        },
+                        {
+                            "code": 402,
+                            "indent": 4,
+                            "parameters": [
+                                1,
+                                "Try to haggle"
+                            ]
+                        },
+                        {
+                            "code": 101,
+                            "indent": 5,
+                            "parameters": [
+                                "",
+                                0,
+                                0,
+                                2
+                            ]
+                        },
+                        {
+                            "code": 401,
+                            "indent": 5,
+                            "parameters": [
+                                "TODO"
+                            ]
+                        },
+                        {
+                            "code": 122,
+                            "indent": 5,
+                            "parameters": [
+                                51,
+                                51,
+                                0,
+                                0,
+                                30
+                            ]
+                        },
+                        {
+                            "code": 123,
+                            "indent": 5,
+                            "parameters": [
+                                "B",
+                                0
+                            ]
+                        },
+                        {
+                            "code": 0,
+                            "indent": 5,
+                            "parameters": []
+                        },
+                        {
+                            "code": 402,
+                            "indent": 4,
+                            "parameters": [
+                                2,
+                                "I'll be right back with the money"
+                            ]
+                        },
+                        {
+                            "code": 0,
+                            "indent": 5,
+                            "parameters": []
+                        },
+                        {
+                            "code": 404,
+                            "indent": 4,
+                            "parameters": []
+                        },
+                        {
+                            "code": 0,
+                            "indent": 4,
+                            "parameters": []
+                        },
+                        {
+                            "code": 411,
+                            "indent": 3,
+                            "parameters": []
+                        },
+                        {
+                            "code": 102,
+                            "indent": 4,
+                            "parameters": [
+                                [
+                                    "Pay \\V[51] shillings",
+                                    "I'll be right back with the money"
+                                ],
+                                1,
+                                0,
+                                2,
+                                0
+                            ]
+                        },
+                        {
+                            "code": 402,
+                            "indent": 4,
+                            "parameters": [
+                                0,
+                                "Pay \\V[51] shillings"
+                            ]
+                        },
+                        {
+                            "code": 101,
+                            "indent": 5,
+                            "parameters": [
+                                "Ratchett_Coachmen",
+                                0,
+                                0,
+                                2
+                            ]
+                        },
+                        {
+                            "code": 401,
+                            "indent": 5,
+                            "parameters": [
+                                "Gunnar: Do you have any other pocket? 'Cause I don't see thirty six!"
+                            ]
+                        },
+                        {
+                            "code": 0,
+                            "indent": 5,
+                            "parameters": []
+                        },
+                        {
+                            "code": 402,
+                            "indent": 4,
+                            "parameters": [
+                                1,
+                                "I'll be right back with the money"
+                            ]
+                        },
+                        {
+                            "code": 101,
+                            "indent": 5,
+                            "parameters": [
+                                "",
+                                0,
+                                0,
+                                2
+                            ]
+                        },
+                        {
+                            "code": 401,
+                            "indent": 5,
+                            "parameters": [
+                                "TODO"
+                            ]
+                        },
+                        {
+                            "code": 0,
+                            "indent": 5,
+                            "parameters": []
+                        },
+                        {
+                            "code": 404,
+                            "indent": 4,
+                            "parameters": []
+                        },
+                        {
+                            "code": 0,
+                            "indent": 4,
+                            "parameters": []
+                        },
+                        {
+                            "code": 412,
+                            "indent": 3,
+                            "parameters": []
+                        },
+                        {
+                            "code": 0,
+                            "indent": 3,
+                            "parameters": []
+                        },
+                        {
+                            "code": 402,
+                            "indent": 2,
+                            "parameters": [
+                                1,
+                                "Any interesting news on the road?"
+                            ]
+                        },
+                        {
+                            "code": 101,
+                            "indent": 3,
+                            "parameters": [
+                                "Ratchett_Coachmen",
+                                0,
+                                0,
+                                2
+                            ]
+                        },
+                        {
+                            "code": 401,
+                            "indent": 3,
+                            "parameters": [
+                                "Gunnar: No."
+                            ]
+                        },
+                        {
+                            "code": 0,
+                            "indent": 3,
+                            "parameters": []
+                        },
+                        {
+                            "code": 404,
+                            "indent": 2,
+                            "parameters": []
+                        },
+                        {
+                            "code": 0,
+                            "indent": 2,
+                            "parameters": []
+                        },
+                        {
+                            "code": 411,
+                            "indent": 1,
+                            "parameters": []
+                        },
+                        {
+                            "code": 101,
+                            "indent": 2,
+                            "parameters": [
+                                "",
+                                0,
+                                0,
+                                2
+                            ]
+                        },
+                        {
+                            "code": 401,
+                            "indent": 2,
+                            "parameters": [
+                                "Balding coachman: Say what? You wanna ride? We're outside of business hours, guys!"
+                            ]
+                        },
+                        {
+                            "code": 401,
+                            "indent": 2,
+                            "parameters": [
+                                "We here to drink, not to barter!"
+                            ]
+                        },
+                        {
+                            "code": 401,
+                            "indent": 2,
+                            "parameters": [
+                                "Bearded coachman: Sit down with a pint if you wanna talk!"
+                            ]
+                        },
+                        {
+                            "code": 0,
+                            "indent": 2,
+                            "parameters": []
+                        },
+                        {
+                            "code": 412,
+                            "indent": 1,
+                            "parameters": []
+                        },
+                        {
+                            "code": 0,
+                            "indent": 1,
+                            "parameters": []
+                        },
+                        {
+                            "code": 402,
+                            "indent": 0,
+                            "parameters": [
+                                1,
+                                "Leave them to their drinks"
+                            ]
+                        },
+                        {
+                            "code": 0,
+                            "indent": 1,
+                            "parameters": []
+                        },
+                        {
+                            "code": 404,
+                            "indent": 0,
+                            "parameters": []
+                        },
+                        {
+                            "code": 123,
+                            "indent": 0,
+                            "parameters": [
+                                "A",
+                                0
+                            ]
+                        },
                         {
                             "code": 0,
                             "indent": 0,
@@ -4535,8 +5251,17 @@
                     },
                     "list": [
                         {
-                            "code": 101,
+                            "code": 111,
                             "indent": 0,
+                            "parameters": [
+                                2,
+                                "A",
+                                0
+                            ]
+                        },
+                        {
+                            "code": 101,
+                            "indent": 1,
                             "parameters": [
                                 "",
                                 0,
@@ -4546,290 +5271,61 @@
                         },
                         {
                             "code": 401,
+                            "indent": 1,
+                            "parameters": [
+                                "The man is still reading his book."
+                            ]
+                        },
+                        {
+                            "code": 0,
+                            "indent": 1,
+                            "parameters": []
+                        },
+                        {
+                            "code": 411,
                             "indent": 0,
+                            "parameters": []
+                        },
+                        {
+                            "code": 101,
+                            "indent": 1,
+                            "parameters": [
+                                "",
+                                0,
+                                0,
+                                2
+                            ]
+                        },
+                        {
+                            "code": 401,
+                            "indent": 1,
                             "parameters": [
                                 "The man in front of you is in his 20s. He is of average height"
                             ]
                         },
                         {
                             "code": 401,
-                            "indent": 0,
+                            "indent": 1,
                             "parameters": [
                                 "and has lank, brown hair and pale-blue eyes. He keeps his"
                             ]
                         },
                         {
                             "code": 401,
-                            "indent": 0,
+                            "indent": 1,
                             "parameters": [
                                 "nose in his book."
                             ]
                         },
                         {
-                            "code": 102,
-                            "indent": 0,
-                            "parameters": [
-                                [
-                                    "Hello !",
-                                    "Leave him be."
-                                ],
-                                1,
-                                0,
-                                2,
-                                0
-                            ]
-                        },
-                        {
-                            "code": 402,
-                            "indent": 0,
-                            "parameters": [
-                                0,
-                                "Hello !"
-                            ]
-                        },
-                        {
-                            "code": 101,
-                            "indent": 1,
-                            "parameters": [
-                                "",
-                                0,
-                                0,
-                                2
-                            ]
-                        },
-                        {
-                            "code": 401,
-                            "indent": 1,
-                            "parameters": [
-                                "He bearly raises his head to respond."
-                            ]
-                        },
-                        {
-                            "code": 101,
-                            "indent": 1,
-                            "parameters": [
-                                "",
-                                0,
-                                0,
-                                2
-                            ]
-                        },
-                        {
-                            "code": 401,
-                            "indent": 1,
-                            "parameters": [
-                                "May I help you ?"
-                            ]
-                        },
-                        {
-                            "code": 102,
-                            "indent": 1,
-                            "parameters": [
-                                [
-                                    "Who are you ?",
-                                    "What is your book about ?"
-                                ],
-                                1,
-                                0,
-                                2,
-                                0
-                            ]
-                        },
-                        {
-                            "code": 402,
-                            "indent": 1,
-                            "parameters": [
-                                0,
-                                "Who are you ?"
-                            ]
-                        },
-                        {
-                            "code": 101,
-                            "indent": 2,
-                            "parameters": [
-                                "",
-                                0,
-                                0,
-                                2
-                            ]
-                        },
-                        {
-                            "code": 401,
-                            "indent": 2,
-                            "parameters": [
-                                "He seems to be annoyed by your questions."
-                            ]
-                        },
-                        {
-                            "code": 101,
-                            "indent": 2,
-                            "parameters": [
-                                "",
-                                0,
-                                0,
-                                2
-                            ]
-                        },
-                        {
-                            "code": 401,
-                            "indent": 2,
-                            "parameters": [
-                                "Ernst Heidlemann, at your service."
-                            ]
-                        },
-                        {
-                            "code": 0,
-                            "indent": 2,
-                            "parameters": []
-                        },
-                        {
-                            "code": 402,
-                            "indent": 1,
-                            "parameters": [
-                                1,
-                                "What is your book about ?"
-                            ]
-                        },
-                        {
-                            "code": 101,
-                            "indent": 2,
-                            "parameters": [
-                                "",
-                                0,
-                                0,
-                                2
-                            ]
-                        },
-                        {
-                            "code": 401,
-                            "indent": 2,
-                            "parameters": [
-                                "He show you the cover whitch reads Leeches and their"
-                            ]
-                        },
-                        {
-                            "code": 401,
-                            "indent": 2,
-                            "parameters": [
-                                "Curative Properties."
-                            ]
-                        },
-                        {
-                            "code": 123,
-                            "indent": 2,
-                            "parameters": [
-                                "A",
-                                0
-                            ]
-                        },
-                        {
-                            "code": 0,
-                            "indent": 2,
-                            "parameters": []
-                        },
-                        {
-                            "code": 404,
-                            "indent": 1,
-                            "parameters": []
-                        },
-                        {
                             "code": 0,
                             "indent": 1,
                             "parameters": []
                         },
                         {
-                            "code": 402,
-                            "indent": 0,
-                            "parameters": [
-                                1,
-                                "Leave him be."
-                            ]
-                        },
-                        {
-                            "code": 123,
-                            "indent": 1,
-                            "parameters": [
-                                "A",
-                                0
-                            ]
-                        },
-                        {
-                            "code": 0,
-                            "indent": 1,
-                            "parameters": []
-                        },
-                        {
-                            "code": 404,
+                            "code": 412,
                             "indent": 0,
                             "parameters": []
-                        },
-                        {
-                            "code": 0,
-                            "indent": 0,
-                            "parameters": []
-                        }
-                    ],
-                    "moveFrequency": 3,
-                    "moveRoute": {
-                        "list": [
-                            {
-                                "code": 0,
-                                "parameters": []
-                            }
-                        ],
-                        "repeat": true,
-                        "skippable": false,
-                        "wait": false
-                    },
-                    "moveSpeed": 3,
-                    "moveType": 0,
-                    "priorityType": 1,
-                    "stepAnime": false,
-                    "through": false,
-                    "trigger": 0,
-                    "walkAnime": true
-                },
-                {
-                    "conditions": {
-                        "actorId": 1,
-                        "actorValid": false,
-                        "itemId": 1,
-                        "itemValid": false,
-                        "selfSwitchCh": "A",
-                        "selfSwitchValid": true,
-                        "switch1Id": 1,
-                        "switch1Valid": false,
-                        "switch2Id": 1,
-                        "switch2Valid": false,
-                        "variableId": 1,
-                        "variableValid": false,
-                        "variableValue": 0
-                    },
-                    "directionFix": false,
-                    "image": {
-                        "tileId": 0,
-                        "characterName": "People4",
-                        "direction": 2,
-                        "pattern": 1,
-                        "characterIndex": 2
-                    },
-                    "list": [
-                        {
-                            "code": 101,
-                            "indent": 0,
-                            "parameters": [
-                                "",
-                                0,
-                                0,
-                                2
-                            ]
-                        },
-                        {
-                            "code": 401,
-                            "indent": 0,
-                            "parameters": [
-                                "The man is still reading his book."
-                            ]
                         },
                         {
                             "code": 102,
@@ -4970,7 +5466,7 @@
                             "code": 401,
                             "indent": 2,
                             "parameters": [
-                                "He show you the cover whitch reads Leeches and their"
+                                "He shows you the cover which reads Leeches and their"
                             ]
                         },
                         {
@@ -4978,14 +5474,6 @@
                             "indent": 2,
                             "parameters": [
                                 "Curative Properties."
-                            ]
-                        },
-                        {
-                            "code": 123,
-                            "indent": 2,
-                            "parameters": [
-                                "A",
-                                0
                             ]
                         },
                         {
@@ -5020,6 +5508,14 @@
                             "code": 404,
                             "indent": 0,
                             "parameters": []
+                        },
+                        {
+                            "code": 123,
+                            "indent": 0,
+                            "parameters": [
+                                "A",
+                                0
+                            ]
                         },
                         {
                             "code": 0,
@@ -5050,6 +5546,95 @@
             ],
             "x": 5,
             "y": 7
+        },
+        {
+            "id": 9,
+            "name": "Herpin",
+            "note": "",
+            "pages": [
+                {
+                    "conditions": {
+                        "actorId": 1,
+                        "actorValid": false,
+                        "itemId": 1,
+                        "itemValid": false,
+                        "selfSwitchCh": "A",
+                        "selfSwitchValid": false,
+                        "switch1Id": 1,
+                        "switch1Valid": false,
+                        "switch2Id": 1,
+                        "switch2Valid": false,
+                        "variableId": 1,
+                        "variableValid": false,
+                        "variableValue": 0
+                    },
+                    "directionFix": false,
+                    "image": {
+                        "tileId": 0,
+                        "characterName": "People4",
+                        "direction": 4,
+                        "pattern": 1,
+                        "characterIndex": 4
+                    },
+                    "list": [
+                        {
+                            "code": 122,
+                            "indent": 0,
+                            "parameters": [
+                                20,
+                                20,
+                                0,
+                                4,
+                                "'ALE_PINT'"
+                            ]
+                        },
+                        {
+                            "code": 122,
+                            "indent": 0,
+                            "parameters": [
+                                21,
+                                21,
+                                0,
+                                0,
+                                2
+                            ]
+                        },
+                        {
+                            "code": 117,
+                            "indent": 0,
+                            "parameters": [
+                                4
+                            ]
+                        },
+                        {
+                            "code": 0,
+                            "indent": 0,
+                            "parameters": []
+                        }
+                    ],
+                    "moveFrequency": 3,
+                    "moveRoute": {
+                        "list": [
+                            {
+                                "code": 0,
+                                "parameters": []
+                            }
+                        ],
+                        "repeat": true,
+                        "skippable": false,
+                        "wait": false
+                    },
+                    "moveSpeed": 3,
+                    "moveType": 0,
+                    "priorityType": 1,
+                    "stepAnime": false,
+                    "through": false,
+                    "trigger": 0,
+                    "walkAnime": true
+                }
+            ],
+            "x": 8,
+            "y": 16
         }
     ]
 }

@@ -9901,7 +9901,7 @@
                         "variableValid": false,
                         "variableValue": 0
                     },
-                    "directionFix": false,
+                    "directionFix": true,
                     "image": {
                         "tileId": 0,
                         "characterName": "Vehicle",
@@ -9935,11 +9935,83 @@
                             ]
                         },
                         {
-                            "code": 401,
+                            "code": 122,
                             "indent": 0,
                             "parameters": [
-                                "<Perception roll here>"
+                                4,
+                                4,
+                                0,
+                                4,
+                                "'PERCEPTION'"
                             ]
+                        },
+                        {
+                            "code": 122,
+                            "indent": 0,
+                            "parameters": [
+                                13,
+                                13,
+                                0,
+                                0,
+                                0
+                            ]
+                        },
+                        {
+                            "code": 117,
+                            "indent": 0,
+                            "parameters": [
+                                5
+                            ]
+                        },
+                        {
+                            "code": 111,
+                            "indent": 0,
+                            "parameters": [
+                                0,
+                                6,
+                                0
+                            ]
+                        },
+                        {
+                            "code": 101,
+                            "indent": 1,
+                            "parameters": [
+                                "",
+                                0,
+                                0,
+                                2
+                            ]
+                        },
+                        {
+                            "code": 401,
+                            "indent": 1,
+                            "parameters": [
+                                "...With a closer look, you notice that underneath the recent paint and polish,"
+                            ]
+                        },
+                        {
+                            "code": 401,
+                            "indent": 1,
+                            "parameters": [
+                                "the frame is rotted and riddled with woodworm."
+                            ]
+                        },
+                        {
+                            "code": 401,
+                            "indent": 1,
+                            "parameters": [
+                                "This coach has seen better days."
+                            ]
+                        },
+                        {
+                            "code": 0,
+                            "indent": 1,
+                            "parameters": []
+                        },
+                        {
+                            "code": 412,
+                            "indent": 0,
+                            "parameters": []
                         },
                         {
                             "code": 0,
@@ -9965,7 +10037,7 @@
                     "stepAnime": false,
                     "through": false,
                     "trigger": 0,
-                    "walkAnime": true
+                    "walkAnime": false
                 }
             ],
             "x": 6,

@@ -11,8 +11,8 @@
 // Imports
 // ----------------------
 
-import { Stat } from "../types/enum";
-import TEW from "../types/tew";
+import { Stat } from "../_types/enum";
+import TEW from "../_types/tew";
 
 // ----------------------
 // $StartCompilation

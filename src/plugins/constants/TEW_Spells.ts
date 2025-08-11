@@ -11,8 +11,8 @@
 // Imports
 // ----------------------
 
-import { SpellDomain, SpellDuration, SpellRange, SpellTarget, SpellTargetRadius, SpellType } from "../types/enum";
-import TEW from "../types/tew";
+import { SpellDomain, SpellDuration, SpellRange, SpellTarget, SpellTargetRadius, SpellType } from "../_types/enum";
+import TEW from "../_types/tew";
 
 // ----------------------
 // $StartCompilation

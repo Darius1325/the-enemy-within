@@ -7,7 +7,7 @@
 // Date: 01/05/2025
 // Description: This file contains the implementation of the properties for the TEW menu system. It includes the command names, window dimensions, and other related properties. The properties are defined using the TEW.MENU namespace and are used throughout the menu system to ensure consistency and ease of maintenance.
 
-import TEW from "../../types/tew";
+import TEW from "../../_types/tew";
 
 // $StartCompilation
 

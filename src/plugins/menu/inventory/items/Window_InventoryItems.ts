@@ -1,7 +1,21 @@
 // $PluginCompiler TEW_Menus.js
 
-import TEW from "../../../types/tew";
-import HalfWindow_List from "../../base/HalfWindow_List";
+import TEW from "../../../_types/tew";
+import HalfWindow_List, { IHalfWindow_List } from "../../base/HalfWindow_List";
+import { Item } from "../../../_types/item";
+
+export interface IWindow_InventoryItems extends IHalfWindow_List {
+    _items: [string, Item][];
+    _stayCount: number;
+
+    syncActor: () => void;
+    drawAllItems: () => void;
+    drawItem: (index: number) => void;
+    armorFromIndex: (index: number) => [string, Item];
+    item: () => [string, Item];
+    select: (index: number) => void;
+    processOk: () => void;
+};
 
 // $StartCompilation
 
@@ -29,16 +43,16 @@ Window_InventoryItems.prototype.setActor = function(actor: any) {
 };
 
 Window_InventoryItems.prototype.syncActor = function() {
-    this._items = TEW.DATABASE.ITEMS.ARRAY.filter( item => this._actor.hasItem(item[0])); // [<internal name>, {<item data>}]
+    this._items = TEW.DATABASE.ITEMS.ARRAY.filter( item => this._actor.hasItem(item[0]));
     this._maxItems = this._items.length;
     this.refresh();
 };
 
 // Drawing all the items
 Window_InventoryItems.prototype.drawAllItems = function() {
-    var topIndex = this.topIndex();
-    for (var i = 0; i < this.maxPageItems(); i++) {
-        var index = topIndex + i;
+    const topIndex = this.topIndex();
+    for (let i = 0; i < this.maxPageItems(); i++) {
+        const index = topIndex + i;
         if (index < this.maxItems()) {
             this.drawItem(index);
         }
@@ -67,7 +81,7 @@ Window_InventoryItems.prototype.itemFromIndex = function(index: number) {
 
 // Getting the current selected item
 Window_InventoryItems.prototype.item = function() {
-    return this.itemFromIndex(this.index());
+    return this._items[this.index()];
 }
 
 // Selecting an item

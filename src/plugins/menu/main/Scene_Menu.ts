@@ -10,7 +10,7 @@
 // ----------------------
 // Imports
 // ----------------------
-import Window_MenuCommand from "./Window_MenuCommand";
+import { Window_MenuCommand } from "../../../rmmv/windows/Window_MenuCommand";
 
 // ----------------------
 // $StartCompilation

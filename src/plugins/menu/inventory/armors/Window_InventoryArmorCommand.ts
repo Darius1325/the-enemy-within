@@ -1,6 +1,12 @@
 // $PluginCompiler TEW_Menus.js
 
-import HalfWindow_DetailsCommand from "../../base/HalfWindow_DetailsCommand";
+import HalfWindow_DetailsCommand, { IHalfWindow_DetailsCommand } from "../../base/HalfWindow_DetailsCommand";
+import { Game_Actor } from "../../../base/stats/Game_Actor";
+
+export interface IWindow_InventoryArmorCommand extends IHalfWindow_DetailsCommand {
+    makeCommandList: () => void;
+    refreshCommand: (equipped: boolean, armorId?: string) => void;
+};
 
 // $StartCompilation
 
@@ -22,20 +28,22 @@ Window_InventoryArmorCommand.prototype.initialize = function() {
 };
 
 // Making the 2 lines
+// TODO REMOVE
 Window_InventoryArmorCommand.prototype.makeCommandList = function() {
     this.addCommand(TextManager.inventoryWeaponEquip, 'inventory_armor_equip');
     this.addCommand(TextManager.inventoryWeaponTransfer, 'inventory_armor_transfer');
 };
 
-Window_InventoryArmorCommand.prototype.refreshCommand = function(actor: any, armorId = 0){
-    if (actor) {
+Window_InventoryArmorCommand.prototype.refreshCommand = function(equipped: boolean, armorId?: string){
+    if (armorId) {
         this.clearCommandList();
-        if (actor.hasArmorEquipped(armorId)) {
+        if (equipped) {
             this.addCommand(TextManager.inventoryArmorUnequip, 'inventory_armor_unequip');
+            this.addCommand(TextManager.inventoryArmorTransfer, 'inventory_armor_transfer', false);
         } else {
             this.addCommand(TextManager.inventoryArmorEquip, 'inventory_armor_equip');
+            this.addCommand(TextManager.inventoryArmorTransfer, 'inventory_armor_transfer');
         }
-        this.addCommand(TextManager.inventoryArmorTransfer, 'inventory_armor_transfer');
         this.createContents();
         Window_Selectable.prototype.refresh.call(this);
     }

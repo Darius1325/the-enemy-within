@@ -4,6 +4,7 @@ Imported.TEW_Base = true;
 var TEW = TEW || {};
 TEW.DICE = TEW.DICE || {};
 TEW.CHARACTERS = TEW.CHARACTERS || {};
+TEW.MEMORY = TEW.MEMORY || {};
 // SceneManager
 SceneManager = SceneManager || {};
 SceneManager._screenWidth = 1280;
@@ -62,6 +63,17 @@ TEW.CHARACTERS.BASE_COMP_VALUES = TEW.DATABASE.COMPS.IDS.reduce((acc, compId) =>
 }, []);
 // #endregion =========================== properties ============================== //
 // ============================== //
+// #region ============================== Input ============================== //
+//----------------------------------
+// Input
+//
+// Key inputs detection and history.
+Input.isAnyKeyTriggered = function () {
+    return Object.keys(this._currentState).some((key) => this._currentState[key])
+        && this._pressedTime === 0;
+};
+// #endregion =========================== Input ============================== //
+// ============================== //
 // #region ============================== Bitmap ============================== //
 // Bitmap
 TEW.DICE.DIE_10_POINTS = [
@@ -117,38 +129,44 @@ Bitmap.prototype.drawDie = function (x, size, value, edgeColor, fillColor) {
 // ============================== //
 // #region ============================== Game_Interpreter ============================== //
 // Game_Interpreter
-TEW.DICE.rollD100 = function () {
-    return Math.floor(Math.random() * 99) + 1;
+TEW.DICE.bonus = function (value) {
+    return Math.floor(value / 10);
 };
-TEW.DICE.displayDiceRoll = function () {
-    const result = this.rollD100();
+TEW.DICE.roll = function (range = 100) {
+    return Math.floor(Math.random() * (range - 1)) + 1;
+};
+TEW.DICE.displayDiceRoll = function (range = 100) {
+    const result = TEW.DICE.roll(range);
     const windowDice = new Window_Dice(0, 0, Math.floor(result / 10), result % 10);
     SceneManager._scene.addWindow(windowDice);
     return result;
 };
-Game_Interpreter.prototype.partySkillTest = function (compId, modifier) {
+TEW.DICE.rollInitiative = function (actor) {
+    return TEW.DICE.roll(10) + TEW.DICE.bonus(actor.paramByName("INIT"));
+};
+Game_Interpreter.prototype.partySkillTest = function (compId, modifier, hidden = false) {
     const actorSkillBaseValues = [];
     // Select the best character for the job
     for (let i = 1; i < $gameActors._data.length; i++) {
         if ($gameActors._data[i]) {
-            actorSkillBaseValues.push($gameActors._data[i][compId]);
+            actorSkillBaseValues.push($gameActors._data[i].comp(compId));
         }
     }
     const maxPartySkill = Math.max(...actorSkillBaseValues) + modifier;
-    const roll = TEW.DICE.displayDiceRoll();
+    const roll = hidden ? TEW.DICE.roll() : TEW.DICE.displayDiceRoll();
     let success = maxPartySkill >= roll;
-    let dr = Math.floor(maxPartySkill / 10) - Math.floor(roll / 10);
+    let sl = Math.floor(maxPartySkill / 10) - Math.floor(roll / 10);
     // Special rules : 5 or below is always a success, 96 or above is always a failure
     if (roll <= 5) {
         success = true;
-        dr = dr > 0 ? dr : 0;
+        sl = sl > 0 ? sl : 0;
     }
     else if (roll >= 96) {
         success = false;
-        dr = dr < 0 ? dr : 0;
+        sl = sl < 0 ? sl : 0;
     }
     return {
-        dr,
+        sl,
         success,
         critical: roll % 11 === 0 || roll === 100,
     };
@@ -158,31 +176,31 @@ Game_Interpreter.prototype.opposedSkillTest = function (compIdPlayer, modifierPl
     const actorSkillBaseValues = [];
     for (let i = 1; i < $gameActors._data.length; i++) {
         if ($gameActors._data[i]) {
-            actorSkillBaseValues.push($gameActors._data[i][compIdPlayer]);
+            actorSkillBaseValues.push($gameActors._data[i].comp(compIdPlayer));
         }
     }
     const maxPartySkill = Math.max(...actorSkillBaseValues) + modifierPlayer;
     const rollPlayer = TEW.DICE.displayDiceRoll();
-    const rollNPC = TEW.DICE.rollD100();
-    let drPlayer = Math.floor(maxPartySkill / 10) - Math.floor(rollPlayer / 10);
-    let drNPC = Math.floor(skillValueNPC / 10) - Math.floor(rollNPC / 10);
+    const rollNPC = TEW.DICE.roll();
+    let slPlayer = Math.floor(maxPartySkill / 10) - Math.floor(rollPlayer / 10);
+    let slNPC = Math.floor(skillValueNPC / 10) - Math.floor(rollNPC / 10);
     let successRollPlayer = maxPartySkill >= rollPlayer;
     let successRollNpc = skillValueNPC >= rollNPC;
     if (rollPlayer <= 5) {
         successRollPlayer = true;
-        drPlayer = drPlayer > 0 ? drPlayer : 0;
+        slPlayer = slPlayer > 0 ? slPlayer : 0;
     }
     else if (rollPlayer >= 96) {
         successRollPlayer = false;
-        drPlayer = drPlayer < 0 ? drPlayer : 0;
+        slPlayer = slPlayer < 0 ? slPlayer : 0;
     }
     if (rollNPC <= 5) {
         successRollNpc = true;
-        drNPC = drNPC > 0 ? drNPC : 0;
+        slNPC = slNPC > 0 ? slNPC : 0;
     }
     else if (rollNPC >= 96) {
         successRollNpc = true;
-        drNPC = drNPC < 0 ? drNPC : 0;
+        slNPC = slNPC < 0 ? slNPC : 0;
     }
     let criticalPlayer = rollPlayer % 11 === 0 || rollPlayer === 100;
     let criticalNPC = rollNPC % 11 === 0 || rollNPC === 100;
@@ -193,17 +211,17 @@ Game_Interpreter.prototype.opposedSkillTest = function (compIdPlayer, modifierPl
     else if (successRollNpc && criticalNPC) {
         success = false;
     }
-    else if (drPlayer > drNPC) {
+    else if (slPlayer > slNPC) {
         success = true;
     }
-    else if (drNPC > drPlayer) {
+    else if (slNPC > slPlayer) {
         success = false;
     }
     else {
         success = (maxPartySkill >= skillValueNPC);
     }
     return {
-        dr: drPlayer - drNPC,
+        sl: slPlayer - slNPC,
         success,
         criticalPlayer
     };
@@ -230,6 +248,48 @@ Game_Interpreter.prototype.opposedSkillTest = function (compIdPlayer, modifierPl
 //     this._diceWindow.refresh();
 // };
 // #endregion =========================== Game_Interpreter ============================== //
+// ============================== //
+// #region ============================== Window_Dice ============================== //
+//---------------------------------------
+// Window_Dice
+//
+// The window for displaying a dice roll.
+function Window_Dice() {
+    this.initialize.apply(this, arguments);
+}
+Window_Dice.prototype = Object.create(Window_Base.prototype);
+Window_Dice.prototype.constructor = Window_Dice;
+Window_Dice.prototype.initialize = function (x, y, tens, units) {
+    Window_Base.prototype.initialize.call(this, x, y, 240, 110); // temp !!
+    this._tens = tens;
+    this._units = units;
+    setTimeout(() => {
+        this.close();
+    }, 2000);
+    this.refresh();
+};
+Window_Dice.prototype.windowWidth = function () {
+    return 340;
+};
+Window_Dice.prototype.windowHeight = function () {
+    return 100;
+};
+Window_Dice.prototype.refresh = function () {
+    this.contents.clear();
+    this.contents.drawDie(0, 1, this._tens, 'black', 'darkgreen');
+    this.contents.drawDie(100, 1, this._units, 'black', 'darkgreen');
+};
+Window_Dice.prototype.open = function () {
+    this.refresh();
+    Window_Base.prototype.open.call(this);
+};
+Window_Dice.prototype.update = function () {
+    Window_Base.prototype.update.call(this);
+    if (Input.isAnyKeyTriggered()) {
+        this.close();
+    }
+};
+// #endregion =========================== Window_Dice ============================== //
 // ============================== //
 // #region ============================== Game_Actor ============================== //
 // Game_Actor
@@ -270,34 +330,34 @@ Object.defineProperties(Game_BattlerBase.prototype, {
     luk: { get: function () { return 0; }, configurable: true }
 });
 // Base stats
-const battlerBaseInit = Game_BattlerBase.prototype.initialize;
+TEW.MEMORY.battlerBaseInit = Game_BattlerBase.prototype.initialize;
 Game_BattlerBase.prototype.initialize = function () {
-    battlerBaseInit.call(this);
+    TEW.MEMORY.battlerBaseInit.call(this);
     this._paramBase = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    this.competences = TEW.CHARACTERS.BASE_COMP_VALUES.slice();
-    this.spells = [];
-    this.talents = {}; // ID: level
-    this.items = {}; // ID: quantity
-    this.weapons = []; // [{ id: id, isInMainHand: boolean, isInSecondHand: boolean, ammo: quantity, ammoType: id }]
-    this.armors = [];
-    this.equippedArmors = [];
-    this.ammo = []; // ID: quantity
+    this._competences = TEW.CHARACTERS.BASE_COMP_VALUES.slice();
+    this._spells = [];
+    this._talents = {}; // ID: level
+    this._items = {}; // ID: quantity
+    this._weapons = []; // [{ id: id, isInMainHand: boolean, isInSecondHand: boolean, ammo: quantity, ammoType: id }]
+    this._armors = [];
+    this._equippedArmors = [];
+    this._ammo = []; // ID: quantity
     // temp
-    this.competences[8] = 2;
-    this.competences[9] = 2;
-    this.competences[10] = 2;
-    this.competences[11] = 2;
-    this.competences[12] = 2;
-    this.competences[13] = 2;
-    this.competences[0] = 2;
-    this.competences[1] = 2;
-    this.competences[2] = 2;
-    this.competences[3] = 2;
-    this.competences[4] = 2;
-    this.competences[5] = 2;
-    this.competences[6] = 2;
-    this.competences[7] = 2;
-    this.competences[14] = 2;
+    this._competences[8] = 2;
+    this._competences[9] = 2;
+    this._competences[10] = 2;
+    this._competences[11] = 2;
+    this._competences[12] = 2;
+    this._competences[13] = 2;
+    this._competences[0] = 2;
+    this._competences[1] = 2;
+    this._competences[2] = 2;
+    this._competences[3] = 2;
+    this._competences[4] = 2;
+    this._competences[5] = 2;
+    this._competences[6] = 2;
+    this._competences[7] = 2;
+    this._competences[14] = 2;
     // temp Talents
     this.addTalent("ACCURATE_SHOT");
     this.addTalent("ACCURATE_SHOT");
@@ -310,13 +370,16 @@ Game_BattlerBase.prototype.initialize = function () {
     this.addSpell("PURGE");
     // temp Items
     this.addItem("HEARTKILL");
-    // this.addItem("AMULET");
+    this.addItem("HEARTKILL");
+    this.addItem("HEARTKILL");
+    this.addItem("HEARTKILL");
+    this.addItem("HEARTKILL");
+    this.addItem("AMULET");
     // this.addItem("BOOTS");
     // this.addItem("BROOM");
     // this.addItem("WINE_GLASS");
     // this.addItem("WINE_GLASS");
     // this.addItem("WINE_GLASS");
-    // this.addItem("HEARTKILL");
     // this.addItem("BOOTS");
     // this.addItem("LEAFLET");
     // this.addItem("BOOTS");
@@ -326,11 +389,11 @@ Game_BattlerBase.prototype.initialize = function () {
     // this.addItem("ROBES_ELABORATE");
     // temp Weapons
     this.addWeapon("AXE");
-    this.addWeapon("SHIELD");
-    this.addWeapon("CLUB");
-    this.addWeapon("CANE_PISTOL");
-    this.addWeapon("CANE_PISTOL");
-    this.addWeapon("HOCHLAND_LONG_RIFLE");
+    // this.addWeapon("SHIELD");
+    // this.addWeapon("CLUB");
+    // this.addWeapon("CANE_PISTOL");
+    // this.addWeapon("CANE_PISTOL");
+    // this.addWeapon("HOCHLAND_LONG_RIFLE");
     // this.equipMainHand(0);
     // this.equipSecondHand(2);
     // temp Armor
@@ -345,7 +408,6 @@ Game_BattlerBase.prototype.initialize = function () {
     this.addAmmo("ARROW", 64);
     this.addAmmo("LEAD_BULLET", 98);
     this.addAmmo("BULLET_AND_POWDER", 50);
-    // console.log(this);
 };
 Object.defineProperties(Game_BattlerBase.prototype, {
     // Max wounds
@@ -379,15 +441,15 @@ Game_BattlerBase.prototype.clearParamPlus = function () {
     this._paramPlus = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 };
 Game_BattlerBase.prototype.param = function (paramId) {
-    var value = this.paramBase(paramId) + this.paramPlus(paramId);
-    return Math.round(value < 0 ? 0 : value);
+    const value = this.paramBase(paramId) + this.paramPlus(paramId);
+    return Math.max(0, value);
 };
 Game_BattlerBase.prototype.paramByName = function (paramName) {
     return this.param(TEW.CHARACTERS.STATS[paramName.toLowerCase()]);
 };
 // Competences
 Game_BattlerBase.prototype.compPlus = function (compId) {
-    const compValue = this.competences[TEW.DATABASE.COMPS.IDS.indexOf(compId)];
+    const compValue = this._competences[TEW.DATABASE.COMPS.IDS.indexOf(compId)];
     return compValue === -1 ? 0 : compValue;
 };
 Game_BattlerBase.prototype.comp = function (compId) {
@@ -398,66 +460,64 @@ Game_BattlerBase.prototype.hasComp = function (compId) {
     if (TEW.DATABASE.COMPS.SET[compId].isBase) {
         return true;
     }
-    return this.competences[TEW.DATABASE.COMPS.IDS.indexOf(compId)] !== -1;
+    return this._competences[TEW.DATABASE.COMPS.IDS.indexOf(compId)] !== -1;
 };
 Game_BattlerBase.prototype.addComp = function (compId, value) {
-    this.competences[TEW.DATABASE.COMPS.IDS.indexOf(compId)] += value;
+    this._competences[TEW.DATABASE.COMPS.IDS.indexOf(compId)] += value;
     // this.refresh();
 };
 // Talents
 Game_BattlerBase.prototype.talent = function (talentId) {
-    return this.talents[talentId] || 0;
+    return this._talents[talentId] || 0;
 };
 Game_BattlerBase.prototype.allTalents = function () {
-    return Object.keys(this.talents);
+    return Object.keys(this._talents);
 };
 Game_BattlerBase.prototype.hasTalent = function (talentId) {
-    return this.talents[talentId] > 0;
+    return this._talents[talentId] > 0;
 };
 Game_BattlerBase.prototype.addTalent = function (talentId) {
-    this.talents[talentId] = this.talent(talentId) + 1;
+    this._talents[talentId] = this.talent(talentId) + 1;
 };
 // Spells
 Game_BattlerBase.prototype.hasSpell = function (spellId) {
-    return this.spells.includes(spellId);
+    return this._spells.includes(spellId);
 };
 Game_BattlerBase.prototype.addSpell = function (spellId) {
     if (!this.hasSpell(spellId)) {
-        this.spells.push(spellId);
+        this._spells.push(spellId);
     }
 };
 // Items
 Game_BattlerBase.prototype.item = function (itemId) {
-    return this.items[itemId] || 0;
+    return this._items[itemId] || 0;
 };
 Game_BattlerBase.prototype.addItem = function (itemId, quantity = 1) {
-    console.log("adding " + itemId + " to " + this.name());
-    this.items[itemId] = this.item(itemId) + quantity;
+    this._items[itemId] = this.item(itemId) + quantity;
 };
 Game_BattlerBase.prototype.removeItem = function (itemId, quantity = 1) {
-    console.log("removing " + itemId + " from " + this.name());
-    this.items[itemId] = this.item(itemId) - quantity;
+    this._items[itemId] = this.item(itemId) - quantity;
     if (this.item(itemId) <= 0) {
-        delete this.items[itemId];
+        delete this._items[itemId];
     }
     return itemId;
 };
 Game_BattlerBase.prototype.hasItem = function (itemId) {
-    return this.items[itemId] > 0;
+    return this._items[itemId] > 0;
 };
 // Weapons
 Game_BattlerBase.prototype.weapon = function (index) {
-    return this.weapons[index];
+    return this._weapons[index];
 };
 Game_BattlerBase.prototype.mainHand = function () {
-    return this.weapons.find((weapon) => weapon.isInMainHand);
+    return this._weapons.find((weapon) => weapon.isInMainHand);
 };
 Game_BattlerBase.prototype.secondHand = function () {
-    return this.weapons.find((weapon) => weapon.isInSecondHand);
+    return this._weapons.find((weapon) => weapon.isInSecondHand);
 };
 Game_BattlerBase.prototype.addWeapon = function (weaponId) {
     const rangedWeapon = TEW.DATABASE.WEAPONS.RANGED_SET[weaponId];
-    this.weapons.push({
+    this._weapons.push({
         id: weaponId,
         isInMainHand: false,
         isInSecondHand: false,
@@ -470,79 +530,94 @@ Game_BattlerBase.prototype.addWeapon = function (weaponId) {
     this.sortWeapons();
 };
 Game_BattlerBase.prototype.transferWeapon = function (weapon) {
-    this.weapons.push(weapon);
+    this._weapons.push(weapon);
     this.sortWeapons();
 };
 Game_BattlerBase.prototype.removeWeapon = function (index) {
-    const removed = this.weapons.splice(index, 1);
+    const removed = this._weapons.splice(index, 1);
     this.sortWeapons();
     return removed;
 };
 Game_BattlerBase.prototype.sortWeapons = function () {
-    this.weapons = this.weapons.sort((a, b) => TEW.DATABASE.WEAPONS.IDS.indexOf(a.id) - TEW.DATABASE.WEAPONS.IDS.indexOf(b.id));
+    this._weapons = this._weapons.sort((a, b) => TEW.DATABASE.WEAPONS.IDS.indexOf(a.id) - TEW.DATABASE.WEAPONS.IDS.indexOf(b.id));
 };
 Game_BattlerBase.prototype.hasWeaponTEW = function (weaponId) {
-    return this.weapons.some((weapon) => weapon.id === weaponId);
+    return this._weapons.some((weapon) => weapon.id === weaponId);
 };
 Game_BattlerBase.prototype.equipMainHand = function (index) {
     this.unequipMainHand();
-    this.weapons[index].isInMainHand = true;
+    this._weapons[index].isInMainHand = true;
 };
 Game_BattlerBase.prototype.equipSecondHand = function (index) {
     this.unequipSecondHand();
-    this.weapons[index].isInSecondHand = true;
+    this._weapons[index].isInSecondHand = true;
 };
 Game_BattlerBase.prototype.unequipMainHand = function () {
-    this.weapons.forEach((weapon) => {
+    this._weapons.forEach((weapon) => {
         weapon.isInMainHand = false;
     });
 };
 Game_BattlerBase.prototype.unequipSecondHand = function () {
-    this.weapons.forEach((weapon) => {
+    this._weapons.forEach((weapon) => {
         weapon.isInSecondHand = false;
     });
 };
 // Armors
 Game_BattlerBase.prototype.addArmor = function (armorId) {
-    this.armors.push(armorId);
+    this._armors.push(armorId);
     this.sortArmors();
 };
 Game_BattlerBase.prototype.removeArmor = function (armorId) {
-    const removed = this.armors.splice(this.armors.indexOf(armorId), 1);
+    const removed = this._armors.splice(this._armors.indexOf(armorId), 1);
     this.sortArmors();
     return removed[0];
 };
 Game_BattlerBase.prototype.hasArmorTEW = function (armorId) {
-    return this.armors.some((armor) => armor === armorId);
+    return this._armors.some((armor) => armor === armorId);
 };
 Game_BattlerBase.prototype.hasArmorEquipped = function (armorId) {
-    return this.equippedArmors.some((armor) => armor === armorId);
+    return this._equippedArmors.some((armor) => armor === armorId);
 };
 Game_BattlerBase.prototype.equipArmor = function (armorId) {
-    this.equippedArmors.push(armorId);
-    this.armors.splice(this.armors.indexOf(armorId), 1);
+    this._equippedArmors.push(armorId);
+    this._armors.splice(this._armors.indexOf(armorId), 1);
     this.sortEquippedArmors();
 };
 Game_BattlerBase.prototype.unequipArmor = function (armorId) {
-    this.armors.push(armorId);
-    this.equippedArmors.splice(this.equippedArmors.indexOf(armorId), 1);
+    this._armors.push(armorId);
+    this._equippedArmors.splice(this._equippedArmors.indexOf(armorId), 1);
     this.sortArmors();
 };
+Game_BattlerBase.prototype.unequipArmors = function (armorIds) {
+    armorIds.forEach(id => {
+        this._armors.push(id);
+        this._equippedArmors.splice(this._equippedArmors.indexOf(id), 1);
+    });
+    this.sortArmors();
+};
+Game_BattlerBase.prototype.armorsAtLocation = function (location) {
+    return this._equippedArmors.map((armor) => TEW.DATABASE.ARMORS.SET[armor])
+        .filter((armor) => armor.locations.includes(location));
+};
+Game_BattlerBase.prototype.armorsAtLocations = function (locations) {
+    return this._equippedArmors.map((armor) => TEW.DATABASE.ARMORS.SET[armor])
+        .filter((armor) => armor.locations.some(location => locations.includes(location)));
+};
 Game_BattlerBase.prototype.sortArmors = function () {
-    this.armors = this.armors.sort((a, b) => TEW.DATABASE.ARMORS.IDS.indexOf(a) - TEW.DATABASE.ARMORS.IDS.indexOf(b));
+    this._armors = this._armors.sort((a, b) => TEW.DATABASE.ARMORS.IDS.indexOf(a) - TEW.DATABASE.ARMORS.IDS.indexOf(b));
 };
 Game_BattlerBase.prototype.sortEquippedArmors = function () {
-    this.equippedArmors = this.equippedArmors.sort((a, b) => TEW.DATABASE.ARMORS.IDS.indexOf(a) - TEW.DATABASE.ARMORS.IDS.indexOf(b));
+    this._equippedArmors = this._equippedArmors.sort((a, b) => TEW.DATABASE.ARMORS.IDS.indexOf(a) - TEW.DATABASE.ARMORS.IDS.indexOf(b));
 };
 // Ammo
 Game_BattlerBase.prototype.ammoType = function (ammoId) {
-    return this.ammo[ammoId] || 0;
+    return this._ammo[ammoId] || 0;
 };
 Game_BattlerBase.prototype.addAmmo = function (ammoId, quantity = 1) {
-    this.ammo[ammoId] = this.ammoType(ammoId) + quantity;
+    this._ammo[ammoId] = this.ammoType(ammoId) + quantity;
 };
 Game_BattlerBase.prototype.hasAmmo = function (ammoId) {
-    return this.ammo[ammoId] > 0;
+    return this._ammo[ammoId] > 0;
 };
 // #endregion =========================== Game_BattlerBase ============================== //
 // ============================== //
@@ -551,6 +626,33 @@ Game_BattlerBase.prototype.hasAmmo = function (ammoId) {
 Game_Interpreter.prototype.setBaseStat = function (playerName, statName, value) {
     const player = $gameActors._data[TEW.CHARACTERS.SET[playerName]];
     player._paramBase[TEW.CHARACTERS.STATS[statName]] = value;
+};
+Game_Interpreter.prototype.partyHasItem = function (itemId) {
+    const actors = $gameParty._actors.map((id) => $gameActors.actor(id));
+    for (let i = 0; i < actors.length; i++) {
+        if (actors[i].hasItem(itemId)) {
+            return true;
+        }
+    }
+    return false;
+};
+Game_Interpreter.prototype.addItemToParty = function (itemId, quantity = 1) {
+    const leadActor = $gameParty.leader();
+    leadActor.addItem(itemId, quantity);
+};
+Game_Interpreter.prototype.removeItemFromParty = function (itemId, quantity = 1) {
+    const actors = $gameParty._actors.map((id) => $gameActors.actor(id));
+    let totalRemoved = 0;
+    for (let i = 0; i < actors.length; i++) {
+        const quantityToRemove = Math.min(actors[i].item(itemId), quantity);
+        if (quantityToRemove > 0) {
+            actors[i].removeItem(itemId, quantityToRemove);
+            totalRemoved += quantityToRemove;
+            if (totalRemoved >= quantity) {
+                break;
+            }
+        }
+    }
 };
 // #endregion =========================== Game_Interpreter ============================== //
 // ============================== //

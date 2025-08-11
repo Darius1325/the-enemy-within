@@ -1,7 +1,4 @@
 // $PluginCompiler TEW_Menus.js
-
-var Window_Base: any;
-
 // $StartCompilation
 
 Window_Base.prototype.drawWrappedText= function(text, x, y, width, fontsize = this.contents.fontSize) {
@@ -26,3 +23,7 @@ Window_Base.prototype.drawWrappedText= function(text, x, y, width, fontsize = th
 // Window_Base.prototype.drawText = function(text, x, y, maxWidth, align, lineHeight = this.lineHeight()) {
 //     this.contents.drawText(text, x, y, maxWidth, lineHeight, align);
 // };
+
+Window_Base.prototype.standardBackOpacity = function() {
+    return 255;
+};
