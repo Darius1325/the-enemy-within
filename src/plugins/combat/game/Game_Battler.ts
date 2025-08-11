@@ -1,4 +1,18 @@
 // $PluginCompiler TEW_Combat.js
+
+import Game_BattlerBase from "./Game_BattlerBase";
+
+export default interface Game_Battler extends Game_BattlerBase {
+    x: number;
+    y: number;
+
+    isAlive: () => boolean;
+    isActor: () => boolean;
+    isEnemy: () => boolean;
+    
+    onTurnStart: () => void;
+}
+
 // $StartCompilation
 
 //-----------------------------------------------------------------------------
@@ -88,7 +102,7 @@ Game_Battler.prototype.tparam = function(paramString) {
 };
 
 Game_Battler.prototype.onTurnStart = function() {
-    if (this.isRestricted) {
+    if (this.isRestricted) { // What have you smoked
         this._canAction = true;
         this.event().setStepAnime(true);
     }

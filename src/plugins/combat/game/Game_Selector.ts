@@ -293,7 +293,7 @@ Game_Selector.prototype.isBusy = function() {
 };
 
 Game_Selector.prototype.selectActor = function() {
-    var select = this.select()
+    var select = this.select();
     if (select && select.isActor() && select.canAction()) {
         if (this.isOk()) {
             SoundManager.playOk();

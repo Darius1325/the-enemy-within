@@ -1,6 +1,7 @@
 // $PluginCompiler TEW_Combat.js
 
-import { Game_Actor } from "../../base/stats/Game_Actor";
+import Game_Battler from "./Game_Battler";
+import Game_Actor from "./Game_Actor";
 
 // $StartCompilation
 
@@ -295,28 +296,42 @@ BattleManager.actor = function() {
     return this._actorIndex >= 0 ? $gamePartyTs.members()[this._actorIndex] : null;
 };
 
-// TODO remove
-BattleManager.makePlayerOrders = function() {
-    this._playersOrder = $gamePartyTs.restrictedMembers();
-};
-
- // TODO remove
+ // TODO remove when managing enemies
 BattleManager.makeEnemyOrders = function() {
     this._enemiesOrder = $gameTroopTs.battleMembers();
 };
 
 // TODO call once when battle starts
 BattleManager.makeTurnOrder = function() {
-    this._turnOrder = this.allBattleMembers()
-        .map((actor: Game_Actor) => TEW.DICE.rollInitiative(actor))
-        .sort((a: number, b: number) => a - b).reverse();
+    const playerInitRolls = $gamePartyTs.members()
+        .map((actor, index) => ({
+            actorIndex: index,
+            isPlayer: true,
+            initiative: TEW.DICE.rollInitiative(actor)
+        }));
+    const enemyInitRolls = $gameTroopTs.members()
+        .map((actor, index) => ({
+            actorIndex: index,
+            isPlayer: false,
+            initiative: TEW.DICE.rollInitiative(actor)
+        }));
+    this._turnOrder = playerInitRolls.concat(enemyInitRolls)
+        .sort((a: { initiative: number }, b: { initiative: number }) =>
+                b.initiative - a.initiative
+        );
 };
 
 BattleManager.updateStartPhase = function() {
-    this.makePlayerOrders(); // TODO remove
-    $gameTroop.increaseTurn();
-    $gameTroopTs.onTurnStart(); // why the fuck are enemies moving first ???
-    $gamePartyTs.onTurnStart(); // TODO change flow from here
+    $gameTroop.increaseTurn(); // useless ?
+
+    this.makeEnemyOrders(); // TODO remove when managing enemies
+
+    this.makeTurnOrder();
+    this._currentTurnOrder = JSON.parse(JSON.stringify(this._turnOrder)); // deep copy to pop actors one by one
+
+    // $gameTroopTs.onTurnStart(); // play enemy related events ?? Idk what this does
+    // $gamePartyTs.onTurnStart(); // TODO change flow from here
+
     $gameSelector.setTransparent(true);
     this._logWindow.startTurn();
     this._phase = 'playerPhase';
@@ -324,7 +339,6 @@ BattleManager.updateStartPhase = function() {
     $gameSelector.updateSelect(); // select active battler instead
     this.refreshMoveTiles();
 };
-
 
 BattleManager.updateExplore = function() {
     this.refreshSubject();
@@ -347,12 +361,12 @@ BattleManager.refreshMoveTiles = function() {
     }
 };
 
-BattleManager.selectActor = function(actor) {
+BattleManager.selectActor = function(actor: Game_Actor) {
     this._battlePhase = 'select';
     $gameSelector.updateSelect();
     this._subject = actor;
     this._subject.performSelect();
-    this._actorIndex = this._subject.indexTs();
+    // this._actorIndex = this._subject.indexTs();
     this._subject.savePosition();
     $gameParty.setupTactics([this._subject]);
     this.refreshMoveTiles();
@@ -424,24 +438,24 @@ BattleManager.inputtingAction = function() {
 };
 
 BattleManager.refreshSubject = function() {
-    var select = $gameSelector.select();
+    const selectedBattler = $gameSelector.select();
     if ($gameSelector.isMoving()) {
-        this.refreshActorWindow(select);
-        this.refreshEnemyWindow(select);
+        this.refreshActorWindow(selectedBattler);
+        this.refreshEnemyWindow(selectedBattler);
     }
 };
 
-BattleManager.refreshActorWindow = function(select) {
-    if (select && select.isAlive() && select.isActor()) {
-        this._actorWindow.open(select);
+BattleManager.refreshActorWindow = function(selectedBattler: Game_Battler) {
+    if (selectedBattler && selectedBattler.isAlive() && selectedBattler.isActor()) {
+        this._actorWindow.open(selectedBattler);
     } else {
         this._actorWindow.close();
     }
 };
 
-BattleManager.refreshEnemyWindow = function(select) {
-    if (select && select.isAlive() && select.isEnemy()) {
-        this._enemyWindow.open(select);
+BattleManager.refreshEnemyWindow = function(selectedBattler: Game_Battler) {
+    if (selectedBattler && selectedBattler.isAlive() && selectedBattler.isEnemy()) {
+        this._enemyWindow.open(selectedBattler);
     } else {
         this._enemyWindow.close();
     }
@@ -479,8 +493,10 @@ BattleManager.updateStart = function() {
     if (select) {
         select.makeRange();
     }
-    if (this._phase === 'playerPhase') {
-        this.updateStartPlayer();
+    this._currentActor = this._currentTurnOrder.shift();
+    this._actorIndex = this._currentActor.actorIndex;
+    if (this._currentActor.isPlayer) {
+        this.updateStartPlayer(this.actor());
     } else {
         this.updateStartEnemy();
     }
@@ -488,29 +504,24 @@ BattleManager.updateStart = function() {
 
 // TODO trigger battle menu here?
 // We need to decide when to trigger the explore phase (maybe just cancel from the battle menu?)
-BattleManager.updateStartPlayer = function() {
-    this._subject = this._playersOrder.shift();
-    if (this._subject) {
-        this.restrictedPhase();
-    } else if ($gamePartyTs.isPhase() || !TEW.COMBAT.SYSTEM.autoTurnEnd) {
-        $gameSelector.setTransparent(false);
-        this._battlePhase = 'explore';
-    } else {
-        this._battlePhase = 'turnEnd';
-    }
+BattleManager.updateStartPlayer = function(actor: Game_Actor) {
+    $gameSelector.performTransfer(actor.x, actor.y);
+    $gameSelector.setTransparent(false);
+    actor.onTurnStart();
+    this.selectActor(actor);
 };
 
-// TODO understand this
-BattleManager.restrictedPhase = function() {
-    this._battlePhase = 'move';
-    this._subject.makeMoves(); // only for AI?
-    this._subject.makeActions();
-    $gameParty.setupTactics([this._subject]);
-    $gameMap.clearTiles();
-    var x = this._subject.tx;
-    var y = this._subject.ty;
-    $gameSelector.performTransfer(x, y);
-};
+// Only for 'restricted' players (confusion move)
+// BattleManager.restrictedPhase = function() {
+//     this._battlePhase = 'move';
+//     this._subject.makeMoves(); // only for AI?
+//     this._subject.makeActions();
+//     $gameParty.setupTactics([this._subject]);
+//     $gameMap.clearTiles();
+//     var x = this._subject.tx;
+//     var y = this._subject.ty;
+//     $gameSelector.performTransfer(x, y);
+// };
 
 BattleManager.updateStartEnemy = function() {
     if ($gameTroopTs.isPhase()) {

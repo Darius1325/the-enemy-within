@@ -1,4 +1,11 @@
 // $PluginCompiler TEW_Combat.js
+
+import Game_Battler from "./Game_Battler";
+
+export default interface Game_Actor extends Game_Battler {
+
+};
+
 // $StartCompilation
 
 //-----------------------------------------------------------------------------

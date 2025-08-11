@@ -1,4 +1,6 @@
 // $PluginCompiler TEW_Combat.js
+
+export default interface Game_BattlerBase {}
 // $StartCompilation
 
 //-----------------------------------------------------------------------------
