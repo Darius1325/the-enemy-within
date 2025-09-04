@@ -223,12 +223,12 @@ Game_Action.prototype.apply = function(target) {
     //   Remove defender's toug + armor points
     // Lookup crit table (help me)
 
-    result.isHit = 0;
+    result.isHit = true;
     result.missed = false;
 
     if (result.isHit) {
         if (this.item().damage.type > 0) {
-            var value = 4;
+            var value = 251;
             this.executeDamage(target, value);
         }
         this.item().effects.forEach(function(effect) {

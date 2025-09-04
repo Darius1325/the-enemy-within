@@ -21,12 +21,6 @@ Game_UnitTs.prototype.members = function() {
     return [];
 };
 
-Game_UnitTs.prototype.updateActive = function() {
-    this.members().forEach(function(member) {
-        member.updateActive();
-    });
-};
-
 Game_UnitTs.prototype.aliveMembers = function() {
     return this.members().filter(function(member) {
         return member.isAlive();

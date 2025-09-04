@@ -72,7 +72,6 @@ Sprite_BattlerTs.prototype.isEnemy = function() {
 Sprite_BattlerTs.prototype.update = function() {
     Sprite_Character.prototype.update.call(this);
     this.updateDamagePopup();
-    this.updateColor();
     this.updateEffect();
 };
 
@@ -109,18 +108,6 @@ Sprite_BattlerTs.prototype.damageOffsetX = function() {
 
 Sprite_BattlerTs.prototype.damageOffsetY = function() {
     return 24;
-};
-
-Sprite_BattlerTs.prototype.isChangeColor = function() {
-    return this._battler.isActor && this._battler.canAction() && !this._battler.isRestricted();
-};
-
-Sprite_BattlerTs.prototype.updateColor = function() {
-    if (this.isChangeColor()) {
-        this.setColorTone([0, 0, 0, 0]);
-    } else {
-        this.setColorTone([0, 0, 0, 255]);
-    }
 };
 
 Sprite_BattlerTs.prototype.setupEffect = function() {

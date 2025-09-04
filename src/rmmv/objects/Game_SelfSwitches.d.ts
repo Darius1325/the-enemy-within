@@ -12,6 +12,7 @@ export declare class Game_SelfSwitches
 	public clear():void;
 	public onChange():void;
 
-	public value(switchId:string):boolean;
-	public setValue(switchId:string, value:boolean):void;
+	public value(accessor:[number,number,string]):boolean;
+	public setValue(accessor:[number,number,string], value:boolean):void;
+
 }

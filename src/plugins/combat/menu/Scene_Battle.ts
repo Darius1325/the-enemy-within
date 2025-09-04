@@ -267,6 +267,7 @@ Scene_Battle.prototype.callMenu = function() {
     this._mapWindow.activate();
 };
 
+// TODO Obsolete
 Scene_Battle.prototype.commandEndTurn = function() {
     SoundManager.playOk();
     BattleManager.onAllTurnEnd();
