@@ -22,7 +22,18 @@ TEW.DATABASE.NPCS = {};
 TEW.DATABASE.NPCS.SET = {
     GUSTAV_FONDLEBURGER: {
         name: "Gustav Fondleburger",
-        stats: [28, 32, 31, 41, 38, 34, 35, 39, 29, 52],
+        stats: {
+            WEAS: 28, 
+            BALS: 32, 
+            STRG: 31, 
+            TOUG: 41, 
+            INIT: 38, 
+            AGIL: 34, 
+            DEXT: 35, 
+            INTL: 39, 
+            WILL: 29, 
+            FELW: 52
+        },
         wounds: 13,
         move: 4,
         status: Status.SILVER_2,
@@ -219,4 +230,5 @@ TEW.DATABASE.NPCS.SET = {
         prayers: {}
     }
 }
+
 // #endregion === NPCS SET === //

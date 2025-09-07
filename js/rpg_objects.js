@@ -4292,6 +4292,7 @@ Game_Enemy.prototype.constructor = Game_Enemy;
 
 Game_Enemy.prototype.initialize = function(enemyId, x, y) {
     Game_Battler.prototype.initialize.call(this);
+    console.log(enemyId);
     this.setup(enemyId, x, y);
 };
 

@@ -1,6 +1,8 @@
 // $PluginCompiler TEW_Combat.js
 // $StartCompilation
 
+import { Stat, StatName } from "../../_types/enum";
+
 //-----------------------------------------------------------------------------
 // Game_Enemy
 //
@@ -75,3 +77,11 @@ Game_Enemy.prototype.applyMove = function() {
         action.applyMove();
     }
 };
+
+Game_Enemy.prototype.paramBase = function(paramId) {
+    console.log(this._enemyId);
+    if (paramId === 'mhp') {
+        return TEW.DATABASE.NPCS.SET[this._enemyId].wounds;
+    }
+    return TEW.DATABASE.NPCS.SET[this._enemyId].stats[paramId];
+}

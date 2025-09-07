@@ -52,7 +52,7 @@ BattleManager.setup = function(troopId: number, canEscape: boolean, canLose: boo
     this._canEscape = canEscape;
     this._canLose = canLose;
     this.makeEscapeRatio();
-    $gameTroop.setup(troopId);
+    // $gameTroop.setup(troopId);
     $gameSwitches.update();
     $gameVariables.update();
     $gameSelector.performTransfer($gamePlayer.x, $gamePlayer.y);
@@ -88,11 +88,12 @@ BattleManager.initMembers = function() {
 BattleManager.createGameObjects = function() {
     for (let i = 0; i < $gameMap.events().length; i++) {
         const event = $gameMap.events()[i];
+        console.log(event.tparam('NPC'));
         if (event.tparam('Actor') > 0) {
             this.addGameActor(event);
         } else if (event.tparam('Party') > 0) {
             this.addGameParty(event)
-        } else if (event.tparam('Enemy') > 0) {
+        } else if (event.tparam('NPC')) {
             this.addGameEnemy(event);
         } else if (event.tparam('Troop') > 0) {
             this.addGameTroop(event);
@@ -112,8 +113,9 @@ BattleManager.addGameParty = function(event) {
 };
 
 BattleManager.addGameEnemy = function(event) {
-    const enemyId = Number(event.tparam('Enemy'));
-    $gameTroopTs.addEnemy(enemyId, event);
+    const npcId : string = event.tparam('NPC');
+    console.log(npcId);
+    $gameTroopTs.addEnemy(npcId, event);
 };
 
 BattleManager.addGameTroop = function(event) {

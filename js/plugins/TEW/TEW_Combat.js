@@ -569,7 +569,7 @@ BattleManager.setup = function (troopId, canEscape, canLose) {
     this._canEscape = canEscape;
     this._canLose = canLose;
     this.makeEscapeRatio();
-    $gameTroop.setup(troopId);
+    // $gameTroop.setup(troopId);
     $gameSwitches.update();
     $gameVariables.update();
     $gameSelector.performTransfer($gamePlayer.x, $gamePlayer.y);
@@ -603,13 +603,14 @@ BattleManager.initMembers = function () {
 BattleManager.createGameObjects = function () {
     for (let i = 0; i < $gameMap.events().length; i++) {
         const event = $gameMap.events()[i];
+        console.log(event.tparam('NPC'));
         if (event.tparam('Actor') > 0) {
             this.addGameActor(event);
         }
         else if (event.tparam('Party') > 0) {
             this.addGameParty(event);
         }
-        else if (event.tparam('Enemy') > 0) {
+        else if (event.tparam('NPC')) {
             this.addGameEnemy(event);
         }
         else if (event.tparam('Troop') > 0) {
@@ -627,8 +628,9 @@ BattleManager.addGameParty = function (event) {
     $gamePartyTs.addActor(actorId, event, true);
 };
 BattleManager.addGameEnemy = function (event) {
-    const enemyId = Number(event.tparam('Enemy'));
-    $gameTroopTs.addEnemy(enemyId, event);
+    const npcId = event.tparam('NPC');
+    console.log(npcId);
+    $gameTroopTs.addEnemy(npcId, event);
 };
 BattleManager.addGameTroop = function (event) {
     const index = Number(event.tparam('Troop'));
@@ -2285,6 +2287,14 @@ Game_Enemy.prototype.applyMove = function () {
         action.applyMove();
     }
 };
+Game_Enemy.prototype.paramBase = function (paramId) {
+    console.log(this._enemyId);
+    if (paramId === 'mhp') {
+        return TEW.DATABASE.NPCS.SET[this._enemyId].wounds;
+    }
+    return TEW.DATABASE.NPCS.SET[this._enemyId].stats[paramId];
+};
+
 // #endregion =========================== Game_Enemy ============================== //
 // ============================== //
 // #region ============================== Game_Event ============================== //
@@ -3078,6 +3088,7 @@ Game_TroopTs.prototype.clear = function () {
     this._enemies = [];
 };
 Game_TroopTs.prototype.addEnemy = function (enemyId, event) {
+    console.log(enemyId);
     var enemy = new Game_Enemy(enemyId);
     var eventId = event.eventId();
     this._enemies.push(enemy);

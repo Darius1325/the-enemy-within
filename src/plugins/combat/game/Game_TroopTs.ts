@@ -26,6 +26,7 @@ Game_TroopTs.prototype.clear = function() {
 };
 
 Game_TroopTs.prototype.addEnemy = function(enemyId, event) {
+    console.log(enemyId);
     var enemy = new Game_Enemy(enemyId);
     var eventId = event.eventId();
     this._enemies.push(enemy);
