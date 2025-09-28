@@ -2618,6 +2618,7 @@ Game_BattlerBase.prototype.refresh = function() {
 
 Game_BattlerBase.prototype.recoverAll = function() {
     this.clearStates();
+    console.log(this.mhp);
     this._hp = this.mhp;
     this._mp = this.mmp;
 };
@@ -4292,7 +4293,6 @@ Game_Enemy.prototype.constructor = Game_Enemy;
 
 Game_Enemy.prototype.initialize = function(enemyId, x, y) {
     Game_Battler.prototype.initialize.call(this);
-    console.log(enemyId);
     this.setup(enemyId, x, y);
 };
 

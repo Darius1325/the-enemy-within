@@ -163,9 +163,28 @@ Game_Interpreter.prototype.iterateEnemyIndex = function(param, callback) {
     }
 };
 
-// Battle Processing
-TEW.MEMORY.gameInterpreterCommand301 = Game_Interpreter.prototype.command301;
+// Redefining event command : Battle Processing
+// TODO remove useless branches
 Game_Interpreter.prototype.command301 = function() {
     this.setWaitMode('TEW_Combat.battle');
-    return TEW.MEMORY.gameInterpreterCommand301.call(this);
+    console.log('save me');
+    if (!$gameParty.inBattle()) {
+        var troopId;
+        if (this._params[0] === 0) {  // Direct designation
+            troopId = this._params[1];
+        } else if (this._params[0] === 1) {  // Designation with a variable
+            troopId = $gameVariables.value(this._params[1]);
+        } else {  // Same as Random Encounter
+            troopId = $gamePlayer.makeEncounterTroopId();
+        }
+        if (TEW.DATABASE.NPCS.TROOPS[troopId]) {
+            BattleManager.setup(troopId, this._params[2], this._params[3]);
+            BattleManager.setEventCallback(function(n) {
+                this._branch[this._indent] = n;
+            }.bind(this));
+            $gamePlayer.makeEncounterCount();
+            SceneManager.push(Scene_Battle);
+        }
+    }
+    return true;
 };

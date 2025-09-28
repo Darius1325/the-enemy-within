@@ -1,7 +1,8 @@
 // $PluginCompiler TEW_Combat.js
-// $StartCompilation
 
-import { Stat, StatName } from "../../_types/enum";
+import { StatArray } from "../import";
+
+// $StartCompilation
 
 //-----------------------------------------------------------------------------
 // Game_Enemy
@@ -78,10 +79,20 @@ Game_Enemy.prototype.applyMove = function() {
     }
 };
 
-Game_Enemy.prototype.paramBase = function(paramId) {
-    console.log(this._enemyId);
-    if (paramId === 'mhp') {
+Game_Enemy.prototype.paramBase = function(paramId: number) {
+    console.log("enemy param base is called with " + paramId);
+    // mhp
+    if (paramId === 0) {
         return TEW.DATABASE.NPCS.SET[this._enemyId].wounds;
     }
-    return TEW.DATABASE.NPCS.SET[this._enemyId].stats[paramId];
+    return TEW.DATABASE.NPCS.SET[this._enemyId].stats[this.statName(paramId)];
+}
+
+// MHP is handled separately
+Game_Enemy.prototype.statName = function(paramId: number) {
+    return StatArray[paramId - 1];
+}
+
+Game_Enemy.prototype.enemy = function() {
+    return TEW.DATABASE.NPCS.SET[this._enemyId];
 }

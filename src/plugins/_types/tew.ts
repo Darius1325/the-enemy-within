@@ -21,6 +21,7 @@ import { Ammunition } from "./ammunition";
 import { ArmorGroup, WeaponGroup, WeaponQuality } from "./enum";
 import {Game_Actor} from "../base/stats/Game_Actor";
 import {Game_BattlerBase} from "../base/stats/Game_BattlerBase";
+import { Troop } from "./troop";
 
 /** Storage object for all TEW plugins */
 const TEW: {
@@ -108,6 +109,8 @@ const TEW: {
         NPCS?: {
             /** All NPCs by ID */
             SET?: Record<string, NPC>;
+
+            TROOPS?: Record<string, Troop>;
         };
     };
 

@@ -52,6 +52,7 @@ Sprite_HpGauge.prototype.drawBattlerHP = function() {
     var width = 40;
     var color1 = this.hpGaugeColor1();
     var color2 = this.hpGaugeColor2();
+    console.log("Battler :", this._battler);
     this.drawGauge(0, 0, width, this._battler.hpRate(), color1, color2)
 };
 

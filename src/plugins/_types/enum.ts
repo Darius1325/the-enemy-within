@@ -22,7 +22,7 @@ export const enum Stat {
     FELW = 'FELW',
     WILL = 'WILL',
 }
-export type StatName = 'MHP' | 'WEAS' | 'BALS' | 'STRG' | 'TOUG' | 'AGIL' | 'DEXT' | 'INIT' | 'INTL' | 'FELW' | 'WILL';
+export type StatName = 'MHP' | 'WEAS' | 'BALS' | 'STRG' | 'TOUG' | 'INIT' | 'AGIL' | 'DEXT' | 'INTL' | 'FELW' | 'WILL';
 
 /**
  * Armor types

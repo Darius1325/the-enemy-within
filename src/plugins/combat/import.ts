@@ -1,4 +1,7 @@
 // $PluginCompiler TEW_Combat.js 0
+
+import { StatName } from "../_types/enum";
+
 // $StartCompilation
 
 var Imported = Imported || {};
@@ -359,3 +362,5 @@ TEW.COMBAT.SYSTEM.phaseVarId = 1;
 TEW.COMBAT.SYSTEM.battlePhaseVarId = 3;
 TEW.COMBAT.SYSTEM.playerPhaseVarId = 2;
 TEW.COMBAT.SYSTEM.turnCountVarId = 4;
+
+export const StatArray: StatName[] = ['MHP', 'WEAS', 'BALS', 'STRG', 'TOUG', 'INIT', 'AGIL', 'DEXT', 'INTL', 'FELW', 'WILL'];

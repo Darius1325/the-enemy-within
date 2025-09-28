@@ -349,6 +349,7 @@ TEW.COMBAT.SYSTEM.phaseVarId = 1;
 TEW.COMBAT.SYSTEM.battlePhaseVarId = 3;
 TEW.COMBAT.SYSTEM.playerPhaseVarId = 2;
 TEW.COMBAT.SYSTEM.turnCountVarId = 4;
+const StatArray = ['MHP', 'WEAS', 'BALS', 'STRG', 'TOUG', 'INIT', 'AGIL', 'DEXT', 'INTL', 'FELW', 'WILL'];
 // #endregion =========================== import ============================== //
 // ============================== //
 // #region ============================== utils ============================== //
@@ -569,7 +570,7 @@ BattleManager.setup = function (troopId, canEscape, canLose) {
     this._canEscape = canEscape;
     this._canLose = canLose;
     this.makeEscapeRatio();
-    // $gameTroop.setup(troopId);
+    $gameTroop.setup(troopId);
     $gameSwitches.update();
     $gameVariables.update();
     $gameSelector.performTransfer($gamePlayer.x, $gamePlayer.y);
@@ -680,6 +681,7 @@ BattleManager.makeEscapeRatio = function () {
     this._escapeRatio = 0.5 * $gameParty.agility() / $gameTroop.agility();
 };
 BattleManager.update = function () {
+    console.log("BattleManager.update + phase :", this._phase);
     if (!this.isBusy() && !this.updateEvent()) {
         switch (this._phase) {
             case Phase.Start:
@@ -1406,6 +1408,7 @@ BattleManager.gainDropItems = function () {
 };
 BattleManager.updateBattleEnd = function () {
     if (!this._escaped && $gameParty.isAllDead() || TEW.COMBAT.SYSTEM.isDefeated) {
+        console.log("END OF BATTLE : YOU LOSE !");
         if (this._canLose) {
             $gameParty.reviveBattleMembers();
             SceneManager.pop();
@@ -1415,6 +1418,7 @@ BattleManager.updateBattleEnd = function () {
         }
     }
     else {
+        console.log("END OF BATTLE : YOU WIN !");
         SceneManager.pop();
     }
     this._phase = null;
@@ -2288,13 +2292,20 @@ Game_Enemy.prototype.applyMove = function () {
     }
 };
 Game_Enemy.prototype.paramBase = function (paramId) {
-    console.log(this._enemyId);
-    if (paramId === 'mhp') {
+    console.log("enemy param base is called with " + paramId);
+    // mhp
+    if (paramId === 0) {
         return TEW.DATABASE.NPCS.SET[this._enemyId].wounds;
     }
-    return TEW.DATABASE.NPCS.SET[this._enemyId].stats[paramId];
+    return TEW.DATABASE.NPCS.SET[this._enemyId].stats[this.statName(paramId)];
 };
-
+// MHP is handled separately
+Game_Enemy.prototype.statName = function (paramId) {
+    return StatArray[paramId - 1];
+};
+Game_Enemy.prototype.enemy = function () {
+    return TEW.DATABASE.NPCS.SET[this._enemyId];
+};
 // #endregion =========================== Game_Enemy ============================== //
 // ============================== //
 // #region ============================== Game_Event ============================== //
@@ -3068,6 +3079,32 @@ Game_Troop.prototype.goldRate = function () {
 Game_Troop.prototype.makeDropItems = function () {
     return [];
 };
+// Use TEW NPC data instead of RMMV's enemy database
+Game_Troop.prototype.setup = function (troopId) {
+    this.clear();
+    this._troopId = troopId;
+    this._enemies = [];
+    this.troop().members.forEach(function (member) {
+        if (TEW.DATABASE.NPCS.SET[member.enemyId]) {
+            var enemyId = member.enemyId;
+            var x = member.x;
+            var y = member.y;
+            var enemy = new Game_Enemy(enemyId, x, y);
+            if (member.hidden) {
+                enemy.hide();
+            }
+            this._enemies.push(enemy);
+        }
+    }, this);
+    this.makeUniqueNames();
+};
+Game_Troop.prototype.troop = function () {
+    const tewTroop = TEW.DATABASE.NPCS.TROOPS[this._troopId];
+    return {
+        members: tewTroop.members,
+        pages: []
+    };
+};
 // #endregion =========================== Game_Troop ============================== //
 // ============================== //
 // #region ============================== Game_TroopTs ============================== //
@@ -3397,11 +3434,32 @@ Game_Interpreter.prototype.iterateEnemyIndex = function (param, callback) {
         TEW.MEMORY.gameInterpreterIterateEnemyIndex.call(this, param, callback);
     }
 };
-// Battle Processing
-TEW.MEMORY.gameInterpreterCommand301 = Game_Interpreter.prototype.command301;
+// Redefining event command : Battle Processing
+// TODO remove useless branches
 Game_Interpreter.prototype.command301 = function () {
     this.setWaitMode('TEW_Combat.battle');
-    return TEW.MEMORY.gameInterpreterCommand301.call(this);
+    console.log('save me');
+    if (!$gameParty.inBattle()) {
+        var troopId;
+        if (this._params[0] === 0) { // Direct designation
+            troopId = this._params[1];
+        }
+        else if (this._params[0] === 1) { // Designation with a variable
+            troopId = $gameVariables.value(this._params[1]);
+        }
+        else { // Same as Random Encounter
+            troopId = $gamePlayer.makeEncounterTroopId();
+        }
+        if (TEW.DATABASE.NPCS.TROOPS[troopId]) {
+            BattleManager.setup(troopId, this._params[2], this._params[3]);
+            BattleManager.setEventCallback(function (n) {
+                this._branch[this._indent] = n;
+            }.bind(this));
+            $gamePlayer.makeEncounterCount();
+            SceneManager.push(Scene_Battle);
+        }
+    }
+    return true;
 };
 // #endregion =========================== Game_Interpreter ============================== //
 // ============================== //
@@ -4587,6 +4645,7 @@ Sprite_HpGauge.prototype.drawBattlerHP = function () {
     var width = 40;
     var color1 = this.hpGaugeColor1();
     var color2 = this.hpGaugeColor2();
+    console.log("Battler :", this._battler);
     this.drawGauge(0, 0, width, this._battler.hpRate(), color1, color2);
 };
 Sprite_HpGauge.prototype.drawGauge = function (x, y, width, rate, color1, color2) {

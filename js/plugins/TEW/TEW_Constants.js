@@ -2491,6 +2491,13 @@ TEW.DATABASE.NPCS.SET = {
     }
 };
 // #endregion === NPCS SET === //
+// #region ====== BATTLE TROOPS === //
+TEW.DATABASE.NPCS.TROOPS = {
+    BATTLE_TEST: {
+        members: ["GUSTAV_FONDLEBURGER"]
+    }
+};
+// #endregion === BATTLE TROOPS === //
 // #endregion =========================== TEW_Npc ============================== //
 // ============================== //
 // #region ============================== TEW_Spells ============================== //

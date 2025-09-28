@@ -51,7 +51,7 @@ Game_Battler.prototype.initMembers = function() {
 
 Game_Battler.prototype.setupEvent = function(eventId) {
     this._eventId = eventId;
-    var event = this.event()
+    var event = this.event();
     this._tx = event.x;
     this._ty = event.y;
     event.setBattler(this);

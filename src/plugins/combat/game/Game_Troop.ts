@@ -51,3 +51,31 @@ Game_Troop.prototype.goldRate = function() {
 Game_Troop.prototype.makeDropItems = function() {
     return [];
 };
+
+// Use TEW NPC data instead of RMMV's enemy database
+Game_Troop.prototype.setup = function(troopId: string) {
+    this.clear();
+    this._troopId = troopId;
+    this._enemies = [];
+    this.troop().members.forEach(function(member) {
+        if (TEW.DATABASE.NPCS.SET[member.enemyId]) {
+            var enemyId = member.enemyId;
+            var x = member.x;
+            var y = member.y;
+            var enemy = new Game_Enemy(enemyId, x, y);
+            if (member.hidden) {
+                enemy.hide();
+            }
+            this._enemies.push(enemy);
+        }
+    }, this);
+    this.makeUniqueNames();
+};
+
+Game_Troop.prototype.troop = function() {
+    const tewTroop = TEW.DATABASE.NPCS.TROOPS[this._troopId];
+    return {
+        members: tewTroop.members,
+        pages: []
+    };
+};

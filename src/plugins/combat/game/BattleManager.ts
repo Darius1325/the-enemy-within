@@ -52,7 +52,7 @@ BattleManager.setup = function(troopId: number, canEscape: boolean, canLose: boo
     this._canEscape = canEscape;
     this._canLose = canLose;
     this.makeEscapeRatio();
-    // $gameTroop.setup(troopId);
+    $gameTroop.setup(troopId);
     $gameSwitches.update();
     $gameVariables.update();
     $gameSelector.performTransfer($gamePlayer.x, $gamePlayer.y);
@@ -177,6 +177,7 @@ BattleManager.makeEscapeRatio = function() {
 };
 
 BattleManager.update = function() {
+    console.log("BattleManager.update + phase :", this._phase);
     if (!this.isBusy() && !this.updateEvent()) {
         switch (this._phase) {
             case Phase.Start:
@@ -979,6 +980,7 @@ BattleManager.gainDropItems = function() {
 
 BattleManager.updateBattleEnd = function() {
     if (!this._escaped && $gameParty.isAllDead() || TEW.COMBAT.SYSTEM.isDefeated) {
+        console.log("END OF BATTLE : YOU LOSE !");
         if (this._canLose) {
             $gameParty.reviveBattleMembers();
             SceneManager.pop();
@@ -986,6 +988,7 @@ BattleManager.updateBattleEnd = function() {
             SceneManager.goto(Scene_Gameover);
         }
     } else {
+        console.log("END OF BATTLE : YOU WIN !");
         SceneManager.pop();
     }
     this._phase = null;
