@@ -136,8 +136,8 @@ Game_Actor.prototype.isBattleMember = function() {
     }
 };
 
-Game_Actor.prototype.makeMoves = function() {
-    Game_Battler.prototype.makeMoves.call(this);
+Game_Actor.prototype.makeMoves = function(displayTiles = true) {
+    Game_Battler.prototype.makeMoves.call(this, displayTiles);
     if (!this.isRestricted() && this.isAutoBattle()) {
         this.autoMoves();
     }

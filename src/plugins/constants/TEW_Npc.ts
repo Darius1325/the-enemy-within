@@ -17,7 +17,7 @@ import { Status } from "../_types/enum";
 // $StartCompilation
 // ----------------------
 
-TEW.DATABASE.NPCS = {};
+TEW.DATABASE.NPCS = TEW.DATABASE.NPCS || {};
 // #region ====== NPCS SET === //
 TEW.DATABASE.NPCS.SET = {
     GUSTAV_FONDLEBURGER: {

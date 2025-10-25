@@ -1,6 +1,7 @@
 // $PluginCompiler TEW_Combat.js
 // $StartCompilation
 
+// TODO unused !
 //-----------------------------------------------------------------------------
 // Window_TacticsMap
 //

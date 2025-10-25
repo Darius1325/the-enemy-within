@@ -187,7 +187,6 @@ Window_InventoryTransferSpinner.prototype.processOk = function() {
 Window_InventoryTransferSpinner.prototype.processNumberChange = function() {
     if (this.isOpenAndActive()) {
         if (Input.isRepeated('up')) {
-            console.log('up is repeated');
             this.changeNumber(1);
         }
         if (Input.isRepeated('down')) {

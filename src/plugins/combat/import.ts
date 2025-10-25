@@ -352,6 +352,15 @@ TEW.COMBAT.SYSTEM.drainTerm = 'Drain'; // TODO should be removed eventually
 TEW.COMBAT.SYSTEM.endTurnTerm = 'End'; // TODO should be removed eventually
 TEW.COMBAT.SYSTEM.hitRateTerm = 'Hit rate'; // TODO should be removed eventually
 TEW.COMBAT.SYSTEM.recoverTerm = 'Recovery'; // TODO should be removed eventually
+
+// Menu command names
+TEW.COMBAT.SYSTEM.move = 'Move';
+TEW.COMBAT.SYSTEM.moveWalk = 'Walk';
+TEW.COMBAT.SYSTEM.moveRun = 'Run';
+TEW.COMBAT.SYSTEM.moveCharge = 'Charge';
+TEW.COMBAT.SYSTEM.moveSwitchWeapon = 'Switch weapons';
+TEW.COMBAT.SYSTEM.action = 'Action';
+TEW.COMBAT.SYSTEM.advantage = 'Advantages';
 TEW.COMBAT.SYSTEM.wait = 'Wait';
 
 TEW.COMBAT.SYSTEM.waitSkillId = 7;

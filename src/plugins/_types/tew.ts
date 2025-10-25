@@ -22,6 +22,7 @@ import { ArmorGroup, WeaponGroup, WeaponQuality } from "./enum";
 import {Game_Actor} from "../base/stats/Game_Actor";
 import {Game_BattlerBase} from "../base/stats/Game_BattlerBase";
 import { Troop } from "./troop";
+import { BattlerAI } from "./battlerAI";
 
 /** Storage object for all TEW plugins */
 const TEW: {
@@ -111,6 +112,8 @@ const TEW: {
             SET?: Record<string, NPC>;
 
             TROOPS?: Record<string, Troop>;
+
+            AI?: Record<string, BattlerAI>;
         };
     };
 

@@ -107,6 +107,7 @@ Game_Map.prototype.updateScroll = function() {
 };
 
 Game_Map.prototype.makeRange = function(distance, event, through) {
+    console.log("making range");
     if (through === undefined) {
         through = false;
     }

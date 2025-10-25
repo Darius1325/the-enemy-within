@@ -167,7 +167,6 @@ Game_Interpreter.prototype.iterateEnemyIndex = function(param, callback) {
 // TODO remove useless branches
 Game_Interpreter.prototype.command301 = function() {
     this.setWaitMode('TEW_Combat.battle');
-    console.log('save me');
     if (!$gameParty.inBattle()) {
         var troopId;
         if (this._params[0] === 0) {  // Direct designation

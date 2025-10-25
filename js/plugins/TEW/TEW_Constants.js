@@ -1118,6 +1118,24 @@ TEW.DATABASE.COMPS.ADVANCED_ARRAY = Object.keys(TEW.DATABASE.COMPS.SET)
 // #endregion === COMPS ARRAYS === //
 // #endregion =========================== TEW_Competences ============================== //
 // ============================== //
+// #region ============================== TEW_EnemyAI ============================== //
+// ----------------------
+TEW.DATABASE.NPCS = TEW.DATABASE.NPCS || {};
+TEW.DATABASE.NPCS.AI = {
+    DEFAULT: {
+        actions: [
+            {
+                conditionParam1: 0,
+                conditionParam2: 0,
+                conditionType: 0,
+                rating: 5,
+                skillId: 1
+            }
+        ]
+    }
+};
+// #endregion =========================== TEW_EnemyAI ============================== //
+// ============================== //
 // #region ============================== TEW_Items ============================== //
 // ----------------------
 TEW.DATABASE.ITEMS = {};
@@ -2279,7 +2297,7 @@ TEW.DATABASE.ITEMS.ARRAY = Object.keys(TEW.DATABASE.ITEMS.SET).map(item => [item
 // ============================== //
 // #region ============================== TEW_Npc ============================== //
 // ----------------------
-TEW.DATABASE.NPCS = {};
+TEW.DATABASE.NPCS = TEW.DATABASE.NPCS || {};
 // #region ====== NPCS SET === //
 TEW.DATABASE.NPCS.SET = {
     GUSTAV_FONDLEBURGER: {

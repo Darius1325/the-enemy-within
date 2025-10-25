@@ -87,17 +87,20 @@ Game_Battler.prototype.currentData = function() {
     return [this.currentBattler(), this.dataEvent()];
 };
 
-Game_Battler.prototype.tparam = function(paramString) {
-    var param = null;
-    for (var i = 0; i < this.currentData().length; i++) {
-        param = this.currentData()[i].meta[paramString]
+Game_Battler.prototype.tparam = function(paramString: string) {
+    let param = null;
+    const battlerData = this.currentData();
+    for (let i = 0; i < battlerData.length; i++) {
+        param = battlerData[i][paramString] || (
+            battlerData[i].meta && battlerData[i].meta[paramString]);
         if (param) {
             break;
         }
     }
-    if (param) {
-        param.replace(/\s/g, '');
-    }
+    // Should never be needed - legacy from the Tactics system base plugin
+    // if (param) {
+    //     param.replace(/\s/g, '');
+    // }
     return param;
 };
 
@@ -107,7 +110,7 @@ Game_Battler.prototype.onTurnStart = function() {
         this.event().setStepAnime(true);
     }
     this.makeActions();
-    this.makeMoves();
+    this.makeMoves(false);
 };
 
 Game_Battler.prototype.onActionEnd = function() {
@@ -201,7 +204,7 @@ Game_Battler.prototype.numMoves = function() {
     return this._moves.length;
 };
 
-Game_Battler.prototype.makeMoves = function() {
+Game_Battler.prototype.makeMoves = function(displayTiles = true) {
     this.clearMoves();
     if (this.canMove()) {
         var moveTimes = this.makeMoveTimes();
@@ -210,7 +213,11 @@ Game_Battler.prototype.makeMoves = function() {
             this._moves.push(new Game_Action(this));
         }
     }
-    this.makeRange();
+    if (displayTiles) {
+        console.log("makeMoves - makeRange");
+        this.makeRange();
+    }
+    // TODO should never happen
     if (this.isRestricted()) {
         this.makeConfusionMove()
     }
@@ -229,12 +236,12 @@ Game_Battler.prototype.clearMoves = function() {
 
 Game_Battler.prototype.refreshMovesAction = function(x, y) {
     if ($gameMap.isOnTiles(x, y)) {
-        this.makeMoves();
+        this.makeMoves(false);
         this._tx = x;
         this._ty = y;
         this.makeShortestMoves();
     } else {
-        this.makeMoves();
+        this.makeMoves(false);
     }
 };
 

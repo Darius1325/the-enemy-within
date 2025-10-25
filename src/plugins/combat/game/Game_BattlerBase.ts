@@ -10,11 +10,11 @@ export default interface Game_BattlerBase {}
 
 Game_BattlerBase.TRAIT_TPARAM = 71;
 Game_BattlerBase.TPARAM  = {
-    'Move': 0,
+    'move': 0,
 };
 
 Game_BattlerBase.prototype.move = function() {
-    return Math.max((Number(this.tparam('Move')) || TEW.COMBAT.SYSTEM.mvp) +
+    return Math.max((Number(this.tparam('move')) || TEW.COMBAT.SYSTEM.mvp) +
         this.traitsSum(Game_BattlerBase.TRAIT_TPARAM, 0), 1);
 };
 
@@ -41,10 +41,11 @@ Game_BattlerBase.prototype.noteTraits = function(obj) {
     return trait || [];
 };
 
-TEW.MEMORY.gameBattlerBaseAllTraits = Game_BattlerBase.prototype.allTraits;
-Game_BattlerBase.prototype.allTraits = function() {
-    return TEW.MEMORY.gameBattlerBaseAllTraits.call(this).concat(this.tparamTraits());
-};
+// Legacy Tactics system code - looks for traits in *.meta.Ts-Parameter
+// TEW.MEMORY.gameBattlerBaseAllTraits = Game_BattlerBase.prototype.allTraits;
+// Game_BattlerBase.prototype.allTraits = function() {
+//     return TEW.MEMORY.gameBattlerBaseAllTraits.call(this).concat(this.tparamTraits());
+// };
 
 TEW.MEMORY.gameBattlerBaseCanUse = Game_BattlerBase.prototype.canUse;
 Game_BattlerBase.prototype.canUse = function(item) {

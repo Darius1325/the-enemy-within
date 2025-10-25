@@ -1,5 +1,6 @@
 // $PluginCompiler TEW_Combat.js
 
+import TEW from "../../_types/tew";
 import { StatArray } from "../import";
 
 // $StartCompilation
@@ -9,6 +10,8 @@ import { StatArray } from "../import";
 //
 // The game object class for an enemy.
 
+
+// TODO turn 99 into a TEW battle system constant
 Object.defineProperties(Game_Enemy.prototype, {
     // AGGressivity
     agg: { get: function() { return this.tparam('Aggro') || 99; }, configurable: true }
@@ -34,6 +37,20 @@ Game_Enemy.prototype.makeMoves = function() {
     Game_Battler.prototype.makeMoves.call(this);
 };
 
+// TODO make 'DEFAULT' a constant
+Game_Enemy.prototype.makeActions = function() {
+    Game_Battler.prototype.makeActions.call(this);
+    if (this.numActions() > 0) {
+        var actionList = this.getAI().actions.filter(function(a) {
+            return this.isActionValid(a);
+        }, this);
+        if (actionList.length > 0) {
+            this.selectAllActions(actionList);
+        }
+    }
+    this.setActionState('waiting');
+};
+
 Game_Enemy.prototype.findMoves = function() {
     if (!this.isConfused()) {
         this.findPosition();
@@ -41,6 +58,7 @@ Game_Enemy.prototype.findMoves = function() {
     this.makeShortestMoves();
 };
 
+// TODO simplify this, no use adding all the ratings together here
 Game_Enemy.prototype.findPosition = function() {
     // Rewrite this if you want to change the target search behavior.
     this._rate = 0;
@@ -51,7 +69,7 @@ Game_Enemy.prototype.findPosition = function() {
         var tile = $gameMap.tiles()[i];
         this._tx = $gameMap.positionTileX(tile);
         this._ty = $gameMap.positionTileY(tile);
-        var actionList = this.enemy().actions.filter(function(a) {
+        var actionList = this.getAI().actions.filter(function(a) {
             return this.isActionValid(a);
         }, this);
         var sum = actionList.reduce(function(r, a) {
@@ -80,7 +98,6 @@ Game_Enemy.prototype.applyMove = function() {
 };
 
 Game_Enemy.prototype.paramBase = function(paramId: number) {
-    console.log("enemy param base is called with " + paramId);
     // mhp
     if (paramId === 0) {
         return TEW.DATABASE.NPCS.SET[this._enemyId].wounds;
@@ -95,4 +112,9 @@ Game_Enemy.prototype.statName = function(paramId: number) {
 
 Game_Enemy.prototype.enemy = function() {
     return TEW.DATABASE.NPCS.SET[this._enemyId];
+}
+
+Game_Enemy.prototype.getAI = function() {
+    const aiId = this.tparam('AI') || 'DEFAULT';
+    return TEW.DATABASE.NPCS.AI[aiId];
 }
