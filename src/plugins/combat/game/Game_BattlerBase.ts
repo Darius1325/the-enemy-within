@@ -14,8 +14,8 @@ Game_BattlerBase.TPARAM  = {
 };
 
 Game_BattlerBase.prototype.move = function() {
-    return Math.max((Number(this.tparam('move')) || TEW.COMBAT.SYSTEM.mvp) +
-        this.traitsSum(Game_BattlerBase.TRAIT_TPARAM, 0), 1);
+    return (Number(this.tparam('move')) || TEW.COMBAT.SYSTEM.mvp)
+        * BattleManager.moveMultiplier;
 };
 
 Game_BattlerBase.prototype.tparamCode = function(tparam) {

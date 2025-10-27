@@ -573,6 +573,26 @@ var BattlePhase;
 // BattleManager
 //
 // The static class that manages tactics progress.
+// One action and one movement per turn unless advantages / specific talents are used
+// Action can be used as a second movement
+BattleManager.actionCount = 1;
+BattleManager.moveCount = 1;
+// Advantages accumulated by winning combat rounds or using the Observe action
+// Common pool for all actors that can be spent to get better rolls or extra actions
+BattleManager.partyAdvantages = 0;
+BattleManager.moveMultiplier = 1; // 0 to switch weapons, 1 for walking, 2 for running, ? for charging
+BattleManager.canMove = function () {
+    return this.actionCount > 0 || this.moveCount > 0;
+};
+BattleManager.canRun = function () {
+    return this.actionCount > 0 && this.moveCount > 0;
+};
+BattleManager.canAct = function () {
+    return this.actionCount > 0;
+};
+BattleManager.canInput = function () {
+    return this.actionCount > 0 || this.moveCount > 0 || this.partyAdvantages > 3;
+};
 BattleManager.setup = function (troopId, canEscape, canLose) {
     this.initMembers();
     this._canEscape = canEscape;
@@ -593,7 +613,7 @@ BattleManager.initMembers = function () {
     this._eventCallback = null;
     this._preemptive = false;
     this._surprise = false;
-    this._actorIndex = -1;
+    this._battlerIndex = -1;
     this._actionForcedBattler = null;
     this._actionBattlers = [];
     this._subject = null;
@@ -817,13 +837,13 @@ BattleManager.allBattleMembers = function () {
 };
 // TODO include enemies ?
 BattleManager.actor = function () {
-    return this._actorIndex >= 0 ? $gamePartyTs.members()[this._actorIndex] : null;
+    return this._battlerIndex >= 0 ? $gamePartyTs.members()[this._battlerIndex] : null;
 };
 BattleManager.battler = function () {
-    if (this._currentActor && this._actorIndex >= 0) {
-        return this._currentActor.isPlayer
-            ? $gamePartyTs.members()[this._actorIndex]
-            : $gameTroopTs.members()[this._actorIndex];
+    if (this._currentBattler && this._battlerIndex >= 0) {
+        return this._currentBattler.isActor
+            ? $gamePartyTs.members()[this._battlerIndex]
+            : $gameTroopTs.members()[this._battlerIndex];
     }
     return null;
 };
@@ -835,15 +855,15 @@ BattleManager.makeEnemyOrders = function () {
 BattleManager.makeTurnOrder = function () {
     const playerInitRolls = $gamePartyTs.members()
         .map((actor, index) => ({
-        actorIndex: index,
-        isPlayer: true,
+        battlerIndex: index,
+        isActor: true,
         initiative: TEW.DICE.rollInitiative(actor)
     }));
     const enemyInitRolls = $gameTroopTs.members()
-        .map((actor, index) => ({
-        actorIndex: index,
-        isPlayer: false,
-        initiative: TEW.DICE.rollInitiative(actor)
+        .map((enemy, index) => ({
+        battlerIndex: index,
+        isActor: false,
+        initiative: TEW.DICE.rollInitiative(enemy)
     }));
     this._turnOrder = playerInitRolls.concat(enemyInitRolls)
         .sort((a, b) => b.initiative - a.initiative);
@@ -911,7 +931,7 @@ BattleManager.updateSelect = function () {
     }
     if ($gameSelector.isCancelled()) {
         SoundManager.playCancel();
-        this.previousSelect();
+        this.previousSelect(); // TODO go back to previous menu instead
     }
 };
 // TODO should be removed
@@ -1019,11 +1039,13 @@ BattleManager.updateStart = function () {
         this._battlePhase = BattlePhase.TurnEnd;
     }
     else {
-        this._currentActor = this._currentTurnOrder.shift();
-        this._actorIndex = this._currentActor.actorIndex;
+        this._currentBattler = this._currentTurnOrder.shift();
+        this._battlerIndex = this._currentBattler.battlerIndex;
+        this.moveCount = 1;
+        this.actionCount = 1;
         this._subject = this.battler();
         if (this._subject.isAlive()) {
-            if (this._currentActor.isPlayer) {
+            if (this._currentBattler.isActor) {
                 this.updateStartPlayer();
             }
             else {
@@ -1058,7 +1080,7 @@ BattleManager.updateStartEnemy = function () {
 };
 BattleManager.updateEnemyPhase = function () {
     this._battlePhase = BattlePhase.ProcessMove;
-    this._subject = $gameTroopTs.members()[this._actorIndex];
+    this._subject = $gameTroopTs.members()[this._battlerIndex];
     $gameTroop.setupTactics([this._subject]);
     this._subject.makeMoves();
     this._subject.findMoves();
@@ -1078,7 +1100,7 @@ BattleManager.updateMove = function () {
             this._subject.nextMove();
         }
         if (!action || !action.isMove()) {
-            if (this._subject.canInput() && this._subject.isActor()) {
+            if (this.canInput() && this._subject.canInput() && this._subject.isActor()) {
                 this._battlePhase = BattlePhase.InputCommand;
             }
             else {
@@ -2154,8 +2176,8 @@ Game_BattlerBase.TPARAM = {
     'move': 0,
 };
 Game_BattlerBase.prototype.move = function () {
-    return Math.max((Number(this.tparam('move')) || TEW.COMBAT.SYSTEM.mvp) +
-        this.traitsSum(Game_BattlerBase.TRAIT_TPARAM, 0), 1);
+    return (Number(this.tparam('move')) || TEW.COMBAT.SYSTEM.mvp)
+        * BattleManager.moveMultiplier;
 };
 Game_BattlerBase.prototype.tparamCode = function (tparam) {
     return Game_BattlerBase.TPARAM[tparam];
@@ -3507,6 +3529,14 @@ function Window_MoveCommand() {
 }
 Window_MoveCommand.prototype = Object.create(Window_ActorCommand.prototype);
 Window_MoveCommand.prototype.constructor = Window_MoveCommand;
+Window_MoveCommand.WALK_COMMAND_INDEX = 0;
+Window_MoveCommand.WALK_MOVE_MULTIPLIER = 1;
+Window_MoveCommand.RUN_COMMAND_INDEX = 1;
+Window_MoveCommand.RUN_MOVE_MULTIPLIER = 2;
+Window_MoveCommand.CHARGE_COMMAND_INDEX = 2;
+Window_MoveCommand.CHARGE_MOVE_MULTIPLIER = 1;
+Window_MoveCommand.SWITCH_WEAPON_COMMAND_INDEX = 3;
+Window_MoveCommand.SWITCH_WEAPON_MOVE_MULTIPLIER = 0;
 Window_MoveCommand.prototype.initialize = function () {
     var y = Graphics.boxHeight - this.windowHeight();
     Window_Command.prototype.initialize.call(this, this.windowWidth(), y);
@@ -3530,16 +3560,32 @@ Window_MoveCommand.prototype.makeCommandList = function () {
     }
 };
 Window_MoveCommand.prototype.addWalkCommand = function () {
-    this.addCommand(TEW.COMBAT.SYSTEM.moveWalk, 'walk', true);
+    this.addCommand(TEW.COMBAT.SYSTEM.moveWalk, 'walk', BattleManager.canMove());
 };
 Window_MoveCommand.prototype.addRunCommand = function () {
-    this.addCommand(TEW.COMBAT.SYSTEM.moveRun, 'run', true);
+    this.addCommand(TEW.COMBAT.SYSTEM.moveRun, 'run', BattleManager.canRun());
 };
 Window_MoveCommand.prototype.addChargeCommand = function () {
-    this.addCommand(TEW.COMBAT.SYSTEM.moveCharge, 'charge', true);
+    this.addCommand(TEW.COMBAT.SYSTEM.moveCharge, 'charge', false);
 };
 Window_MoveCommand.prototype.addSwitchWeaponCommand = function () {
-    this.addCommand(TEW.COMBAT.SYSTEM.moveSwitchWeapon, 'switchWeapon', true);
+    this.addCommand(TEW.COMBAT.SYSTEM.moveSwitchWeapon, 'switchWeapon', false);
+};
+Window_MoveCommand.prototype.select = function (index) {
+    Window_ActorCommand.prototype.select.call(this, index);
+    if (this._index === Window_MoveCommand.WALK_COMMAND_INDEX) {
+        BattleManager.moveMultiplier = Window_MoveCommand.WALK_MOVE_MULTIPLIER;
+    }
+    else if (this._index === Window_MoveCommand.RUN_COMMAND_INDEX) {
+        BattleManager.moveMultiplier = Window_MoveCommand.RUN_MOVE_MULTIPLIER;
+    }
+    else if (this._index === Window_MoveCommand.CHARGE_COMMAND_INDEX) {
+        BattleManager.moveMultiplier = Window_MoveCommand.CHARGE_MOVE_MULTIPLIER;
+    }
+    else if (this._index === Window_MoveCommand.SWITCH_WEAPON_COMMAND_INDEX) {
+        BattleManager.moveMultiplier = Window_MoveCommand.SWITCH_WEAPON_MOVE_MULTIPLIER;
+    }
+    BattleManager.refreshMoveTiles();
 };
 // #endregion =========================== Window_MoveCommand ============================== //
 // ============================== //
@@ -3680,6 +3726,7 @@ Scene_Battle.prototype.createStatusWindow = function () {
 Scene_Battle.prototype.createMoveCommandWindow = function () {
     this._moveCommandWindow = new Window_MoveCommand();
     this._moveCommandWindow.setHandler('walk', this.commandWalk.bind(this));
+    this._moveCommandWindow.setHandler('run', this.commandRun.bind(this));
     this._moveCommandWindow.setHandler('cancel', () => {
         $gameMap.clearTiles();
         this._moveCommandWindow.deactivate();
@@ -3877,6 +3924,30 @@ Scene_Battle.prototype.commandMove = function () {
     BattleManager.refreshMoveTiles();
 };
 Scene_Battle.prototype.commandWalk = function () {
+    // Spend a movement if possible or spend an action to move
+    if (BattleManager.moveCount > 0) {
+        BattleManager.moveCount -= 1;
+        this.commandWalkOrRun();
+    }
+    else if (BattleManager.actionCount > 0) {
+        BattleManager.actionCount -= 1;
+        this.commandWalkOrRun();
+    }
+    else {
+        SoundManager.playCancel();
+    }
+};
+Scene_Battle.prototype.commandRun = function () {
+    if (BattleManager.canRun()) {
+        BattleManager.moveCount -= 1;
+        BattleManager.actionCount -= 1;
+        this.commandWalkOrRun();
+    }
+    else {
+        SoundManager.playCancel();
+    }
+};
+Scene_Battle.prototype.commandWalkOrRun = function () {
     BattleManager._battlePhase = BattlePhase.InputMove;
     this._moveCommandWindow.close();
     this._tacticsCommandWindow.close();
@@ -4123,13 +4194,13 @@ Window_TacticsCommand.prototype.makeCommandList = function () {
 //     }, this);
 // };
 Window_TacticsCommand.prototype.addMoveCommand = function () {
-    this.addCommand(TEW.COMBAT.SYSTEM.move, 'move', true);
+    this.addCommand(TEW.COMBAT.SYSTEM.move, 'move', BattleManager.canMove());
 };
 Window_TacticsCommand.prototype.addActionCommand = function () {
-    this.addCommand(TEW.COMBAT.SYSTEM.action, 'action', true);
+    this.addCommand(TEW.COMBAT.SYSTEM.action, 'action', false);
 };
 Window_TacticsCommand.prototype.addAdvantageCommand = function () {
-    this.addCommand(TEW.COMBAT.SYSTEM.advantage, 'advantage', true);
+    this.addCommand(TEW.COMBAT.SYSTEM.advantage, 'advantage', false);
 };
 Window_TacticsCommand.prototype.addWaitCommand = function () {
     this.addCommand(TEW.COMBAT.SYSTEM.wait, 'wait', true);

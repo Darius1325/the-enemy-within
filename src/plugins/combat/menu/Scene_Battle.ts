@@ -169,6 +169,7 @@ Scene_Battle.prototype.createStatusWindow = function() {
 Scene_Battle.prototype.createMoveCommandWindow = function() {
     this._moveCommandWindow = new Window_MoveCommand();
     this._moveCommandWindow.setHandler('walk', this.commandWalk.bind(this));
+    this._moveCommandWindow.setHandler('run', this.commandRun.bind(this));
     this._moveCommandWindow.setHandler('cancel', () => {
         $gameMap.clearTiles();
         this._moveCommandWindow.deactivate();
@@ -394,6 +395,29 @@ Scene_Battle.prototype.commandMove = function() {
 };
 
 Scene_Battle.prototype.commandWalk = function() {
+    // Spend a movement if possible or spend an action to move
+    if (BattleManager.moveCount > 0) {
+        BattleManager.moveCount -= 1;
+        this.commandWalkOrRun();
+    } else if (BattleManager.actionCount > 0) {
+        BattleManager.actionCount -= 1;
+        this.commandWalkOrRun();
+    } else {
+        SoundManager.playCancel();
+    }
+};
+
+Scene_Battle.prototype.commandRun = function() {
+    if (BattleManager.canRun()) {
+        BattleManager.moveCount -= 1;
+        BattleManager.actionCount -= 1;
+        this.commandWalkOrRun();
+    } else {
+        SoundManager.playCancel();
+    }
+};
+
+Scene_Battle.prototype.commandWalkOrRun = function() {
     BattleManager._battlePhase = BattlePhase.InputMove;
     this._moveCommandWindow.close();
     this._tacticsCommandWindow.close();

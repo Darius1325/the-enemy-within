@@ -77,15 +77,15 @@ Window_TacticsCommand.prototype.makeCommandList = function() {
 // };
 
 Window_TacticsCommand.prototype.addMoveCommand = function() {
-    this.addCommand(TEW.COMBAT.SYSTEM.move, 'move', true);
+    this.addCommand(TEW.COMBAT.SYSTEM.move, 'move', BattleManager.canMove());
 };
 
 Window_TacticsCommand.prototype.addActionCommand = function() {
-    this.addCommand(TEW.COMBAT.SYSTEM.action, 'action', true);
+    this.addCommand(TEW.COMBAT.SYSTEM.action, 'action', false);
 };
 
 Window_TacticsCommand.prototype.addAdvantageCommand = function() {
-    this.addCommand(TEW.COMBAT.SYSTEM.advantage, 'advantage', true);
+    this.addCommand(TEW.COMBAT.SYSTEM.advantage, 'advantage', false);
 };
 
 Window_TacticsCommand.prototype.addWaitCommand = function() {

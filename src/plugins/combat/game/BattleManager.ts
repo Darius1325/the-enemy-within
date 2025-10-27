@@ -8,7 +8,7 @@ interface BattleManager {
     _phase: Phase;
     _battlePhase: BattlePhase;
     
-    _actorIndex: number;
+    _battlerIndex: number;
     
     _troopId: number;
     _canLose: boolean;
@@ -47,6 +47,33 @@ export enum BattlePhase {
 //
 // The static class that manages tactics progress.
 
+// One action and one movement per turn unless advantages / specific talents are used
+// Action can be used as a second movement
+BattleManager.actionCount = 1;
+BattleManager.moveCount = 1;
+
+// Advantages accumulated by winning combat rounds or using the Observe action
+// Common pool for all actors that can be spent to get better rolls or extra actions
+BattleManager.partyAdvantages = 0;
+
+BattleManager.moveMultiplier = 1; // 0 to switch weapons, 1 for walking, 2 for running, ? for charging
+
+BattleManager.canMove = function() {
+    return this.actionCount > 0 || this.moveCount > 0;
+}
+
+BattleManager.canRun = function() {
+    return this.actionCount > 0 && this.moveCount > 0;
+}
+
+BattleManager.canAct = function() {
+    return this.actionCount > 0;
+}
+
+BattleManager.canInput = function() {
+    return this.actionCount > 0 || this.moveCount > 0 || this.partyAdvantages > 3;
+}
+
 BattleManager.setup = function(troopId: number, canEscape: boolean, canLose: boolean) {
     this.initMembers();
     this._canEscape = canEscape;
@@ -68,7 +95,7 @@ BattleManager.initMembers = function() {
     this._eventCallback = null;
     this._preemptive = false;
     this._surprise = false;
-    this._actorIndex = -1;
+    this._battlerIndex = -1;
     this._actionForcedBattler = null;
     this._actionBattlers = [];
     this._subject = null;
@@ -324,14 +351,14 @@ BattleManager.allBattleMembers = function() {
 
 // TODO include enemies ?
 BattleManager.actor = function() {
-    return this._actorIndex >= 0 ? $gamePartyTs.members()[this._actorIndex] : null;
+    return this._battlerIndex >= 0 ? $gamePartyTs.members()[this._battlerIndex] : null;
 };
 
 BattleManager.battler = function() {
-    if (this._currentActor && this._actorIndex >= 0) {
-        return this._currentActor.isPlayer 
-            ? $gamePartyTs.members()[this._actorIndex]
-            : $gameTroopTs.members()[this._actorIndex]
+    if (this._currentBattler && this._battlerIndex >= 0) {
+        return this._currentBattler.isActor 
+            ? $gamePartyTs.members()[this._battlerIndex]
+            : $gameTroopTs.members()[this._battlerIndex]
     }
     return null;
 };
@@ -345,15 +372,15 @@ BattleManager.makeEnemyOrders = function() {
 BattleManager.makeTurnOrder = function() {
     const playerInitRolls = $gamePartyTs.members()
         .map((actor, index) => ({
-            actorIndex: index,
-            isPlayer: true,
+            battlerIndex: index,
+            isActor: true,
             initiative: TEW.DICE.rollInitiative(actor)
         }));
     const enemyInitRolls = $gameTroopTs.members()
-        .map((actor, index) => ({
-            actorIndex: index,
-            isPlayer: false,
-            initiative: TEW.DICE.rollInitiative(actor)
+        .map((enemy, index) => ({
+            battlerIndex: index,
+            isActor: false,
+            initiative: TEW.DICE.rollInitiative(enemy)
         }));
     this._turnOrder = playerInitRolls.concat(enemyInitRolls)
         .sort((a: { initiative: number }, b: { initiative: number }) =>
@@ -432,7 +459,7 @@ BattleManager.updateSelect = function() {
     }
     if ($gameSelector.isCancelled()) {
         SoundManager.playCancel();
-        this.previousSelect();
+        this.previousSelect(); // TODO go back to previous menu instead
     }
 };
 
@@ -547,12 +574,15 @@ BattleManager.updateStart = function() {
         // All battlers have played, reset turn order
         this._battlePhase = BattlePhase.TurnEnd;
     } else {
-        this._currentActor = this._currentTurnOrder.shift();
-        this._actorIndex = this._currentActor.actorIndex;
+        this._currentBattler = this._currentTurnOrder.shift();
+        this._battlerIndex = this._currentBattler.battlerIndex;
+
+        this.moveCount = 1;
+        this.actionCount = 1;
 
         this._subject = this.battler();
         if (this._subject.isAlive()) {
-            if (this._currentActor.isPlayer) {
+            if (this._currentBattler.isActor) {
                 this.updateStartPlayer();
             } else {
                 this.updateStartEnemy();
@@ -590,7 +620,7 @@ BattleManager.updateStartEnemy = function() {
 
 BattleManager.updateEnemyPhase = function() {
     this._battlePhase = BattlePhase.ProcessMove;
-    this._subject = $gameTroopTs.members()[this._actorIndex];
+    this._subject = $gameTroopTs.members()[this._battlerIndex];
     $gameTroop.setupTactics([this._subject]);
     this._subject.makeMoves();
     this._subject.findMoves();
@@ -611,7 +641,7 @@ BattleManager.updateMove = function() {
             this._subject.nextMove();
         }
         if (!action || !action.isMove()){
-            if (this._subject.canInput() && this._subject.isActor()) {
+            if (this.canInput() && this._subject.canInput() && this._subject.isActor()) {
                 this._battlePhase = BattlePhase.InputCommand;
             } else {
                 this.setupAction();
