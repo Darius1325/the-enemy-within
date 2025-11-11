@@ -24,6 +24,35 @@ Window_Base.prototype.drawWrappedText= function(text, x, y, width, fontsize = th
 //     this.contents.drawText(text, x, y, maxWidth, lineHeight, align);
 // };
 
+Window_Base.prototype.drawCurrentOverMax = function(
+    currentValue : number,
+    maxValue : number,
+    x : number,
+    y : number,
+    width : number,
+    color1 : string,
+    color2 : string,
+    label : string 
+) {
+    const labelWidth = this.textWidth(label);
+    const currentValueWidth = this.textWidth(currentValue);
+    const maxValueWidth = this.textWidth(maxValue);
+    const slashWidth = this.textWidth('/');
+
+    const xCurrentValue = x + width - maxValueWidth - slashWidth - currentValueWidth;
+    const xSlash = x + width - maxValueWidth - slashWidth;
+    const xMaxValue = x + width - maxValueWidth;
+    this.changeTextColor(this.systemColor());
+    this.drawText(label, x, y, labelWidth);
+
+    this.changeTextColor(color1);
+    this.drawText(currentValue, xCurrentValue, y, currentValueWidth, 'right');
+    this.resetTextColor();
+    this.drawText('/', xSlash, y, slashWidth, 'right');
+    this.changeTextColor(color2);
+    this.drawText(maxValue, xMaxValue, y, maxValueWidth, 'right');
+};
+
 Window_Base.prototype.standardBackOpacity = function() {
     return 255;
 };

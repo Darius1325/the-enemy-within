@@ -2557,6 +2557,42 @@ Game_Map.prototype.makeRange = function (distance, event, through) {
         }
     }
 };
+// TODO special pathfinding for charge action: absolute shortest path canceled by any obstacle
+// Nota bene: "roundXWithDirection" andd "roundYWithDirection" is the worst naming I've seen since Ta Mère SCRL
+Game_Map.prototype.makeChargeRange = function (distance, event, through) {
+    console.log("making charge range");
+    if (through === undefined) {
+        through = false;
+    }
+    var queue = [];
+    var level = [];
+    var tiles = [];
+    var startTile = this.tile(event.x, event.y);
+    this.clearTiles();
+    queue.push(startTile);
+    level[startTile] = 0;
+    this.addTile(startTile);
+    while (queue.length && level[queue[0]] < distance) {
+        var start = queue.shift();
+        var x = this.positionTileX(start);
+        var y = this.positionTileY(start);
+        for (var d = 8; d >= 2; d -= 2) {
+            if (event.canPass(x, y, d) || through) {
+                var x2 = this.roundXWithDirection(x, d);
+                var y2 = this.roundYWithDirection(y, d);
+                var tile = this.tile(x2, y2);
+                if (!tiles.includes(tile)) {
+                    queue.push(tile);
+                    level[tile] = level[start] + 1;
+                    tiles.push(tile);
+                    if ($gameMap.isPassableTile(x2, y2)) {
+                        this.addTile(tile);
+                    }
+                }
+            }
+        }
+    }
+};
 Game_Map.prototype.eventsRangeXy = function (tx, ty) {
     return this.events().filter(function (event) {
         var x = event.x;
@@ -3727,6 +3763,7 @@ Scene_Battle.prototype.createMoveCommandWindow = function () {
     this._moveCommandWindow = new Window_MoveCommand();
     this._moveCommandWindow.setHandler('walk', this.commandWalk.bind(this));
     this._moveCommandWindow.setHandler('run', this.commandRun.bind(this));
+    this._moveCommandWindow.setHandler('charge', this.commandCharge.bind(this));
     this._moveCommandWindow.setHandler('cancel', () => {
         $gameMap.clearTiles();
         this._moveCommandWindow.deactivate();
@@ -3942,6 +3979,21 @@ Scene_Battle.prototype.commandRun = function () {
         BattleManager.moveCount -= 1;
         BattleManager.actionCount -= 1;
         this.commandWalkOrRun();
+    }
+    else {
+        SoundManager.playCancel();
+    }
+};
+Scene_Battle.prototype.commandCharge = function () {
+    if (BattleManager.canRun()) {
+        BattleManager.moveCount -= 1;
+        BattleManager.actionCount -= 1;
+        this._moveCommandWindow.close();
+        this._tacticsCommandWindow.close();
+        // TODO account for critical failure
+        // TODO special phase for special pathfinding + no menu
+        BattleManager._battlePhase = BattlePhase.InputMove;
+        BattleManager.refreshMoveTiles();
     }
     else {
         SoundManager.playCancel();

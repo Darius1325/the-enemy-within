@@ -2618,7 +2618,6 @@ Game_BattlerBase.prototype.refresh = function() {
 
 Game_BattlerBase.prototype.recoverAll = function() {
     this.clearStates();
-    console.log(this.mhp);
     this._hp = this.mhp;
     this._mp = this.mmp;
 };

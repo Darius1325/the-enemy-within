@@ -170,6 +170,7 @@ Scene_Battle.prototype.createMoveCommandWindow = function() {
     this._moveCommandWindow = new Window_MoveCommand();
     this._moveCommandWindow.setHandler('walk', this.commandWalk.bind(this));
     this._moveCommandWindow.setHandler('run', this.commandRun.bind(this));
+    this._moveCommandWindow.setHandler('charge', this.commandCharge.bind(this));
     this._moveCommandWindow.setHandler('cancel', () => {
         $gameMap.clearTiles();
         this._moveCommandWindow.deactivate();
@@ -416,6 +417,21 @@ Scene_Battle.prototype.commandRun = function() {
         SoundManager.playCancel();
     }
 };
+
+Scene_Battle.prototype.commandCharge = function() {
+    if (BattleManager.canRun()) {
+        BattleManager.moveCount -= 1;
+        BattleManager.actionCount -= 1;
+        this._moveCommandWindow.close();
+        this._tacticsCommandWindow.close();
+        // TODO account for critical failure
+        // TODO special phase for special pathfinding + no menu
+        BattleManager._battlePhase = BattlePhase.InputMove;
+        BattleManager.refreshMoveTiles();
+    } else {
+        SoundManager.playCancel();
+    }
+}
 
 Scene_Battle.prototype.commandWalkOrRun = function() {
     BattleManager._battlePhase = BattlePhase.InputMove;

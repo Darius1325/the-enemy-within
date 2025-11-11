@@ -1,6 +1,6 @@
 // $PluginCompiler TEW_Base.js
 
-import {BodyLocation, StatName, WeaponGroup} from "../../_types/enum";
+import {BodyLocation, Stat, StatName, WeaponGroup} from "../../_types/enum";
 import TEW from "../../_types/tew";
 import {Armor} from "../../_types/armor";
 
@@ -134,7 +134,12 @@ Game_BattlerBase.prototype.initialize = function() {
     this._weapons = []; // [{ id: id, isInMainHand: boolean, isInSecondHand: boolean, ammo: quantity, ammoType: id }]
     this._armors = [];
     this._equippedArmors = [];
-    this._ammo = []; // ID: quantity
+    this._ammo = {}; // ID: quantity
+    this._exp = 0;
+    this._fate = 0;
+    this._fortune = 0;
+    this._resilience = 0;
+    this._resolve = 0;
 };
 
 Object.defineProperties(Game_BattlerBase.prototype, {
@@ -161,6 +166,14 @@ Object.defineProperties(Game_BattlerBase.prototype, {
     // Fellowship
     felw: { get: function() { return this.param(10); }, configurable: true }
 });
+
+Game_BattlerBase.prototype.calculateMHP = function() {
+    var isHardy = this.hasTalent("Hardy");
+    return Math.floor(this.paramByName("TOUG") / 10) * 2 // (TOUG / 10) * 2
+        + Math.floor(this.paramByName("STRG") / 10)      // + (STRG / 10)
+        + Math.floor(this.paramByName("WILL") / 10)      // + (WILL / 10)
+        + (isHardy ? Math.floor(this.paramByName("TOUG") / 10) : 0) // + (TOUG / 10) if Hardy talent
+}
 
 
 Game_BattlerBase.prototype.clearBuffs = function() {
