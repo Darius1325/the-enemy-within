@@ -322,7 +322,7 @@ Game_Actor.prototype.initTEW = function (actorId) {
 Game_Actor.prototype.initCecile = function () {
     // Set base parameters for Cecile
     this._paramBase = [
-        0, // MHP (11 ?)
+        0, // MHP (11)
         40, // WEAS
         25, // BALS
         26, // STRG
@@ -362,7 +362,7 @@ Game_Actor.prototype.initCecile = function () {
 Game_Actor.prototype.initCheplu = function () {
     // Set base parameters for Cheplu
     this._paramBase = [
-        0, // MHP (11 ?)
+        0, // MHP (11)
         23, // WEAS
         39, // BALS
         27, // STRG
