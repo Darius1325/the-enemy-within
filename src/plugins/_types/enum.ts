@@ -228,3 +228,10 @@ export const enum SpellDuration {
     INIT_BONUS = "Initiative Bonus",
     WILL = "Willpower",
 }
+
+export const enum Direction {
+    DOWN = 2,
+    LEFT = 4,
+    RIGHT = 6,
+    UP = 8,
+}
