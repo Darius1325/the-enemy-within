@@ -1160,6 +1160,534 @@ TEW.DATABASE.ITEMS.SET = {
         availability: Availability.RARE,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_RARE,
         description: "One of the most common street-drugs in the Empire, Weirdroot is chewed, bringing a sense of euphoria and pleasant hallucinations, which some suggest may be connected to the Winds of Magic. The drug gives a +10 bonus to Toughness and Willpower Tests, but a penalty of -10 to Agility, Initiative, and Intelligence Tests. Duration: Active when chewed plus an additional 1d10x10 minutes."
+    },
+    DIGESTIVE_TONIC: {
+        name: "Digestive Tonic",
+        group: ItemGroup.HERBS,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_DRUGS, //TODO change icon
+        groupLabel: ItemGroupLabel.HERBS,
+        nb: 1,
+        price: 36,
+        enc: 0,
+        availability: Availability.COMMON,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "A draught used to help with stomach illness. Provides +20 to recovery tests from stomach ailments such as Galloping Trots or Bloody Flux."
+    },
+    EARTH_ROOT: {
+        name: "Earth Root",
+        group: ItemGroup.HERBS,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_DRUGS, //TODO change icon
+        groupLabel: ItemGroupLabel.HERBS,
+        nb: 1,
+        price: 1200,
+        enc: 0,
+        availability: Availability.SCARCE,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
+        description: "This herb is ingested to negate the effects of Buboes caused by the Black Plague (though the swellings are still significant). Further, gain a bonus of +10 on all Tests concerning the disease. Usable once per day"
+    },
+    FAXTORYLL: {
+        name: "Faxtoryll",
+        group: ItemGroup.HERBS,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_DRUGS, //TODO change icon
+        groupLabel: ItemGroupLabel.HERBS,
+        nb: 1,
+        price: 180,
+        enc: 0,
+        availability: Availability.EXOTIC,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_EXOTIC,
+        description: "When smeared on a wound, poultices made from this herbal coagulant remove all Bleeding Conditions without a Heal Test."
+    },
+    HEALING_DRAUGHT: {
+        name: "Healing Draught",
+        group: ItemGroup.HERBS,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_DRUGS, //TODO change icon
+        groupLabel: ItemGroupLabel.HERBS,
+        nb: 1,
+        price: 120,
+        enc: 0,
+        availability: Availability.SCARCE,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
+        description: "If you have more than 0 Wounds, recover Toughness Bonus Wounds immediately. Usable once per encounter"
+    },
+    HEALING_POULTICE: {
+        name: "Healing Poultice",
+        group: ItemGroup.HERBS,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_DRUGS, //TODO change icon
+        groupLabel: ItemGroupLabel.HERBS,
+        nb: 1,
+        price: 144,
+        enc: 0,
+        availability: Availability.COMMON,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "This foul-smelling medicinal wrap is made from animal dung and urine combined with any number of common herbs such as Sigmafoil, Tarrabeth, and Valerian. You do not suffer any Minor Infections from a Critical Wound treated with a Healing Poultice."
+    },
+    NIGHTSHADE: {
+        name: "Nightshade",
+        group: ItemGroup.HERBS,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_DRUGS, //TODO change icon
+        groupLabel: ItemGroupLabel.HERBS,
+        nb: 1,
+        price: 720,
+        enc: 0,
+        availability: Availability.RARE,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_RARE,
+        description: "Consuming this herb causes the victim to fall into a deep sleep after 2-3 hours, unless an Endurance Test is passed. A Nightshade slumber lasts 1d10+4 hours."
+    },
+    SALWORT: {
+        name: "Salwort",
+        group: ItemGroup.HERBS,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_DRUGS, //TODO change icon
+        groupLabel: ItemGroupLabel.HERBS,
+        nb: 1,
+        price: 144,
+        enc: 0,
+        availability: Availability.COMMON,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "When held under someone's nose, the aroma from a crushed sprig of this herb removes 1 Stunned Condition. Usable once per encounter"
+    },
+    VITALITY_DRAUGHT: {
+        name: "Vitality Draught",
+        group: ItemGroup.HERBS,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_DRUGS, //TODO change icon
+        groupLabel: ItemGroupLabel.HERBS,
+        nb: 1,
+        price: 216,
+        enc: 0,
+        availability: Availability.SCARCE,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
+        description: "Drinking this draught instantly removes all Fatigued Conditions."
+    },
+    EYE_PATCH: {
+        name: "Eye Patch",
+        group: ItemGroup.PROSTHETICS,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_DRUGS, //TODO change icon
+        groupLabel: ItemGroupLabel.PROSTHETICS,
+        nb: 1,
+        price: 6,
+        enc: 0,
+        availability: Availability.COMMON,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "Often decorated, an eye patch is used to cover scarred eye sockets."
+    },
+    FALSE_EYE: {
+        name: "False Eye",
+        group: ItemGroup.PROSTHETICS,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_DRUGS, //TODO change icon
+        groupLabel: ItemGroupLabel.PROSTHETICS,
+        nb: 1,
+        price: 240,
+        enc: 0,
+        availability: Availability.RARE,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_RARE,
+        description: "Particularly popular amongst the rich who prefer not to wear cruder eye-patches, false eyes come in many forms, from wooden to polished glass."
+    },
+    FALSE_LEG: {
+        name: "False Leg",
+        group: ItemGroup.PROSTHETICS,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_DRUGS, //TODO change icon
+        groupLabel: ItemGroupLabel.PROSTHETICS,
+        nb: 1,
+        price: 192,
+        enc: 2,
+        availability: Availability.SCARCE,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
+        description: "A False Leg, allows you to ignore 1 point of Movement loss due to the missing body part. Further, for 100 XP you can regain the last point of Movement Loss as you train yourself to use your new body part, and for 200 XP you relearn how to use Dodge again. This all requires you not to lose your False Leg, though."
+    },
+    GILDED_NOSE: {
+        name: "Gilded Nose",
+        group: ItemGroup.PROSTHETICS,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_DRUGS, //TODO change icon
+        groupLabel: ItemGroupLabel.PROSTHETICS,
+        nb: 1,
+        price: 216,
+        enc: 0,
+        availability: Availability.SCARCE,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
+        description: "Though most are made of wood or ceramic, the term gilded nose is widely used regardless. You can ignore the Fellowship loss for having no nose."
+    },
+    HOOK: {
+        name: "Hook",
+        group: ItemGroup.PROSTHETICS,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_DRUGS, //TODO change icon
+        groupLabel: ItemGroupLabel.PROSTHETICS,
+        nb: 1,
+        price: 40,
+        enc: 1,
+        availability: Availability.COMMON,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "You have a hook strapped where you used to have a hand. A surprisingly nimble tool once you are used to it, you can buy back the -20 penalty on all Tests involving two hands for 100 XP per 5 you subtract from the penalty, removing the penalty completely for 400 XP."
+    },
+    ENGINEERING_MARVEL: {
+        name: "Engineering Marvel",
+        group: ItemGroup.PROSTHETICS,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_DRUGS, //TODO change icon
+        groupLabel: ItemGroupLabel.PROSTHETICS,
+        nb: 1,
+        price: 4800,
+        enc: 1,
+        availability: Availability.EXOTIC,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_EXOTIC,
+        description: "Only for the exceedingly rich, you commission a work of art from one of the Engineers' Guilds, allowing you to completely ignore the loss of an ear, hand, arm, or leg, as steam hisses and machinery clicks in place of blood and muscle. Should you ever receive a Critical Wound to the marvel, it automatically breaks down, and needs to be taken back for costly repair."
+    },
+    WOODEN_TEETH: {
+        name: "Wooden Teeth",
+        group: ItemGroup.PROSTHETICS,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_DRUGS, //TODO change icon
+        groupLabel: ItemGroupLabel.PROSTHETICS,
+        nb: 1,
+        price: 120,
+        enc: 0,
+        availability: Availability.RARE,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_RARE,
+        description: "False Teeth are often beautifully carved and painted, and sometimes a significant improvement to the originals. You ignore all penalties for loss of teeth."
+    },
+    BALL: {
+        name: "Ball",
+        group: ItemGroup.MISC,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_DRUGS, //TODO change icon
+        groupLabel: ItemGroupLabel.MISC,
+        nb: 1,
+        price: 5,
+        enc: 0,
+        availability: Availability.COMMON,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "Simply a ball."
+    },
+    BANDAGE: {
+        name: "Bandage",
+        group: ItemGroup.MISC,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_DRUGS, //TODO change icon
+        groupLabel: ItemGroupLabel.MISC,
+        nb: 1,
+        price: 4,
+        enc: 0,
+        availability: Availability.COMMON,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "Bandages are used to cure bleeding wounds. A successful Heal or Dexterity Test removes +1 extra Bleeding Status."
+    },
+    BATON: {
+        name: "BATON",
+        group: ItemGroup.MISC,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_DRUGS, //TODO change icon
+        groupLabel: ItemGroupLabel.MISC,
+        nb: 1,
+        price: 12,
+        enc: 0,
+        availability: Availability.COMMON,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "Go fetch !"
+    },
+    BEDROLL: {
+        name: "Bedroll",
+        group: ItemGroup.MISC,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_DRUGS, //TODO change icon
+        groupLabel: ItemGroupLabel.MISC,
+        nb: 1,
+        price: 72,
+        enc: 1,
+        availability: Availability.COMMON,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "Used to sleep outside without freezing. Endurance Tests rolled to resist cold exposure gain a bonus of +20 when resting."
+    },
+    BLANKET: {
+        name: "Blanket",
+        group: ItemGroup.MISC,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_DRUGS, //TODO change icon
+        groupLabel: ItemGroupLabel.MISC,
+        nb: 1,
+        price: 8,
+        enc: 0,
+        availability: Availability.COMMON,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "Not as effective as a bedroll but makes nights more confortable."
+    },
+    CANDLE: {
+        name: "Candle",
+        group: ItemGroup.MISC,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_DRUGS, //TODO change icon
+        groupLabel: ItemGroupLabel.MISC,
+        nb: 12,
+        price: 12,
+        enc: 0,
+        availability: Availability.COMMON,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "Provides illumination for 10 yards when lit."
+    },
+    CANVAS_TARP: {
+        name: "Canvas Tarp",
+        group: ItemGroup.MISC,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_DRUGS, //TODO change icon
+        groupLabel: ItemGroupLabel.MISC,
+        nb: 1,
+        price: 96,
+        enc: 1,
+        availability: Availability.COMMON,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "A simple tarp made of canvas."
+    },
+    CHALK: {
+        name: "Chalk",
+        group: ItemGroup.MISC,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_DRUGS, //TODO change icon
+        groupLabel: ItemGroupLabel.MISC,
+        nb: 1,
+        price: 10,
+        enc: 0,
+        availability: Availability.COMMON,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "A bit of chalk."
+    },
+    CHARCOAL_STICK: {
+        name: "Charcoal Stick",
+        group: ItemGroup.MISC,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_DRUGS, //TODO change icon
+        groupLabel: ItemGroupLabel.MISC,
+        nb: 1,
+        price: 10,
+        enc: 0,
+        availability: Availability.COMMON,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "A piece of charcoal used to write or draw."
+    },
+    CUTLERY: {
+        name: "Cutlery",
+        group: ItemGroup.MISC,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_DRUGS, //TODO change icon
+        groupLabel: ItemGroupLabel.MISC,
+        nb: 1,
+        price: 42,
+        enc: 0,
+        availability: Availability.COMMON,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "A set of cutlery composed of a plate, a glass, a knife and a fork."
+    },
+    DAVRISH_LAMP: {
+        name: "Davrish Lamp",
+        group: ItemGroup.MISC,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_DRUGS, //TODO change icon
+        groupLabel: ItemGroupLabel.MISC,
+        nb: 1,
+        price: 480,
+        enc: 1,
+        availability: Availability.RARE,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_RARE,
+        description: "A safety lamp emitting the light of a candle, first developed for Reikland's mines by Master Engineer Davrich Stephansson. It flares brightly in 'firedamp' (explosive gasses); after 1d10 rounds of exposure to the lamp the firedamp will explode. It is wise to withdraw before this happens."
+    },
+    DECK_OF_CARDS: {
+        name: "Deck of cards",
+        group: ItemGroup.MISC,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_DRUGS, //TODO change icon
+        groupLabel: ItemGroupLabel.MISC,
+        nb: 1,
+        price: 12,
+        enc: 0,
+        availability: Availability.COMMON,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "A set of cards used in a variety of games like The Red Empress."
+    },
+    COOKING_POT: {
+        name: "Cooking Pot",
+        group: ItemGroup.MISC,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_DRUGS, //TODO change icon
+        groupLabel: ItemGroupLabel.MISC,
+        nb: 1,
+        price: 96,
+        enc: 1,
+        availability: Availability.COMMON,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "A pot used for cooking in the wilderness."
+    },
+    CUP: {
+        name: "Cup",
+        group: ItemGroup.MISC,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_DRUGS, //TODO change icon
+        groupLabel: ItemGroupLabel.MISC,
+        nb: 1,
+        price: 8,
+        enc: 0,
+        availability: Availability.COMMON,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "A wooden cup often used by adventurers."
+    },
+    DICE: {
+        name: "Dice",
+        group: ItemGroup.MISC,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_DRUGS, //TODO change icon
+        groupLabel: ItemGroupLabel.MISC,
+        nb: 1,
+        price: 10,
+        enc: 0,
+        availability: Availability.COMMON,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "A normal dice used in games of chance."
+    },
+    DOLL: {
+        name: "Doll",
+        group: ItemGroup.MISC,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_DRUGS, //TODO change icon
+        groupLabel: ItemGroupLabel.MISC,
+        nb: 1,
+        price: 24,
+        enc: 0,
+        availability: Availability.COMMON,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "A nice gift for children."
+    },
+    GRAPPLING_HOOK: {
+        name: "Grappling Hook",
+        group: ItemGroup.MISC,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_DRUGS, //TODO change icon
+        groupLabel: ItemGroupLabel.MISC,
+        nb: 1,
+        price: 250,
+        enc: 1,
+        availability: Availability.SCARCE,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
+        description: "Coupled with a rope, allows unscalable surfaces to be climbed."
+    },
+    INSTRUMENT: { //TODO more instruments ?
+        name: "Instrument",
+        group: ItemGroup.MISC,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_DRUGS, //TODO change icon
+        groupLabel: ItemGroupLabel.MISC,
+        nb: 1,
+        price: 480,
+        enc: 1,
+        availability: Availability.RARE,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_RARE,
+        description: "A well made music instrument."
+    },
+    LAMP_OIL: {
+        name: "Lamp Oil",
+        group: ItemGroup.MISC,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_DRUGS, //TODO change icon
+        groupLabel: ItemGroupLabel.MISC,
+        nb: 1,
+        price: 24,
+        enc: 0,
+        availability: Availability.COMMON,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "Used to refill lanterns. Contains enough fuel for 4 hours of standard use, or 8 hours of low flame equivalent to a candle."
+    },
+    LANTERN: {
+        name: "Lantern",
+        group: ItemGroup.MISC,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_DRUGS, //TODO change icon
+        groupLabel: ItemGroupLabel.MISC,
+        nb: 1,
+        price: 144,
+        enc: 1,
+        availability: Availability.COMMON,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "Provides illumination for 20 yards."
+    },
+    STORM_LANTERN: {
+        name: "Storm Lantern",
+        group: ItemGroup.MISC,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_DRUGS, //TODO change icon
+        groupLabel: ItemGroupLabel.MISC,
+        nb: 1,
+        price: 240,
+        enc: 1,
+        availability: Availability.SCARCE,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
+        description: "Shutters protect the flame from wind, and also enable the light to be directed in a 90° arc or darkened altogether. Provides illumination for 20 yards, or 30 when targeted."
+    },
+    MATCH: {
+        name: "Match",
+        group: ItemGroup.MISC,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_DRUGS, //TODO change icon
+        groupLabel: ItemGroupLabel.MISC,
+        nb: 1,
+        price: 1,
+        enc: 0,
+        availability: Availability.COMMON,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "A single match, don't blow it."
+    },
+    PAN: {
+        name: "Pan",
+        group: ItemGroup.MISC,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_DRUGS, //TODO change icon
+        groupLabel: ItemGroupLabel.MISC,
+        nb: 1,
+        price: 90,
+        enc: 1,
+        availability: Availability.COMMON,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "A simple frying pan. Some would say it is even better than a sword."
+    },
+    PIPE_AND_TOBACCO: {
+        name: "Pipe and tobacco",
+        group: ItemGroup.MISC,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_DRUGS, //TODO change icon
+        groupLabel: ItemGroupLabel.MISC,
+        nb: 1,
+        price: 40,
+        enc: 1,
+        availability: Availability.SCARCE,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
+        description: "Smoking kill ! But it gives a certain style."
+    },
+    PLATE: {
+        name: "Plate",
+        group: ItemGroup.MISC,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_DRUGS, //TODO change icon
+        groupLabel: ItemGroupLabel.MISC,
+        nb: 1,
+        price: 12,
+        enc: 0,
+        availability: Availability.COMMON,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "A wooden plate."
+    },
+    BOWL: {
+        name: "Bowl",
+        group: ItemGroup.MISC,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_DRUGS, //TODO change icon
+        groupLabel: ItemGroupLabel.MISC,
+        nb: 1,
+        price: 12,
+        enc: 0,
+        availability: Availability.COMMON,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "A wooden bowl."
+    },
+    RAGS: {
+        name: "Rags",
+        group: ItemGroup.MISC,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_DRUGS, //TODO change icon
+        groupLabel: ItemGroupLabel.MISC,
+        nb: 1,
+        price: 1,
+        enc: 0,
+        availability: Availability.COMMON,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "Dirty rags worn by street rats."
+    },
+    ROPE: {
+        name: "Rope, 10 yards",
+        group: ItemGroup.MISC,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_DRUGS, //TODO change icon
+        groupLabel: ItemGroupLabel.MISC,
+        nb: 1,
+        price: 52,
+        enc: 1,
+        availability: Availability.COMMON,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
+        description: "10 yards of good rope."
+    },
+    TENT: {
+        name: "Tent",
+        group: ItemGroup.MISC,
+        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_DRUGS, //TODO change icon
+        groupLabel: ItemGroupLabel.MISC,
+        nb: 1,
+        price: 144,
+        enc: 2,
+        availability: Availability.SCARCE,
+        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
+        description: "A medium-sized tent accommodating four people sleeping in close quarters."
     }
 }
 // #endregion === ITEMS SET === //

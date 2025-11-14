@@ -165,7 +165,10 @@ export const enum ItemGroup {
     FOOD,
     TOOLS,
     BOOKS,
-    DRUGS
+    DRUGS,
+    HERBS,
+    PROSTHETICS,
+    MISC
 }
 
 export const enum ItemGroupLabel {
@@ -173,7 +176,10 @@ export const enum ItemGroupLabel {
     FOOD = "Food",
     TOOLS = "Tools",
     BOOKS = "Books",
-    DRUGS = "Drugs"
+    DRUGS = "Drugs",
+    HERBS = "Herbs and Draughts",
+    PROSTHETICS = "Prosthetics",
+    MISC = "Miscellaneous Trappings"
 }
 
 export const enum Status {
