@@ -3555,39 +3555,208 @@ Game_Interpreter.prototype.command301 = function () {
 };
 // #endregion =========================== Game_Interpreter ============================== //
 // ============================== //
-// #region ============================== Window_MoveCommand ============================== //
+// #region ============================== HalfWindow_TacticsDetails ============================== //
+//-----------------------------------------------------------------------------
+// HalfWindow_TacticsDetails
+//
+// Super object to manage all item details windows
+function HalfWindow_TacticsDetails() {
+    this.initialize.apply(this, arguments);
+}
+HalfWindow_TacticsDetails.prototype = Object.create(Window_Base.prototype);
+HalfWindow_TacticsDetails.prototype.constructor = HalfWindow_TacticsDetails;
+// Initalizing the window
+HalfWindow_TacticsDetails.prototype.initialize = function (commandWindowHeight) {
+    Window_Base.prototype.initialize.call(this, Graphics.boxWidth / 2, 0, Graphics.boxWidth / 2, Graphics.boxHeight - commandWindowHeight);
+    this.width = Graphics.boxWidth / 2;
+    this.deactivate();
+    this.refresh();
+};
+HalfWindow_TacticsDetails.prototype.setActor = function (actor) {
+    if (this._actor !== actor) {
+        this._actor = actor;
+        this.refresh();
+    }
+};
+// Drawing an underlined Text
+HalfWindow_TacticsDetails.prototype.drawUnderlinedText = function (text, x, y, width, align) {
+    // Draw text
+    this.drawText(text, x, y, width, align);
+    // Getting position of the line
+    const textSize = this.contents.fontSize;
+    const textWidth = this.textWidth(text);
+    const lineY = y + textSize + 2;
+    // Drawing the line
+    this.contents.paintOpacity = 255;
+    this.contents.fillRect(x + (align === "center" ? (width - textWidth) / 2 : align === "right" ? width - textWidth : 0), lineY, textWidth, 2, // Thickness
+    this.normalColor());
+};
+// Drawing a table with 2 columns
+HalfWindow_TacticsDetails.prototype.drawTable2Columns = function (x, y, width, rows, textArray) {
+    const cellWidthFirstRow = width / 3;
+    const cellWidthSecondRow = width / 3 * 2;
+    const cellHeight = this.lineHeight();
+    for (let row = 0; row < rows; row++) {
+        const cellXTh = x;
+        const cellXTd = x + cellWidthFirstRow;
+        const cellY = y + row * cellHeight;
+        this.drawText(textArray[row][0], cellXTh + 5, cellY, cellWidthFirstRow - 10, "left");
+        this.drawText(textArray[row][1], cellXTd + 5, cellY, cellWidthSecondRow - 10, "left");
+    }
+};
+// Drawing a wrapped text - used to draw to description
+HalfWindow_TacticsDetails.prototype.drawWrappedTextManually = function (text, x, y, fontSize) {
+    const words = text.split(" ");
+    const maxWidth = this.contentsWidth() - x;
+    if (text.length <= 100) {
+        this.contents.fontSize = 28;
+    }
+    else if (text.length <= 200) {
+        this.contents.fontSize = 20;
+    }
+    // else if (text.length <= 200) { this.contents.fontSize = 16; }
+    else {
+        this.contents.fontSize = 16;
+    }
+    const spaceWidth = this.textWidth(" ");
+    const lineHeight = fontSize * 1.2;
+    let currentX = x;
+    let currentY = y;
+    words.forEach(word => {
+        const wordWidth = this.textWidth(word);
+        // If the word is too long, drawing it on the next line
+        if (currentX + wordWidth > maxWidth) {
+            currentX = x; // begining of the line
+            currentY += lineHeight; // next line
+        }
+        // drawing it on the current line
+        this.drawText(word, currentX, currentY, wordWidth, 'left');
+        currentX += wordWidth + spaceWidth;
+    });
+    this.resetFontSettings();
+};
+HalfWindow_TacticsDetails.prototype.drawLine = function (y) {
+    const lineWidth = 40;
+    const lineSize = 2;
+    this.contents.fillRect((this.contentsWidth() - lineWidth) / 2, y, lineWidth, lineSize, this.normalColor());
+};
+HalfWindow_TacticsDetails.prototype.clear = function () {
+    if (this.contents) {
+        this.contents.clear();
+    }
+};
+// #endregion =========================== HalfWindow_TacticsDetails ============================== //
+// ============================== //
+// #region ============================== HalfWindow_TacticsDetailsCommand ============================== //
+//-----------------------------------------------------------------------------
+// HalfWindow_TacticsDetailsCommand
+//
+// Super object to manage individual item command windows
+function HalfWindow_TacticsDetailsCommand() {
+    this.initialize.apply(this, arguments);
+}
+HalfWindow_TacticsDetailsCommand.prototype = Object.create(Window_Command.prototype);
+HalfWindow_TacticsDetailsCommand.prototype.constructor = HalfWindow_TacticsDetailsCommand;
+// Initializing the command window
+HalfWindow_TacticsDetailsCommand.prototype.initialize = function (actionsNumber = 2) {
+    this._actionsNumber = actionsNumber;
+    this._windowWidth = Graphics.boxWidth / 2;
+    this._windowHeight = this.fittingHeight(this._actionsNumber);
+    Window_Command.prototype.initialize.call(this, Graphics.boxWidth / 2, Graphics.boxHeight - this._windowHeight);
+    this.deactivate();
+};
+// Window Width
+HalfWindow_TacticsDetailsCommand.prototype.windowWidth = function () {
+    return this._windowWidth;
+};
+HalfWindow_TacticsDetailsCommand.prototype.addCommand = function (name, symbol, enabled = true, ext = null) {
+    this._list.push({ name: name, symbol: symbol, enabled: enabled, ext: ext });
+};
+HalfWindow_TacticsDetailsCommand.prototype.clear = function () {
+    this.clearCommandList();
+    Window_Selectable.prototype.refresh.call(this);
+};
+// #endregion =========================== HalfWindow_TacticsDetailsCommand ============================== //
+// ============================== //
+// #region ============================== HalfWindow_TacticsList ============================== //
+//-----------------------------------------------------------------------------
+// HalfWindow_TacticsList
+//
+// Super object to manage all inventory list windows
+function HalfWindow_TacticsList() {
+    this.initialize.apply(this, arguments);
+}
+HalfWindow_TacticsList.prototype = Object.create(Window_Selectable.prototype);
+HalfWindow_TacticsList.prototype.constructor = HalfWindow_TacticsList;
+// Inializing the window
+HalfWindow_TacticsList.prototype.initialize = function () {
+    Window_Selectable.prototype.initialize.call(this, 0, 0, Graphics.boxWidth / 2, Graphics.boxHeight);
+    this._actor = null;
+    this._maxItems = 0;
+    this._leftPadding = 10;
+    this._rightColumnWidth = 20;
+    this._rightColumnPosition = Graphics.boxWidth / 2 - this._rightColumnWidth * 4;
+    this._iconPadding = 5;
+    this.deactivate();
+    this.refresh();
+};
+// Setting the actor
+HalfWindow_TacticsList.prototype.setActor = function (actor) {
+    if (this._actor !== actor) {
+        this._actor = actor;
+        this.refresh();
+    }
+};
+// Refreshing the window
+HalfWindow_TacticsList.prototype.refresh = function () {
+    if (this.contents) {
+        this.contents.clear();
+    }
+    if (this._actor) {
+        this.drawAllItems();
+    }
+};
+// Number of items
+HalfWindow_TacticsList.prototype.maxItems = function () {
+    return this._maxItems;
+};
+// Number of columns
+HalfWindow_TacticsList.prototype.maxCols = () => 1;
+// #endregion =========================== HalfWindow_TacticsList ============================== //
+// ============================== //
+// #region ============================== Window_TacticsMoveCommand ============================== //
 //-----------------------------------------------------------------------------
 // Window_MoveCommand
 //
 // The window for selecting an actor's action on the tactics screen.
-function Window_MoveCommand() {
+function Window_TacticsMoveCommand() {
     this.initialize.apply(this, arguments);
 }
-Window_MoveCommand.prototype = Object.create(Window_ActorCommand.prototype);
-Window_MoveCommand.prototype.constructor = Window_MoveCommand;
-Window_MoveCommand.WALK_COMMAND_INDEX = 0;
-Window_MoveCommand.WALK_MOVE_MULTIPLIER = 1;
-Window_MoveCommand.RUN_COMMAND_INDEX = 1;
-Window_MoveCommand.RUN_MOVE_MULTIPLIER = 2;
-Window_MoveCommand.CHARGE_COMMAND_INDEX = 2;
-Window_MoveCommand.CHARGE_MOVE_MULTIPLIER = 1;
-Window_MoveCommand.SWITCH_WEAPON_COMMAND_INDEX = 3;
-Window_MoveCommand.SWITCH_WEAPON_MOVE_MULTIPLIER = 0;
-Window_MoveCommand.prototype.initialize = function () {
+Window_TacticsMoveCommand.prototype = Object.create(Window_ActorCommand.prototype);
+Window_TacticsMoveCommand.prototype.constructor = Window_TacticsMoveCommand;
+Window_TacticsMoveCommand.WALK_COMMAND_INDEX = 0;
+Window_TacticsMoveCommand.WALK_MOVE_MULTIPLIER = 1;
+Window_TacticsMoveCommand.RUN_COMMAND_INDEX = 1;
+Window_TacticsMoveCommand.RUN_MOVE_MULTIPLIER = 2;
+Window_TacticsMoveCommand.CHARGE_COMMAND_INDEX = 2;
+Window_TacticsMoveCommand.CHARGE_MOVE_MULTIPLIER = 1;
+Window_TacticsMoveCommand.SWITCH_WEAPON_COMMAND_INDEX = 3;
+Window_TacticsMoveCommand.SWITCH_WEAPON_MOVE_MULTIPLIER = 0;
+Window_TacticsMoveCommand.prototype.initialize = function () {
     var y = Graphics.boxHeight - this.windowHeight();
     Window_Command.prototype.initialize.call(this, this.windowWidth(), y);
     this.openness = 0;
     this.deactivate();
     this._actor = null;
 };
-Window_MoveCommand.prototype.setActor = function (actor) {
+Window_TacticsMoveCommand.prototype.setActor = function (actor) {
     this._actor = actor;
     this.refresh();
     this.selectLast();
     this.activate();
     this.open();
 };
-Window_MoveCommand.prototype.makeCommandList = function () {
+Window_TacticsMoveCommand.prototype.makeCommandList = function () {
     if (this._actor) {
         this.addWalkCommand();
         this.addRunCommand();
@@ -3595,35 +3764,35 @@ Window_MoveCommand.prototype.makeCommandList = function () {
         this.addSwitchWeaponCommand();
     }
 };
-Window_MoveCommand.prototype.addWalkCommand = function () {
+Window_TacticsMoveCommand.prototype.addWalkCommand = function () {
     this.addCommand(TEW.COMBAT.SYSTEM.moveWalk, 'walk', BattleManager.canMove());
 };
-Window_MoveCommand.prototype.addRunCommand = function () {
+Window_TacticsMoveCommand.prototype.addRunCommand = function () {
     this.addCommand(TEW.COMBAT.SYSTEM.moveRun, 'run', BattleManager.canRun());
 };
-Window_MoveCommand.prototype.addChargeCommand = function () {
+Window_TacticsMoveCommand.prototype.addChargeCommand = function () {
     this.addCommand(TEW.COMBAT.SYSTEM.moveCharge, 'charge', false);
 };
-Window_MoveCommand.prototype.addSwitchWeaponCommand = function () {
-    this.addCommand(TEW.COMBAT.SYSTEM.moveSwitchWeapon, 'switchWeapon', false);
+Window_TacticsMoveCommand.prototype.addSwitchWeaponCommand = function () {
+    this.addCommand(TEW.COMBAT.SYSTEM.moveSwitchWeapon, 'switchWeapon', BattleManager.canMove());
 };
-Window_MoveCommand.prototype.select = function (index) {
+Window_TacticsMoveCommand.prototype.select = function (index) {
     Window_ActorCommand.prototype.select.call(this, index);
-    if (this._index === Window_MoveCommand.WALK_COMMAND_INDEX) {
-        BattleManager.moveMultiplier = Window_MoveCommand.WALK_MOVE_MULTIPLIER;
+    if (this._index === Window_TacticsMoveCommand.WALK_COMMAND_INDEX) {
+        BattleManager.moveMultiplier = Window_TacticsMoveCommand.WALK_MOVE_MULTIPLIER;
     }
-    else if (this._index === Window_MoveCommand.RUN_COMMAND_INDEX) {
-        BattleManager.moveMultiplier = Window_MoveCommand.RUN_MOVE_MULTIPLIER;
+    else if (this._index === Window_TacticsMoveCommand.RUN_COMMAND_INDEX) {
+        BattleManager.moveMultiplier = Window_TacticsMoveCommand.RUN_MOVE_MULTIPLIER;
     }
-    else if (this._index === Window_MoveCommand.CHARGE_COMMAND_INDEX) {
-        BattleManager.moveMultiplier = Window_MoveCommand.CHARGE_MOVE_MULTIPLIER;
+    else if (this._index === Window_TacticsMoveCommand.CHARGE_COMMAND_INDEX) {
+        BattleManager.moveMultiplier = Window_TacticsMoveCommand.CHARGE_MOVE_MULTIPLIER;
     }
-    else if (this._index === Window_MoveCommand.SWITCH_WEAPON_COMMAND_INDEX) {
-        BattleManager.moveMultiplier = Window_MoveCommand.SWITCH_WEAPON_MOVE_MULTIPLIER;
+    else if (this._index === Window_TacticsMoveCommand.SWITCH_WEAPON_COMMAND_INDEX) {
+        BattleManager.moveMultiplier = Window_TacticsMoveCommand.SWITCH_WEAPON_MOVE_MULTIPLIER;
     }
     BattleManager.refreshMoveTiles();
 };
-// #endregion =========================== Window_MoveCommand ============================== //
+// #endregion =========================== Window_TacticsMoveCommand ============================== //
 // ============================== //
 // #region ============================== Scene_Battle ============================== //
 //-----------------------------------------------------------------------------
@@ -3670,6 +3839,9 @@ Scene_Battle.prototype.createAllWindows = function () {
     this.createMapWindow();
     this.createStatusWindow();
     this.createMoveCommandWindow();
+    this.createWeaponCommandWindow();
+    this.createWeaponListWindow();
+    this.createWeaponDetailsWindow();
 };
 Scene_Battle.prototype.createLogWindow = function () {
     this._logWindow = new Window_BattleLog();
@@ -3760,17 +3932,104 @@ Scene_Battle.prototype.createStatusWindow = function () {
     this.addWindow(this._statusWindow);
 };
 Scene_Battle.prototype.createMoveCommandWindow = function () {
-    this._moveCommandWindow = new Window_MoveCommand();
+    this._moveCommandWindow = new Window_TacticsMoveCommand();
     this._moveCommandWindow.setHandler('walk', this.commandWalk.bind(this));
     this._moveCommandWindow.setHandler('run', this.commandRun.bind(this));
     this._moveCommandWindow.setHandler('charge', this.commandCharge.bind(this));
+    this._moveCommandWindow.setHandler('switchWeapon', this.commandSwitchWeapon.bind(this));
     this._moveCommandWindow.setHandler('cancel', () => {
         $gameMap.clearTiles();
+        this._tacticsCommandWindow.activate();
         this._moveCommandWindow.deactivate();
         this._moveCommandWindow.hide();
-        this._tacticsCommandWindow.activate();
     });
     this.addWindow(this._moveCommandWindow);
+};
+Scene_Battle.prototype.createWeaponCommandWindow = function () {
+    this._weaponsCommandWindow = new Window_TacticsWeaponCommand();
+    this._weaponsCommandWindow.setHandler('cancel', () => {
+        this._weaponsCommandWindow.deactivate();
+        this._weaponsCommandWindow.deselect();
+        this._weaponsWindow.refresh();
+        this._weaponsWindow.activate();
+    });
+    this._weaponsCommandWindow.setHandler('inventory_weapon_equip', this.equipWeapon.bind(this));
+    this._weaponsCommandWindow.setHandler('inventory_weapon_unequip', this.unequipWeapon.bind(this));
+    this._weaponsCommandWindow.hide();
+    this.addWindow(this._weaponsCommandWindow);
+};
+Scene_Battle.prototype.createWeaponListWindow = function () {
+    this._weaponsWindow = new Window_TacticsWeapons();
+    this._weaponsWindow.setHandler('cancel', () => {
+        this._moveCommandWindow.activate();
+        this._weaponsWindow.close();
+        this._weaponDetailsWindow.close();
+        this._weaponsCommandWindow.close();
+        this._moveCommandWindow.refresh();
+        this._moveCommandWindow.select(0);
+    });
+    this._weaponsWindow.setHandler('ok', () => {
+        this.activateCommandWindowWeapon();
+    });
+    this._weaponsWindow.hide();
+    this.addWindow(this._weaponsWindow);
+};
+Scene_Battle.prototype.createWeaponDetailsWindow = function () {
+    this._weaponDetailsWindow = new Window_TacticsWeaponDetails(this._weaponsCommandWindow.fittingHeight(this._weaponsCommandWindow._actionsNumber));
+    this._weaponsWindow.setHandler('show_weapon_details', () => {
+        this.showWeaponDetails();
+    });
+    this._weaponDetailsWindow.hide();
+    this.addWindow(this._weaponDetailsWindow);
+};
+Scene_Battle.prototype.activateCommandWindowWeapon = function () {
+    if (this._weaponsWindow.isOpenAndActive() && this._weaponsWindow.index() >= 0) {
+        this._weaponsCommandWindow.activate();
+        this._weaponsWindow.deactivate();
+        this._weaponsCommandWindow.show();
+        this._weaponsCommandWindow.select(0);
+    }
+};
+Scene_Battle.prototype.showWeaponDetails = function () {
+    const weapon = this._weaponsWindow.weaponFromIndex(this._weaponsWindow.index());
+    if (weapon) {
+        this._weaponDetailsWindow._weapon = weapon;
+        this._weaponsCommandWindow.refreshCommand(this._actor, weapon.equipIndex);
+        this._weaponDetailsWindow.refresh();
+    }
+    else {
+        this._weaponDetailsWindow.clear();
+        this._weaponsCommandWindow.clear();
+    }
+};
+Scene_Battle.prototype.equipWeapon = function () {
+    const weapon = this._weaponsWindow.item();
+    if (weapon.group === 5 /* WeaponGroup.PARRY */
+        || weapon.qualities.some((quality) => quality === 10 /* WeaponQuality.SHIELD_1 */
+            || quality === 11 /* WeaponQuality.SHIELD_2 */
+            || quality === 12 /* WeaponQuality.SHIELD_3 */
+            || quality === 13 /* WeaponQuality.SHIELD_4 */
+            || quality === 14 /* WeaponQuality.SHIELD_5 */)) {
+        BattleManager.actor().unequipSecondHand();
+        BattleManager.actor().equipSecondHand(weapon.equipIndex);
+    }
+    else {
+        BattleManager.actor().unequipMainHand();
+        BattleManager.actor().equipMainHand(weapon.equipIndex);
+    }
+    this._weaponsWindow.syncActor();
+    this._weaponsCommandWindow.callHandler('cancel');
+};
+Scene_Battle.prototype.unequipWeapon = function () {
+    const weaponIndex = this._weaponsWindow.index();
+    if (weaponIndex === 0) {
+        BattleManager.actor().unequipMainHand();
+    }
+    else if (weaponIndex === 1) {
+        BattleManager.actor().unequipSecondHand();
+    }
+    this._weaponsWindow.syncActor();
+    this._weaponsCommandWindow.callHandler('cancel');
 };
 Scene_Battle.prototype.commandPersonal = function () {
     this._statusWindow.setFormationMode(false);
@@ -3909,7 +4168,9 @@ Scene_Battle.prototype.isAnyInputWindowActive = function () {
         this._itemWindow.active ||
         this._mapWindow.active ||
         this._statusWindow.active ||
-        this._moveCommandWindow.active);
+        this._moveCommandWindow.active ||
+        this._weaponsWindow.active ||
+        this._weaponsCommandWindow.active);
 };
 Scene_Battle.prototype.startActorCommandSelection = function () {
     this._actorWindow.show();
@@ -4004,6 +4265,32 @@ Scene_Battle.prototype.commandWalkOrRun = function () {
     this._moveCommandWindow.close();
     this._tacticsCommandWindow.close();
     BattleManager.refreshMoveTiles();
+};
+Scene_Battle.prototype.commandSwitchWeapon = function () {
+    // Spend a movement if possible or spend an action to move
+    if (BattleManager.moveCount === 0 && BattleManager.actionCount === 0) {
+        SoundManager.playCancel();
+    }
+    else {
+        if (BattleManager.moveCount > 0) {
+            BattleManager.moveCount -= 1;
+        }
+        else {
+            BattleManager.actionCount -= 1;
+        }
+        this._weaponsWindow.open();
+        this._weaponDetailsWindow.open();
+        this._weaponsCommandWindow.open();
+        this._weaponsWindow.setActor(BattleManager.actor());
+        this._weaponsWindow.select(0);
+        this._weaponDetailsWindow.refresh();
+        this._weaponsCommandWindow.refresh();
+        this._weaponsWindow.show();
+        this._weaponDetailsWindow.show();
+        this._weaponsCommandWindow.show();
+        this._weaponsWindow.activate();
+        this._moveCommandWindow.deactivate();
+    }
 };
 Scene_Battle.prototype.commandWait = function () {
     BattleManager.inputtingAction().setWait();
@@ -4136,6 +4423,210 @@ SceneManager.isCurrentScene = function (sceneClass) {
     return this._scene && this._scene.constructor === sceneClass;
 };
 // #endregion =========================== SceneManager ============================== //
+// ============================== //
+// #region ============================== Window_TacticsWeaponCommand ============================== //
+//-----------------------------------------------------------------------------
+// Window_TacticsWeaponCommand
+//
+// Weapon individual commands window
+function Window_TacticsWeaponCommand() {
+    this.initialize.apply(this, arguments);
+}
+Window_TacticsWeaponCommand.prototype = Object.create(HalfWindow_TacticsDetailsCommand.prototype);
+Window_TacticsWeaponCommand.prototype.constructor = Window_TacticsWeaponCommand;
+// Initializing the command window
+Window_TacticsWeaponCommand.prototype.initialize = function () {
+    HalfWindow_TacticsDetailsCommand.prototype.initialize.call(this, 1);
+};
+Window_TacticsWeaponCommand.prototype.makeCommandList = function () {
+    this.addCommand(TextManager.inventoryWeaponEquip, 'inventory_weapon_equip');
+};
+Window_TacticsWeaponCommand.prototype.refreshCommand = function (actor, weaponIndex = 0) {
+    if (actor) {
+        const weapon = actor.weapon(weaponIndex);
+        this.clearCommandList();
+        if (weapon.isInMainHand || weapon.isInSecondHand) {
+            this.addCommand(TextManager.inventoryWeaponUnequip, 'inventory_weapon_unequip');
+        }
+        else {
+            this.addCommand(TextManager.inventoryWeaponEquip, 'inventory_weapon_equip');
+        }
+        this.createContents();
+        Window_Selectable.prototype.refresh.call(this);
+    }
+};
+// #endregion =========================== Window_TacticsWeaponCommand ============================== //
+// ============================== //
+// #region ============================== Window_TacticsWeaponDetails ============================== //
+//-----------------------------------------------------------------------------
+// Window_TacticsWeaponDetails
+//
+// Weapon details window
+function Window_TacticsWeaponDetails() {
+    this.initialize.apply(this, arguments);
+}
+Window_TacticsWeaponDetails.prototype = Object.create(HalfWindow_TacticsDetails.prototype);
+Window_TacticsWeaponDetails.prototype.constructor = Window_TacticsWeaponDetails;
+Window_TacticsWeaponDetails.prototype.initialize = function (commandWindowHeight = 0) {
+    HalfWindow_TacticsDetails.prototype.initialize.call(this, commandWindowHeight);
+    this._weapon = null;
+};
+// Refreshing the window
+Window_TacticsWeaponDetails.prototype.refresh = function () {
+    this.contents.clear();
+    if (this._weapon) {
+        this.drawDetails(this._weapon);
+    }
+};
+// Erase window content
+Window_TacticsWeaponDetails.prototype.empty = function () {
+    this._weapon = null;
+};
+// Drawing the details
+Window_TacticsWeaponDetails.prototype.drawDetails = function (weapon) {
+    // Title
+    this.drawUnderlinedText(weapon.name, 0, 0, this.contentsWidth(), "center");
+    // Item's Icon
+    this.drawIcon(weapon.icon, 0, 0);
+    // Availability Icon
+    this.drawIcon(weapon.availabilityIcon, this.contentsWidth() - 32, 0);
+    // Table
+    this.drawTable2Columns(0, 80, this.contentsWidth(), 2, [
+        // ["Owned :", "x" + item[1].quantity],
+        ["Group :", weapon.groupLabel],
+        ["Enc. :", weapon.enc]
+    ]);
+    this.drawLine(200);
+    // Description
+    this.drawWrappedTextManually(weapon.description, 0, 220, 24);
+};
+// #endregion =========================== Window_TacticsWeaponDetails ============================== //
+// ============================== //
+// #region ============================== Window_TacticsWeapons ============================== //
+// ----------------------
+function Window_TacticsWeapons() {
+    this.initialize.apply(this, arguments);
+}
+Window_TacticsWeapons.prototype = Object.create(HalfWindow_TacticsList.prototype);
+Window_TacticsWeapons.prototype.constructor = Window_TacticsWeapons;
+Window_TacticsWeapons.prototype.initialize = function () {
+    HalfWindow_TacticsList.prototype.initialize.call(this);
+};
+Window_TacticsWeapons.prototype.setActor = function (actor) {
+    if (this._actor !== actor) {
+        this._actor = actor;
+        this.syncActor();
+    }
+};
+Window_TacticsWeapons.prototype.length = function () {
+    return this._weapons.length
+        + (this._mainHandWeapon != undefined ? 1 : 0)
+        + (this._secondHandWeapon != undefined ? 1 : 0);
+};
+Window_TacticsWeapons.prototype.syncActor = function () {
+    const actor = this._actor;
+    const displayedWeapons = actor._weapons.map((weapon, index) => {
+        const weaponData = Object.assign({}, TEW.DATABASE.WEAPONS.ARRAY.find(w => w[0] === weapon.id));
+        return Object.assign(Object.assign(Object.assign({ id: weaponData[0] }, weaponData[1]), weapon), { equipIndex: index, equipIcon: weapon.isInMainHand
+                ? TEW.DATABASE.ICONS.SET.EQUIPPED_MAIN_HAND
+                : weapon.isInSecondHand
+                    ? TEW.DATABASE.ICONS.SET.EQUIPPED_SECOND_HAND
+                    : 0 });
+    });
+    this._weapons = displayedWeapons.filter((weapon) => !weapon.isInMainHand && !weapon.isInSecondHand);
+    this._maxItems = this._weapons.length;
+    this._mainHandWeapon = displayedWeapons.find((weapon) => weapon.isInMainHand);
+    if (this._mainHandWeapon) {
+        this._maxItems++;
+    }
+    this._secondHandWeapon = displayedWeapons.find((weapon) => weapon.isInSecondHand);
+    if (this._secondHandWeapon) {
+        this._maxItems++;
+    }
+    this.refresh();
+};
+Window_TacticsWeapons.prototype.drawAllItems = function () {
+    var topIndex = this.topIndex();
+    for (var i = 0; i < this.maxPageItems(); i++) {
+        var index = topIndex + i;
+        if (index < this.maxItems()) {
+            this.drawItem(index);
+        }
+    }
+};
+Window_TacticsWeapons.prototype.drawItem = function (index) {
+    const normalizedIndex = index - this.topIndex();
+    const x = 48;
+    const y = normalizedIndex * TEW.MENU.LINE_HEIGHT;
+    const weapon = this.weaponFromIndex(index);
+    if (weapon) {
+        this.changeTextColor(this.systemColor());
+        this.drawIcon(weapon.equipIcon || 0, x - 32, y);
+        this.drawIcon(weapon.icon, x, y);
+        this.drawText(weapon.name, x + 32 + this._iconPadding, y, this.contentsWidth());
+        this.resetTextColor();
+    }
+};
+Window_TacticsWeapons.prototype.weaponFromIndex = function (index) {
+    index = Math.min(index, this.maxItems() - 1);
+    let weapon;
+    if (index === 0) {
+        if (this._mainHandWeapon) {
+            weapon = this._mainHandWeapon;
+        }
+        else if (this._secondHandWeapon) {
+            weapon = this._secondHandWeapon;
+        }
+        else {
+            weapon = this._weapons[0];
+        }
+    }
+    else if (index === 1) {
+        if (this._mainHandWeapon && this._secondHandWeapon) {
+            weapon = this._secondHandWeapon;
+        }
+        else if (this._mainHandWeapon || this._secondHandWeapon) {
+            weapon = this._weapons[0];
+        }
+        else {
+            weapon = this._weapons[1];
+        }
+    }
+    else {
+        let realIndex = index;
+        if (this._mainHandWeapon)
+            realIndex--;
+        if (this._secondHandWeapon)
+            realIndex--;
+        weapon = this._weapons[realIndex];
+    }
+    return weapon;
+};
+// Getting the current selected weapon
+Window_TacticsWeapons.prototype.item = function () {
+    return this.weaponFromIndex(this.index());
+};
+Window_TacticsWeapons.prototype.select = function (index) {
+    this._index = index;
+    if (this._index >= 0) {
+        this.callHandler("show_weapon_details");
+    }
+    this._stayCount = 0;
+    this.ensureCursorVisible();
+    this.updateCursor();
+    this.callUpdateHelp();
+};
+Window_TacticsWeapons.prototype.processOk = function () {
+    if (this.isCurrentItemEnabled()) {
+        this.playOkSound();
+        this.updateInputData();
+        this.callOkHandler();
+    }
+    else {
+        this.playBuzzerSound();
+    }
+};
+// #endregion =========================== Window_TacticsWeapons ============================== //
 // ============================== //
 // #region ============================== Window_Base ============================== //
 //-----------------------------------------------------------------------------

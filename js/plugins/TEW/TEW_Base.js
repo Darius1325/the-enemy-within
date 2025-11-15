@@ -323,16 +323,16 @@ Game_Actor.prototype.initCecile = function () {
     // Set base parameters for Cecile
     this._paramBase = [
         0, // MHP (11)
-        40, // WEAS
-        25, // BALS
-        26, // STRG
-        30, // TOUG
-        38, // INIT
-        35, // AGIL
-        22, // DEXT
-        21, // INTL
-        36, // WILL
-        23 // FELW
+        37, // WEAS
+        28, // BALS
+        35, // STRG
+        37, // TOUG
+        27, // INIT
+        22, // AGIL
+        33, // DEXT
+        29, // INTL
+        40, // WILL
+        28 // FELW
     ];
     this._paramBase[0] = this.calculateMHP();
     // Fate / Resilience
@@ -341,20 +341,38 @@ Game_Actor.prototype.initCecile = function () {
     this._resilience = 3;
     this._resolve = 3;
     // competences
+    this.addComp('CHARM', 3);
+    this.addComp('LEADERSHIP', 3);
+    this.addComp('LORE_REIKLAND', 3);
+    this.addComp('LANGUAGE_BRETONNIAN', 5);
+    this.addComp('GOSSIP', 5);
+    this.addComp('MELEE_BASIC', 5);
     this.addComp('ATHLETICS', 5);
     this.addComp('DODGE', 5);
     this.addComp('ENDURANCE', 5);
+    this.addComp('HEAL', 5);
+    this.addComp('INTUITION', 5);
+    this.addComp('LANGUAGE_CLASSICAL', 5);
+    this.addComp('MELEE_FENCING', 5);
+    this.addComp('PERCEPTION', 5);
     // talents
-    this.addTalent('BEAT_BLADE');
+    this.addTalent('SAVVY');
+    this.addTalent('PURE_SOUL');
+    this.addTalent('COOLHEADED');
+    this.addTalent('WARRIOR_BORN');
+    this.addTalent('FEINT');
     // spells
-    this.addSpell('BLAST');
     // items
     this.addItem('BANDAGE', 5);
+    this.addItem('CLOTHING', 1);
+    this.addItem('TWEEZERS', 1);
+    this.addItem('EAR_PICK', 1);
+    this.addItem('COMB', 1);
     // weapons
-    this.addWeapon("SWORD");
+    this.addWeapon("RAPIER");
+    this.addWeapon("DAGGER");
     this.addWeapon("SLING");
     // armors
-    this.addArmor("LEATHER_JERKIN");
     // ammo
     this.addAmmo("PEBBLE", 20);
 };

@@ -1591,7 +1591,7 @@ TEW.DATABASE.ITEMS.SET = {
         enc: 1,
         availability: Availability.SCARCE,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
-        description: "Shutters protect the flame from wind, and also enable the light to be directed in a 90° arc or darkened altogether. Provides illumination for 20 yards, or 30 when targeted."
+        description: "Shutters protect the flame from wind, and also enable the light to be directed in a 90 degrees arc or darkened altogether. Provides illumination for 20 yards, or 30 when targeted."
     },
     MATCH: {
         name: "Match",

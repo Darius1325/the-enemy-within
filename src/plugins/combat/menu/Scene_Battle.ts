@@ -7,8 +7,12 @@ import Window_TacticsMap from "./Window_TacticsMap";
 import Window_TacticsStatus from "./Window_TacticsStatus";
 import Window_TacticsCommand from "./Window_TacticsCommand";
 import Window_TacticsInfo from "./Window_TacticsInfo";
-import Window_MoveCommand from "./move/Window_MoveCommand";
+import Window_TacticsMoveCommand from "./move/Window_TacticsMoveCommand";
 import { BattlePhase } from "../game/BattleManager";
+import Window_TacticsWeapons, { LoadedWeapon } from "./weapons/Window_TacticsWeapons";
+import Window_TacticsWeaponDetails from "./weapons/Window_TacticsWeaponDetails";
+import Window_TacticsWeaponCommand from "./weapons/Window_TacticsWeaponCommand";
+import { WeaponGroup, WeaponQuality } from "../../_types/enum";
 
 // $StartCompilation
 
@@ -64,6 +68,10 @@ Scene_Battle.prototype.createAllWindows = function() {
     this.createStatusWindow();
 
     this.createMoveCommandWindow();
+
+    this.createWeaponCommandWindow();
+    this.createWeaponListWindow();
+    this.createWeaponDetailsWindow();
 };
 
 Scene_Battle.prototype.createLogWindow = function() {
@@ -167,18 +175,113 @@ Scene_Battle.prototype.createStatusWindow = function() {
 };
 
 Scene_Battle.prototype.createMoveCommandWindow = function() {
-    this._moveCommandWindow = new Window_MoveCommand();
+    this._moveCommandWindow = new Window_TacticsMoveCommand();
     this._moveCommandWindow.setHandler('walk', this.commandWalk.bind(this));
     this._moveCommandWindow.setHandler('run', this.commandRun.bind(this));
     this._moveCommandWindow.setHandler('charge', this.commandCharge.bind(this));
+    this._moveCommandWindow.setHandler('switchWeapon', this.commandSwitchWeapon.bind(this));
     this._moveCommandWindow.setHandler('cancel', () => {
         $gameMap.clearTiles();
+        this._tacticsCommandWindow.activate();
         this._moveCommandWindow.deactivate();
         this._moveCommandWindow.hide();
-        this._tacticsCommandWindow.activate();
     });
     this.addWindow(this._moveCommandWindow);
 };
+
+Scene_Battle.prototype.createWeaponCommandWindow = function() {
+    this._weaponsCommandWindow = new Window_TacticsWeaponCommand();
+    this._weaponsCommandWindow.setHandler('cancel', () => {
+        this._weaponsCommandWindow.deactivate();
+        this._weaponsCommandWindow.deselect();
+        this._weaponsWindow.refresh();
+        this._weaponsWindow.activate();
+    });
+    this._weaponsCommandWindow.setHandler('inventory_weapon_equip', this.equipWeapon.bind(this));
+    this._weaponsCommandWindow.setHandler('inventory_weapon_unequip', this.unequipWeapon.bind(this));
+    this._weaponsCommandWindow.hide();
+    this.addWindow(this._weaponsCommandWindow);
+};
+
+Scene_Battle.prototype.createWeaponListWindow = function() {
+    this._weaponsWindow = new Window_TacticsWeapons();
+    this._weaponsWindow.setHandler('cancel', () => {
+        this._moveCommandWindow.activate();
+        this._weaponsWindow.close();
+        this._weaponDetailsWindow.close();
+        this._weaponsCommandWindow.close();
+        this._moveCommandWindow.refresh();
+        this._moveCommandWindow.select(0);
+    });
+    this._weaponsWindow.setHandler('ok', () => {
+        this.activateCommandWindowWeapon();
+    });
+    this._weaponsWindow.hide();
+    this.addWindow(this._weaponsWindow);
+};
+
+Scene_Battle.prototype.createWeaponDetailsWindow = function() {
+    this._weaponDetailsWindow = new Window_TacticsWeaponDetails(
+        this._weaponsCommandWindow.fittingHeight(this._weaponsCommandWindow._actionsNumber)
+    );
+    this._weaponsWindow.setHandler('show_weapon_details', () => {
+        this.showWeaponDetails();
+    });
+    this._weaponDetailsWindow.hide();
+    this.addWindow(this._weaponDetailsWindow);
+};
+
+Scene_Battle.prototype.activateCommandWindowWeapon = function() {
+    if (this._weaponsWindow.isOpenAndActive() && this._weaponsWindow.index() >= 0) {
+        this._weaponsCommandWindow.activate();
+        this._weaponsWindow.deactivate();
+        this._weaponsCommandWindow.show();
+        this._weaponsCommandWindow.select(0);
+    }
+};
+
+Scene_Battle.prototype.showWeaponDetails = function() {
+    const weapon: LoadedWeapon = this._weaponsWindow.weaponFromIndex(this._weaponsWindow.index());
+    if (weapon) {
+        this._weaponDetailsWindow._weapon = weapon;
+        this._weaponsCommandWindow.refreshCommand(this._actor, weapon.equipIndex);
+        this._weaponDetailsWindow.refresh();
+    } else {
+        this._weaponDetailsWindow.clear();
+        this._weaponsCommandWindow.clear();
+    }
+};
+
+Scene_Battle.prototype.equipWeapon = function() {
+    const weapon: LoadedWeapon = this._weaponsWindow.item();
+    if (weapon.group === WeaponGroup.PARRY
+        || weapon.qualities.some((quality) =>
+            quality === WeaponQuality.SHIELD_1
+            || quality === WeaponQuality.SHIELD_2
+            || quality === WeaponQuality.SHIELD_3
+            || quality === WeaponQuality.SHIELD_4
+            || quality === WeaponQuality.SHIELD_5)
+    ) {
+        BattleManager.actor().unequipSecondHand();
+        BattleManager.actor().equipSecondHand(weapon.equipIndex);
+    } else {
+        BattleManager.actor().unequipMainHand();
+        BattleManager.actor().equipMainHand(weapon.equipIndex);
+    }
+    this._weaponsWindow.syncActor();
+    this._weaponsCommandWindow.callHandler('cancel');
+}
+
+Scene_Battle.prototype.unequipWeapon = function() {
+    const weaponIndex = this._weaponsWindow.index();
+    if (weaponIndex === 0) {
+        BattleManager.actor().unequipMainHand();
+    } else if (weaponIndex === 1) {
+        BattleManager.actor().unequipSecondHand();
+    }
+    this._weaponsWindow.syncActor();
+    this._weaponsCommandWindow.callHandler('cancel');
+}
 
 Scene_Battle.prototype.commandPersonal = function() {
     this._statusWindow.setFormationMode(false);
@@ -336,7 +439,10 @@ Scene_Battle.prototype.isAnyInputWindowActive = function() {
         this._itemWindow.active ||
         this._mapWindow.active ||
         this._statusWindow.active ||
-        this._moveCommandWindow.active);
+        this._moveCommandWindow.active ||
+        this._weaponsWindow.active ||
+        this._weaponsCommandWindow.active
+    );
 };
 
 Scene_Battle.prototype.startActorCommandSelection = function() {
@@ -438,6 +544,31 @@ Scene_Battle.prototype.commandWalkOrRun = function() {
     this._moveCommandWindow.close();
     this._tacticsCommandWindow.close();
     BattleManager.refreshMoveTiles();
+};
+
+Scene_Battle.prototype.commandSwitchWeapon = function() {
+    // Spend a movement if possible or spend an action to move
+    if (BattleManager.moveCount === 0 && BattleManager.actionCount === 0) {
+        SoundManager.playCancel();
+    } else {
+        if (BattleManager.moveCount > 0) {
+            BattleManager.moveCount -= 1;
+        } else {
+            BattleManager.actionCount -= 1;
+        }
+        this._weaponsWindow.open();
+        this._weaponDetailsWindow.open();
+        this._weaponsCommandWindow.open();
+        this._weaponsWindow.setActor(BattleManager.actor());
+        this._weaponsWindow.select(0);
+        this._weaponDetailsWindow.refresh();
+        this._weaponsCommandWindow.refresh();
+        this._weaponsWindow.show();
+        this._weaponDetailsWindow.show();
+        this._weaponsCommandWindow.show();
+        this._weaponsWindow.activate();
+        this._moveCommandWindow.deactivate();
+    }
 };
 
 Scene_Battle.prototype.commandWait = function() {

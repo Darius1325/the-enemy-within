@@ -14,7 +14,7 @@
 import Window_InventoryCommand from "./Window_InventoryCommand";
 import Window_InventoryTransferCommand from "./Window_InventoryTransferCommand";
 import Window_InventoryTransferSpinner from "./Window_InventoryTransferSpinner";
-import {Scene_Equip} from "_types/Scene_Equip";
+import {Scene_Equip} from "./_types/Scene_Equip";
 
 // ----------------------
 // $StartCompilation
