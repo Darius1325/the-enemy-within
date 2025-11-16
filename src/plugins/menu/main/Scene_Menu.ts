@@ -10,6 +10,7 @@
 // ----------------------
 // Imports
 // ----------------------
+import { Sprite } from "../../../rmmv/core/Sprite";
 import { Window_MenuCommand } from "../../../rmmv/windows/Window_MenuCommand";
 
 // ----------------------
@@ -29,6 +30,7 @@ Scene_Menu.prototype.initialize = function() {
 
 Scene_Menu.prototype.create = function() {
     Scene_MenuBase.prototype.create.call(this);
+    this.addFullscreenBackground();
     this.createCommandWindow();
     this.createGoldWindow();
     this.createStatusWindow();
@@ -37,6 +39,11 @@ Scene_Menu.prototype.create = function() {
 Scene_Menu.prototype.start = function() {
     Scene_MenuBase.prototype.start.call(this);
     this._statusMenuWindow.refresh();
+};
+
+Scene_Menu.prototype.addFullscreenBackground = function() {
+    this._background = new Sprite(ImageManager.loadSystem('bg_fullscreen'));
+    this.addChildAt(this._background, this.getChildIndex(this._windowLayer));
 };
 
 Scene_Menu.prototype.createCommandWindow = function() {

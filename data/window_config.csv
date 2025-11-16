@@ -1,0 +1,4 @@
+Window Name,Image Name (in System folder), Window Opacity,Scene Name (optional),Attribute Name (optional)
+Window_MenuCommand,bg_menuCommand,255,,
+Window_MenuStatus,bg_menuStatus,255,,
+Window_Gold,bg_gold,255,,

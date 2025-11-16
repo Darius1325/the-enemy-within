@@ -11,6 +11,15 @@
 // $StartCompilation
 // ----------------------
 
+// TODO define fixed window dimensions (and graphical details?) in dedicated file
+Window_MenuCommand.prototype.windowWidth = function() {
+    return 280;
+};
+
+Window_MenuCommand.prototype.windowHeight = function() {
+    return 348;
+};
+
 Window_MenuCommand.prototype.makeCommandList = function () {
     this.addMainCommands();
     this.addFormationCommand();

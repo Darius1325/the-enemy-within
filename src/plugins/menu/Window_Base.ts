@@ -56,3 +56,21 @@ Window_Base.prototype.drawCurrentOverMax = function(
 Window_Base.prototype.standardBackOpacity = function() {
     return 255;
 };
+
+Window_Base.prototype.verticalBorderPadding = function() {
+    return 30;
+};
+
+Window_Base.prototype.horizontalBorderPadding = function() {
+    return 20;
+};
+
+// TODO no need for color picker, we can optimize everything here?
+Window_Base.prototype.normalColor = function() {
+    return this.textColor(15);
+};
+
+Window_Base.prototype.resetTextColor = function() {
+    this.changeTextColor(this.normalColor());
+    this.contents.outlineWidth = 0;
+};

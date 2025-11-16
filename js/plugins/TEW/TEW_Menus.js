@@ -120,6 +120,7 @@ Scene_Menu.prototype.initialize = function () {
 };
 Scene_Menu.prototype.create = function () {
     Scene_MenuBase.prototype.create.call(this);
+    this.addFullscreenBackground();
     this.createCommandWindow();
     this.createGoldWindow();
     this.createStatusWindow();
@@ -127,6 +128,10 @@ Scene_Menu.prototype.create = function () {
 Scene_Menu.prototype.start = function () {
     Scene_MenuBase.prototype.start.call(this);
     this._statusMenuWindow.refresh();
+};
+Scene_Menu.prototype.addFullscreenBackground = function () {
+    this._background = new Sprite(ImageManager.loadSystem('bg_fullscreen'));
+    this.addChildAt(this._background, this.getChildIndex(this._windowLayer));
 };
 Scene_Menu.prototype.createCommandWindow = function () {
     this._commandWindow = new Window_MenuCommand(0, 0);
@@ -1157,8 +1162,25 @@ Window_InventoryHelp.prototype.refresh = function () {
 };
 // #endregion =========================== Window_InventoryHelp ============================== //
 // ============================== //
+// #region ============================== Window_Gold ============================== //
+// TODO define fixed window dimensions (and graphical details?) in dedicated file
+Window_Gold.prototype.windowWidth = function () {
+    return 280;
+};
+Window_Gold.prototype.windowHeight = function () {
+    return 132;
+};
+// #endregion =========================== Window_Gold ============================== //
+// ============================== //
 // #region ============================== Window_MenuCommand ============================== //
 // ----------------------
+// TODO define fixed window dimensions (and graphical details?) in dedicated file
+Window_MenuCommand.prototype.windowWidth = function () {
+    return 280;
+};
+Window_MenuCommand.prototype.windowHeight = function () {
+    return 348;
+};
 Window_MenuCommand.prototype.makeCommandList = function () {
     this.addMainCommands();
     this.addFormationCommand();
@@ -1191,6 +1213,16 @@ Window_MenuCommand.prototype.selectLast = function () {
     this.selectSymbol(Window_MenuCommand._lastCommandSymbol);
 };
 // #endregion =========================== Window_MenuCommand ============================== //
+// ============================== //
+// #region ============================== Window_MenuStatus ============================== //
+// TODO define fixed window dimensions (and graphical details?) in dedicated file
+Window_MenuStatus.prototype.windowWidth = function () {
+    return 1000;
+};
+Window_MenuStatus.prototype.windowHeight = function () {
+    return 720;
+};
+// #endregion =========================== Window_MenuStatus ============================== //
 // ============================== //
 // #region ============================== Scene_Status ============================== //
 // ----------------------
@@ -2019,6 +2051,20 @@ Window_Base.prototype.drawCurrentOverMax = function (currentValue, maxValue, x, 
 Window_Base.prototype.standardBackOpacity = function () {
     return 255;
 };
+Window_Base.prototype.verticalBorderPadding = function () {
+    return 30;
+};
+Window_Base.prototype.horizontalBorderPadding = function () {
+    return 20;
+};
+// TODO no need for color picker, we can optimize everything here?
+Window_Base.prototype.normalColor = function () {
+    return this.textColor(15);
+};
+Window_Base.prototype.resetTextColor = function () {
+    this.changeTextColor(this.normalColor());
+    this.contents.outlineWidth = 0;
+};
 // #endregion =========================== Window_Base ============================== //
 // ============================== //
 // #region ============================== Window_Selectable ============================== //
@@ -2034,6 +2080,18 @@ Window_Selectable.prototype.setTopRow = function (row) {
         this.refresh();
         this.updateCursor();
     }
+};
+// TODO
+Window_Selectable.prototype.itemRect = function (index) {
+    const maxCols = this.maxCols();
+    const width = this.itemWidth();
+    const height = this.itemHeight();
+    const rect = new Rectangle(index % maxCols * (width + this.spacing()) + this.horizontalBorderPadding() - this._scrollX, Math.floor(index / maxCols) * height + this.verticalBorderPadding() - this._scrollY, this.itemWidth(), this.itemHeight());
+    return rect;
+};
+Window_Selectable.prototype.itemWidth = function () {
+    return Math.floor((this.width - this.padding * 2 - this.horizontalBorderPadding() * 2
+        + this.spacing()) / this.maxCols() - this.spacing());
 };
 // #endregion =========================== Window_Selectable ============================== //
 // ============================== //
