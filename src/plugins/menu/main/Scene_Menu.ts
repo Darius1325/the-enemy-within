@@ -47,7 +47,7 @@ Scene_Menu.prototype.addFullscreenBackground = function() {
 };
 
 Scene_Menu.prototype.createCommandWindow = function() {
-    this._commandWindow = new Window_MenuCommand(0, 0);
+    this._commandWindow = new Window_MenuCommand(50, 30); // TODO constants
     this._commandWindow.setHandler('menu_status',    this.commandPersonal.bind(this));
     this._commandWindow.setHandler('menu_inventory',     this.commandPersonal.bind(this));
     this._commandWindow.setHandler('menu_formation', this.commandFormation.bind(this));
@@ -60,13 +60,12 @@ Scene_Menu.prototype.createCommandWindow = function() {
 };
 
 Scene_Menu.prototype.createGoldWindow = function() {
-    this._goldWindow = new Window_Gold(0, 0);
-    this._goldWindow.y = Graphics.boxHeight - this._goldWindow.height;
+    this._goldWindow = new Window_Gold(50, 584); // TODO constants
     this.addWindow(this._goldWindow);
 };
 
 Scene_Menu.prototype.createStatusWindow = function() {
-    this._statusMenuWindow = new Window_MenuStatus(this._commandWindow.width, 0);
+    this._statusMenuWindow = new Window_MenuStatus(460, 10); // TODO constants
     this._statusMenuWindow.reserveFaceImages();
     this.addWindow(this._statusMenuWindow);
 };

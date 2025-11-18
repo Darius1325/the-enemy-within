@@ -118,10 +118,7 @@ Scene_Status.prototype.refreshActor = function() {
 
 // Creating the commands for this scene
 Scene_Status.prototype.createCommandWindow = function() {
-    var wx = 0;
-    var wy = 0;
-    var ww = Graphics.boxWidth;
-    this._commandWindow = new Window_StatusCommand(wx, wy, ww);
+    this._commandWindow = new Window_StatusCommand(1280, 0); // TODO constants
     this._commandWindow.setHandler('cancel', this.popScene.bind(this));
     this._commandWindow.setHandler('pagedown', this.nextActor.bind(this));
     this._commandWindow.setHandler('pageup', this.previousActor.bind(this));

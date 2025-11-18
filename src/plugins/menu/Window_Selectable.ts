@@ -19,21 +19,26 @@ Window_Selectable.prototype.setTopRow = function(row: number) {
     }
 };
 
-// TODO
+// TODO rewrite all this.padding uses OR set padding to 30
 Window_Selectable.prototype.itemRect = function(index: number) {
     const maxCols = this.maxCols();
     const width = this.itemWidth();
     const height = this.itemHeight();
     const rect = new Rectangle(
-        index % maxCols * (width + this.spacing()) + this.horizontalBorderPadding() - this._scrollX,
-        Math.floor(index / maxCols) * height + this.verticalBorderPadding() - this._scrollY,
-        this.itemWidth(),
-        this.itemHeight()
+        index % maxCols * (width + this.spacing()) - this._scrollX,
+        Math.floor(index / maxCols) * height - this._scrollY,
+        width,
+        height
     );
     return rect;
 };
 
 Window_Selectable.prototype.itemWidth = function() {
-    return Math.floor((this.width - this.padding * 2 - this.horizontalBorderPadding() * 2
+    return Math.floor((this.width - this.horizontalBorderPadding() * 2
                 + this.spacing()) / this.maxCols() - this.spacing());
+};
+
+Window_Selectable.prototype.maxPageRows = function() {
+    var pageHeight = this.height - this.verticalBorderPadding() * 2;
+    return Math.floor(pageHeight / this.itemHeight());
 };

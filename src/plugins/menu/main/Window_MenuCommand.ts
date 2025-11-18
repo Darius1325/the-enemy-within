@@ -17,7 +17,7 @@ Window_MenuCommand.prototype.windowWidth = function() {
 };
 
 Window_MenuCommand.prototype.windowHeight = function() {
-    return 348;
+    return 312;
 };
 
 Window_MenuCommand.prototype.makeCommandList = function () {

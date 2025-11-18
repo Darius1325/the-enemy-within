@@ -7,5 +7,12 @@ Window_Gold.prototype.windowWidth = function() {
 };
 
 Window_Gold.prototype.windowHeight = function() {
-    return 132;
+    return 96;
+};
+
+Window_Gold.prototype.refresh = function() {
+    const x = this.textPadding();
+    const textWidth = this.contents.width - this.textPadding() * 2 - this.horizontalBorderPadding() * 2;
+    this.contents.clear();
+    this.drawCurrencyValue(this.value(), this.currencyUnit(), x, 0, textWidth);
 };

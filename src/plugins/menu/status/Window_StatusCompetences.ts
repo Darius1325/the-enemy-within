@@ -35,10 +35,9 @@ Window_StatusCompetences.prototype.initialize = function() {
     this._actor = null;
     this._maxItems = 0;
     this._leftPadding = 10;
-    this._compColumnWidth = this.width / 4 - this._leftPadding;
-    this._levelColumnWidth = this.width / 8;
-    this._statColumnWidth = this.width / 8;
-    this.activate();
+    this._compColumnWidth = 350; // TODO constants
+    this._levelColumnWidth = 100;
+    this._statColumnWidth = 150;
     this.refresh();
 };
 

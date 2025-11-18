@@ -21,23 +21,20 @@ function HalfWindow_DetailsCommand() {
     this.initialize.apply(this, arguments);
 }
 
+// TODO maybe just fix every window's position?
+HalfWindow_DetailsCommand.MARGIN_X = 180;
+HalfWindow_DetailsCommand.MARGIN_Y = 20;
+
 export default HalfWindow_DetailsCommand.prototype = Object.create(Window_Command.prototype);
 HalfWindow_DetailsCommand.prototype.constructor = HalfWindow_DetailsCommand;
 
 // Initializing the command window
 HalfWindow_DetailsCommand.prototype.initialize = function(actionsNumber = 2) {
     this._actionsNumber = actionsNumber;
-    this._windowWidth = Graphics.boxWidth / 2;
-    this._windowHeight = this.fittingHeight(this._actionsNumber);
     Window_Command.prototype.initialize.call(
         this,
-        Graphics.boxWidth / 2,
-        Graphics.boxHeight - this._windowHeight);
-};
-
-// Window Width
-HalfWindow_DetailsCommand.prototype.windowWidth = function() {
-    return this._windowWidth;
+        Graphics.boxWidth / 2 + HalfWindow_DetailsCommand.MARGIN_X,
+        Graphics.boxHeight - this.fittingHeight(actionsNumber) - HalfWindow_DetailsCommand.MARGIN_Y);
 };
 
 HalfWindow_DetailsCommand.prototype.addCommand = function(name: string, symbol: string, enabled = true, ext = null) {

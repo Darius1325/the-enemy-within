@@ -62,8 +62,8 @@ TextManager.command = function (commandId) {
 Input.keyMapper[65] = "A_Key";
 Input.keyMapper[69] = "E_Key";
 // Windows
-TEW.MENU.INVENTORY_WINDOW_TOPBAR_HEIGHT = 70;
-TEW.MENU.STATUS_WINDOW_TOPBAR_HEIGHT = 70;
+TEW.MENU.INVENTORY_WINDOW_TOPBAR_HEIGHT = 96;
+TEW.MENU.STATUS_WINDOW_TOPBAR_HEIGHT = 96;
 TEW.MENU.STATUS_WINDOW_BOTTOM_DESCRIPTION_HEIGHT = 140;
 // The window for selecting a command on the inventory screen.
 // Adding new Commands Entries
@@ -134,7 +134,7 @@ Scene_Menu.prototype.addFullscreenBackground = function () {
     this.addChildAt(this._background, this.getChildIndex(this._windowLayer));
 };
 Scene_Menu.prototype.createCommandWindow = function () {
-    this._commandWindow = new Window_MenuCommand(0, 0);
+    this._commandWindow = new Window_MenuCommand(50, 30); // TODO constants
     this._commandWindow.setHandler('menu_status', this.commandPersonal.bind(this));
     this._commandWindow.setHandler('menu_inventory', this.commandPersonal.bind(this));
     this._commandWindow.setHandler('menu_formation', this.commandFormation.bind(this));
@@ -146,12 +146,11 @@ Scene_Menu.prototype.createCommandWindow = function () {
     this.addWindow(this._commandWindow);
 };
 Scene_Menu.prototype.createGoldWindow = function () {
-    this._goldWindow = new Window_Gold(0, 0);
-    this._goldWindow.y = Graphics.boxHeight - this._goldWindow.height;
+    this._goldWindow = new Window_Gold(50, 584); // TODO constants
     this.addWindow(this._goldWindow);
 };
 Scene_Menu.prototype.createStatusWindow = function () {
-    this._statusMenuWindow = new Window_MenuStatus(this._commandWindow.width, 0);
+    this._statusMenuWindow = new Window_MenuStatus(460, 10); // TODO constants
     this._statusMenuWindow.reserveFaceImages();
     this.addWindow(this._statusMenuWindow);
 };
@@ -323,18 +322,15 @@ HalfWindow_Details.prototype.clear = function () {
 function HalfWindow_DetailsCommand() {
     this.initialize.apply(this, arguments);
 }
+// TODO maybe just fix every window's position?
+HalfWindow_DetailsCommand.MARGIN_X = 180;
+HalfWindow_DetailsCommand.MARGIN_Y = 20;
 HalfWindow_DetailsCommand.prototype = Object.create(Window_Command.prototype);
 HalfWindow_DetailsCommand.prototype.constructor = HalfWindow_DetailsCommand;
 // Initializing the command window
 HalfWindow_DetailsCommand.prototype.initialize = function (actionsNumber = 2) {
     this._actionsNumber = actionsNumber;
-    this._windowWidth = Graphics.boxWidth / 2;
-    this._windowHeight = this.fittingHeight(this._actionsNumber);
-    Window_Command.prototype.initialize.call(this, Graphics.boxWidth / 2, Graphics.boxHeight - this._windowHeight);
-};
-// Window Width
-HalfWindow_DetailsCommand.prototype.windowWidth = function () {
-    return this._windowWidth;
+    Window_Command.prototype.initialize.call(this, Graphics.boxWidth / 2 + HalfWindow_DetailsCommand.MARGIN_X, Graphics.boxHeight - this.fittingHeight(actionsNumber) - HalfWindow_DetailsCommand.MARGIN_Y);
 };
 HalfWindow_DetailsCommand.prototype.addCommand = function (name, symbol, enabled = true, ext = null) {
     this._list.push({ name: name, symbol: symbol, enabled: enabled, ext: ext });
@@ -1168,7 +1164,13 @@ Window_Gold.prototype.windowWidth = function () {
     return 280;
 };
 Window_Gold.prototype.windowHeight = function () {
-    return 132;
+    return 96;
+};
+Window_Gold.prototype.refresh = function () {
+    const x = this.textPadding();
+    const textWidth = this.contents.width - this.textPadding() * 2 - this.horizontalBorderPadding() * 2;
+    this.contents.clear();
+    this.drawCurrencyValue(this.value(), this.currencyUnit(), x, 0, textWidth);
 };
 // #endregion =========================== Window_Gold ============================== //
 // ============================== //
@@ -1179,7 +1181,7 @@ Window_MenuCommand.prototype.windowWidth = function () {
     return 280;
 };
 Window_MenuCommand.prototype.windowHeight = function () {
-    return 348;
+    return 312;
 };
 Window_MenuCommand.prototype.makeCommandList = function () {
     this.addMainCommands();
@@ -1217,10 +1219,10 @@ Window_MenuCommand.prototype.selectLast = function () {
 // #region ============================== Window_MenuStatus ============================== //
 // TODO define fixed window dimensions (and graphical details?) in dedicated file
 Window_MenuStatus.prototype.windowWidth = function () {
-    return 1000;
+    return 800;
 };
 Window_MenuStatus.prototype.windowHeight = function () {
-    return 720;
+    return 700;
 };
 // #endregion =========================== Window_MenuStatus ============================== //
 // ============================== //
@@ -1308,10 +1310,7 @@ Scene_Status.prototype.refreshActor = function () {
 };
 // Creating the commands for this scene
 Scene_Status.prototype.createCommandWindow = function () {
-    var wx = 0;
-    var wy = 0;
-    var ww = Graphics.boxWidth;
-    this._commandWindow = new Window_StatusCommand(wx, wy, ww);
+    this._commandWindow = new Window_StatusCommand(1280, 0); // TODO constants
     this._commandWindow.setHandler('cancel', this.popScene.bind(this));
     this._commandWindow.setHandler('pagedown', this.nextActor.bind(this));
     this._commandWindow.setHandler('pageup', this.previousActor.bind(this));
@@ -1511,14 +1510,13 @@ function Window_StatusCommand() {
 Window_StatusCommand.prototype = Object.create(Window_HorzCommand.prototype);
 Window_StatusCommand.prototype.constructor = Window_StatusCommand;
 // Initializing the command window
-Window_StatusCommand.prototype.initialize = function (x, y, width) {
-    this._windowWidth = width;
+Window_StatusCommand.prototype.initialize = function (x, y) {
     this._windowHeight = TEW.MENU.STATUS_WINDOW_TOPBAR_HEIGHT;
     Window_HorzCommand.prototype.initialize.call(this, x, y);
 };
 // Window Width
 Window_StatusCommand.prototype.windowWidth = function () {
-    return this._windowWidth;
+    return 720; // TODO constants
 };
 // Max column number
 Window_StatusCommand.prototype.maxCols = function () {
@@ -1556,10 +1554,9 @@ Window_StatusCompetences.prototype.initialize = function () {
     this._actor = null;
     this._maxItems = 0;
     this._leftPadding = 10;
-    this._compColumnWidth = this.width / 4 - this._leftPadding;
-    this._levelColumnWidth = this.width / 8;
-    this._statColumnWidth = this.width / 8;
-    this.activate();
+    this._compColumnWidth = 350; // TODO constants
+    this._levelColumnWidth = 100;
+    this._statColumnWidth = 150;
     this.refresh();
 };
 /**
@@ -2009,6 +2006,60 @@ Window_StatusTalents.prototype.maxItems = function () {
 };
 // #endregion =========================== Window_StatusTalents ============================== //
 // ============================== //
+// #region ============================== Window ============================== //
+Window.prototype.horizontalBorderPadding = function () {
+    return this.padding;
+};
+Window.prototype.verticalBorderPadding = function () {
+    return this.padding;
+};
+Window.prototype._refreshContents = function () {
+    this._windowContentsSprite.move(this.horizontalBorderPadding(), this.verticalBorderPadding());
+};
+Window.prototype._refreshCursor = function () {
+    var x = this._cursorRect.x + this.horizontalBorderPadding() - this.origin.x;
+    var y = this._cursorRect.y + this.verticalBorderPadding() - this.origin.y;
+    var w = this._cursorRect.width;
+    var h = this._cursorRect.height;
+    var m = 4;
+    var x2 = Math.max(x, this.horizontalBorderPadding());
+    var y2 = Math.max(y, this.verticalBorderPadding());
+    var ox = x - x2;
+    var oy = y - y2;
+    var w2 = Math.min(w, this._width - this.horizontalBorderPadding() - x2);
+    var h2 = Math.min(h, this._height - this.verticalBorderPadding() - y2);
+    var bitmap = new Bitmap(w2, h2);
+    this._windowCursorSprite.bitmap = bitmap;
+    this._windowCursorSprite.setFrame(0, 0, w2, h2);
+    this._windowCursorSprite.move(x2, y2);
+    if (w > 0 && h > 0 && this._windowskin) {
+        var skin = this._windowskin;
+        var p = 96;
+        var q = 48;
+        bitmap.blt(skin, p + m, p + m, q - m * 2, q - m * 2, ox + m, oy + m, w - m * 2, h - m * 2);
+        bitmap.blt(skin, p + m, p + 0, q - m * 2, m, ox + m, oy + 0, w - m * 2, m);
+        bitmap.blt(skin, p + m, p + q - m, q - m * 2, m, ox + m, oy + h - m, w - m * 2, m);
+        bitmap.blt(skin, p + 0, p + m, m, q - m * 2, ox + 0, oy + m, m, h - m * 2);
+        bitmap.blt(skin, p + q - m, p + m, m, q - m * 2, ox + w - m, oy + m, m, h - m * 2);
+        bitmap.blt(skin, p + 0, p + 0, m, m, ox + 0, oy + 0, m, m);
+        bitmap.blt(skin, p + q - m, p + 0, m, m, ox + w - m, oy + 0, m, m);
+        bitmap.blt(skin, p + 0, p + q - m, m, m, ox + 0, oy + h - m, m, m);
+        bitmap.blt(skin, p + q - m, p + q - m, m, m, ox + w - m, oy + h - m, m, m);
+    }
+};
+Window.prototype._updateContents = function () {
+    var w = this._width - this.horizontalBorderPadding() * 2;
+    var h = this._height - this.verticalBorderPadding() * 2;
+    if (w > 0 && h > 0) {
+        this._windowContentsSprite.setFrame(this.origin.x, this.origin.y, w, h);
+        this._windowContentsSprite.visible = this.isOpen();
+    }
+    else {
+        this._windowContentsSprite.visible = false;
+    }
+};
+// #endregion =========================== Window ============================== //
+// ============================== //
 // #region ============================== Window_Base ============================== //
 Window_Base.prototype.drawWrappedText = function (text, x, y, width, fontsize = this.contents.fontSize) {
     this.contents.fontSize = fontsize;
@@ -2055,7 +2106,16 @@ Window_Base.prototype.verticalBorderPadding = function () {
     return 30;
 };
 Window_Base.prototype.horizontalBorderPadding = function () {
-    return 20;
+    return 30;
+};
+Window_Base.prototype.contentsWidth = function () {
+    return this.width - this.horizontalBorderPadding() * 2;
+};
+Window_Base.prototype.contentsHeight = function () {
+    return this.height - this.verticalBorderPadding() * 2;
+};
+Window_Base.prototype.fittingHeight = function (numLines) {
+    return numLines * this.lineHeight() + this.verticalBorderPadding() * 2;
 };
 // TODO no need for color picker, we can optimize everything here?
 Window_Base.prototype.normalColor = function () {
@@ -2066,6 +2126,12 @@ Window_Base.prototype.resetTextColor = function () {
     this.contents.outlineWidth = 0;
 };
 // #endregion =========================== Window_Base ============================== //
+// ============================== //
+// #region ============================== Window_Command ============================== //
+Window_Command.prototype.windowWidth = function () {
+    return 280;
+};
+// #endregion =========================== Window_Command ============================== //
 // ============================== //
 // #region ============================== Window_Selectable ============================== //
 //-----------------------------------------------------------------------------
@@ -2081,17 +2147,21 @@ Window_Selectable.prototype.setTopRow = function (row) {
         this.updateCursor();
     }
 };
-// TODO
+// TODO rewrite all this.padding uses OR set padding to 30
 Window_Selectable.prototype.itemRect = function (index) {
     const maxCols = this.maxCols();
     const width = this.itemWidth();
     const height = this.itemHeight();
-    const rect = new Rectangle(index % maxCols * (width + this.spacing()) + this.horizontalBorderPadding() - this._scrollX, Math.floor(index / maxCols) * height + this.verticalBorderPadding() - this._scrollY, this.itemWidth(), this.itemHeight());
+    const rect = new Rectangle(index % maxCols * (width + this.spacing()) - this._scrollX, Math.floor(index / maxCols) * height - this._scrollY, width, height);
     return rect;
 };
 Window_Selectable.prototype.itemWidth = function () {
-    return Math.floor((this.width - this.padding * 2 - this.horizontalBorderPadding() * 2
+    return Math.floor((this.width - this.horizontalBorderPadding() * 2
         + this.spacing()) / this.maxCols() - this.spacing());
+};
+Window_Selectable.prototype.maxPageRows = function () {
+    var pageHeight = this.height - this.verticalBorderPadding() * 2;
+    return Math.floor(pageHeight / this.itemHeight());
 };
 // #endregion =========================== Window_Selectable ============================== //
 // ============================== //

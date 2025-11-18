@@ -62,7 +62,19 @@ Window_Base.prototype.verticalBorderPadding = function() {
 };
 
 Window_Base.prototype.horizontalBorderPadding = function() {
-    return 20;
+    return 30;
+};
+
+Window_Base.prototype.contentsWidth = function() {
+    return this.width - this.horizontalBorderPadding() * 2;
+};
+
+Window_Base.prototype.contentsHeight = function() {
+    return this.height - this.verticalBorderPadding() * 2;
+};
+
+Window_Base.prototype.fittingHeight = function(numLines) {
+    return numLines * this.lineHeight() + this.verticalBorderPadding() * 2;
 };
 
 // TODO no need for color picker, we can optimize everything here?

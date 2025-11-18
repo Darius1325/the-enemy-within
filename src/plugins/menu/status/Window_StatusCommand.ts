@@ -17,15 +17,14 @@ export default Window_StatusCommand.prototype = Object.create(Window_HorzCommand
 Window_StatusCommand.prototype.constructor = Window_StatusCommand;
 
 // Initializing the command window
-Window_StatusCommand.prototype.initialize = function(x: number, y: number, width: number) {
-    this._windowWidth = width;
+Window_StatusCommand.prototype.initialize = function(x: number, y: number) {
     this._windowHeight = TEW.MENU.STATUS_WINDOW_TOPBAR_HEIGHT;
     Window_HorzCommand.prototype.initialize.call(this, x, y);
 };
 
 // Window Width
 Window_StatusCommand.prototype.windowWidth = function() {
-    return this._windowWidth;
+    return 720; // TODO constants
 };
 
 // Max column number
