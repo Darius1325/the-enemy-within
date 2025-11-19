@@ -9,3 +9,7 @@ Window_MenuStatus.prototype.windowWidth = function() {
 Window_MenuStatus.prototype.windowHeight = function() {
     return 700;
 };
+
+Window_MenuStatus.prototype.backgroundImageName = function() {
+    return "bg_menuStatus";
+};

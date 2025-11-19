@@ -19,6 +19,7 @@ import Window_StatusTalents from "./Window_StatusTalents";
 import Window_StatusTalentDescription from "./Window_StatusTalentDescription";
 import Window_StatusSpellCommand from "./Window_StatusSpellCommand";
 import Window_StatusSpellDetails from "./Window_StatusSpellDetails";
+import { Sprite } from "../../../rmmv/core/Sprite";
 
 // ----------------------
 // $StartCompilation
@@ -34,6 +35,7 @@ Scene_Status.prototype.create = function() {
 
     // Init
     Scene_MenuBase.prototype.create.call(this);
+    this.addFullscreenBackground();
 
     // Command window
     this.createCommandWindow();
@@ -56,6 +58,12 @@ Scene_Status.prototype.create = function() {
     this.activateStatusStats(); // Desactivate all the windows, except the stats one
     this.refreshActor();
 };
+
+Scene_Status.prototype.addFullscreenBackground = function() {
+    this._background = new Sprite(ImageManager.loadSystem('bg_fullscreen'));
+    this.addChildAt(this._background, this.getChildIndex(this._windowLayer));
+};
+
 // #region ====== All windows handling === //
 // Hiding all the windows
 Scene_Status.prototype.hideAllWindows = function() {
@@ -118,7 +126,7 @@ Scene_Status.prototype.refreshActor = function() {
 
 // Creating the commands for this scene
 Scene_Status.prototype.createCommandWindow = function() {
-    this._commandWindow = new Window_StatusCommand(1280, 0); // TODO constants
+    this._commandWindow = new Window_StatusCommand(0, 0);
     this._commandWindow.setHandler('cancel', this.popScene.bind(this));
     this._commandWindow.setHandler('pagedown', this.nextActor.bind(this));
     this._commandWindow.setHandler('pageup', this.previousActor.bind(this));

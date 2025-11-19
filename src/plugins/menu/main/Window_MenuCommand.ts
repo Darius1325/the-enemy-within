@@ -20,6 +20,10 @@ Window_MenuCommand.prototype.windowHeight = function() {
     return 312;
 };
 
+Window_MenuCommand.prototype.backgroundImageName = function() {
+    return "bg_menuCommand";
+};
+
 Window_MenuCommand.prototype.makeCommandList = function () {
     this.addMainCommands();
     this.addFormationCommand();
