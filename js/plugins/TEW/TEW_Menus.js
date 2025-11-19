@@ -62,9 +62,9 @@ TextManager.command = function (commandId) {
 Input.keyMapper[65] = "A_Key";
 Input.keyMapper[69] = "E_Key";
 // Windows
-TEW.MENU.INVENTORY_WINDOW_TOPBAR_HEIGHT = 96;
-TEW.MENU.STATUS_WINDOW_TOPBAR_HEIGHT = 96;
-TEW.MENU.STATUS_WINDOW_BOTTOM_DESCRIPTION_HEIGHT = 140;
+TEW.MENU.INVENTORY_WINDOW_TOPBAR_HEIGHT = 72;
+TEW.MENU.STATUS_WINDOW_TOPBAR_HEIGHT = 72;
+TEW.MENU.STATUS_WINDOW_BOTTOM_DESCRIPTION_HEIGHT = 134;
 // The window for selecting a command on the inventory screen.
 // Adding new Commands Entries
 Object.defineProperties(TextManager, {
@@ -331,6 +331,9 @@ HalfWindow_DetailsCommand.prototype.constructor = HalfWindow_DetailsCommand;
 HalfWindow_DetailsCommand.prototype.initialize = function (actionsNumber = 2) {
     this._actionsNumber = actionsNumber;
     Window_Command.prototype.initialize.call(this, Graphics.boxWidth / 2 + HalfWindow_DetailsCommand.MARGIN_X, Graphics.boxHeight - this.fittingHeight(actionsNumber) - HalfWindow_DetailsCommand.MARGIN_Y);
+};
+HalfWindow_DetailsCommand.prototype.backgroundImageName = function () {
+    return "bg_inventoryCommand" + this._actionsNumber;
 };
 HalfWindow_DetailsCommand.prototype.addCommand = function (name, symbol, enabled = true, ext = null) {
     this._list.push({ name: name, symbol: symbol, enabled: enabled, ext: ext });
@@ -1166,6 +1169,9 @@ Window_Gold.prototype.windowWidth = function () {
 Window_Gold.prototype.windowHeight = function () {
     return 96;
 };
+Window_Gold.prototype.backgroundImageName = function () {
+    return "bg_gold";
+};
 Window_Gold.prototype.refresh = function () {
     const x = this.textPadding();
     const textWidth = this.contents.width - this.textPadding() * 2 - this.horizontalBorderPadding() * 2;
@@ -1182,6 +1188,9 @@ Window_MenuCommand.prototype.windowWidth = function () {
 };
 Window_MenuCommand.prototype.windowHeight = function () {
     return 312;
+};
+Window_MenuCommand.prototype.backgroundImageName = function () {
+    return "bg_menuCommand";
 };
 Window_MenuCommand.prototype.makeCommandList = function () {
     this.addMainCommands();
@@ -1224,6 +1233,9 @@ Window_MenuStatus.prototype.windowWidth = function () {
 Window_MenuStatus.prototype.windowHeight = function () {
     return 700;
 };
+Window_MenuStatus.prototype.backgroundImageName = function () {
+    return "bg_menuStatus";
+};
 // #endregion =========================== Window_MenuStatus ============================== //
 // ============================== //
 // #region ============================== Scene_Status ============================== //
@@ -1236,6 +1248,7 @@ Scene_Status.prototype.SPELLS_WINDOW_INDEX = 3;
 Scene_Status.prototype.create = function () {
     // Init
     Scene_MenuBase.prototype.create.call(this);
+    this.addFullscreenBackground();
     // Command window
     this.createCommandWindow();
     // Info window
@@ -1251,6 +1264,10 @@ Scene_Status.prototype.create = function () {
     this.createSpellDetailsWindow();
     this.activateStatusStats(); // Desactivate all the windows, except the stats one
     this.refreshActor();
+};
+Scene_Status.prototype.addFullscreenBackground = function () {
+    this._background = new Sprite(ImageManager.loadSystem('bg_fullscreen'));
+    this.addChildAt(this._background, this.getChildIndex(this._windowLayer));
 };
 // #region ====== All windows handling === //
 // Hiding all the windows
@@ -1310,7 +1327,7 @@ Scene_Status.prototype.refreshActor = function () {
 };
 // Creating the commands for this scene
 Scene_Status.prototype.createCommandWindow = function () {
-    this._commandWindow = new Window_StatusCommand(1280, 0); // TODO constants
+    this._commandWindow = new Window_StatusCommand(0, 0);
     this._commandWindow.setHandler('cancel', this.popScene.bind(this));
     this._commandWindow.setHandler('pagedown', this.nextActor.bind(this));
     this._commandWindow.setHandler('pageup', this.previousActor.bind(this));
@@ -1514,9 +1531,12 @@ Window_StatusCommand.prototype.initialize = function (x, y) {
     this._windowHeight = TEW.MENU.STATUS_WINDOW_TOPBAR_HEIGHT;
     Window_HorzCommand.prototype.initialize.call(this, x, y);
 };
+Window_StatusCommand.prototype.backgroundImageName = function () {
+    return "bg_menuTopbarCommands";
+};
 // Window Width
 Window_StatusCommand.prototype.windowWidth = function () {
-    return 720; // TODO constants
+    return 1280; // TODO constants
 };
 // Max column number
 Window_StatusCommand.prototype.maxCols = function () {
@@ -1536,6 +1556,9 @@ Window_StatusCommand.prototype.cursorRight = function (wrap) {
 Window_StatusCommand.prototype.cursorLeft = function (wrap) {
     Window_HorzCommand.prototype.cursorLeft.call(this, wrap);
     this.callHandler('left');
+};
+Window_StatusCommand.prototype.verticalBorderPadding = function () {
+    return 18;
 };
 // #endregion =========================== Window_StatusCommand ============================== //
 // ============================== //
@@ -1558,6 +1581,9 @@ Window_StatusCompetences.prototype.initialize = function () {
     this._levelColumnWidth = 100;
     this._statColumnWidth = 150;
     this.refresh();
+};
+Window_StatusCompetences.prototype.backgroundImageName = function () {
+    return "bg_statusCompetences";
 };
 /**
  * Sets the actor for the window.
@@ -1860,6 +1886,9 @@ Window_StatusTalentDescription.prototype.initialize = function () {
     this.refresh();
     this._talent = null;
 };
+Window_StatusTalentDescription.prototype.backgroundImageName = function () {
+    return "bg_statusTalentDescription";
+};
 /**
  * Refreshes the content of the window.
  */
@@ -1874,6 +1903,9 @@ Window_StatusTalentDescription.prototype.refresh = function () {
  */
 Window_StatusTalentDescription.prototype.drawDescription = function (talent) {
     this.drawWrappedText(talent[1].description, 10, 0, Graphics.boxWidth);
+};
+Window_StatusTalentDescription.prototype.verticalBorderPadding = function (talent) {
+    return 18;
 };
 // #endregion =========================== Window_StatusTalentDescription ============================== //
 // ============================== //
@@ -1896,6 +1928,9 @@ Window_StatusTalents.prototype.initialize = function () {
     this._levelColumnWidth = this.width / 6;
     this.activate();
     this.refresh();
+};
+Window_StatusTalents.prototype.backgroundImageName = function () {
+    return "bg_statusTalents";
 };
 /**
  * Sets the actor for the window.
@@ -2061,6 +2096,19 @@ Window.prototype._updateContents = function () {
 // #endregion =========================== Window ============================== //
 // ============================== //
 // #region ============================== Window_Base ============================== //
+TEW.MEMORY.windowBaseInitialize = Window_Base.prototype.initialize;
+Window_Base.prototype.initialize = function (x, y, width, height) {
+    TEW.MEMORY.windowBaseInitialize.call(this, x, y, width, height);
+    const bg = this.backgroundImageName();
+    if (bg) {
+        this._bgSprite = new Sprite();
+        this._bgSprite.bitmap = ImageManager.loadSystem(bg);
+        this.addChildAt(this._bgSprite, 0);
+    }
+};
+Window_Base.prototype.backgroundImageName = function () {
+    return undefined;
+};
 Window_Base.prototype.drawWrappedText = function (text, x, y, width, fontsize = this.contents.fontSize) {
     this.contents.fontSize = fontsize;
     const words = text.split(" ");
@@ -2176,6 +2224,7 @@ Scene_Equip.AMMO_WINDOW_INDEX = 4;
 Scene_Equip.prototype.create = function () {
     // Init
     Scene_MenuBase.prototype.create.call(this);
+    this.addFullscreenBackground();
     // Command window
     this.createCommandWindow();
     // Info window
@@ -2207,6 +2256,10 @@ Scene_Equip.prototype.create = function () {
     this._currentMainWindow = this._infosWindow;
     this.activateInventoryInfos(); // Deactivate all windows, except infos
     this.refreshActor();
+};
+Scene_Equip.prototype.addFullscreenBackground = function () {
+    this._background = new Sprite(ImageManager.loadSystem('bg_fullscreen'));
+    this.addChildAt(this._background, this.getChildIndex(this._windowLayer));
 };
 // Refreshing the actor
 Scene_Equip.prototype.refreshActor = function () {

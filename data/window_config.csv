@@ -1,7 +1,0 @@
-Window Name,Image Name (in System folder), Window Opacity,Scene Name (optional),Attribute Name (optional)
-Window_MenuCommand,bg_menuCommand,255,,
-Window_MenuStatus,bg_menuStatus,255,,
-Window_Gold,bg_gold,255,,
-Window_InventoryItemCommand,bg_inventoryCommand2,255,,
-Window_InventoryArmorCommand,bg_inventoryCommand2,255,,
-Window_InventoryWeaponCommand,bg_inventoryCommand3,255,,

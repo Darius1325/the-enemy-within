@@ -41,6 +41,10 @@ Window_StatusCompetences.prototype.initialize = function() {
     this.refresh();
 };
 
+Window_StatusCompetences.prototype.backgroundImageName = function() {
+    return "bg_statusCompetences";
+};
+
 /**
  * Sets the actor for the window.
  */

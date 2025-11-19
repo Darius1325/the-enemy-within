@@ -22,9 +22,13 @@ Window_StatusCommand.prototype.initialize = function(x: number, y: number) {
     Window_HorzCommand.prototype.initialize.call(this, x, y);
 };
 
+Window_StatusCommand.prototype.backgroundImageName = function() {
+    return "bg_menuTopbarCommands";
+};
+
 // Window Width
 Window_StatusCommand.prototype.windowWidth = function() {
-    return 720; // TODO constants
+    return 1280; // TODO constants
 };
 
 // Max column number
@@ -40,7 +44,6 @@ Window_StatusCommand.prototype.makeCommandList = function() {
     this.addCommand(TextManager.statusSpells, 'status_spells');
 };
 
-
 Window_StatusCommand.prototype.cursorRight = function(wrap: boolean) {
     Window_HorzCommand.prototype.cursorRight.call(this, wrap);
     this.callHandler('right');
@@ -49,4 +52,8 @@ Window_StatusCommand.prototype.cursorRight = function(wrap: boolean) {
 Window_StatusCommand.prototype.cursorLeft = function(wrap: boolean) {
     Window_HorzCommand.prototype.cursorLeft.call(this, wrap);
     this.callHandler('left');
+};
+
+Window_StatusCommand.prototype.verticalBorderPadding = function() {
+    return 18;
 };

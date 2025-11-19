@@ -187,8 +187,12 @@ TH.WindowBackgroundDesigner = TH.WindowBackgroundDesigner || {};
     if (data) {
       this.opacity = data.opacity;
       this._bgSprite = new Sprite();
-      // this._bgSprite.move(0, 0, this.width, this.height);
       this._bgSprite.bitmap = ImageManager.loadSystem(data.imageName);
+      this.addChildAt(this._bgSprite, 0);
+    } else {
+      this.opacity = 255;
+      this._bgSprite = new Sprite();
+      this._bgSprite.bitmap = ImageManager.loadSystem("default_window_background");
       this.addChildAt(this._bgSprite, 0);
     }
   };

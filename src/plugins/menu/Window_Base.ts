@@ -1,5 +1,24 @@
 // $PluginCompiler TEW_Menus.js
+
+import { Sprite } from "../../rmmv/core/Sprite";
+import TEW from "../_types/tew";
+
 // $StartCompilation
+
+TEW.MEMORY.windowBaseInitialize = Window_Base.prototype.initialize;
+Window_Base.prototype.initialize = function(x, y, width, height) {
+    TEW.MEMORY.windowBaseInitialize.call(this, x, y, width, height);
+    const bg = this.backgroundImageName();
+    if (bg) {
+        this._bgSprite = new Sprite();
+        this._bgSprite.bitmap = ImageManager.loadSystem(bg);
+        this.addChildAt(this._bgSprite, 0);
+    }
+};
+
+Window_Base.prototype.backgroundImageName = function() {
+    return undefined;
+};
 
 Window_Base.prototype.drawWrappedText= function(text, x, y, width, fontsize = this.contents.fontSize) {
     this.contents.fontSize = fontsize;

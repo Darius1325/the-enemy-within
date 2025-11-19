@@ -11,6 +11,7 @@
 // Imports
 // ----------------------
 
+import { Sprite } from "../../../rmmv/core/Sprite";
 import Window_InventoryCommand from "./Window_InventoryCommand";
 import Window_InventoryTransferCommand from "./Window_InventoryTransferCommand";
 import Window_InventoryTransferSpinner from "./Window_InventoryTransferSpinner";
@@ -30,6 +31,7 @@ Scene_Equip.AMMO_WINDOW_INDEX = 4;
 Scene_Equip.prototype.create = function() {
     // Init
     Scene_MenuBase.prototype.create.call(this);
+    this.addFullscreenBackground();
 
     // Command window
     this.createCommandWindow();
@@ -70,6 +72,11 @@ Scene_Equip.prototype.create = function() {
     this._currentMainWindow = this._infosWindow;
     this.activateInventoryInfos(); // Deactivate all windows, except infos
     this.refreshActor();
+};
+
+Scene_Equip.prototype.addFullscreenBackground = function() {
+    this._background = new Sprite(ImageManager.loadSystem('bg_fullscreen'));
+    this.addChildAt(this._background, this.getChildIndex(this._windowLayer));
 };
 
 // Refreshing the actor
