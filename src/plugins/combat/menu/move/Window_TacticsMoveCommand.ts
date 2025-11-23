@@ -59,7 +59,7 @@ Window_TacticsMoveCommand.prototype.addRunCommand = function() {
 };
 
 Window_TacticsMoveCommand.prototype.addChargeCommand = function() {
-    this.addCommand(TEW.COMBAT.SYSTEM.moveCharge, 'charge', false);
+    this.addCommand(TEW.COMBAT.SYSTEM.moveCharge, 'charge', BattleManager.canRun());
 };
 
 Window_TacticsMoveCommand.prototype.addSwitchWeaponCommand = function() {
@@ -70,12 +70,16 @@ Window_TacticsMoveCommand.prototype.select = function(index: number) {
     Window_ActorCommand.prototype.select.call(this, index);
     if (this._index === Window_TacticsMoveCommand.WALK_COMMAND_INDEX) {
         BattleManager.moveMultiplier = Window_TacticsMoveCommand.WALK_MOVE_MULTIPLIER;
+        $gameMap._flexibleMovement = true;
     } else if (this._index === Window_TacticsMoveCommand.RUN_COMMAND_INDEX) {
         BattleManager.moveMultiplier = Window_TacticsMoveCommand.RUN_MOVE_MULTIPLIER;
+        $gameMap._flexibleMovement = true;
     } else if (this._index === Window_TacticsMoveCommand.CHARGE_COMMAND_INDEX) {
         BattleManager.moveMultiplier = Window_TacticsMoveCommand.CHARGE_MOVE_MULTIPLIER;
+        $gameMap._flexibleMovement = false;
     } else if (this._index === Window_TacticsMoveCommand.SWITCH_WEAPON_COMMAND_INDEX) {
         BattleManager.moveMultiplier = Window_TacticsMoveCommand.SWITCH_WEAPON_MOVE_MULTIPLIER;
+        $gameMap._flexibleMovement = true;
     }
     BattleManager.refreshMoveTiles();
 };

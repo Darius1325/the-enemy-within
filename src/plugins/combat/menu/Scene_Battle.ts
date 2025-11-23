@@ -531,6 +531,7 @@ Scene_Battle.prototype.commandCharge = function() {
         this._moveCommandWindow.close();
         this._tacticsCommandWindow.close();
         // TODO account for critical failure
+        // TODO switch back to flexible movement when done
         // TODO special phase for special pathfinding + no menu
         BattleManager._battlePhase = BattlePhase.InputMove;
         BattleManager.refreshMoveTiles();

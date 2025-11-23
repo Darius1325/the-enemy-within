@@ -34,6 +34,7 @@ Game_Actor.prototype.initTEW = function(actorId : number) {
         default:
             break;
     }
+    this.recoverAll(); // Set max wounds to MAX (HP)
     console.log(this);
 }
 

@@ -14,8 +14,10 @@ export declare class Game_Enemy extends Game_Battler
 	protected _enemyId:number;
     protected _letter:string;
     protected _plural:boolean;
-    protected _screenX:number;
-    protected _screenY:number;
+    public _screenX:number;
+    public _screenY:number;
+    public _tx:number;
+    public _ty:number;
 
 	public constructor(enemyId:number, x:number, y:number);
 
