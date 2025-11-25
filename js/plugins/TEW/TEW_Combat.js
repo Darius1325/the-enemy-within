@@ -559,6 +559,7 @@ var BattlePhase;
     BattlePhase["Init"] = "init";
     BattlePhase["Start"] = "start";
     BattlePhase["InputMove"] = "inputMove";
+    BattlePhase["InputCharge"] = "inputCharge";
     BattlePhase["Explore"] = "explore";
     BattlePhase["Target"] = "target";
     BattlePhase["ProcessMove"] = "processMove";
@@ -696,6 +697,7 @@ BattleManager.isActive = function () {
         switch (this._battlePhase) {
             case BattlePhase.Explore:
             case BattlePhase.InputMove:
+            case BattlePhase.InputCharge:
             case BattlePhase.Target:
                 return true;
         }
@@ -729,6 +731,9 @@ BattleManager.updateBattlersPhase = function () {
             this.updateExplore();
             break;
         case BattlePhase.InputMove:
+            this.updateSelect();
+            break;
+        case BattlePhase.InputCharge:
             this.updateSelect();
             break;
         case BattlePhase.Target:
@@ -926,6 +931,7 @@ BattleManager.updateSelect = function () {
     }
     if ($gameSelector.checkDestination(this._subject)) {
         SoundManager.playOk();
+        $gameMap._flexibleMovement = true; // Go back to free movement range
         this._battlePhase = BattlePhase.ProcessMove;
         $gameMap.clearTiles();
     }
@@ -2575,7 +2581,13 @@ Game_Map.prototype.exploreRange = function (distance, event, through) {
         }
     }
 };
-// TODO special pathfinding for charge action: absolute shortest path canceled by any obstacle
+/**
+ * Battlers can only charge a target if it's in range and they have direct vision on it.
+ * A target is directly in sight if we can trace at least two rays that:
+ *  - cross no obstacle
+ *  - start from adjacent corners of the subject's tile
+ *  - end on the same corner of the target's tile
+ */
 Game_Map.prototype.chargeRange = function (distance, event, through) {
     console.log("making charge range");
     if (through === undefined) {
@@ -2583,14 +2595,16 @@ Game_Map.prototype.chargeRange = function (distance, event, through) {
     }
     const startX = event.x;
     const startY = event.y;
-    const validTargets = $gameTroopTs.members(); // TODO exclude dead + adapt for enemy side
-    const reachableTargets = [];
-    for (const enemy of validTargets) {
+    const enemiesInRange = $gameTroopTs.members(); // TODO exclude dead + adapt for enemy side
+    const targettableEnemies = [];
+    for (const enemy of enemiesInRange) {
         // TODO skip target if outside max range
         const targetX = enemy._tx;
         const targetY = enemy._ty;
         const dx = targetX - startX;
         const dy = targetY - startY;
+        // If subject and target are on the same row or column, all rays would traverse the same tiles
+        // we can skip ray tracing and check for obstacles along the row/column
         if (dx == 0) {
             const lowestY = Math.min(startY, targetY);
             const highestY = Math.max(startY, targetY);
@@ -2599,13 +2613,13 @@ Game_Map.prototype.chargeRange = function (distance, event, through) {
                 path.push({ x: startX, y: i });
             }
             if (this.isPathClear({ x: startX, y: startY }, path, event)) {
-                reachableTargets.push({
+                targettableEnemies.push({
                     x: targetX,
                     y: targetY,
                     path
                 });
                 this.addTile(this.tile(targetX, targetY));
-                this.addTile(this.tile(path[path.length].x, path[path.length].y));
+                this.addTile(this.tile(path[path.length - 1].x, path[path.length - 1].y)); // TODO remove
             }
         }
         else if (dy == 0) {
@@ -2616,19 +2630,22 @@ Game_Map.prototype.chargeRange = function (distance, event, through) {
                 path.push({ x: i, y: startY });
             }
             if (this.isPathClear({ x: startX, y: startY }, path, event)) {
-                reachableTargets.push({
+                targettableEnemies.push({
                     x: targetX,
                     y: targetY,
                     path
                 });
                 this.addTile(this.tile(targetX, targetY));
-                this.addTile(this.tile(path[path.length].x, path[path.length].y));
+                this.addTile(this.tile(path[path.length - 1].x, path[path.length - 1].y)); // TODO remove
             }
         }
         else {
             const startCorners = this.computeTileCorners(startX, startY);
             const targetCorners = this.computeTileCorners(targetX, targetY);
+            // Exclude the corner(s) of the target furthest away from the subject, because ray-tracing these would be redundant
             const usefulCorners = this.computeUsefulCorners(dx, dy, targetCorners);
+            // Skip checking some tiles adjacent to the subject/target.
+            // Because tile corners are also tile coordinates, we must exclude the start and end of some rays
             const excludedCorners = this.computeExcludedCornersForRayTracing(dx, dy, startCorners, targetCorners);
             // TODO skip A&W if same row or column
             const rays = [];
@@ -2641,29 +2658,25 @@ Game_Map.prototype.chargeRange = function (distance, event, through) {
                     }
                 }
             }
-            let isValidPath = false;
-            for (const target of usefulCorners) {
-                const usefulRays = rays.filter(ray => ray.target.x == target.x && ray.target.y == target.y);
+            // Yes I wrote a fucking label in TS code, and yes I'm still better than RMMV devs
+            targetValidityCheck: for (const target of usefulCorners) { // same target corner
+                const usefulRays = rays.filter(ray => this.samePoint(ray.target, target));
                 if (usefulRays.length > 1) {
                     for (const ray1 of usefulRays) {
                         for (const ray2 of usefulRays) {
-                            if ((ray1.start.x == ray2.start.x) != (ray1.start.y == ray2.start.y)) {
-                                reachableTargets.push({
+                            if ((ray1.start.x == ray2.start.x) != (ray1.start.y == ray2.start.y)) { // adjacent subject corners
+                                targettableEnemies.push({
                                     x: target.x,
                                     y: target.y,
                                     path: ray1.path
                                 });
                                 this.addTile(this.tile(target.x, target.y));
-                                this.addTile(this.tile(ray1.path[ray1.path.length].x, ray1.path[ray1.path.length].y));
-                                break;
+                                this.addTile(this.tile(ray1.path[ray1.path.length - 1].x, ray1.path[ray1.path.length - 1].y)); // TODO remove
+                                break targetValidityCheck;
                             }
                         }
-                        if (isValidPath)
-                            break;
                     }
                 }
-                if (isValidPath)
-                    break;
             }
             // TODO store and re-use path
             // TODO special check for target : don't check event collision because enemy is here (duh)
@@ -2744,30 +2757,70 @@ Game_Map.prototype.computeExcludedCornersForRayTracing = function (dx, dy, start
  * Trace a ray from a tile corner to another, and compute the ray's supercover with Amanatides & Woo's algorithm
  */
 Game_Map.prototype.amanatidesWooSupercover = function (start, end) {
-    const points = [];
-    const dx = end.x - start.x;
-    const dy = end.y - start.y;
-    const stepX = dx > 0 ? 1 : -1;
-    const stepY = dy > 0 ? 1 : -1;
-    const tDeltaX = Math.abs(1 / dx);
-    const tDeltaY = Math.abs(1 / dy);
+    const tilesCrossed = [];
+    // Skip in case of horizontal or vertical ray
+    if (start.x === end.x) {
+        const lowestY = Math.min(start.y, end.y);
+        const highestY = Math.max(start.y, end.y);
+        for (let y = lowestY; y < highestY; y++) {
+            tilesCrossed.push({ x: start.x, y });
+        }
+        return tilesCrossed;
+    }
+    if (start.y === end.y) {
+        const lowestX = Math.min(start.x, end.x);
+        const highestX = Math.max(start.x, end.x);
+        for (let x = lowestX; x < highestX; x++) {
+            tilesCrossed.push({ x, y: start.y });
+        }
+        return tilesCrossed;
+    }
     let x = start.x;
     let y = start.y;
-    let tMaxX = tDeltaX * (dx > 0 ? 1 : 0);
-    let tMaxY = tDeltaY * (dy > 0 ? 1 : 0);
-    points.push({ x, y });
-    while (x !== end.x || y !== end.y) {
-        if (tMaxX < tMaxY) {
-            tMaxX += tDeltaX;
+    tilesCrossed.push({ x, y });
+    const dx = end.x - x;
+    const dy = end.y - y;
+    const stepX = dx > 0 ? 1 : -1;
+    const stepY = dy > 0 ? 1 : -1;
+    const invDx = 1 / dx;
+    const invDy = 1 / dy;
+    const tDeltaX = Math.abs(invDx);
+    const tDeltaY = Math.abs(invDy);
+    let tMaxX = stepX > 0 ? invDx : 0;
+    let tMaxY = stepY > 0 ? invDy : 0;
+    const epsilon = 1e-12;
+    while (!(x === end.x && y === end.y)) {
+        if (Math.abs(tMaxX - tMaxY) < epsilon) { // Endpoint or exact corner hit
+            const adjacentTileX = { x: x + stepX, y };
+            const adjacentTileY = { x, y: y + stepY };
+            // TODO can this be short-circuited?
+            // The first condition can only be true in the NE quadrant,
+            //  and the second can only be true in the SW quadrant
+            if (this.samePoint(adjacentTileX, end)) {
+                x += stepX;
+            }
+            else if (this.samePoint(adjacentTileY, end)) {
+                y += stepY;
+            }
+            else {
+                x += stepX;
+                y += stepY;
+                tMaxX += tDeltaX;
+                tMaxY += tDeltaY;
+                tilesCrossed.push(adjacentTileX, adjacentTileY);
+            }
+        }
+        else if (tMaxX < tMaxY) {
             x += stepX;
+            tMaxX += tDeltaX;
         }
         else {
-            tMaxY += tDeltaY;
             y += stepY;
+            tMaxY += tDeltaY;
         }
-        points.push({ x, y });
+        tilesCrossed.push({ x, y });
     }
-    return points;
+    return tilesCrossed;
 };
 Game_Map.prototype.isPathClear = function (startTile, tiles, event) {
     if (!tiles.length)
@@ -2801,9 +2854,9 @@ Game_Map.prototype.checkAndStoreTileBorderPassability = function (x, y) {
 Game_Map.prototype.isMapPassable = function (startTile, targetTile, event) {
     const direction = this.computeDirection(targetTile.x - startTile.x, targetTile.y - startTile.y);
     const oppositeDirection = this.reverseDirection(direction);
-    return event.isCollidedWithCharacters(targetTile.x, targetTile.y)
-        && this.isTilePassable(startTile, direction)
-        && this.isTilePassable(targetTile, oppositeDirection);
+    return this.isTilePassable(startTile, direction)
+        && this.isTilePassable(targetTile, oppositeDirection)
+        && !event.isCollidedWithCharacters(targetTile.x, targetTile.y);
 };
 Game_Map.prototype.isTilePassable = function (tile, d) {
     const key = `${tile.x},${tile.y},${d}`;
@@ -2840,6 +2893,9 @@ Game_Map.prototype.computeDirection = function (dx, dy) {
  */
 Game_Map.prototype.reverseDirection = function (d) {
     return 10 - d;
+};
+Game_Map.prototype.samePoint = function (p1, p2) {
+    return p1.x == p2.x && p1.y == p2.y;
 };
 Game_Map.prototype.eventsRangeXy = function (tx, ty) {
     return this.events().filter(function (event) {
@@ -4493,12 +4549,12 @@ Scene_Battle.prototype.commandCharge = function () {
     if (BattleManager.canRun()) {
         BattleManager.moveCount -= 1;
         BattleManager.actionCount -= 1;
+        BattleManager._battlePhase = BattlePhase.InputCharge;
         this._moveCommandWindow.close();
         this._tacticsCommandWindow.close();
         // TODO account for critical failure
         // TODO switch back to flexible movement when done
         // TODO special phase for special pathfinding + no menu
-        BattleManager._battlePhase = BattlePhase.InputMove;
         BattleManager.refreshMoveTiles();
     }
     else {

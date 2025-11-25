@@ -31,7 +31,8 @@ export enum BattlePhase {
     Init = "init",
     Start = "start",
     InputMove = "inputMove",
-    Explore = "explore", // TODO
+    InputCharge = "inputCharge", // TODO
+    Explore = "explore", // TODO remove?
     Target = "target",
     ProcessMove = "processMove",
     Action = "action",
@@ -189,6 +190,7 @@ BattleManager.isActive = function() {
         switch (this._battlePhase) {
             case BattlePhase.Explore:
             case BattlePhase.InputMove:
+            case BattlePhase.InputCharge:
             case BattlePhase.Target:
                 return true;
         }
@@ -225,6 +227,9 @@ BattleManager.updateBattlersPhase = function() {
             this.updateExplore();
             break;
         case BattlePhase.InputMove:
+            this.updateSelect();
+            break;
+        case BattlePhase.InputCharge:
             this.updateSelect();
             break;
         case BattlePhase.Target:
@@ -454,6 +459,7 @@ BattleManager.updateSelect = function() {
     }
     if ($gameSelector.checkDestination(this._subject)) {
         SoundManager.playOk();
+        $gameMap._flexibleMovement = true; // Go back to free movement range
         this._battlePhase = BattlePhase.ProcessMove;
         $gameMap.clearTiles();
     }

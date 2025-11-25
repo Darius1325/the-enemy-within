@@ -528,12 +528,12 @@ Scene_Battle.prototype.commandCharge = function() {
     if (BattleManager.canRun()) {
         BattleManager.moveCount -= 1;
         BattleManager.actionCount -= 1;
+        BattleManager._battlePhase = BattlePhase.InputCharge;
         this._moveCommandWindow.close();
         this._tacticsCommandWindow.close();
         // TODO account for critical failure
         // TODO switch back to flexible movement when done
         // TODO special phase for special pathfinding + no menu
-        BattleManager._battlePhase = BattlePhase.InputMove;
         BattleManager.refreshMoveTiles();
     } else {
         SoundManager.playCancel();
