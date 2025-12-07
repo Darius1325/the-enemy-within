@@ -25,7 +25,7 @@ TEW.DATABASE.NPCS.SET = {
         stats: {
             WEAS: 28, 
             BALS: 32, 
-            STRG: 31, 
+            STRG: 31,
             TOUG: 41, 
             INIT: 38, 
             AGIL: 34, 

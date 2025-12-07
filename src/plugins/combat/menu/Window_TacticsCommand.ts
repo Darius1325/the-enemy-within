@@ -81,7 +81,7 @@ Window_TacticsCommand.prototype.addMoveCommand = function() {
 };
 
 Window_TacticsCommand.prototype.addActionCommand = function() {
-    this.addCommand(TEW.COMBAT.SYSTEM.action, 'action', false);
+    this.addCommand(TEW.COMBAT.SYSTEM.action, 'action', true);
 };
 
 Window_TacticsCommand.prototype.addAdvantageCommand = function() {

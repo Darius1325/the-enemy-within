@@ -188,6 +188,19 @@ const TEW: {
          * @returns void
          */
         rollInitiative?: (actor: Game_Actor) => number;
+
+        combatOpposedSkillTest?: (
+            compValueAttacker: number,
+            compValueDefender: number,
+            isAttackerPlayer: boolean,
+            isDefenderPlayer: boolean
+        ) => {
+            slAttacker: number,
+            slDefender: number,
+            success: boolean,
+            criticalAttacker: boolean,
+            criticalDefender: boolean
+        };
     };
 
     /** Battle system constants and utilities */
@@ -357,6 +370,8 @@ const TEW: {
             }[];
         };
 
+        isMeleeWeapon?: (weapon: MeleeWeapon | RangedWeapon) => boolean;
+
         /**
          * Find the competence value associated with a weapon group.
          * If the battler does not have that competence, this function returns its base weapon or ballistic skill.
@@ -365,7 +380,26 @@ const TEW: {
          * @param isMelee true if the weapon is melee, false if it is ranged
          * @returns Whether the battler has the right competence and the effective value
          */
-        getCombatCompOrDefault?: (battler: Game_BattlerBase, weaponGroup: WeaponGroup, isMelee: boolean) => {
+        getAttackCompOrDefault?: (battler: Game_BattlerBase, weaponGroup: WeaponGroup, isMelee: boolean) => {
+            /**
+             * True if the battler has the competence matching weaponGroup
+             */
+            match: boolean;
+            /**
+             * Competence value used by the battler when fighting with this weaponGroup
+             */
+            value: number;
+        };
+
+        /**
+         * Find the competence value associated with a weapon group.
+         * If the battler does not have that competence, this function returns its base weapon or ballistic skill.
+         * @param battler Game_BattlerBase
+         * @param weaponGroup from TEW.DATABASE.WEAPONS.GROUP_IDS
+         * @param isMelee true if the weapon is melee, false if it is ranged
+         * @returns Whether the battler has the right competence and the effective value
+         */
+        getDefenceCompOrDefault?: (battler: Game_BattlerBase, weaponGroup: WeaponGroup, isMelee: boolean) => {
             /**
              * True if the battler has the competence matching weaponGroup
              */

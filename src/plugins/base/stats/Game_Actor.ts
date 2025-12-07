@@ -99,6 +99,7 @@ Game_Actor.prototype.initCecile = function() {
     this.addWeapon("RAPIER");
     this.addWeapon("DAGGER");
     this.addWeapon("SLING");
+    this.equipMainHand(1);
 
     // armors
 

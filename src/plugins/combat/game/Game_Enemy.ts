@@ -107,7 +107,7 @@ Game_Enemy.prototype.paramBase = function(paramId: number) {
 
 // MHP is handled separately
 Game_Enemy.prototype.statName = function(paramId: number) {
-    return StatArray[paramId - 1];
+    return StatArray[paramId];
 }
 
 Game_Enemy.prototype.enemy = function() {

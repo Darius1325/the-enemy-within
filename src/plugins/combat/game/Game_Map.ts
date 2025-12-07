@@ -191,51 +191,58 @@ Game_Map.prototype.chargeRange = function(distance: number, event: Game_Characte
     }[] = [];
 
     for (const enemy of enemiesInRange) {
-        // TODO skip target if outside max range
 
-        const targetX = enemy._tx;
-        const targetY = enemy._ty;
+        const enemyX = enemy._tx;
+        const enemyY = enemy._ty;
+        const enemyPos: Point = { x: enemyX, y: enemyY };
 
-        const dx = targetX - startX;
-        const dy  = targetY - startY;
+        const dx = enemyX - startX;
+        const dy  = enemyY - startY;
+        const manhattanDistance = dx + dy;
+
+        if (manhattanDistance < TEW.COMBAT.SYSTEM.chargeMinimumRange || manhattanDistance > distance) {
+            continue;
+        }
 
         // If subject and target are on the same row or column, all rays would traverse the same tiles
         // we can skip ray tracing and check for obstacles along the row/column
         if (dx == 0) {
-            const lowestY = Math.min(startY, targetY);
-            const highestY = Math.max(startY, targetY);
+            const lowestY = Math.min(startY, enemyY);
+            const highestY = Math.max(startY, enemyY);
             const path = [];
             for (let i = lowestY; i < highestY; i++) {
                 path.push({ x: startX, y: i });
             }
-            if (this.isPathClear({ x: startX, y: startY }, path, event)) {
+            if (this.isPathClear({ x: startX, y: startY }, path, event)
+                && this.isMapPassableWithoutEventCheck(path.last(), enemyPos)) {
                 targettableEnemies.push({
-                    x: targetX,
-                    y: targetY,
+                    x: enemyX,
+                    y: enemyY,
                     path
                 });
-                this.addTile(this.tile(targetX, targetY));
-                this.addTile(this.tile(path[path.length - 1].x, path[path.length - 1].y)); // TODO remove
+                this.addTile(this.tile(enemyX, enemyY));
+                this.addTile(this.tile(path.last().x, path.last().y)); // TODO remove
             }
         } else if (dy == 0) {
-            const lowestX = Math.min(startX, targetX);
-            const highestX = Math.max(startX, targetX);
+            const lowestX = Math.min(startX, enemyX);
+            const highestX = Math.max(startX, enemyX);
             const path = [];
             for (let i = lowestX; i < highestX; i++) {
                 path.push({ x: i, y: startY });
             }
-            if (this.isPathClear({ x: startX, y: startY }, path, event)) {
+            if (this.isPathClear({ x: startX, y: startY }, path, event)
+                && this.isMapPassableWithoutEventCheck(path.last(), enemyPos)) {
                 targettableEnemies.push({
-                    x: targetX,
-                    y: targetY,
+                    x: enemyX,
+                    y: enemyY,
                     path
                 });
-                this.addTile(this.tile(targetX, targetY));
-                this.addTile(this.tile(path[path.length - 1].x, path[path.length - 1].y)); // TODO remove
+                this.addTile(this.tile(enemyX, enemyY));
+                this.addTile(this.tile(path.last().x, path.last().y)); // TODO remove
             }
         } else {
             const startCorners: Point[] = this.computeTileCorners(startX, startY);
-            const targetCorners: Point[] = this.computeTileCorners(targetX, targetY);
+            const targetCorners: Point[] = this.computeTileCorners(enemyX, enemyY);
 
             // Exclude the corner(s) of the target furthest away from the subject, because ray-tracing these would be redundant
             const usefulCorners: Point[] = this.computeUsefulCorners(dx, dy, targetCorners);
@@ -243,8 +250,6 @@ Game_Map.prototype.chargeRange = function(distance: number, event: Game_Characte
             // Skip checking some tiles adjacent to the subject/target.
             // Because tile corners are also tile coordinates, we must exclude the start and end of some rays
             const excludedCorners: Point[] = this.computeExcludedCornersForRayTracing(dx, dy, startCorners, targetCorners);
-
-            // TODO skip A&W if same row or column
 
             const rays: {
                 start: Point,
@@ -254,9 +259,11 @@ Game_Map.prototype.chargeRange = function(distance: number, event: Game_Characte
             for (const start of startCorners) {
                 for (const target of usefulCorners) {
                     let path: Point[] = this.amanatidesWooSupercover(start, target);
-                    path = path.filter(point => !excludedCorners.includes(point));
-                    if (this.isPathClear(start, path, event)) {
-                        rays.push({start, target, path});
+                    const trimmedPath = path.filter(point => !excludedCorners.includes(point));
+                    if (this.isPathClear(start, trimmedPath, event)) {
+                        if (this.isMapPassableWithoutEventCheck(trimmedPath.last(), enemyPos)) {
+                            rays.push({start, target, path});
+                        }
                     }
                 }
             }
@@ -275,7 +282,7 @@ Game_Map.prototype.chargeRange = function(distance: number, event: Game_Characte
                                     path: ray1.path
                                 });
                                 this.addTile(this.tile(target.x, target.y));
-                                this.addTile(this.tile(ray1.path[ray1.path.length - 1].x, ray1.path[ray1.path.length - 1].y)); // TODO remove
+                                this.addTile(this.tile(ray1.path.last().x, ray1.path.last().y)); // TODO remove
                                 break targetValidityCheck;
                             }
                         }
@@ -283,7 +290,6 @@ Game_Map.prototype.chargeRange = function(distance: number, event: Game_Characte
                 }
             }
             // TODO store and re-use path
-            // TODO special check for target : don't check event collision because enemy is here (duh)
         }
     }
 };
@@ -462,11 +468,18 @@ Game_Map.prototype.checkAndStoreTileBorderPassability = function(x: number, y: n
 /**
  * Override from RMMV core
  */
-Game_Map.prototype.isMapPassable = function(startTile: Point, targetTile: Point, event: Game_CharacterBase) {
+Game_Map.prototype.isMapPassableWithoutEventCheck = function(startTile: Point, targetTile: Point) {
     const direction = this.computeDirection(targetTile.x - startTile.x, targetTile.y - startTile.y);
     const oppositeDirection = this.reverseDirection(direction);
     return this.isTilePassable(startTile, direction)
-        && this.isTilePassable(targetTile, oppositeDirection)
+        && this.isTilePassable(targetTile, oppositeDirection);
+};
+
+/**
+ * Override from RMMV core
+ */
+Game_Map.prototype.isMapPassable = function(startTile: Point, targetTile: Point, event: Game_CharacterBase) {
+    return this.isMapPassableWithoutEventCheck(startTile, targetTile, event)
         && !event.isCollidedWithCharacters(targetTile.x, targetTile.y);
 };
 

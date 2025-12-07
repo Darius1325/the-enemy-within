@@ -1,4 +1,8 @@
 // $PluginCompiler TEW_Combat.js
+
+import { Stat } from "../../_types/enum";
+import TEW from "../../_types/tew";
+
 // $StartCompilation
 
 //-----------------------------------------------------------------------------
@@ -192,44 +196,81 @@ Game_Action.prototype.setSubject = function(subject) {
 };
 
 Game_Action.prototype.apply = function(target) {
+    console.log("Game_Action.prototype.apply");
+    console.log("target, ", target);
+    console.log("this.subject(), ", this.subject());
     var result = target.result();
     this.subject().clearResult();
     result.clear();
 
+    const attacker = this.subject();
+    const attackerWeapon = TEW.COMBAT.getWeaponFromId(attacker.equippedWeapon().id); // TODO attack with second hand
+
+    const defenderWeapon = TEW.COMBAT.getWeaponFromId(target.equippedWeapon().id); // TODO defend with second hand
+
     // Damage calc
     //
     // Choose weapon (elsewhere)
-    //   Get CC characteristic associated with weapon
-    // Get (best) weapon from defender
-    //   Get CC characteristic associated with weapon
-    // Check for opponent's defensive tools (shield)
-    // Check attacker's talents for modifiers (make a list)
-    // Check defender's talents for modifiers (make a list)
-    // Check weapon effects on bonus (PRECISE)
-    // Check sizes
-    // Check outnumberment
-    //
+    //   Get combat characteristic associated with weapon
+    const attackerCombatSkill = TEW.COMBAT.getAttackCompOrDefault(
+        attacker,
+        attackerWeapon.group,
+        TEW.COMBAT.isMeleeWeapon(attackerWeapon)
+    );
+
+    // TODO Get (best) weapon from defender
+    //   Get combat characteristic associated with weapon
+    const defenderCombatSkill = TEW.COMBAT.getDefenceCompOrDefault(
+        target,
+        defenderWeapon.group,
+        TEW.COMBAT.isMeleeWeapon(defenderWeapon)
+    );
+
+    // TODO Check for opponent's defensive tools (shield)
+    // TODO Check attacker's talents for modifiers (make a list)
+    // TODO Check defender's talents for modifiers (make a list)
+    // TODO Check weapon effects on bonus (PRECISE)
+    // TODO Check sizes
+    // TODO Check outnumberment
+    
     // Roll dice
-    //
-    // Check attacker's talents on dice roll (make a list)
-    // Check weapon effects on dice roll (make a list)
+    const combatResult = TEW.DICE.combatOpposedSkillTest(
+        attackerCombatSkill.value,
+        defenderCombatSkill.value,
+        true,
+        false // GIGA TODO
+    );
+
+    // TODO Check attacker's talents on dice roll (make a list)
+    // TODO Check weapon effects on dice roll (make a list)
     // Check hit/miss
-    // Check weapon effects on crit (make a list)
-    // Check for crits
+    result.isHit = combatResult.slAttacker >= 0 && combatResult.success;
+    result.missed = !result.isHit;
+
+    // TODO Check weapon effects on crit (make a list)
+    // TODO Check for crits
+
     // Compute damage
     //   Add weapon bonus + stat bonus + opposed DR
     //   Check location
     //   Check weapon effects based on location (make a list)
-    //   Remove defender's toug + armor points
-    // Lookup crit table (help me)
+    //   Remove defender's toug + TODO armor points
+    const damage = combatResult.slAttacker - combatResult.slDefender
+        + attackerWeapon.damage + (attackerWeapon.strBonus ? attacker.paramBonus(Stat.STRG) : 0)
+        - target.paramBonus(Stat.TOUG);
+    console.log(
+        combatResult,
+        attackerWeapon.damage,
+        attackerWeapon.strBonus,
+        attacker.paramBonus(Stat.STRG),
+        target.paramBonus(Stat.TOUG)
+    );
 
-    result.isHit = true;
-    result.missed = false;
+    // TODO Lookup crit table (help me)
 
     if (result.isHit) {
         if (this.item().damage.type > 0) {
-            var value = 251;
-            this.executeDamage(target, value);
+            this.executeDamage(target, damage);
         }
         this.item().effects.forEach(function(effect) {
             this.applyItemEffect(target, effect);
@@ -239,6 +280,7 @@ Game_Action.prototype.apply = function(target) {
 };
 
 // Calculating damage value
+// Used in auto battle actions
 Game_Action.prototype.makeDamageValue = function(target, critical) {
     var item = this.item();
     var baseValue = this.evalDamageFormula(target);

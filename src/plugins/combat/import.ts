@@ -325,6 +325,7 @@ TEW.COMBAT.SYSTEM = TEW.COMBAT.SYSTEM || {};
 
 TEW.COMBAT.SYSTEM.actionRange = '1'; // TODO should be a number ?
 TEW.COMBAT.SYSTEM.mvp = 4; // TODO should be removed eventually
+TEW.COMBAT.SYSTEM.chargeMinimumRange = 4;
 
 TEW.COMBAT.SYSTEM.durationStartSprite = 1; // TODO should be removed eventually
 TEW.COMBAT.SYSTEM.gridOpacity = 1;
@@ -360,6 +361,7 @@ TEW.COMBAT.SYSTEM.moveRun = 'Run';
 TEW.COMBAT.SYSTEM.moveCharge = 'Charge';
 TEW.COMBAT.SYSTEM.moveSwitchWeapon = 'Switch weapons';
 TEW.COMBAT.SYSTEM.action = 'Action';
+TEW.COMBAT.SYSTEM.actionAttack = 'Attack';
 TEW.COMBAT.SYSTEM.advantage = 'Advantages';
 TEW.COMBAT.SYSTEM.wait = 'Wait';
 

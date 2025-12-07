@@ -118,6 +118,63 @@ Game_Interpreter.prototype.opposedSkillTest = function(compIdPlayer: string, mod
 };
 
 // Combat opposed test
+// SL = Success level (DR in french)
+// TODO loca
+TEW.DICE.combatOpposedSkillTest = function(
+    compValueAttacker: number,
+    compValueDefender: number,
+    isAttackerPlayer: boolean,
+    isDefenderPlayer: boolean
+) {
+    const rollAttacker = isAttackerPlayer ? TEW.DICE.displayDiceRoll() : TEW.DICE.roll();
+    const rollDefender = isDefenderPlayer ? TEW.DICE.displayDiceRoll() : TEW.DICE.roll();
+
+    let slAttacker = Math.floor(compValueAttacker / 10) - Math.floor(rollAttacker / 10);
+    let slDefender = Math.floor(compValueDefender / 10) - Math.floor(rollDefender / 10);
+
+    let successRollAttacker = compValueAttacker >= rollAttacker;
+    let successRollDefender = compValueDefender >= rollDefender;
+
+    if (rollAttacker <= 5) {
+        successRollAttacker = true;
+        slAttacker = slAttacker > 0 ? slAttacker : 0;
+    } else if (rollAttacker >= 96) {
+        successRollAttacker = false;
+        slAttacker = slAttacker < 0 ? slAttacker : 0;
+    }
+
+    if (rollDefender <= 5) {
+        successRollDefender = true;
+        slDefender = slDefender > 0 ? slDefender : 0;
+    } else if (rollDefender >= 96) {
+        successRollDefender = true;
+        slDefender = slDefender < 0 ? slDefender : 0;
+    }
+
+    let criticalAttacker = rollAttacker % 11 === 0 || rollAttacker === 100;
+    let criticalDefender = rollDefender % 11 === 0 || rollDefender === 100;
+
+    let success: boolean;
+    if (successRollAttacker && criticalAttacker) {
+        success = true;
+    } else if (successRollDefender && criticalDefender) {
+        success = false;
+    } else if (slAttacker > slDefender) {
+        success = true;
+    } else if (slDefender > slAttacker) {
+        success = false;
+    } else {
+        success = (compValueAttacker >= compValueDefender);
+    }
+
+    return {
+        slAttacker,
+        slDefender,
+        success,
+        criticalAttacker,
+        criticalDefender
+    };
+};
 
 
 // Scene_Dice

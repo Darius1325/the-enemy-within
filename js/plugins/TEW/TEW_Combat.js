@@ -317,6 +317,7 @@ TEW.COMBAT = TEW.COMBAT || {};
 TEW.COMBAT.SYSTEM = TEW.COMBAT.SYSTEM || {};
 TEW.COMBAT.SYSTEM.actionRange = '1'; // TODO should be a number ?
 TEW.COMBAT.SYSTEM.mvp = 4; // TODO should be removed eventually
+TEW.COMBAT.SYSTEM.chargeMinimumRange = 4;
 TEW.COMBAT.SYSTEM.durationStartSprite = 1; // TODO should be removed eventually
 TEW.COMBAT.SYSTEM.gridOpacity = 1;
 TEW.COMBAT.SYSTEM.selectorFile = 'Selector';
@@ -347,6 +348,7 @@ TEW.COMBAT.SYSTEM.moveRun = 'Run';
 TEW.COMBAT.SYSTEM.moveCharge = 'Charge';
 TEW.COMBAT.SYSTEM.moveSwitchWeapon = 'Switch weapons';
 TEW.COMBAT.SYSTEM.action = 'Action';
+TEW.COMBAT.SYSTEM.actionAttack = 'Attack';
 TEW.COMBAT.SYSTEM.advantage = 'Advantages';
 TEW.COMBAT.SYSTEM.wait = 'Wait';
 TEW.COMBAT.SYSTEM.waitSkillId = 7;
@@ -372,6 +374,9 @@ String.prototype.toBoolean = function () {
         default:
             return true;
     }
+};
+Array.prototype.last = function () {
+    return this[this.length - 1];
 };
 // Retrieve weapon info
 TEW.COMBAT.getWeaponQualityEffects = (weaponId) => {
@@ -516,9 +521,13 @@ TEW.COMBAT.getArmorInfos = (armorIds) => {
             }]
     };
 };
+// Differentiate between melee and ranged weapons
+TEW.COMBAT.isMeleeWeapon = (weapon) => {
+    return weapon['range'] === undefined;
+};
 // Get battler's stat value for combat depending on the wielded weapon's group
-TEW.COMBAT.getCombatCompOrDefault = (battler, weaponGroup, isMelee) => {
-    const compName = isMelee ? 'MELEE' : 'RANGED' + '_' + TEW.DATABASE.WEAPONS.GROUP_IDS[weaponGroup];
+TEW.COMBAT.getAttackCompOrDefault = (battler, weaponGroup, isMelee) => {
+    const compName = (isMelee ? 'MELEE' : 'RANGED') + '_' + TEW.DATABASE.WEAPONS.GROUP_IDS[weaponGroup];
     if (battler.hasComp(compName)) {
         return {
             match: true,
@@ -529,6 +538,23 @@ TEW.COMBAT.getCombatCompOrDefault = (battler, weaponGroup, isMelee) => {
         return {
             match: false,
             value: isMelee ? battler.weas : battler.bals
+        };
+    }
+};
+// Get battler's stat value for combat depending on the wielded weapon's group
+// TODO is Dodge
+TEW.COMBAT.getDefenceCompOrDefault = (battler, weaponGroup, isMelee) => {
+    const compName = isMelee ? ('MELEE' + '_' + TEW.DATABASE.WEAPONS.GROUP_IDS[weaponGroup]) : 'DODGE';
+    if (battler.hasComp(compName)) {
+        return {
+            match: true,
+            value: battler.comp(compName)
+        };
+    }
+    else {
+        return {
+            match: false,
+            value: battler.weas
         };
     }
 };
@@ -1666,41 +1692,52 @@ Game_Action.prototype.setSubject = function (subject) {
     }
 };
 Game_Action.prototype.apply = function (target) {
+    console.log("Game_Action.prototype.apply");
+    console.log("target, ", target);
+    console.log("this.subject(), ", this.subject());
     var result = target.result();
     this.subject().clearResult();
     result.clear();
+    const attacker = this.subject();
+    const attackerWeapon = TEW.COMBAT.getWeaponFromId(attacker.equippedWeapon().id); // TODO attack with second hand
+    const defenderWeapon = TEW.COMBAT.getWeaponFromId(target.equippedWeapon().id); // TODO defend with second hand
     // Damage calc
     //
     // Choose weapon (elsewhere)
-    //   Get CC characteristic associated with weapon
-    // Get (best) weapon from defender
-    //   Get CC characteristic associated with weapon
-    // Check for opponent's defensive tools (shield)
-    // Check attacker's talents for modifiers (make a list)
-    // Check defender's talents for modifiers (make a list)
-    // Check weapon effects on bonus (PRECISE)
-    // Check sizes
-    // Check outnumberment
-    //
+    //   Get combat characteristic associated with weapon
+    const attackerCombatSkill = TEW.COMBAT.getAttackCompOrDefault(attacker, attackerWeapon.group, TEW.COMBAT.isMeleeWeapon(attackerWeapon));
+    // TODO Get (best) weapon from defender
+    //   Get combat characteristic associated with weapon
+    const defenderCombatSkill = TEW.COMBAT.getDefenceCompOrDefault(target, defenderWeapon.group, TEW.COMBAT.isMeleeWeapon(defenderWeapon));
+    // TODO Check for opponent's defensive tools (shield)
+    // TODO Check attacker's talents for modifiers (make a list)
+    // TODO Check defender's talents for modifiers (make a list)
+    // TODO Check weapon effects on bonus (PRECISE)
+    // TODO Check sizes
+    // TODO Check outnumberment
     // Roll dice
-    //
-    // Check attacker's talents on dice roll (make a list)
-    // Check weapon effects on dice roll (make a list)
+    const combatResult = TEW.DICE.combatOpposedSkillTest(attackerCombatSkill.value, defenderCombatSkill.value, true, false // GIGA TODO
+    );
+    // TODO Check attacker's talents on dice roll (make a list)
+    // TODO Check weapon effects on dice roll (make a list)
     // Check hit/miss
-    // Check weapon effects on crit (make a list)
-    // Check for crits
+    result.isHit = combatResult.slAttacker >= 0 && combatResult.success;
+    result.missed = !result.isHit;
+    // TODO Check weapon effects on crit (make a list)
+    // TODO Check for crits
     // Compute damage
     //   Add weapon bonus + stat bonus + opposed DR
     //   Check location
     //   Check weapon effects based on location (make a list)
-    //   Remove defender's toug + armor points
-    // Lookup crit table (help me)
-    result.isHit = true;
-    result.missed = false;
+    //   Remove defender's toug + TODO armor points
+    const damage = combatResult.slAttacker - combatResult.slDefender
+        + attackerWeapon.damage + (attackerWeapon.strBonus ? attacker.paramBonus("STRG" /* Stat.STRG */) : 0)
+        - target.paramBonus("TOUG" /* Stat.TOUG */);
+    console.log(combatResult, attackerWeapon.damage, attackerWeapon.strBonus, attacker.paramBonus("STRG" /* Stat.STRG */), target.paramBonus("TOUG" /* Stat.TOUG */));
+    // TODO Lookup crit table (help me)
     if (result.isHit) {
         if (this.item().damage.type > 0) {
-            var value = 251;
-            this.executeDamage(target, value);
+            this.executeDamage(target, damage);
         }
         this.item().effects.forEach(function (effect) {
             this.applyItemEffect(target, effect);
@@ -1709,6 +1746,7 @@ Game_Action.prototype.apply = function (target) {
     }
 };
 // Calculating damage value
+// Used in auto battle actions
 Game_Action.prototype.makeDamageValue = function (target, critical) {
     var item = this.item();
     var baseValue = this.evalDamageFormula(target);
@@ -2182,8 +2220,12 @@ Game_BattlerBase.TPARAM = {
     'move': 0,
 };
 Game_BattlerBase.prototype.move = function () {
-    return (Number(this.tparam('move')) || TEW.COMBAT.SYSTEM.mvp)
-        * BattleManager.moveMultiplier;
+    let totalMove = (Number(this.tparam('move')) || TEW.COMBAT.SYSTEM.mvp) * BattleManager.moveMultiplier;
+    if (!$gameMap._flexibleMovement) { // Charge command selected
+        totalMove += Math.floor(this.comp('ATHLETICS') / 10) + 2; // Easy athletism test max possible roll
+    }
+    console.log("Game_BattlerBase.prototype.move : ", totalMove);
+    return totalMove;
 };
 Game_BattlerBase.prototype.tparamCode = function (tparam) {
     return Game_BattlerBase.TPARAM[tparam];
@@ -2360,7 +2402,7 @@ Game_Enemy.prototype.paramBase = function (paramId) {
 };
 // MHP is handled separately
 Game_Enemy.prototype.statName = function (paramId) {
-    return StatArray[paramId - 1];
+    return StatArray[paramId];
 };
 Game_Enemy.prototype.enemy = function () {
     return TEW.DATABASE.NPCS.SET[this._enemyId];
@@ -2598,63 +2640,70 @@ Game_Map.prototype.chargeRange = function (distance, event, through) {
     const enemiesInRange = $gameTroopTs.members(); // TODO exclude dead + adapt for enemy side
     const targettableEnemies = [];
     for (const enemy of enemiesInRange) {
-        // TODO skip target if outside max range
-        const targetX = enemy._tx;
-        const targetY = enemy._ty;
-        const dx = targetX - startX;
-        const dy = targetY - startY;
+        const enemyX = enemy._tx;
+        const enemyY = enemy._ty;
+        const enemyPos = { x: enemyX, y: enemyY };
+        const dx = enemyX - startX;
+        const dy = enemyY - startY;
+        const manhattanDistance = dx + dy;
+        if (manhattanDistance < TEW.COMBAT.SYSTEM.chargeMinimumRange || manhattanDistance > distance) {
+            continue;
+        }
         // If subject and target are on the same row or column, all rays would traverse the same tiles
         // we can skip ray tracing and check for obstacles along the row/column
         if (dx == 0) {
-            const lowestY = Math.min(startY, targetY);
-            const highestY = Math.max(startY, targetY);
+            const lowestY = Math.min(startY, enemyY);
+            const highestY = Math.max(startY, enemyY);
             const path = [];
             for (let i = lowestY; i < highestY; i++) {
                 path.push({ x: startX, y: i });
             }
-            if (this.isPathClear({ x: startX, y: startY }, path, event)) {
+            if (this.isPathClear({ x: startX, y: startY }, path, event)
+                && this.isMapPassableWithoutEventCheck(path.last(), enemyPos)) {
                 targettableEnemies.push({
-                    x: targetX,
-                    y: targetY,
+                    x: enemyX,
+                    y: enemyY,
                     path
                 });
-                this.addTile(this.tile(targetX, targetY));
-                this.addTile(this.tile(path[path.length - 1].x, path[path.length - 1].y)); // TODO remove
+                this.addTile(this.tile(enemyX, enemyY));
+                this.addTile(this.tile(path.last().x, path.last().y)); // TODO remove
             }
         }
         else if (dy == 0) {
-            const lowestX = Math.min(startX, targetX);
-            const highestX = Math.max(startX, targetX);
+            const lowestX = Math.min(startX, enemyX);
+            const highestX = Math.max(startX, enemyX);
             const path = [];
             for (let i = lowestX; i < highestX; i++) {
                 path.push({ x: i, y: startY });
             }
-            if (this.isPathClear({ x: startX, y: startY }, path, event)) {
+            if (this.isPathClear({ x: startX, y: startY }, path, event)
+                && this.isMapPassableWithoutEventCheck(path.last(), enemyPos)) {
                 targettableEnemies.push({
-                    x: targetX,
-                    y: targetY,
+                    x: enemyX,
+                    y: enemyY,
                     path
                 });
-                this.addTile(this.tile(targetX, targetY));
-                this.addTile(this.tile(path[path.length - 1].x, path[path.length - 1].y)); // TODO remove
+                this.addTile(this.tile(enemyX, enemyY));
+                this.addTile(this.tile(path.last().x, path.last().y)); // TODO remove
             }
         }
         else {
             const startCorners = this.computeTileCorners(startX, startY);
-            const targetCorners = this.computeTileCorners(targetX, targetY);
+            const targetCorners = this.computeTileCorners(enemyX, enemyY);
             // Exclude the corner(s) of the target furthest away from the subject, because ray-tracing these would be redundant
             const usefulCorners = this.computeUsefulCorners(dx, dy, targetCorners);
             // Skip checking some tiles adjacent to the subject/target.
             // Because tile corners are also tile coordinates, we must exclude the start and end of some rays
             const excludedCorners = this.computeExcludedCornersForRayTracing(dx, dy, startCorners, targetCorners);
-            // TODO skip A&W if same row or column
             const rays = [];
             for (const start of startCorners) {
                 for (const target of usefulCorners) {
                     let path = this.amanatidesWooSupercover(start, target);
-                    path = path.filter(point => !excludedCorners.includes(point));
-                    if (this.isPathClear(start, path, event)) {
-                        rays.push({ start, target, path });
+                    const trimmedPath = path.filter(point => !excludedCorners.includes(point));
+                    if (this.isPathClear(start, trimmedPath, event)) {
+                        if (this.isMapPassableWithoutEventCheck(trimmedPath.last(), enemyPos)) {
+                            rays.push({ start, target, path });
+                        }
                     }
                 }
             }
@@ -2671,7 +2720,7 @@ Game_Map.prototype.chargeRange = function (distance, event, through) {
                                     path: ray1.path
                                 });
                                 this.addTile(this.tile(target.x, target.y));
-                                this.addTile(this.tile(ray1.path[ray1.path.length - 1].x, ray1.path[ray1.path.length - 1].y)); // TODO remove
+                                this.addTile(this.tile(ray1.path.last().x, ray1.path.last().y)); // TODO remove
                                 break targetValidityCheck;
                             }
                         }
@@ -2679,7 +2728,6 @@ Game_Map.prototype.chargeRange = function (distance, event, through) {
                 }
             }
             // TODO store and re-use path
-            // TODO special check for target : don't check event collision because enemy is here (duh)
         }
     }
 };
@@ -2851,11 +2899,17 @@ Game_Map.prototype.checkAndStoreTileBorderPassability = function (x, y) {
 /**
  * Override from RMMV core
  */
-Game_Map.prototype.isMapPassable = function (startTile, targetTile, event) {
+Game_Map.prototype.isMapPassableWithoutEventCheck = function (startTile, targetTile) {
     const direction = this.computeDirection(targetTile.x - startTile.x, targetTile.y - startTile.y);
     const oppositeDirection = this.reverseDirection(direction);
     return this.isTilePassable(startTile, direction)
-        && this.isTilePassable(targetTile, oppositeDirection)
+        && this.isTilePassable(targetTile, oppositeDirection);
+};
+/**
+ * Override from RMMV core
+ */
+Game_Map.prototype.isMapPassable = function (startTile, targetTile, event) {
+    return this.isMapPassableWithoutEventCheck(startTile, targetTile, event)
         && !event.isCollidedWithCharacters(targetTile.x, targetTile.y);
 };
 Game_Map.prototype.isTilePassable = function (tile, d) {
@@ -3851,6 +3905,44 @@ Game_Interpreter.prototype.command301 = function () {
 };
 // #endregion =========================== Game_Interpreter ============================== //
 // ============================== //
+// #region ============================== Window_TacticsActionCommand ============================== //
+//-----------------------------------------------------------------------------
+// Window_TacticsActionCommand
+//
+// The window for selecting an actor's action on the tactics screen.
+function Window_TacticsActionCommand() {
+    this.initialize.apply(this, arguments);
+}
+Window_TacticsActionCommand.prototype = Object.create(Window_ActorCommand.prototype);
+Window_TacticsActionCommand.prototype.constructor = Window_TacticsActionCommand;
+Window_TacticsActionCommand.prototype.initialize = function () {
+    var y = Graphics.boxHeight - this.windowHeight();
+    Window_Command.prototype.initialize.call(this, this.windowWidth(), y);
+    this.openness = 0;
+    this.deactivate();
+    this._actor = null;
+};
+Window_TacticsActionCommand.prototype.setActor = function (actor) {
+    this._actor = actor;
+    this.refresh();
+    this.selectLast();
+    this.activate();
+    this.open();
+};
+Window_TacticsActionCommand.prototype.makeCommandList = function () {
+    if (this._actor) {
+        this.addAttackCommand();
+    }
+};
+Window_TacticsActionCommand.prototype.addAttackCommand = function () {
+    this.addCommand(TEW.COMBAT.SYSTEM.actionAttack, 'attack', BattleManager.canAct());
+};
+Window_TacticsActionCommand.prototype.select = function (index) {
+    Window_ActorCommand.prototype.select.call(this, index);
+    BattleManager.refreshMoveTiles();
+};
+// #endregion =========================== Window_TacticsActionCommand ============================== //
+// ============================== //
 // #region ============================== HalfWindow_TacticsDetails ============================== //
 //-----------------------------------------------------------------------------
 // HalfWindow_TacticsDetails
@@ -4035,7 +4127,7 @@ Window_TacticsMoveCommand.WALK_MOVE_MULTIPLIER = 1;
 Window_TacticsMoveCommand.RUN_COMMAND_INDEX = 1;
 Window_TacticsMoveCommand.RUN_MOVE_MULTIPLIER = 2;
 Window_TacticsMoveCommand.CHARGE_COMMAND_INDEX = 2;
-Window_TacticsMoveCommand.CHARGE_MOVE_MULTIPLIER = 1;
+Window_TacticsMoveCommand.CHARGE_MOVE_MULTIPLIER = 2;
 Window_TacticsMoveCommand.SWITCH_WEAPON_COMMAND_INDEX = 3;
 Window_TacticsMoveCommand.SWITCH_WEAPON_MOVE_MULTIPLIER = 0;
 Window_TacticsMoveCommand.prototype.initialize = function () {
@@ -4139,6 +4231,7 @@ Scene_Battle.prototype.createAllWindows = function () {
     this.createMapWindow();
     this.createStatusWindow();
     this.createMoveCommandWindow();
+    this.createActionCommandWindow();
     this.createWeaponCommandWindow();
     this.createWeaponListWindow();
     this.createWeaponDetailsWindow();
@@ -4166,6 +4259,7 @@ Scene_Battle.prototype.createEnemyWindow = function () {
 Scene_Battle.prototype.createActorCommandWindow = function () {
     this._tacticsCommandWindow = new Window_TacticsCommand();
     this._tacticsCommandWindow.setHandler('move', this.commandMove.bind(this));
+    this._tacticsCommandWindow.setHandler('action', this.commandAction.bind(this));
     // this._tacticsCommandWindow.setHandler('attack', this.commandAttack.bind(this));
     // this._tacticsCommandWindow.setHandler('skill',  this.commandSkill.bind(this));
     // this._tacticsCommandWindow.setHandler('guard',  this.commandGuard.bind(this));
@@ -4244,6 +4338,17 @@ Scene_Battle.prototype.createMoveCommandWindow = function () {
         this._moveCommandWindow.hide();
     });
     this.addWindow(this._moveCommandWindow);
+};
+Scene_Battle.prototype.createActionCommandWindow = function () {
+    this._actionCommandWindow = new Window_TacticsActionCommand();
+    this._actionCommandWindow.setHandler('attack', this.commandAttack.bind(this));
+    this._actionCommandWindow.setHandler('cancel', () => {
+        $gameMap.clearTiles();
+        this._tacticsCommandWindow.activate();
+        this._actionCommandWindow.deactivate();
+        this._actionCommandWindow.hide();
+    });
+    this.addWindow(this._actionCommandWindow);
 };
 Scene_Battle.prototype.createWeaponCommandWindow = function () {
     this._weaponsCommandWindow = new Window_TacticsWeaponCommand();
@@ -4597,6 +4702,23 @@ Scene_Battle.prototype.commandWait = function () {
     BattleManager.inputtingAction().setWait();
     BattleManager.setupAction();
     this._tacticsCommandWindow.close();
+};
+Scene_Battle.prototype.commandAction = function () {
+    this._actorWindow.hide();
+    this._actionCommandWindow.setActor(BattleManager.actor());
+    this._actionCommandWindow.refresh();
+    this._actionCommandWindow.show();
+    this._tacticsCommandWindow.deactivate();
+    this._actionCommandWindow.activate();
+    $gameSelector.performTransfer(BattleManager._subject.x, BattleManager._subject.y);
+    BattleManager.refreshMoveTiles();
+};
+Scene_Battle.prototype.commandAttack = function () {
+    var action = BattleManager.inputtingAction();
+    action.setAttack(); // TODO maybe get rid of that
+    // BattleManager.setupCombat(action); // WTF are you doing step bro ?
+    BattleManager.refreshRedCells(action);
+    this.onSelectAction();
 };
 Scene_Battle.prototype.onPersonalOk = function () {
     $gameSelector.setTransparent(false);
@@ -5041,7 +5163,7 @@ Window_TacticsCommand.prototype.addMoveCommand = function () {
     this.addCommand(TEW.COMBAT.SYSTEM.move, 'move', BattleManager.canMove());
 };
 Window_TacticsCommand.prototype.addActionCommand = function () {
-    this.addCommand(TEW.COMBAT.SYSTEM.action, 'action', false);
+    this.addCommand(TEW.COMBAT.SYSTEM.action, 'action', true);
 };
 Window_TacticsCommand.prototype.addAdvantageCommand = function () {
     this.addCommand(TEW.COMBAT.SYSTEM.advantage, 'advantage', false);

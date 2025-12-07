@@ -44,6 +44,7 @@ export interface Game_BattlerBase {
 
     param: (paramId: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10) => number;
     paramByName: (paramName: StatName) => number;
+    paramBonus: (paramName: StatName) => number;
 
     compPlus: (compId: string) => number;
     comp: (compId: string) => number;
@@ -70,6 +71,7 @@ export interface Game_BattlerBase {
     equipSecondHand: (index: number) => void;
     unequipMainHand: () => void;
     unequipSecondHand: () => void;
+    equippedWeapon: () => ActorWeapon;
     hasWeaponTEW: (weaponId: string) => boolean;
     addWeapon: (weaponId: string) => void;
     transferWeapon: (weapon: ActorWeapon) => void;
@@ -192,6 +194,10 @@ Game_BattlerBase.prototype.param = function(paramId: number) {
 
 Game_BattlerBase.prototype.paramByName = function(paramName: StatName) {
     return this.param(TEW.CHARACTERS.STATS[paramName.toLowerCase()]);
+};
+
+Game_BattlerBase.prototype.paramBonus = function(paramName: StatName) {
+    return Math.floor(this.param(TEW.CHARACTERS.STATS[paramName.toLowerCase()]) / 10);
 };
 
 // Competences
@@ -340,6 +346,18 @@ Game_BattlerBase.prototype.unequipSecondHand = function() {
     this._weapons.forEach((weapon: ActorWeapon) => {
         weapon.isInSecondHand = false;
     });
+}
+
+// TODO ???
+Game_BattlerBase.prototype.equippedWeapon = function() {
+    return this.mainHand() || {
+        id: 'UNARMED',
+        isInMainHand: true,
+        isInSecondHand: false,
+        isReloadable: false,
+        ammo: 0,
+        ammoType: undefined
+    };
 }
 
 // Armors

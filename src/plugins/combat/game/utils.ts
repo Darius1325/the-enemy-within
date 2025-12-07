@@ -4,6 +4,8 @@ import TEW from "../../_types/tew";
 import { ArmorGroup, WeaponGroup, WeaponQuality } from "../../_types/enum";
 import {Game_Battler} from "../../../rmmv/objects/Game_Battler";
 import {Game_BattlerBase} from "../../base/stats/Game_BattlerBase";
+import { MeleeWeapon } from "../../_types/meleeWeapon";
+import { RangedWeapon } from "../../_types/rangedWeapon";
 
 // $StartCompilation
 
@@ -19,6 +21,10 @@ String.prototype.toBoolean = function() {
         default:
             return true;
     }
+};
+
+Array.prototype.last = function() {
+    return this[this.length - 1];
 };
 
 // Retrieve weapon info
@@ -142,9 +148,14 @@ TEW.COMBAT.getArmorInfos = (armorIds: string[]) => {
     };
 };
 
+// Differentiate between melee and ranged weapons
+TEW.COMBAT.isMeleeWeapon = (weapon: MeleeWeapon | RangedWeapon) => {
+    return weapon['range'] === undefined;
+};
+
 // Get battler's stat value for combat depending on the wielded weapon's group
-TEW.COMBAT.getCombatCompOrDefault = (battler: Game_BattlerBase, weaponGroup: WeaponGroup, isMelee: boolean) => {
-    const compName = isMelee ? 'MELEE' : 'RANGED' + '_' + TEW.DATABASE.WEAPONS.GROUP_IDS[weaponGroup];
+TEW.COMBAT.getAttackCompOrDefault = (battler: Game_BattlerBase, weaponGroup: WeaponGroup, isMelee: boolean) => {
+    const compName = (isMelee ? 'MELEE' : 'RANGED') + '_' + TEW.DATABASE.WEAPONS.GROUP_IDS[weaponGroup];
     if (battler.hasComp(compName)) {
         return {
             match: true,
@@ -154,6 +165,23 @@ TEW.COMBAT.getCombatCompOrDefault = (battler: Game_BattlerBase, weaponGroup: Wea
         return {
             match: false,
             value: isMelee ? battler.weas : battler.bals
+        };
+    }
+};
+
+// Get battler's stat value for combat depending on the wielded weapon's group
+// TODO is Dodge
+TEW.COMBAT.getDefenceCompOrDefault = (battler: Game_BattlerBase, weaponGroup: WeaponGroup, isMelee: boolean) => {
+    const compName = isMelee ? ('MELEE' + '_' + TEW.DATABASE.WEAPONS.GROUP_IDS[weaponGroup]) : 'DODGE';
+    if (battler.hasComp(compName)) {
+        return {
+            match: true,
+            value: battler.comp(compName)
+        };
+    } else {
+        return {
+            match: false,
+            value: battler.weas
         };
     }
 };

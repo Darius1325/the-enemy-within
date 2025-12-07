@@ -8,6 +8,7 @@ import Window_TacticsStatus from "./Window_TacticsStatus";
 import Window_TacticsCommand from "./Window_TacticsCommand";
 import Window_TacticsInfo from "./Window_TacticsInfo";
 import Window_TacticsMoveCommand from "./move/Window_TacticsMoveCommand";
+import Window_TacticsActionCommand from "./action/Window_TacticsActionCommand";
 import { BattlePhase } from "../game/BattleManager";
 import Window_TacticsWeapons, { LoadedWeapon } from "./weapons/Window_TacticsWeapons";
 import Window_TacticsWeaponDetails from "./weapons/Window_TacticsWeaponDetails";
@@ -68,6 +69,7 @@ Scene_Battle.prototype.createAllWindows = function() {
     this.createStatusWindow();
 
     this.createMoveCommandWindow();
+    this.createActionCommandWindow();
 
     this.createWeaponCommandWindow();
     this.createWeaponListWindow();
@@ -101,6 +103,7 @@ Scene_Battle.prototype.createEnemyWindow = function() {
 Scene_Battle.prototype.createActorCommandWindow = function() {
     this._tacticsCommandWindow = new Window_TacticsCommand();
     this._tacticsCommandWindow.setHandler('move', this.commandMove.bind(this));
+    this._tacticsCommandWindow.setHandler('action', this.commandAction.bind(this));
     // this._tacticsCommandWindow.setHandler('attack', this.commandAttack.bind(this));
     // this._tacticsCommandWindow.setHandler('skill',  this.commandSkill.bind(this));
     // this._tacticsCommandWindow.setHandler('guard',  this.commandGuard.bind(this));
@@ -187,6 +190,18 @@ Scene_Battle.prototype.createMoveCommandWindow = function() {
         this._moveCommandWindow.hide();
     });
     this.addWindow(this._moveCommandWindow);
+};
+
+Scene_Battle.prototype.createActionCommandWindow = function() {
+    this._actionCommandWindow = new Window_TacticsActionCommand();
+    this._actionCommandWindow.setHandler('attack', this.commandAttack.bind(this));
+    this._actionCommandWindow.setHandler('cancel', () => {
+        $gameMap.clearTiles();
+        this._tacticsCommandWindow.activate();
+        this._actionCommandWindow.deactivate();
+        this._actionCommandWindow.hide();
+    });
+    this.addWindow(this._actionCommandWindow);
 };
 
 Scene_Battle.prototype.createWeaponCommandWindow = function() {
@@ -576,6 +591,25 @@ Scene_Battle.prototype.commandWait = function() {
     BattleManager.inputtingAction().setWait();
     BattleManager.setupAction();
     this._tacticsCommandWindow.close();
+};
+
+Scene_Battle.prototype.commandAction = function() {
+    this._actorWindow.hide();
+    this._actionCommandWindow.setActor(BattleManager.actor());
+    this._actionCommandWindow.refresh();
+    this._actionCommandWindow.show();
+    this._tacticsCommandWindow.deactivate();
+    this._actionCommandWindow.activate();
+    $gameSelector.performTransfer(BattleManager._subject.x, BattleManager._subject.y);
+    BattleManager.refreshMoveTiles();
+};
+
+Scene_Battle.prototype.commandAttack = function() {
+    var action = BattleManager.inputtingAction();
+    action.setAttack(); // TODO maybe get rid of that
+    // BattleManager.setupCombat(action); // WTF are you doing step bro ?
+    BattleManager.refreshRedCells(action);
+    this.onSelectAction();
 };
 
 Scene_Battle.prototype.onPersonalOk = function() {

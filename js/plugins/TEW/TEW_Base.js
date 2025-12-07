@@ -227,6 +227,57 @@ Game_Interpreter.prototype.opposedSkillTest = function (compIdPlayer, modifierPl
     };
 };
 // Combat opposed test
+// SL = Success level (DR in french)
+// TODO loca
+TEW.DICE.combatOpposedSkillTest = function (compValueAttacker, compValueDefender, isAttackerPlayer, isDefenderPlayer) {
+    const rollAttacker = isAttackerPlayer ? TEW.DICE.displayDiceRoll() : TEW.DICE.roll();
+    const rollDefender = isDefenderPlayer ? TEW.DICE.displayDiceRoll() : TEW.DICE.roll();
+    let slAttacker = Math.floor(compValueAttacker / 10) - Math.floor(rollAttacker / 10);
+    let slDefender = Math.floor(compValueDefender / 10) - Math.floor(rollDefender / 10);
+    let successRollAttacker = compValueAttacker >= rollAttacker;
+    let successRollDefender = compValueDefender >= rollDefender;
+    if (rollAttacker <= 5) {
+        successRollAttacker = true;
+        slAttacker = slAttacker > 0 ? slAttacker : 0;
+    }
+    else if (rollAttacker >= 96) {
+        successRollAttacker = false;
+        slAttacker = slAttacker < 0 ? slAttacker : 0;
+    }
+    if (rollDefender <= 5) {
+        successRollDefender = true;
+        slDefender = slDefender > 0 ? slDefender : 0;
+    }
+    else if (rollDefender >= 96) {
+        successRollDefender = true;
+        slDefender = slDefender < 0 ? slDefender : 0;
+    }
+    let criticalAttacker = rollAttacker % 11 === 0 || rollAttacker === 100;
+    let criticalDefender = rollDefender % 11 === 0 || rollDefender === 100;
+    let success;
+    if (successRollAttacker && criticalAttacker) {
+        success = true;
+    }
+    else if (successRollDefender && criticalDefender) {
+        success = false;
+    }
+    else if (slAttacker > slDefender) {
+        success = true;
+    }
+    else if (slDefender > slAttacker) {
+        success = false;
+    }
+    else {
+        success = (compValueAttacker >= compValueDefender);
+    }
+    return {
+        slAttacker,
+        slDefender,
+        success,
+        criticalAttacker,
+        criticalDefender
+    };
+};
 // Scene_Dice
 // function Scene_Dice() {
 //     this.initialize.apply(this, arguments);
@@ -265,7 +316,7 @@ Window_Dice.prototype.initialize = function (x, y, tens, units) {
     this._units = units;
     setTimeout(() => {
         this.close();
-    }, 2000);
+    }, 3000);
     this.refresh();
 };
 Window_Dice.prototype.windowWidth = function () {
@@ -373,6 +424,7 @@ Game_Actor.prototype.initCecile = function () {
     this.addWeapon("RAPIER");
     this.addWeapon("DAGGER");
     this.addWeapon("SLING");
+    this.equipMainHand(1);
     // armors
     // ammo
     this.addAmmo("PEBBLE", 20);
@@ -495,6 +547,9 @@ Game_BattlerBase.prototype.param = function (paramId) {
 Game_BattlerBase.prototype.paramByName = function (paramName) {
     return this.param(TEW.CHARACTERS.STATS[paramName.toLowerCase()]);
 };
+Game_BattlerBase.prototype.paramBonus = function (paramName) {
+    return Math.floor(this.param(TEW.CHARACTERS.STATS[paramName.toLowerCase()]) / 10);
+};
 // Competences
 Game_BattlerBase.prototype.compPlus = function (compId) {
     const compValue = this._competences[TEW.DATABASE.COMPS.IDS.indexOf(compId)];
@@ -609,6 +664,17 @@ Game_BattlerBase.prototype.unequipSecondHand = function () {
     this._weapons.forEach((weapon) => {
         weapon.isInSecondHand = false;
     });
+};
+// TODO ???
+Game_BattlerBase.prototype.equippedWeapon = function () {
+    return this.mainHand() || {
+        id: 'UNARMED',
+        isInMainHand: true,
+        isInSecondHand: false,
+        isReloadable: false,
+        ammo: 0,
+        ammoType: undefined
+    };
 };
 // Armors
 Game_BattlerBase.prototype.addArmor = function (armorId) {

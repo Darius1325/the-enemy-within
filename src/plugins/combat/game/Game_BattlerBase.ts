@@ -9,13 +9,17 @@ export default interface Game_BattlerBase {}
 // The superclass of Game_Battler. It mainly contains parameters calculation.
 
 Game_BattlerBase.TRAIT_TPARAM = 71;
-Game_BattlerBase.TPARAM  = {
+Game_BattlerBase.TPARAM = {
     'move': 0,
 };
 
 Game_BattlerBase.prototype.move = function() {
-    return (Number(this.tparam('move')) || TEW.COMBAT.SYSTEM.mvp)
-        * BattleManager.moveMultiplier;
+    let totalMove = (Number(this.tparam('move')) || TEW.COMBAT.SYSTEM.mvp) * BattleManager.moveMultiplier;
+    if (!$gameMap._flexibleMovement) { // Charge command selected
+        totalMove += Math.floor(this.comp('ATHLETICS') / 10) + 2; // Easy athletism test max possible roll
+    }
+    console.log("Game_BattlerBase.prototype.move : ", totalMove);
+    return totalMove;
 };
 
 Game_BattlerBase.prototype.tparamCode = function(tparam) {

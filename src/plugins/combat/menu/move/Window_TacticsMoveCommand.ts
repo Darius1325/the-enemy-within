@@ -20,7 +20,7 @@ Window_TacticsMoveCommand.RUN_COMMAND_INDEX = 1;
 Window_TacticsMoveCommand.RUN_MOVE_MULTIPLIER = 2;
 
 Window_TacticsMoveCommand.CHARGE_COMMAND_INDEX = 2;
-Window_TacticsMoveCommand.CHARGE_MOVE_MULTIPLIER = 1;
+Window_TacticsMoveCommand.CHARGE_MOVE_MULTIPLIER = 2;
 
 Window_TacticsMoveCommand.SWITCH_WEAPON_COMMAND_INDEX = 3;
 Window_TacticsMoveCommand.SWITCH_WEAPON_MOVE_MULTIPLIER = 0;

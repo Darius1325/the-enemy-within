@@ -18,6 +18,9 @@ declare global {
     interface String {
         toBoolean() : boolean;
     }
+    interface Array<T> {
+        last() : T;
+    }
 
     var Math: Math;
 

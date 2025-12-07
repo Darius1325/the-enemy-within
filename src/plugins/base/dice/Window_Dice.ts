@@ -19,7 +19,7 @@ Window_Dice.prototype.initialize = function(x: number, y: number, tens: number, 
     this._units = units;
     setTimeout(() => {
         this.close();
-    }, 2000);
+    }, 3000);
     this.refresh();
 };
 
