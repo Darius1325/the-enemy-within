@@ -1,5 +1,6 @@
 // $PluginCompiler TEW_Combat.js
 
+import { Point } from "../../_types/point";
 import Game_BattlerBase from "./Game_BattlerBase";
 
 export default interface Game_Battler extends Game_BattlerBase {
@@ -253,6 +254,19 @@ Game_Battler.prototype.makeShortestMoves = function() {
         this._char.moveStraight(d);
         this._moves[index].setMove(d / 2);
         index++;
+    }
+    this._tx = this._char.x;
+    this._ty = this._char.y;
+};
+
+Game_Battler.prototype.moveAlongPredefinedPath = function(path: Point[]) {
+    this._char.setPosition(this.x, this.y);
+    this._moves = [];
+    for (let i = 0; i < path.length; i++) {
+        var d = this._char.findDirectionTo(path[i].x, path[i].y);
+        this._char.moveStraight(d);
+        this._moves.push(new Game_Action(this));
+        this._moves[i].setMove(d / 2);
     }
     this._tx = this._char.x;
     this._ty = this._char.y;

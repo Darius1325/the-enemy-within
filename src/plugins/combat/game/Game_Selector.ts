@@ -315,11 +315,11 @@ Game_Selector.prototype.checkDestination = function(subject) {
 };
 
 Game_Selector.prototype.selectTarget = function(action) {
-    var select = this.select();
+    const selectedBattler = this.select();
     if ($gameSelector.isOk()) {
-        if ($gameMap.isOnTiles(this.x, this.y) && action.isTargetValid(select)) {
+        if ($gameMap.isOnTiles(this.x, this.y) && action.isTargetValid(selectedBattler)) {
             SoundManager.playOk();
-            return select.index();
+            return selectedBattler.index();
         } else {
             SoundManager.playBuzzer();
         }

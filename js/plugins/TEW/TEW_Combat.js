@@ -760,7 +760,7 @@ BattleManager.updateBattlersPhase = function () {
             this.updateSelect();
             break;
         case BattlePhase.InputCharge:
-            this.updateSelect();
+            this.updateChargeTarget();
             break;
         case BattlePhase.Target:
             this.updateTarget();
@@ -958,6 +958,28 @@ BattleManager.updateSelect = function () {
     if ($gameSelector.checkDestination(this._subject)) {
         SoundManager.playOk();
         $gameMap._flexibleMovement = true; // Go back to free movement range
+        this._battlePhase = BattlePhase.ProcessMove;
+        $gameMap.clearTiles();
+    }
+    if ($gameSelector.isCancelled()) {
+        SoundManager.playCancel();
+        this.previousSelect(); // TODO go back to previous menu instead
+    }
+};
+BattleManager.updateChargeTarget = function () {
+    const startX = this._subject.x;
+    const startY = this._subject.y;
+    const targetX = $gameSelector.x;
+    const targetY = $gameSelector.y;
+    this.refreshEnemyWindow($gameSelector.select());
+    const action = new Game_Action(this._subject);
+    action.setAttack();
+    if ($gameSelector.selectTarget(action) >= 0) { // -1 if invalid target
+        SoundManager.playOk();
+        // TODO limit path to actual movement range
+        console.log($gameMap._straightPaths[`${startX},${startY}`][`${targetX},${targetY}`]);
+        this._subject.moveAlongPredefinedPath($gameMap._straightPaths[`${startX},${startY}`][`${targetX},${targetY}`]);
+        $gameMap._flexibleMovement = true; // Go back to free movement range for next action
         this._battlePhase = BattlePhase.ProcessMove;
         $gameMap.clearTiles();
     }
@@ -2144,6 +2166,18 @@ Game_Battler.prototype.makeShortestMoves = function () {
     this._tx = this._char.x;
     this._ty = this._char.y;
 };
+Game_Battler.prototype.moveAlongPredefinedPath = function (path) {
+    this._char.setPosition(this.x, this.y);
+    this._moves = [];
+    for (let i = 0; i < path.length; i++) {
+        var d = this._char.findDirectionTo(path[i].x, path[i].y);
+        this._char.moveStraight(d);
+        this._moves.push(new Game_Action(this));
+        this._moves[i].setMove(d / 2);
+    }
+    this._tx = this._char.x;
+    this._ty = this._char.y;
+};
 Game_Battler.prototype.tpos = function () {
     return this.tx === this._char.x && this.ty === this._char.y;
 };
@@ -2497,6 +2531,7 @@ Game_Map.prototype.initialize = function () {
     this._flexibleMovement = true;
     this._tilePassability = {}; // for ranges, contains { 'x,y': boolean } entries
     this._tileBorderPassability = {}; // for ranges, contains { 'x,y,d': boolean } entries
+    this._straightPaths = {}; // store paths computed for charging/shooting, as { 'x1,y1': { 'x2,y2': [<path>], ... }, ... }
 };
 Game_Map.prototype.addTile = function (tile) {
     this._tiles.push(tile);
@@ -2637,15 +2672,18 @@ Game_Map.prototype.chargeRange = function (distance, event, through) {
     }
     const startX = event.x;
     const startY = event.y;
+    const startKey = `${startX},${startY}`;
+    this._straightPaths[startKey] = {};
     const enemiesInRange = $gameTroopTs.members(); // TODO exclude dead + adapt for enemy side
     const targettableEnemies = [];
     for (const enemy of enemiesInRange) {
         const enemyX = enemy._tx;
         const enemyY = enemy._ty;
+        const enemyKey = `${enemyX},${enemyY}`;
         const enemyPos = { x: enemyX, y: enemyY };
         const dx = enemyX - startX;
         const dy = enemyY - startY;
-        const manhattanDistance = dx + dy;
+        const manhattanDistance = Math.floor(dx) + Math.floor(dy);
         if (manhattanDistance < TEW.COMBAT.SYSTEM.chargeMinimumRange || manhattanDistance > distance) {
             continue;
         }
@@ -2662,11 +2700,13 @@ Game_Map.prototype.chargeRange = function (distance, event, through) {
                 && this.isMapPassableWithoutEventCheck(path.last(), enemyPos)) {
                 targettableEnemies.push({
                     x: enemyX,
-                    y: enemyY,
-                    path
+                    y: enemyY
                 });
                 this.addTile(this.tile(enemyX, enemyY));
-                this.addTile(this.tile(path.last().x, path.last().y)); // TODO remove
+                // Remove start position for move processing
+                // FIXME possible optimization by never including start tile ?
+                path.shift();
+                this._straightPaths[startKey][enemyKey] = path;
             }
         }
         else if (dy == 0) {
@@ -2680,11 +2720,12 @@ Game_Map.prototype.chargeRange = function (distance, event, through) {
                 && this.isMapPassableWithoutEventCheck(path.last(), enemyPos)) {
                 targettableEnemies.push({
                     x: enemyX,
-                    y: enemyY,
-                    path
+                    y: enemyY
                 });
                 this.addTile(this.tile(enemyX, enemyY));
-                this.addTile(this.tile(path.last().x, path.last().y)); // TODO remove
+                // Remove start position for move processing
+                path.shift();
+                this._straightPaths[startKey][enemyKey] = path;
             }
         }
         else {
@@ -2702,7 +2743,7 @@ Game_Map.prototype.chargeRange = function (distance, event, through) {
                     const trimmedPath = path.filter(point => !excludedCorners.includes(point));
                     if (this.isPathClear(start, trimmedPath, event)) {
                         if (this.isMapPassableWithoutEventCheck(trimmedPath.last(), enemyPos)) {
-                            rays.push({ start, target, path });
+                            rays.push({ start, target, path: trimmedPath });
                         }
                     }
                 }
@@ -2717,17 +2758,17 @@ Game_Map.prototype.chargeRange = function (distance, event, through) {
                                 targettableEnemies.push({
                                     x: target.x,
                                     y: target.y,
-                                    path: ray1.path
                                 });
                                 this.addTile(this.tile(target.x, target.y));
-                                this.addTile(this.tile(ray1.path.last().x, ray1.path.last().y)); // TODO remove
+                                // Remove start position for move processing
+                                ray1.path.shift();
+                                this._straightPaths[startKey][enemyKey] = ray1.path;
                                 break targetValidityCheck;
                             }
                         }
                     }
                 }
             }
-            // TODO store and re-use path
         }
     }
 };
@@ -2743,38 +2784,20 @@ Game_Map.prototype.computeTileCorners = function (x, y) {
  * Trust the process (we are engineers)
  */
 Game_Map.prototype.computeUsefulCorners = function (dx, dy, corners) {
-    if (dx == 0) {
-        if (dy < 0) { // target on NORTH
-            return [corners[2], corners[3]];
+    if (dx > 0) {
+        if (dy > 0) { // SOUTH EAST
+            return [corners[0], corners[1], corners[2]];
         }
-        else { // target on SOUTH
-            return [corners[0], corners[1]];
-        }
-    }
-    else if (dy == 0) {
-        if (dx < 0) { // target on WEST
-            return [corners[1], corners[3]];
-        }
-        else { // target on EAST
-            return [corners[0], corners[2]];
+        else { // NORTH EAST
+            return [corners[0], corners[2], corners[3]];
         }
     }
-    else { // remove the farthest corner
-        if (dx > 0) {
-            if (dy > 0) { // SOUTH EAST
-                return [corners[0], corners[1], corners[2]];
-            }
-            else { // NORTH EAST
-                return [corners[0], corners[2], corners[3]];
-            }
+    else {
+        if (dy > 0) { // SOUTH WEST
+            return [corners[0], corners[1], corners[3]];
         }
-        else {
-            if (dy > 0) { // SOUTH WEST
-                return [corners[0], corners[1], corners[3]];
-            }
-            else { // NORTH WEST
-                return [corners[1], corners[2], corners[3]];
-            }
+        else { // NORTH WEST
+            return [corners[1], corners[2], corners[3]];
         }
     }
 };
@@ -2784,22 +2807,23 @@ Game_Map.prototype.computeUsefulCorners = function (dx, dy, corners) {
 Game_Map.prototype.computeExcludedCornersForRayTracing = function (dx, dy, startCorners, targetCorners) {
     let result = [];
     if (dx > 0) {
-        if (dy > 0) { // SOUTH EAST
-            result = targetCorners;
+        if (dy > 0) { // SOUTH EAST - remove all target corners
+            return [targetCorners[0], targetCorners[1], targetCorners[2]];
         }
-        else { // NORTH EAST - keep start NE and target SW
-            result.push(startCorners[1], targetCorners[0], targetCorners[2]);
+        else { // NORTH EAST - keep subject N and target SW
+            return [startCorners[2], startCorners[3],
+                targetCorners[0], targetCorners[3]];
         }
     }
     else {
-        if (dy > 0) { // SOUTH WEST - keep start SW and target NE
-            result.push(startCorners[2], targetCorners[0], targetCorners[1]);
+        if (dy > 0) { // SOUTH WEST - keep subject W and target NE
+            result.push(startCorners[1], startCorners[3], targetCorners[0], targetCorners[3]);
         }
-        else { // NORTH WEST
-            result = startCorners;
+        else { // NORTH WEST - keep subject NW
+            result.push(startCorners[1], startCorners[2], startCorners[3]);
         }
     }
-    return [];
+    return result;
 };
 /**
  * Trace a ray from a tile corner to another, and compute the ray's supercover with Amanatides & Woo's algorithm
@@ -2909,6 +2933,9 @@ Game_Map.prototype.isMapPassableWithoutEventCheck = function (startTile, targetT
  * Override from RMMV core
  */
 Game_Map.prototype.isMapPassable = function (startTile, targetTile, event) {
+    if (startTile.x === targetTile.x && startTile.y === targetTile.y) {
+        return true;
+    }
     return this.isMapPassableWithoutEventCheck(startTile, targetTile, event)
         && !event.isCollidedWithCharacters(targetTile.x, targetTile.y);
 };
@@ -3390,11 +3417,11 @@ Game_Selector.prototype.checkDestination = function (subject) {
     return false;
 };
 Game_Selector.prototype.selectTarget = function (action) {
-    var select = this.select();
+    const selectedBattler = this.select();
     if ($gameSelector.isOk()) {
-        if ($gameMap.isOnTiles(this.x, this.y) && action.isTargetValid(select)) {
+        if ($gameMap.isOnTiles(this.x, this.y) && action.isTargetValid(selectedBattler)) {
             SoundManager.playOk();
-            return select.index();
+            return selectedBattler.index();
         }
         else {
             SoundManager.playBuzzer();

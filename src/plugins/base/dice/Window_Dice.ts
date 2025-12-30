@@ -33,8 +33,8 @@ Window_Dice.prototype.windowHeight = function() {
 
 Window_Dice.prototype.refresh = function() {
     this.contents.clear();
-    this.contents.drawDie(0, 1, this._tens, 'black', 'darkgreen');
-    this.contents.drawDie(100, 1, this._units, 'black', 'darkgreen');
+    this.contents.drawDie(0, 1, this._tens, 'black', 'lightgreen');
+    this.contents.drawDie(100, 1, this._units, 'black', 'lightgreen');
 };
 
 Window_Dice.prototype.open = function() {

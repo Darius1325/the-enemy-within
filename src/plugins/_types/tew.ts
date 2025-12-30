@@ -195,6 +195,8 @@ const TEW: {
             isAttackerPlayer: boolean,
             isDefenderPlayer: boolean
         ) => {
+            rollAttacker: number,
+            rollDefender: number,
             slAttacker: number,
             slDefender: number,
             success: boolean,
@@ -317,7 +319,7 @@ const TEW: {
          * @param weaponId from TEW.DATABASE.WEAPONS.IDS
          * @returns Weapon's in-battle effects
          */
-        getWeaponQualityEffects?: (weaponId: string) => {
+        getWeaponQualityEffects?: (weapon: MeleeWeapon | RangedWeapon) => {
             /** Modifier applied to dice rolls when attacking (before success/failure) */
             attackMod: number;
 
@@ -325,10 +327,10 @@ const TEW: {
             defenceMod: number;
 
             /** Modifier applied to SL when attacking (after success) */
-            attackBonusDR: number; // TODO rename to SL
+            attackBonusSL: number;
 
             /** Modifier applied to SL when defending (after success/failure) */
-            defenceBonusDR: number; // TODO rename to SL
+            defenceBonusSL: number;
 
             /** Bonus armor points when defending */
             bonusPA: number;

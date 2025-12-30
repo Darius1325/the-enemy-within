@@ -205,8 +205,10 @@ Game_Action.prototype.apply = function(target) {
 
     const attacker = this.subject();
     const attackerWeapon = TEW.COMBAT.getWeaponFromId(attacker.equippedWeapon().id); // TODO attack with second hand
+    const attackerWeaponEffects = TEW.COMBAT.getWeaponQualityEffects(attackerWeapon);
 
     const defenderWeapon = TEW.COMBAT.getWeaponFromId(target.equippedWeapon().id); // TODO defend with second hand
+    const defenderWeaponEffects = TEW.COMBAT.getWeaponQualityEffects(defenderWeapon);
 
     // Damage calc
     //
@@ -235,11 +237,32 @@ Game_Action.prototype.apply = function(target) {
     
     // Roll dice
     const combatResult = TEW.DICE.combatOpposedSkillTest(
-        attackerCombatSkill.value,
-        defenderCombatSkill.value,
+        attackerCombatSkill.value + attackerWeaponEffects.attackMod,
+        defenderCombatSkill.value + defenderWeaponEffects.defenceMod,
         true,
         false // GIGA TODO
     );
+
+    // Special weapon quality checks
+    // Impale
+    if (attackerWeaponEffects.effects.IMPALE) {
+        if (combatResult.rollAttacker % 10 === 0) {
+            combatResult.criticalAttacker = true;
+        }
+    }
+    // Damaging
+    if (attackerWeaponEffects.effects.DAMAGING) {
+        const damagingSL = (combatResult.rollAttacker % 10) || 10; // 10 SL if roll is a multiple of 10
+        if (damagingSL > combatResult.slAttacker) {
+            combatResult.slAttacker = damagingSL;
+        }
+    }
+
+    // FIXME do we add bonus SL before or after hit check ?
+    combatResult.slAttacker += attackerWeaponEffects.attackBonusSL;
+    combatResult.slDefender += attackerWeaponEffects.defenceBonusSL;
+
+    // TODO wait X seconds here for player input (fortune points)
 
     // TODO Check attacker's talents on dice roll (make a list)
     // TODO Check weapon effects on dice roll (make a list)

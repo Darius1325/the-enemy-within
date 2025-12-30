@@ -23,6 +23,7 @@ Game_Map.prototype.initialize = function() {
     this._flexibleMovement = true;
     this._tilePassability = {}; // for ranges, contains { 'x,y': boolean } entries
     this._tileBorderPassability = {}; // for ranges, contains { 'x,y,d': boolean } entries
+    this._straightPaths = {}; // store paths computed for charging/shooting, as { 'x1,y1': { 'x2,y2': [<path>], ... }, ... }
 };
 
 Game_Map.prototype.addTile = function(tile) {
@@ -183,22 +184,22 @@ Game_Map.prototype.chargeRange = function(distance: number, event: Game_Characte
 
     const startX = event.x;
     const startY = event.y;
+    const startKey = `${startX},${startY}`;
+    this._straightPaths[startKey] = {};
+
     const enemiesInRange: Game_Enemy[] = $gameTroopTs.members(); // TODO exclude dead + adapt for enemy side
-    const targettableEnemies: {
-        x: number,
-        y: number,
-        path: Point[]
-    }[] = [];
+    const targettableEnemies: Point[] = [];
 
     for (const enemy of enemiesInRange) {
 
         const enemyX = enemy._tx;
         const enemyY = enemy._ty;
+        const enemyKey = `${enemyX},${enemyY}`;
         const enemyPos: Point = { x: enemyX, y: enemyY };
 
         const dx = enemyX - startX;
-        const dy  = enemyY - startY;
-        const manhattanDistance = dx + dy;
+        const dy = enemyY - startY;
+        const manhattanDistance = Math.floor(dx) + Math.floor(dy);
 
         if (manhattanDistance < TEW.COMBAT.SYSTEM.chargeMinimumRange || manhattanDistance > distance) {
             continue;
@@ -214,14 +215,17 @@ Game_Map.prototype.chargeRange = function(distance: number, event: Game_Characte
                 path.push({ x: startX, y: i });
             }
             if (this.isPathClear({ x: startX, y: startY }, path, event)
-                && this.isMapPassableWithoutEventCheck(path.last(), enemyPos)) {
+                && this.isMapPassableWithoutEventCheck(path.last(), enemyPos)
+            ) {
                 targettableEnemies.push({
                     x: enemyX,
-                    y: enemyY,
-                    path
+                    y: enemyY
                 });
                 this.addTile(this.tile(enemyX, enemyY));
-                this.addTile(this.tile(path.last().x, path.last().y)); // TODO remove
+                // Remove start position for move processing
+                // FIXME possible optimization by never including start tile ?
+                path.shift();
+                this._straightPaths[startKey][enemyKey] = path;
             }
         } else if (dy == 0) {
             const lowestX = Math.min(startX, enemyX);
@@ -231,14 +235,16 @@ Game_Map.prototype.chargeRange = function(distance: number, event: Game_Characte
                 path.push({ x: i, y: startY });
             }
             if (this.isPathClear({ x: startX, y: startY }, path, event)
-                && this.isMapPassableWithoutEventCheck(path.last(), enemyPos)) {
+                && this.isMapPassableWithoutEventCheck(path.last(), enemyPos)
+            ) {
                 targettableEnemies.push({
                     x: enemyX,
-                    y: enemyY,
-                    path
+                    y: enemyY
                 });
                 this.addTile(this.tile(enemyX, enemyY));
-                this.addTile(this.tile(path.last().x, path.last().y)); // TODO remove
+                // Remove start position for move processing
+                path.shift();
+                this._straightPaths[startKey][enemyKey] = path;
             }
         } else {
             const startCorners: Point[] = this.computeTileCorners(startX, startY);
@@ -262,7 +268,7 @@ Game_Map.prototype.chargeRange = function(distance: number, event: Game_Characte
                     const trimmedPath = path.filter(point => !excludedCorners.includes(point));
                     if (this.isPathClear(start, trimmedPath, event)) {
                         if (this.isMapPassableWithoutEventCheck(trimmedPath.last(), enemyPos)) {
-                            rays.push({start, target, path});
+                            rays.push({start, target, path: trimmedPath});
                         }
                     }
                 }
@@ -279,17 +285,17 @@ Game_Map.prototype.chargeRange = function(distance: number, event: Game_Characte
                                 targettableEnemies.push({
                                     x: target.x,
                                     y: target.y,
-                                    path: ray1.path
                                 });
                                 this.addTile(this.tile(target.x, target.y));
-                                this.addTile(this.tile(ray1.path.last().x, ray1.path.last().y)); // TODO remove
+                                // Remove start position for move processing
+                                ray1.path.shift();
+                                this._straightPaths[startKey][enemyKey] = ray1.path;
                                 break targetValidityCheck;
                             }
                         }
                     }
                 }
             }
-            // TODO store and re-use path
         }
     }
 };
@@ -307,31 +313,17 @@ Game_Map.prototype.computeTileCorners = function(x: number, y: number){
  * Trust the process (we are engineers)
  */
 Game_Map.prototype.computeUsefulCorners = function(dx: number, dy: number, corners: Point[]) {
-    if (dx == 0) {
-        if (dy < 0) { // target on NORTH
-            return [corners[2], corners[3]];
-        } else { // target on SOUTH
-            return [corners[0], corners[1]];
+    if (dx > 0) {
+        if (dy > 0) { // SOUTH EAST
+            return [corners[0], corners[1], corners[2]];
+        } else { // NORTH EAST
+            return [corners[0], corners[2], corners[3]];
         }
-    } else if (dy == 0) {
-        if (dx < 0) { // target on WEST
-            return [corners[1], corners[3]];
-        } else { // target on EAST
-            return [corners[0], corners[2]];
-        }
-    } else { // remove the farthest corner
-        if (dx > 0) {
-            if (dy > 0) { // SOUTH EAST
-                return [corners[0], corners[1], corners[2]];
-            } else { // NORTH EAST
-                return [corners[0], corners[2], corners[3]];
-            }
-        } else {
-            if (dy > 0) { // SOUTH WEST
-                return [corners[0], corners[1], corners[3]];
-            } else { // NORTH WEST
-                return [corners[1], corners[2], corners[3]];
-            }
+    } else {
+        if (dy > 0) { // SOUTH WEST
+            return [corners[0], corners[1], corners[3]];
+        } else { // NORTH WEST
+            return [corners[1], corners[2], corners[3]];
         }
     }
 };
@@ -340,23 +332,21 @@ Game_Map.prototype.computeUsefulCorners = function(dx: number, dy: number, corne
  * Trust the process (we are engineers)
  */
 Game_Map.prototype.computeExcludedCornersForRayTracing = function(dx: number, dy: number, startCorners: Point[], targetCorners: Point[]) {
-    let result : Point[] = [];
     if (dx > 0) {
-        if (dy > 0) { // SOUTH EAST
-            result = targetCorners;
-        } else { // NORTH EAST - keep start NE and target SW
-            result.push(startCorners[1],
-                targetCorners[0], targetCorners[2]);
+        if (dy > 0) { // SOUTH EAST - remove all target corners
+            return [targetCorners[0], targetCorners[1], targetCorners[2]];
+        } else { // NORTH EAST - keep subject N and target SW
+            return [startCorners[2], startCorners[3],
+                targetCorners[0], targetCorners[3]];
         }
     } else {
-        if (dy > 0) { // SOUTH WEST - keep start SW and target NE
-            result.push(startCorners[2],
-                targetCorners[0], targetCorners[1]);
-        } else { // NORTH WEST
-            result = startCorners;
+        if (dy > 0) { // SOUTH WEST - keep subject W and target NE
+            return [startCorners[1], startCorners[3],
+                targetCorners[0], targetCorners[3]];
+        } else { // NORTH WEST - keep subject NW
+            return [startCorners[1], startCorners[2], startCorners[3]];
         }
     }
-    return [];
 };
 
 /**
@@ -479,6 +469,9 @@ Game_Map.prototype.isMapPassableWithoutEventCheck = function(startTile: Point, t
  * Override from RMMV core
  */
 Game_Map.prototype.isMapPassable = function(startTile: Point, targetTile: Point, event: Game_CharacterBase) {
+    if (startTile.x === targetTile.x && startTile.y === targetTile.y) {
+        return true;
+    }
     return this.isMapPassableWithoutEventCheck(startTile, targetTile, event)
         && !event.isCollidedWithCharacters(targetTile.x, targetTile.y);
 };

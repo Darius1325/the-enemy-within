@@ -28,14 +28,12 @@ Array.prototype.last = function() {
 };
 
 // Retrieve weapon info
-TEW.COMBAT.getWeaponQualityEffects = (weaponId: string) => {
-    const weapon = TEW.COMBAT.getWeaponFromId(weaponId);
-
+TEW.COMBAT.getWeaponQualityEffects = (weapon: MeleeWeapon | RangedWeapon) => {
     let attackMod: number = 0;
     let defenceMod: number = 0;
     let slashLevel: number = 0;
-    let attackBonusDR: number = 0;
-    let defenceBonusDR: number = 0;
+    let attackBonusSL: number = 0;
+    let defenceBonusSL: number = 0;
     let bonusPA: number = 0;
     let ignoredPA: number = 0;
     let effects: Partial<Record<keyof typeof WeaponQuality, boolean>> = {};
@@ -67,7 +65,7 @@ TEW.COMBAT.getWeaponQualityEffects = (weaponId: string) => {
             ignoredArmorTypes.push(ArmorGroup.PLATE);
             ignoredPA += 1;
         } else if (quality === WeaponQuality.PRECISE) {
-            attackBonusDR += 1;
+            attackBonusSL += 1;
         } else if (quality === WeaponQuality.PUMMEL) {
             effects.PUMMEL = true;
         } else if (quality === WeaponQuality.SLASH_1) {
@@ -75,21 +73,21 @@ TEW.COMBAT.getWeaponQualityEffects = (weaponId: string) => {
         } else if (quality === WeaponQuality.SLASH_2) {
             slashLevel = 2;
         } else if (quality === WeaponQuality.UNBALANCED) {
-            defenceBonusDR -= 1;
+            defenceBonusSL -= 1;
         } else if (quality === WeaponQuality.IMPACT) {
             effects.IMPACT = true;
         } else if (quality === WeaponQuality.FAST) {
-            attackBonusDR += 1;
+            attackBonusSL += 1;
         } else if (quality === WeaponQuality.TRIP) {
             effects.TRIP = true;
         } else if (quality === WeaponQuality.ENTANGLE) {
             effects.ENTANGLE = true;
         } else if (quality === WeaponQuality.SLOW) {
-            attackBonusDR -= 1;
+            attackBonusSL -= 1;
         } else if (quality === WeaponQuality.WRAP) {
-            attackBonusDR += 1;
+            attackBonusSL += 1;
         } else if (quality === WeaponQuality.IMPRECISE) {
-            attackBonusDR -= 1;
+            attackBonusSL -= 1;
         } else if (quality === WeaponQuality.TIRING) {
             effects.TIRING = true;
         } else if (quality === WeaponQuality.TRAP_BLADE) {
@@ -104,8 +102,8 @@ TEW.COMBAT.getWeaponQualityEffects = (weaponId: string) => {
     return {
         attackMod,
         defenceMod,
-        attackBonusDR,
-        defenceBonusDR,
+        attackBonusSL,
+        defenceBonusSL,
         bonusPA,
         ignoredPA,
         ignoredArmorTypes,

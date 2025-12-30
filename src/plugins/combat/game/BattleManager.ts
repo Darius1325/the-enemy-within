@@ -230,7 +230,7 @@ BattleManager.updateBattlersPhase = function() {
             this.updateSelect();
             break;
         case BattlePhase.InputCharge:
-            this.updateSelect();
+            this.updateChargeTarget();
             break;
         case BattlePhase.Target:
             this.updateTarget();
@@ -460,6 +460,35 @@ BattleManager.updateSelect = function() {
     if ($gameSelector.checkDestination(this._subject)) {
         SoundManager.playOk();
         $gameMap._flexibleMovement = true; // Go back to free movement range
+        this._battlePhase = BattlePhase.ProcessMove;
+        $gameMap.clearTiles();
+    }
+    if ($gameSelector.isCancelled()) {
+        SoundManager.playCancel();
+        this.previousSelect(); // TODO go back to previous menu instead
+    }
+};
+
+BattleManager.updateChargeTarget = function() {
+    const startX = this._subject.x;
+    const startY = this._subject.y;
+    const targetX = $gameSelector.x;
+    const targetY = $gameSelector.y;
+    this.refreshEnemyWindow($gameSelector.select());
+    const action = new Game_Action(this._subject);
+    action.setAttack();
+    if ($gameSelector.selectTarget(action) >= 0) { // -1 if invalid target
+        SoundManager.playOk();
+        // TODO limit path to actual movement range
+        // TODO select target using $gameTroopTs instead of $gameTroop
+        // TODO enemy position is not trimmed correctly
+        // TODO exact corner hits when ray tracing make an impossible path
+        //       either choose only one adjacent tile for collisions or trim it later
+        console.log($gameMap._straightPaths[`${startX},${startY}`][`${targetX},${targetY}`]);
+        this._subject.moveAlongPredefinedPath(
+            $gameMap._straightPaths[`${startX},${startY}`][`${targetX},${targetY}`]
+        );
+        $gameMap._flexibleMovement = true; // Go back to free movement range for next action
         this._battlePhase = BattlePhase.ProcessMove;
         $gameMap.clearTiles();
     }

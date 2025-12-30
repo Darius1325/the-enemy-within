@@ -168,6 +168,8 @@ TEW.DICE.combatOpposedSkillTest = function(
     }
 
     return {
+        rollAttacker,
+        rollDefender,
         slAttacker,
         slDefender,
         success,
