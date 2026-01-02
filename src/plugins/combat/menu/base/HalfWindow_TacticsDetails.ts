@@ -81,37 +81,37 @@ HalfWindow_TacticsDetails.prototype.drawTable2Columns = function(x: number, y: n
     }
 };
 
-// Drawing a wrapped text - used to draw to description
-HalfWindow_TacticsDetails.prototype.drawWrappedTextManually = function(text: string, x: number, y: number, fontSize: number) {
+// // Drawing a wrapped text - used to draw to description
+// HalfWindow_TacticsDetails.prototype.drawWrappedTextManually = function(text: string, x: number, y: number, fontSize: number) {
 
-    const words = text.split(" ");
-    const maxWidth = this.contentsWidth() - x;
+//     const words = text.split(" ");
+//     const maxWidth = this.contentsWidth() - x;
 
-    if (text.length <= 100){ this.contents.fontSize = 28; }
-    else if (text.length <= 200){ this.contents.fontSize = 20; }
-    // else if (text.length <= 200) { this.contents.fontSize = 16; }
-    else { this.contents.fontSize = 16; }
+//     if (text.length <= 100){ this.contents.fontSize = 28; }
+//     else if (text.length <= 200){ this.contents.fontSize = 20; }
+//     // else if (text.length <= 200) { this.contents.fontSize = 16; }
+//     else { this.contents.fontSize = 16; }
 
-    const spaceWidth = this.textWidth(" ");
-    const lineHeight = fontSize * 1.2;
-    let currentX = x;
-    let currentY = y;
+//     const spaceWidth = this.textWidth(" ");
+//     const lineHeight = fontSize * 1.2;
+//     let currentX = x;
+//     let currentY = y;
 
-    words.forEach(word => {
-        const wordWidth = this.textWidth(word);
+//     words.forEach(word => {
+//         const wordWidth = this.textWidth(word);
 
-        // If the word is too long, drawing it on the next line
-        if (currentX + wordWidth > maxWidth) {
-            currentX = x; // begining of the line
-            currentY += lineHeight; // next line
-        }
+//         // If the word is too long, drawing it on the next line
+//         if (currentX + wordWidth > maxWidth) {
+//             currentX = x; // begining of the line
+//             currentY += lineHeight; // next line
+//         }
 
-        // drawing it on the current line
-        this.drawText(word, currentX, currentY, wordWidth, 'left');
-        currentX += wordWidth + spaceWidth;
-    });
-    this.resetFontSettings();
-};
+//         // drawing it on the current line
+//         this.drawText(word, currentX, currentY, wordWidth, 'left');
+//         currentX += wordWidth + spaceWidth;
+//     });
+//     this.resetFontSettings();
+// };
 
 HalfWindow_TacticsDetails.prototype.drawLine = function(y: number) {
     const lineWidth = 40;

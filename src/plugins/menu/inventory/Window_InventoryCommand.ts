@@ -24,7 +24,7 @@ Window_InventoryCommand.prototype.initialize = function(x: number, y: number, wi
 
 // Max column number
 Window_InventoryCommand.prototype.maxCols = function() {
-    return 5;
+    return 4;
 };
 
 // Making the 5 tabs
@@ -33,7 +33,6 @@ Window_InventoryCommand.prototype.makeCommandList = function() {
     this.addCommand(TextManager.inventoryWeapons, 'inventory_weapons');
     this.addCommand(TextManager.inventoryArmors, 'inventory_armors');
     this.addCommand(TextManager.inventoryItems, 'inventory_items');
-    this.addCommand(TextManager.inventoryAmmo, 'inventory_ammo');
 };
 
 

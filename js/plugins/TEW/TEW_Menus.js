@@ -273,37 +273,31 @@ HalfWindow_Details.prototype.drawTable2Columns = function (x, y, width, rows, te
         this.drawText(textArray[row][1], cellXTd + 5, cellY, cellWidthSecondRow - 10, "left");
     }
 };
-// Drawing a wrapped text - used to draw to description
-HalfWindow_Details.prototype.drawWrappedTextManually = function (text, x, y, fontSize) {
-    const words = text.split(" ");
-    const maxWidth = this.contentsWidth() - x;
-    if (text.length <= 100) {
-        this.contents.fontSize = 28;
-    }
-    else if (text.length <= 200) {
-        this.contents.fontSize = 20;
-    }
-    // else if (text.length <= 200) { this.contents.fontSize = 16; }
-    else {
-        this.contents.fontSize = 16;
-    }
-    const spaceWidth = this.textWidth(" ");
-    const lineHeight = fontSize * 1.2;
-    let currentX = x;
-    let currentY = y;
-    words.forEach(word => {
-        const wordWidth = this.textWidth(word);
-        // If the word is too long, drawing it on the next line
-        if (currentX + wordWidth > maxWidth) {
-            currentX = x; // begining of the line
-            currentY += lineHeight; // next line
-        }
-        // drawing it on the current line
-        this.drawText(word, currentX, currentY, wordWidth, 'left');
-        currentX += wordWidth + spaceWidth;
-    });
-    this.resetFontSettings();
-};
+// // Drawing a wrapped text - used to draw to description
+// HalfWindow_Details.prototype.drawWrappedTextManually = function(text: string, x: number, y: number, fontSize: number) {
+//     const words = text.split(" ");
+//     const maxWidth = this.contentsWidth() - x;
+//     if (text.length <= 100){ this.contents.fontSize = 28; }
+//     else if (text.length <= 200){ this.contents.fontSize = 20; }
+//     // else if (text.length <= 200) { this.contents.fontSize = 16; }
+//     else { this.contents.fontSize = 16; }
+//     const spaceWidth = this.textWidth(" ");
+//     const lineHeight = fontSize * 1.2;
+//     let currentX = x;
+//     let currentY = y;
+//     words.forEach(word => {
+//         const wordWidth = this.textWidth(word);
+//         // If the word is too long, drawing it on the next line
+//         if (currentX + wordWidth > maxWidth) {
+//             currentX = x; // begining of the line
+//             currentY += lineHeight; // next line
+//         }
+//         // drawing it on the current line
+//         this.drawText(word, currentX, currentY, wordWidth, 'left');
+//         currentX += wordWidth + spaceWidth;
+//     });
+//     this.resetFontSettings();
+// };
 HalfWindow_Details.prototype.drawLine = function (y) {
     const lineWidth = 40;
     const lineSize = 2;
@@ -478,28 +472,28 @@ Window_InventoryTransferCommand.prototype.makeCommandList = function () {
 // #endregion =========================== Window_InventoryTransferCommand ============================== //
 // ============================== //
 // #region ============================== Window_InventoryAmmo ============================== //
-//-----------------------------------------------------------------------------
-// Window_InventoryInfo
-//
-// TODO
-function Window_InventoryAmmo() {
-    this.initialize.apply(this, arguments);
-}
-Window_InventoryAmmo.prototype = Object.create(HalfWindow_List.prototype);
-Window_InventoryAmmo.prototype.constructor = Window_InventoryAmmo;
-Window_InventoryAmmo.prototype.initialize = function () {
-    HalfWindow_List.prototype.initialize.call(this);
-    this._helpWindow = null;
-    // this.setHandler('ok', this.showHelpWindow.bind(this));
-};
-Window_InventoryAmmo.prototype.setActor = function (actor) {
-    if (this._actor !== actor) {
-        this._actor = actor;
-        // this._advancedCompsList = TEW.ADVANCED_COMPS.filter(comp => actor.hasComp(comp[0])); // TODO
-        // this._maxItems = TEW.BASE_COMPS.length + this._advancedCompsList.length;
-        this.refresh();
-    }
-};
+// //-----------------------------------------------------------------------------
+// // Window_InventoryInfo
+// //
+// // TODO
+// function Window_InventoryAmmo() {
+//     this.initialize.apply(this, arguments);
+// }
+// Window_InventoryAmmo.prototype = Object.create(HalfWindow_List.prototype);
+// Window_InventoryAmmo.prototype.constructor = Window_InventoryAmmo;
+// Window_InventoryAmmo.prototype.initialize = function() {
+//     HalfWindow_List.prototype.initialize.call(this);
+//     this._helpWindow = null;
+//     // this.setHandler('ok', this.showHelpWindow.bind(this));
+// };
+// Window_InventoryAmmo.prototype.setActor = function(actor: any) {
+//     if (this._actor !== actor) {
+//         this._actor = actor;
+//         // this._advancedCompsList = TEW.ADVANCED_COMPS.filter(comp => actor.hasComp(comp[0])); // TODO
+//         // this._maxItems = TEW.BASE_COMPS.length + this._advancedCompsList.length;
+//         this.refresh();
+//     }
+// };
 // #endregion =========================== Window_InventoryAmmo ============================== //
 // ============================== //
 // #region ============================== Window_InventoryArmorCommand ============================== //
@@ -748,15 +742,18 @@ Window_InventoryItemDetails.prototype.initialize = function () {
 Window_InventoryItemDetails.prototype.refresh = function () {
     this.contents.clear();
     if (this._item) {
-        this.drawDetails(this._item);
+        this.drawItemDetails(this._item);
+    }
+    else if (this._ammo) {
+        this.drawAmmoDetails(this._ammo);
     }
 };
 // Erase window content
 Window_InventoryItemDetails.prototype.empty = function () {
-    this._item = null;
+    this._item = undefined;
 };
-// Drawing the details
-Window_InventoryItemDetails.prototype.drawDetails = function (item) {
+// Drawing item details
+Window_InventoryItemDetails.prototype.drawItemDetails = function (item) {
     // Title
     this.drawUnderlinedText(item[1].name, 0, 0, this.contentsWidth(), "center");
     // Item's Icon
@@ -767,11 +764,28 @@ Window_InventoryItemDetails.prototype.drawDetails = function (item) {
     this.drawTable2Columns(0, 80, this.contentsWidth(), 3, [
         ["Owned :", "x" + item[1].quantity],
         ["Group :", item[1].groupLabel],
-        ["Enc. :", item[1].enc]
+        ["Enc. :", item[1].enc || 0]
     ]);
     this.drawLine(200);
     // Description
     this.drawWrappedTextManually(item[1].description, 0, 220, 24);
+};
+// Drawing ammunition details
+Window_InventoryItemDetails.prototype.drawAmmoDetails = function (ammo) {
+    // Title
+    this.drawUnderlinedText(ammo[1].name, 0, 0, this.contentsWidth(), "center");
+    // Item's Icon
+    this.drawIcon(ammo[1].groupIcon, 0, 0);
+    // Availability Icon
+    this.drawIcon(ammo[1].availabilityIcon, this.contentsWidth() - 32, 0);
+    // Table
+    this.drawTable2Columns(0, 80, this.contentsWidth(), 2, [
+        ["Owned :", "x" + ammo[1].quantity],
+        ["Group :", ammo[1].groupLabel]
+    ]);
+    this.drawLine(200);
+    // Description
+    this.drawWrappedTextManually(ammo[1].description, 0, 220, 24);
 };
 // #endregion =========================== Window_InventoryItemDetails ============================== //
 // ============================== //
@@ -796,7 +810,8 @@ Window_InventoryItems.prototype.setActor = function (actor) {
 };
 Window_InventoryItems.prototype.syncActor = function () {
     this._items = TEW.DATABASE.ITEMS.ARRAY.filter(item => this._actor.hasItem(item[0]));
-    this._maxItems = this._items.length;
+    this._ammo = TEW.DATABASE.WEAPONS.AMMO_ARRAY.filter(ammo => this._actor.hasAmmo(ammo[0]));
+    this._maxItems = this._ammo.length + this._items.length;
     this.refresh();
 };
 // Drawing all the items
@@ -814,21 +829,29 @@ Window_InventoryItems.prototype.drawItem = function (index) {
     const normalizedIndex = index - this.topIndex();
     const x = this._leftPadding; // padding
     const y = normalizedIndex * TEW.MENU.LINE_HEIGHT;
-    const item = this.itemFromIndex(index);
+    const itemOrAmmo = this.itemOrAmmoFromIndex(index);
     this.changeTextColor(this.systemColor());
-    this.drawIcon(item[1].groupIcon, x, y);
-    this.drawText(item[1].name, x + 32 + this._iconPadding, y, this._rightColumnPosition);
+    this.drawIcon(itemOrAmmo[1].groupIcon, x, y);
+    this.drawText(itemOrAmmo[1].name, x + 32 + this._iconPadding, y, this._rightColumnPosition);
     this.resetTextColor();
-    this.drawText(this._actor.item(item[0]), this._rightColumnPosition, y, this._rightColumnWidth, 'right');
+    if (index < this._ammo.length) {
+        this.drawText(this._actor.ammo(itemOrAmmo[0]), this._rightColumnPosition, y, this._rightColumnWidth, 'right');
+    }
+    else {
+        this.drawText(this._actor.item(itemOrAmmo[0]), this._rightColumnPosition, y, this._rightColumnWidth, 'right');
+    }
 };
 // Getting an item from its index
-Window_InventoryItems.prototype.itemFromIndex = function (index) {
+Window_InventoryItems.prototype.itemOrAmmoFromIndex = function (index) {
+    if (index < this._ammo.length) {
+        return this._ammo[index];
+    }
     index = Math.min(index, this._items.length - 1);
-    return this._items[index];
+    return this._items[index - this._ammo.length];
 };
 // Getting the current selected item
 Window_InventoryItems.prototype.item = function () {
-    return this._items[this.index()];
+    return this.itemOrAmmoFromIndex(this.index());
 };
 // Selecting an item
 Window_InventoryItems.prototype.select = function (index) {
@@ -1090,7 +1113,7 @@ Window_InventoryCommand.prototype.initialize = function (x, y, width) {
 };
 // Max column number
 Window_InventoryCommand.prototype.maxCols = function () {
-    return 5;
+    return 4;
 };
 // Making the 5 tabs
 Window_InventoryCommand.prototype.makeCommandList = function () {
@@ -1098,7 +1121,6 @@ Window_InventoryCommand.prototype.makeCommandList = function () {
     this.addCommand(TextManager.inventoryWeapons, 'inventory_weapons');
     this.addCommand(TextManager.inventoryArmors, 'inventory_armors');
     this.addCommand(TextManager.inventoryItems, 'inventory_items');
-    this.addCommand(TextManager.inventoryAmmo, 'inventory_ammo');
 };
 Window_InventoryCommand.prototype.cursorRight = function (wrap) {
     Window_HorzCommand.prototype.cursorRight.call(this, wrap);
@@ -1320,7 +1342,7 @@ Scene_Status.prototype.displayWindow = function () {
         this._spellsCommandWindow.show();
         this._spellsWindow.refresh();
         this._spellsDetailsWindow.refresh();
-        this._spellsCommandWindow.refresh();
+        this._spellsCommandWindow.clear();
     }
 };
 // #endregion === All windows handling === //
@@ -1409,12 +1431,21 @@ Scene_Status.prototype.createTalentDescriptionWindow = function () {
 };
 // Activating the talents window
 Scene_Status.prototype.activateStatusTalents = function (index = 0) {
+    const nbTalents = this._talentsWindow._talents.length;
     this.hideAllWindows();
     this._talentsWindow.show();
     this._talentDescriptionWindow.show();
-    this._commandWindow.deactivate();
-    this._talentsWindow.activate();
-    this._talentsWindow.select(index);
+    if (nbTalents > 0) {
+        this._commandWindow.deactivate();
+        this._talentsWindow.activate();
+        this._talentsWindow.select(index);
+    }
+    else {
+        this._commandWindow.activate();
+        this._talentsWindow.deselect();
+        this._talentDescriptionWindow.empty();
+        this._talentDescriptionWindow.clear();
+    }
     this._talentsWindow.refresh();
 };
 // Showing the talent description
@@ -1461,13 +1492,25 @@ Scene_Status.prototype.createSpellDetailsWindow = function () {
 };
 // Activating the spells window
 Scene_Status.prototype.activateStatusSpells = function (index = 0) {
+    const nbSpells = this._spellsWindow._maxItems;
     this.hideAllWindows();
     this._spellsWindow.show();
-    this._commandWindow.deactivate();
-    this._spellsWindow.activate();
     this._spellsDetailsWindow.show();
     this._spellsCommandWindow.show();
-    this._spellsWindow.select(index);
+    this._spellsCommandWindow.deselect();
+    if (nbSpells > 0) {
+        this._commandWindow.deactivate();
+        this._spellsWindow.activate();
+        this._spellsWindow.select(index);
+        this._spellsCommandWindow.refresh();
+    }
+    else {
+        this._commandWindow.activate();
+        this._spellsWindow.deselect();
+        this._spellsDetailsWindow.empty();
+        this._spellsDetailsWindow.clear();
+        this._spellsCommandWindow.clear();
+    }
     this._spellsWindow.refresh();
 };
 Scene_Status.prototype.showSpellDetails = function () {
@@ -1696,6 +1739,10 @@ Window_StatusSpellDetails.prototype.refresh = function () {
         this.drawDetails(this._spell);
     }
 };
+/** Clear all contents */
+Window_StatusSpellDetails.prototype.empty = function () {
+    this._spell = null;
+};
 // Drawing the details
 Window_StatusSpellDetails.prototype.drawDetails = function (spell) {
     var _a;
@@ -1732,7 +1779,7 @@ Window_StatusSpellDetails.prototype.drawDetails = function (spell) {
     this.drawLine(260);
     // Description
     // const descPadding = 20;
-    this.drawWrappedText(spell[1].desc, 0, 280, this.width - 2 * this.standardPadding(), 20);
+    this.drawWrappedTextManually(spell[1].desc, 0, 280, 24);
 };
 // #endregion =========================== Window_StatusSpellDetails ============================== //
 // ============================== //
@@ -1893,11 +1940,26 @@ Window_StatusTalentDescription.prototype.refresh = function () {
         this.drawDescription(this._talent);
     }
 };
+/** Clear all contents */
+Window_StatusTalentDescription.prototype.empty = function () {
+    this._talent = null;
+};
+Window_StatusTalentDescription.prototype.clear = function () {
+    if (this.contents) {
+        this.contents.clear();
+    }
+};
 /**
  * Draws the description of the selected talent.
  */
 Window_StatusTalentDescription.prototype.drawDescription = function (talent) {
-    this.drawWrappedText(talent[1].description, 10, 0, Graphics.boxWidth);
+    this.drawWrappedTextManually(talent[1].description, 10, 0, 24);
+    // this.drawWrappedText(
+    //     talent[1].description,
+    //     10,
+    //     0,
+    //     Graphics.boxWidth
+    // );
 };
 Window_StatusTalentDescription.prototype.verticalBorderPadding = function () {
     return 18;
@@ -2119,6 +2181,37 @@ Window_Base.prototype.drawWrappedText = function (text, x, y, width, fontsize = 
     this.drawText(line, x, currentY, width);
     this.resetFontSettings();
 };
+// Drawing a wrapped text - used to draw to description
+Window_Base.prototype.drawWrappedTextManually = function (text, x, y, fontSize) {
+    const words = text.split(" ");
+    const maxWidth = this.contentsWidth() - x;
+    if (text.length <= 100) {
+        this.contents.fontSize = 28;
+    }
+    else if (text.length <= 200) {
+        this.contents.fontSize = 20;
+    }
+    // else if (text.length <= 200) { this.contents.fontSize = 16; }
+    else {
+        this.contents.fontSize = 16;
+    }
+    const spaceWidth = this.textWidth(" ");
+    const lineHeight = fontSize * 1.2;
+    let currentX = x;
+    let currentY = y;
+    words.forEach(word => {
+        const wordWidth = this.textWidth(word);
+        // If the word is too long, drawing it on the next line
+        if (currentX + wordWidth > maxWidth) {
+            currentX = x; // begining of the line
+            currentY += lineHeight; // next line
+        }
+        // drawing it on the current line
+        this.drawText(word, currentX, currentY, wordWidth, 'left');
+        currentX += wordWidth + spaceWidth;
+    });
+    this.resetFontSettings();
+};
 // Window_Base.prototype.drawText = function(text, x, y, maxWidth, align, lineHeight = this.lineHeight()) {
 //     this.contents.drawText(text, x, y, maxWidth, lineHeight, align);
 // };
@@ -2307,7 +2400,6 @@ Scene_Equip.INFOS_WINDOW_INDEX = 0;
 Scene_Equip.WEAPONS_WINDOW_INDEX = 1;
 Scene_Equip.ARMORS_WINDOW_INDEX = 2;
 Scene_Equip.ITEMS_WINDOW_INDEX = 3;
-Scene_Equip.AMMO_WINDOW_INDEX = 4;
 // Creating the scene
 Scene_Equip.prototype.create = function () {
     // Init
@@ -2329,15 +2421,12 @@ Scene_Equip.prototype.create = function () {
     this.createItemsWindow();
     this.createItemsCommandWindow();
     this.createItemsDetailsWindow();
-    // Ammo Windows
-    this.createAmmoWindow();
     // // Help window
     // this.createHelpWindow();
     // this._helpWindow.hide();
     // this._weaponsWindow.setHelpWindow(this._helpWindow);
     // this._armorsWindow.setHelpWindow(this._helpWindow);
     // // this._itemsWindow.setHelpWindow(this._helpWindow);
-    // this._ammoWindow.setHelpWindow(this._helpWindow);
     // Transfer windows
     this.createTransferCommandWindow();
     this.createTransferSpinnerWindow();
@@ -2356,7 +2445,6 @@ Scene_Equip.prototype.refreshActor = function () {
     this._weaponsWindow.setActor(actor);
     this._armorsWindow.setActor(actor);
     this._itemsWindow.setActor(actor);
-    this._ammoWindow.setActor(actor);
     this._transferCommandWindow.setActor(actor);
 };
 // // Creating the help window
@@ -2379,7 +2467,6 @@ Scene_Equip.prototype.createCommandWindow = function () {
     this._commandWindow.setHandler('inventory_weapons', this.activateInventoryWeapons.bind(this));
     this._commandWindow.setHandler('inventory_armors', this.activateInventoryArmors.bind(this));
     this._commandWindow.setHandler('inventory_items', this.activateInventoryItems.bind(this));
-    this._commandWindow.setHandler('inventory_ammo', this.activateInventoryAmmo.bind(this));
     this.addWindow(this._commandWindow);
 };
 // Create the character choice window for object transfers
@@ -2399,7 +2486,7 @@ Scene_Equip.prototype.createTransferCommandWindow = function () {
                 this.activateInventoryArmors(this._armorsWindow.index());
                 break;
             case Window_InventoryTransferCommand.AMMO:
-                this.activateInventoryAmmo(this._ammoWindow.index());
+                this.activateInventoryItems(this._itemsWindow.index());
                 break;
         }
     });
@@ -2447,8 +2534,6 @@ Scene_Equip.prototype.hideAllWindows = function () {
     this._itemDetailsWindow.deactivate();
     this._itemsCommandWindow.hide();
     this._itemsCommandWindow.deactivate();
-    this._ammoWindow.hide();
-    this._ammoWindow.deactivate();
     this._transferCommandWindow.hide();
     this._transferCommandWindow.deactivate();
     this._transferSpinnerWindow.hide();
@@ -2487,10 +2572,6 @@ Scene_Equip.prototype.displayWindow = function () {
         this._itemDetailsWindow.refresh();
         this._itemsCommandWindow.clear();
     }
-    else if (this._commandWindow.index() == Scene_Equip.AMMO_WINDOW_INDEX) {
-        this._ammoWindow.show();
-        this._ammoWindow.refresh();
-    }
 };
 Scene_Equip.prototype.initTransfer = function () {
     switch (this._transferCommandWindow.type) {
@@ -2510,7 +2591,12 @@ Scene_Equip.prototype.initTransfer = function () {
             this.doTransfer();
             break;
         case Window_InventoryTransferCommand.AMMO:
-        // TODO
+            const selectedAmmo = this._itemsWindow.item()[0];
+            this._transferCommandWindow.item = selectedAmmo;
+            this._transferCommandWindow.deactivate();
+            this._transferSpinnerWindow.setMax(this._actor.ammo(selectedAmmo));
+            this._transferSpinnerWindow.start();
+            break;
     }
 };
 Scene_Equip.prototype.doTransfer = function () {
@@ -2717,29 +2803,29 @@ Window_InventoryTransferSpinner.prototype.onButtonDown2 = function () {
 // #endregion =========================== Window_InventoryTransferSpinner ============================== //
 // ============================== //
 // #region ============================== Scene_Equip ============================== //
-// ----------------------
-Scene_Equip.prototype.createAmmoWindow = function () {
-    this._ammoWindow = new Window_InventoryAmmo();
-    this._ammoWindow.setHandler('cancel', () => {
-        this._commandWindow.activate();
-        this._ammoWindow.deselect();
-    });
-    this._ammoWindow.hide();
-    this.addWindow(this._ammoWindow);
-};
-Scene_Equip.prototype.activateInventoryAmmo = function (index = 0) {
-    const nbAmmo = this._ammoWindow._ammo.length; // TODO
-    if (nbAmmo > 0) {
-        index = Math.min(index, nbAmmo - 1);
-        this.hideAllWindows();
-        this._currentMainWindow = this._ammoWindow;
-        this._ammoWindow.show();
-        this._commandWindow.deactivate();
-        this._ammoWindow.activate();
-        this._ammoWindow.select(index);
-        this._ammoWindow.refresh();
-    }
-};
+// // ----------------------
+// Scene_Equip.prototype.createAmmoWindow = function() {
+//     this._ammoWindow = new Window_InventoryAmmo();
+//     this._ammoWindow.setHandler('cancel', () => {
+//         this._commandWindow.activate();
+//         this._ammoWindow.deselect();
+//     });
+//     this._ammoWindow.hide();
+//     this.addWindow(this._ammoWindow);
+// };
+// Scene_Equip.prototype.activateInventoryAmmo = function(index = 0) {
+//     const nbAmmo = this._ammoWindow._ammo.length; // TODO
+//     if (nbAmmo > 0){
+//         index = Math.min(index, nbAmmo - 1);
+//         this.hideAllWindows();
+//         this._currentMainWindow = this._ammoWindow;
+//         this._ammoWindow.show();
+//         this._commandWindow.deactivate();
+//         this._ammoWindow.activate();
+//         this._ammoWindow.select(index);
+//         this._ammoWindow.refresh();
+//     }
+// };
 // #endregion =========================== Scene_Equip ============================== //
 // ============================== //
 // #region ============================== Scene_Equip ============================== //
@@ -2798,7 +2884,6 @@ Scene_Equip.prototype.activateInventoryArmors = function (index = 0) {
         this._armorsWindow.deselect();
         this._armorDetailsWindow.empty();
         this._armorDetailsWindow.clear();
-        this._armorsCommandWindow.clearCommandList();
         this._armorsCommandWindow.clear();
     }
     this._armorsWindow.refresh();
@@ -2924,7 +3009,7 @@ Scene_Equip.prototype.createItemsCommandWindow = function () {
     this.addWindow(this._itemsCommandWindow);
 };
 Scene_Equip.prototype.activateInventoryItems = function (index = 0) {
-    const nbItems = this._itemsWindow._items.length;
+    const nbItems = this._itemsWindow._maxItems;
     this.hideAllWindows();
     this._currentMainWindow = this._itemsWindow;
     this._itemsWindow.show();
@@ -2943,7 +3028,6 @@ Scene_Equip.prototype.activateInventoryItems = function (index = 0) {
         this._itemsWindow.deselect();
         this._itemDetailsWindow.empty();
         this._itemDetailsWindow.clear();
-        this._itemsCommandWindow.clearCommandList();
         this._itemsCommandWindow.clear();
     }
     this._itemsWindow.refresh();
@@ -2957,11 +3041,20 @@ Scene_Equip.prototype.activateCommandWindowItem = function () {
     }
 };
 Scene_Equip.prototype.showItemDetails = function () {
-    const item = this._itemsWindow.itemFromIndex(this._itemsWindow.index());
-    if (item) {
-        item[1].quantity = this._itemsWindow._actor.item(item[0]);
-        this._itemDetailsWindow._item = item;
-        this._itemDetailsWindow.refresh();
+    const itemOrAmmo = this._itemsWindow.itemOrAmmoFromIndex(this._itemsWindow.index());
+    if (itemOrAmmo) {
+        if (itemOrAmmo.enc) { // If Item
+            itemOrAmmo[1].quantity = this._itemsWindow._actor.item(itemOrAmmo[0]);
+            this._itemDetailsWindow._ammo = undefined;
+            this._itemDetailsWindow._item = itemOrAmmo;
+            this._itemDetailsWindow.refresh();
+        }
+        else { // Else Ammo
+            itemOrAmmo[1].quantity = this._itemsWindow._actor.ammo(itemOrAmmo[0]);
+            this._itemDetailsWindow._item = undefined;
+            this._itemDetailsWindow._ammo = itemOrAmmo;
+            this._itemDetailsWindow.refresh();
+        }
     }
     else {
         this._itemDetailsWindow.clear();
@@ -2973,7 +3066,13 @@ Scene_Equip.prototype.useItem = function () {
     this._itemsCommandWindow.callHandler('cancel');
 };
 Scene_Equip.prototype.transferItem = function () {
-    this._transferCommandWindow.setItemType(Window_InventoryTransferCommand.ITEM);
+    const itemOrAmmo = this._itemsWindow.item();
+    if (itemOrAmmo.enc) { // if Item
+        this._transferCommandWindow.setItemType(Window_InventoryTransferCommand.ITEM);
+    }
+    else { // Else Ammo
+        this._transferCommandWindow.setItemType(Window_InventoryTransferCommand.AMMO);
+    }
     this._transferCommandWindow.activate();
     this._transferCommandWindow.show();
     this._transferCommandWindow.select(0);
@@ -3037,7 +3136,6 @@ Scene_Equip.prototype.activateInventoryWeapons = function (index = 0) {
         this._weaponsWindow.deselect();
         this._weaponDetailsWindow.empty();
         this._weaponDetailsWindow.clear();
-        this._weaponsCommandWindow.clearCommandList();
         this._weaponsCommandWindow.clear();
     }
     this._weaponsWindow.refresh();

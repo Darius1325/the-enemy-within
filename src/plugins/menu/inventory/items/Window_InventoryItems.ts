@@ -3,16 +3,18 @@
 import TEW from "../../../_types/tew";
 import HalfWindow_List, { IHalfWindow_List } from "../../base/HalfWindow_List";
 import { Item } from "../../../_types/item";
+import { Ammunition } from "../../../_types/ammunition";
 
 export interface IWindow_InventoryItems extends IHalfWindow_List {
     _items: [string, Item][];
+    _ammo: [string, Ammunition][];
     _stayCount: number;
 
     syncActor: () => void;
     drawAllItems: () => void;
     drawItem: (index: number) => void;
-    armorFromIndex: (index: number) => [string, Item];
-    item: () => [string, Item];
+    itemOrAmmoFromIndex: (index: number) => [string, Item|Ammunition];
+    item: () => [string, Item|Ammunition];
     select: (index: number) => void;
     processOk: () => void;
 };
@@ -44,7 +46,8 @@ Window_InventoryItems.prototype.setActor = function(actor: any) {
 
 Window_InventoryItems.prototype.syncActor = function() {
     this._items = TEW.DATABASE.ITEMS.ARRAY.filter( item => this._actor.hasItem(item[0]));
-    this._maxItems = this._items.length;
+    this._ammo = TEW.DATABASE.WEAPONS.AMMO_ARRAY.filter(ammo => this._actor.hasAmmo(ammo[0]))
+    this._maxItems = this._ammo.length + this._items.length;
     this.refresh();
 };
 
@@ -65,23 +68,30 @@ Window_InventoryItems.prototype.drawItem = function(index: number) {
     const x = this._leftPadding; // padding
     const y = normalizedIndex  * TEW.MENU.LINE_HEIGHT;
 
-    const item = this.itemFromIndex(index);
+    const itemOrAmmo: [string, Item | Ammunition] = this.itemOrAmmoFromIndex(index);
     this.changeTextColor(this.systemColor());
-    this.drawIcon(item[1].groupIcon, x, y)
-    this.drawText(item[1].name, x + 32 + this._iconPadding, y, this._rightColumnPosition);
+    this.drawIcon(itemOrAmmo[1].groupIcon, x, y)
+    this.drawText(itemOrAmmo[1].name, x + 32 + this._iconPadding, y, this._rightColumnPosition);
     this.resetTextColor();
-    this.drawText(this._actor.item(item[0]), this._rightColumnPosition, y, this._rightColumnWidth, 'right');
+    if (index < this._ammo.length) {
+        this.drawText(this._actor.ammo(itemOrAmmo[0]), this._rightColumnPosition, y, this._rightColumnWidth, 'right');
+    } else {
+        this.drawText(this._actor.item(itemOrAmmo[0]), this._rightColumnPosition, y, this._rightColumnWidth, 'right');
+    }
 };
 
 // Getting an item from its index
-Window_InventoryItems.prototype.itemFromIndex = function(index: number) {
+Window_InventoryItems.prototype.itemOrAmmoFromIndex = function(index: number) {
+    if (index < this._ammo.length) {
+        return this._ammo[index];
+    }
     index = Math.min(index, this._items.length - 1);
-    return this._items[index];
+    return this._items[index - this._ammo.length];
 };
 
 // Getting the current selected item
 Window_InventoryItems.prototype.item = function() {
-    return this._items[this.index()];
+    return this.itemOrAmmoFromIndex(this.index());
 }
 
 // Selecting an item

@@ -44,16 +44,28 @@ Window_StatusTalentDescription.prototype.refresh = function () {
     }
 };
 
+/** Clear all contents */
+Window_StatusTalentDescription.prototype.empty = function() {
+    this._talent = null;
+};
+
+Window_StatusTalentDescription.prototype.clear = function() {
+    if (this.contents) {
+        this.contents.clear();
+    }
+}
+
 /**
  * Draws the description of the selected talent.
  */
 Window_StatusTalentDescription.prototype.drawDescription = function(talent) {
-    this.drawWrappedText(
-        talent[1].description,
-        10,
-        0,
-        Graphics.boxWidth
-    )
+    this.drawWrappedTextManually(talent[1].description, 10, 0, 24);
+    // this.drawWrappedText(
+    //     talent[1].description,
+    //     10,
+    //     0,
+    //     Graphics.boxWidth
+    // );
 };
 
 Window_StatusTalentDescription.prototype.verticalBorderPadding = function() {

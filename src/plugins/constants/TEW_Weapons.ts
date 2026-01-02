@@ -1357,7 +1357,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
 TEW.DATABASE.WEAPONS.AMMO_SET = {
     ARROW: {
         name: "Arrow",
-        icon: TEW.DATABASE.ICONS.SET.WEAPON_BOW,
+        groupIcon: TEW.DATABASE.ICONS.SET.WEAPON_BOW,
         group: WeaponGroup.BOW,
         groupLabel: WeaponGroupLabel.BOW,
         ammountSold: 12,
@@ -1367,11 +1367,11 @@ TEW.DATABASE.WEAPONS.AMMO_SET = {
         range: "+0",
         damage: "+0",
         qualities: [WeaponQuality.IMPALE],
-        description: "empty"
+        description: "A classic arrow to use with a bow."
     },
     BARBED_ARROW: {
         name: "Barbed Arrow",
-        icon: TEW.DATABASE.ICONS.SET.WEAPON_BOW,
+        groupIcon: TEW.DATABASE.ICONS.SET.WEAPON_BOW,
         group: WeaponGroup.BOW,
         groupLabel: WeaponGroupLabel.BOW,
         ammountSold: 12,
@@ -1381,11 +1381,11 @@ TEW.DATABASE.WEAPONS.AMMO_SET = {
         range: "+0",
         damage: "+0",
         qualities: [WeaponQuality.IMPALE, WeaponQuality.SLASH_1],
-        description: "empty"
+        description: "A sharp arrow designed to remain in the flesh of the target."
     },
     BODKIN_ARROW: {
         name: "Bodkin Arrow",
-        icon: TEW.DATABASE.ICONS.SET.WEAPON_BOW,
+        groupIcon: TEW.DATABASE.ICONS.SET.WEAPON_BOW,
         group: WeaponGroup.BOW,
         groupLabel: WeaponGroupLabel.BOW,
         ammountSold: 12,
@@ -1395,11 +1395,11 @@ TEW.DATABASE.WEAPONS.AMMO_SET = {
         range: "+0",
         damage: "+0",
         qualities: [WeaponQuality.IMPALE, WeaponQuality.PENETRATING],
-        description: "empty"
+        description: "A square-based arrow, used to penetrate heavy armor."
     },
     ELF_ARROW: {
         name: "Elf Arrow",
-        icon: TEW.DATABASE.ICONS.SET.WEAPON_BOW,
+        groupIcon: TEW.DATABASE.ICONS.SET.WEAPON_BOW,
         group: WeaponGroup.BOW,
         groupLabel: WeaponGroupLabel.BOW,
         ammountSold: 1,
@@ -1409,11 +1409,11 @@ TEW.DATABASE.WEAPONS.AMMO_SET = {
         range: "+50",
         damage: "+1",
         qualities: [WeaponQuality.ACCURATE, WeaponQuality.IMPALE, WeaponQuality.PENETRATING],
-        description: "empty"
+        description: "A perfectly balanced an sharpened arrow, designed by the High Elves."
     },
-    SHARO_STICK: {
+    SHARP_STICK: {
         name: "Sharp Stick",
-        icon: TEW.DATABASE.ICONS.SET.WEAPON_BOW,
+        groupIcon: TEW.DATABASE.ICONS.SET.WEAPON_BOW,
         group: WeaponGroup.BOW,
         groupLabel: WeaponGroupLabel.BOW,
         ammountSold: 1,
@@ -1423,11 +1423,11 @@ TEW.DATABASE.WEAPONS.AMMO_SET = {
         range: "/2",
         damage: "-2",
         qualities: [WeaponQuality.DANGEROUS, WeaponQuality.IMPRECISE, WeaponQuality.UNDAMAGING],
-        description: "empty"
+        description: "Just a pointy stick."
     },
     BOLT: {
         name: "Bolt",
-        icon: TEW.DATABASE.ICONS.SET.WEAPON_CROSSBOW,
+        groupIcon: TEW.DATABASE.ICONS.SET.WEAPON_CROSSBOW,
         group: WeaponGroup.CROSSBOW,
         groupLabel: WeaponGroupLabel.CROSSBOW,
         ammountSold: 12,
@@ -1437,11 +1437,11 @@ TEW.DATABASE.WEAPONS.AMMO_SET = {
         range: "+0",
         damage: "+0",
         qualities: [WeaponQuality.IMPALE],
-        description: "empty"
+        description: "A simple bolt to use with a crossbow."
     },
     LEAD_BULLET: {
         name: "Lead Bullet",
-        icon: TEW.DATABASE.ICONS.SET.WEAPON_SLING,
+        groupIcon: TEW.DATABASE.ICONS.SET.WEAPON_SLING,
         group: WeaponGroup.SLING,
         groupLabel: WeaponGroupLabel.SLING,
         ammountSold: 12,
@@ -1451,11 +1451,11 @@ TEW.DATABASE.WEAPONS.AMMO_SET = {
         range: "-10",
         damage: "+1",
         qualities: [WeaponQuality.PUMMEL],
-        description: "empty"
+        description: "A bullet made of lead to throw with a sling."
     },
     PEBBLE: {
         name: "Pebble",
-        icon: TEW.DATABASE.ICONS.SET.WEAPON_SLING,
+        groupIcon: TEW.DATABASE.ICONS.SET.WEAPON_SLING,
         group: WeaponGroup.SLING,
         groupLabel: WeaponGroupLabel.SLING,
         ammountSold: 1,
@@ -1465,11 +1465,11 @@ TEW.DATABASE.WEAPONS.AMMO_SET = {
         range: "-10",
         damage: "-2",
         qualities: [WeaponQuality.IMPRECISE, WeaponQuality.UNDAMAGING],
-        description: "empty"
+        description: "A simple pebble picked up from the ground."
     },
     STONE_BULLET: {
         name: "Stone Bullet",
-        icon: TEW.DATABASE.ICONS.SET.WEAPON_SLING,
+        groupIcon: TEW.DATABASE.ICONS.SET.WEAPON_SLING,
         group: WeaponGroup.SLING,
         groupLabel: WeaponGroupLabel.SLING,
         ammountSold: 12,
@@ -1479,11 +1479,11 @@ TEW.DATABASE.WEAPONS.AMMO_SET = {
         range: "+0",
         damage: "+0",
         qualities: [WeaponQuality.PUMMEL],
-        description: "empty"
+        description: "A projectile made of stone to be throwned by a sling."
     },
     BULLET_AND_POWDER: {
         name: "Bullet and Powder",
-        icon: TEW.DATABASE.ICONS.SET.PISTOL,
+        groupIcon: TEW.DATABASE.ICONS.SET.PISTOL,
         group: WeaponGroup.BLACKPOWDER,
         groupLabel: WeaponGroupLabel.BLACKPOWDER,
         ammountSold: 12,
@@ -1497,7 +1497,7 @@ TEW.DATABASE.WEAPONS.AMMO_SET = {
     },
     PAPER_CARTRIDGE: { //TODO
         name: "Paper Cartridge",
-        icon: TEW.DATABASE.ICONS.SET.PISTOL,
+        groupIcon: TEW.DATABASE.ICONS.SET.PISTOL,
         group: WeaponGroup.BLACKPOWDER,
         groupLabel: WeaponGroupLabel.BLACKPOWDER,
         ammountSold: 12,
@@ -1511,7 +1511,7 @@ TEW.DATABASE.WEAPONS.AMMO_SET = {
     },
     AQSHY_INFUSED_POWDER: { //TODO
         name: "Aqshy-Infused Powder",
-        icon: TEW.DATABASE.ICONS.SET.PISTOL,
+        groupIcon: TEW.DATABASE.ICONS.SET.PISTOL,
         group: WeaponGroup.BLACKPOWDER,
         groupLabel: WeaponGroupLabel.BLACKPOWDER,
         ammountSold: 12,
@@ -1525,7 +1525,7 @@ TEW.DATABASE.WEAPONS.AMMO_SET = {
     },
     PRECISION_SHOT_AND_POWDER: {
         name: "Precision Shot and Powder",
-        icon: TEW.DATABASE.ICONS.SET.PISTOL,
+        groupIcon: TEW.DATABASE.ICONS.SET.PISTOL,
         group: WeaponGroup.BLACKPOWDER,
         groupLabel: WeaponGroupLabel.BLACKPOWDER,
         ammountSold: 1,
@@ -1539,7 +1539,7 @@ TEW.DATABASE.WEAPONS.AMMO_SET = {
     },
     IMPROVISED_SHOT_AND_POWDER: {
         name: "Improvised Shot and Powder",
-        icon: TEW.DATABASE.ICONS.SET.PISTOL,
+        groupIcon: TEW.DATABASE.ICONS.SET.PISTOL,
         group: WeaponGroup.BLACKPOWDER,
         groupLabel: WeaponGroupLabel.BLACKPOWDER,
         ammountSold: 1,
@@ -1553,7 +1553,7 @@ TEW.DATABASE.WEAPONS.AMMO_SET = {
     },
     SMALL_SHOT_AND_POWDER: {
         name: "Small Shot and Powder",
-        icon: TEW.DATABASE.ICONS.SET.PISTOL,
+        groupIcon: TEW.DATABASE.ICONS.SET.PISTOL,
         group: WeaponGroup.BLACKPOWDER,
         groupLabel: WeaponGroupLabel.BLACKPOWDER,
         ammountSold: 12,
@@ -1567,7 +1567,7 @@ TEW.DATABASE.WEAPONS.AMMO_SET = {
     },
     SCRAP_AND_POWDER: {
         name: "Scrap and Powder",
-        icon: TEW.DATABASE.ICONS.SET.PISTOL,
+        groupIcon: TEW.DATABASE.ICONS.SET.PISTOL,
         group: WeaponGroup.BLACKPOWDER,
         groupLabel: WeaponGroupLabel.BLACKPOWDER,
         ammountSold: 12,
@@ -1581,7 +1581,7 @@ TEW.DATABASE.WEAPONS.AMMO_SET = {
     },
     LARGE_BULLET_AND_POWDER: {
         name: "Large Bullet and Powder",
-        icon: TEW.DATABASE.ICONS.SET.PISTOL,
+        groupIcon: TEW.DATABASE.ICONS.SET.PISTOL,
         group: WeaponGroup.BLACKPOWDER,
         groupLabel: WeaponGroupLabel.BLACKPOWDER,
         ammountSold: 12,
@@ -1628,4 +1628,5 @@ TEW.DATABASE.WEAPONS.ARRAY = TEW.DATABASE.WEAPONS.IDS
         .map((key: string) => [key, TEW.DATABASE.WEAPONS.MELEE_SET[key] || TEW.DATABASE.WEAPONS.RANGED_SET[key]])
 // #endregion === WEAPONS ARRAY === //
 
-
+TEW.DATABASE.WEAPONS.AMMO_IDS = Object.keys(TEW.DATABASE.WEAPONS.AMMO_SET).sort((a, b) => a.localeCompare(b));
+TEW.DATABASE.WEAPONS.AMMO_ARRAY = TEW.DATABASE.WEAPONS.AMMO_IDS.map((key: string) => [key, TEW.DATABASE.WEAPONS.AMMO_SET[key]]);

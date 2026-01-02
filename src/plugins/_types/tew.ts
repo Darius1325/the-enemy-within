@@ -57,12 +57,16 @@ const TEW: {
             RANGED_SET?: Record<string, RangedWeapon>;
             /** All ammunition by ID (for weapons with the RELOAD/RELOAD_X quality */
             AMMO_SET?: Record<string, Ammunition>;
-            /** All weapon IDs */
+            /** All weapon IDs in alphabetical order */
             IDS?: string[];
             /** Decoupled map of all weapons */
             ARRAY?: [string, MeleeWeapon | RangedWeapon][];
             /** Weapon group IDs */
             GROUP_IDS?: string[];
+            /** Ammunition IDs in alphabetical order */
+            AMMO_IDS?: string[];
+            /** Decoupled map of all ammo */
+            AMMO_ARRAY?: [string, Ammunition][];
         };
 
         /**

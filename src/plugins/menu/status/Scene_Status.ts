@@ -109,7 +109,7 @@ Scene_Status.prototype.displayWindow = function() {
         this._spellsCommandWindow.show();
         this._spellsWindow.refresh();
         this._spellsDetailsWindow.refresh();
-        this._spellsCommandWindow.refresh();
+        this._spellsCommandWindow.clear();
     }
 };
 // #endregion === All windows handling === //
@@ -204,21 +204,29 @@ Scene_Status.prototype.createTalentDescriptionWindow = function(){
 
 // Activating the talents window
 Scene_Status.prototype.activateStatusTalents = function(index:number = 0) {
+    const nbTalents = this._talentsWindow._talents.length;
     this.hideAllWindows();
     this._talentsWindow.show();
     this._talentDescriptionWindow.show();
-    this._commandWindow.deactivate();
-    this._talentsWindow.activate();
-    this._talentsWindow.select(index);
+    if (nbTalents > 0) {
+        this._commandWindow.deactivate();
+        this._talentsWindow.activate();
+        this._talentsWindow.select(index);
+    } else {
+        this._commandWindow.activate();
+        this._talentsWindow.deselect();
+        this._talentDescriptionWindow.empty();
+        this._talentDescriptionWindow.clear();
+    }
     this._talentsWindow.refresh();
 };
 
 // Showing the talent description
-Scene_Status.prototype.showTalentDescription = function(){
+Scene_Status.prototype.showTalentDescription = function() {
     const talent = this._talentsWindow.talentFromIndex(this._talentsWindow.index());
     this._talentDescriptionWindow._talent = talent;
     this._talentDescriptionWindow.refresh();
-}
+};
 // #endregion === Talents windows === //
 // === //
 // #region ====== Spells windows === //
@@ -247,8 +255,7 @@ Scene_Status.prototype.createSpellCommandWindow = function() {
     this._spellsCommandWindow.hide();
     this._spellsCommandWindow.deselect();
     this.addWindow(this._spellsCommandWindow);
-
-}
+};
 
 Scene_Status.prototype.createSpellDetailsWindow = function() {
     this._spellsDetailsWindow = new Window_StatusSpellDetails(
@@ -259,17 +266,28 @@ Scene_Status.prototype.createSpellDetailsWindow = function() {
     });
     this._spellsDetailsWindow.hide();
     this.addWindow(this._spellsDetailsWindow);
-}
+};
 
 // Activating the spells window
 Scene_Status.prototype.activateStatusSpells = function(index = 0) {
+    const nbSpells = this._spellsWindow._maxItems;
     this.hideAllWindows();
     this._spellsWindow.show();
-    this._commandWindow.deactivate();
-    this._spellsWindow.activate();
     this._spellsDetailsWindow.show();
     this._spellsCommandWindow.show();
-    this._spellsWindow.select(index);
+    this._spellsCommandWindow.deselect();
+    if (nbSpells > 0){
+        this._commandWindow.deactivate();
+        this._spellsWindow.activate();
+        this._spellsWindow.select(index);
+        this._spellsCommandWindow.refresh();
+    } else {
+        this._commandWindow.activate();
+        this._spellsWindow.deselect();
+        this._spellsDetailsWindow.empty();
+        this._spellsDetailsWindow.clear();
+        this._spellsCommandWindow.clear();
+    }
     this._spellsWindow.refresh();
 };
 
@@ -277,12 +295,12 @@ Scene_Status.prototype.showSpellDetails = function() {
     const spell = this._spellsWindow.spellFromIndex(this._spellsWindow.index());
     this._spellsDetailsWindow._spell = spell;
     this._spellsDetailsWindow.refresh();
-}
+};
 
 // Casting a spell
 Scene_Status.prototype.castSpell = function() {
     this._spellsCommandWindow.callHandler('cancel');
-}
+};
 
 // Activating the command window for spells
 Scene_Status.prototype.activateCommandWindowSpells = function() {
@@ -292,5 +310,5 @@ Scene_Status.prototype.activateCommandWindowSpells = function() {
         this._spellsCommandWindow.activate();
         this._spellsCommandWindow.select(0);
     }
-}
+};
 // #endregion === Spells windows === //

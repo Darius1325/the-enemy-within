@@ -81,7 +81,6 @@ Scene_Equip.prototype.activateInventoryWeapons = function(index = 0) {
         this._weaponsWindow.deselect();
         this._weaponDetailsWindow.empty();
         this._weaponDetailsWindow.clear();
-        this._weaponsCommandWindow.clearCommandList();
         this._weaponsCommandWindow.clear();
     }
     this._weaponsWindow.refresh();

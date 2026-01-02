@@ -25,7 +25,7 @@ export type Ammunition = {
      * @see {@link ../constants/icons.ts}
      * @example TEW.DATABASE.ICONS.SET.WEAPON_BOW
      */
-    icon: number,
+    groupIcon: number,
     /**
      * Ammunition group
      * @see {@link ../types/enum.ts#WeaponGroup}

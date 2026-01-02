@@ -83,7 +83,6 @@ Scene_Equip.prototype.activateInventoryArmors = function(index = 0) {
         this._armorsWindow.deselect();
         this._armorDetailsWindow.empty();
         this._armorDetailsWindow.clear();
-        this._armorsCommandWindow.clearCommandList();
         this._armorsCommandWindow.clear();
     }
     this._armorsWindow.refresh();

@@ -728,11 +728,21 @@ Game_BattlerBase.prototype.sortEquippedArmors = function () {
     this._equippedArmors = this._equippedArmors.sort((a, b) => TEW.DATABASE.ARMORS.IDS.indexOf(a) - TEW.DATABASE.ARMORS.IDS.indexOf(b));
 };
 // Ammo
+Game_BattlerBase.prototype.ammo = function (ammoId) {
+    return this._ammo[ammoId] || 0;
+};
 Game_BattlerBase.prototype.ammoType = function (ammoId) {
     return this._ammo[ammoId] || 0;
 };
 Game_BattlerBase.prototype.addAmmo = function (ammoId, quantity = 1) {
     this._ammo[ammoId] = this.ammoType(ammoId) + quantity;
+};
+Game_BattlerBase.prototype.removeAmmo = function (ammoId, quantity = 1) {
+    this._ammo[ammoId] = this.ammo(ammoId) - quantity;
+    if (this.ammo(ammoId) <= 0) {
+        delete this._ammo[ammoId];
+    }
+    return ammoId;
 };
 Game_BattlerBase.prototype.hasAmmo = function (ammoId) {
     return this._ammo[ammoId] > 0;

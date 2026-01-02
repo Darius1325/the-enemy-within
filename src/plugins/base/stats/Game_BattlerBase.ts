@@ -422,12 +422,25 @@ Game_BattlerBase.prototype.sortEquippedArmors = function() {
 }
 
 // Ammo
+
+Game_BattlerBase.prototype.ammo = function(ammoId: string) {
+    return this._ammo[ammoId] || 0;
+};
+
 Game_BattlerBase.prototype.ammoType = function(ammoId : string) {
     return this._ammo[ammoId] || 0;
 };
 
 Game_BattlerBase.prototype.addAmmo = function(ammoId : string, quantity = 1) {
     this._ammo[ammoId] = this.ammoType(ammoId) + quantity;
+}
+
+Game_BattlerBase.prototype.removeAmmo = function(ammoId: string, quantity = 1) {
+    this._ammo[ammoId] = this.ammo(ammoId) - quantity;
+    if (this.ammo(ammoId) <= 0) {
+        delete this._ammo[ammoId];
+    }
+    return ammoId;
 }
 
 Game_BattlerBase.prototype.hasAmmo = function(ammoId : string) {

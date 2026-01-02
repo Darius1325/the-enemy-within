@@ -1,5 +1,6 @@
 // $PluginCompiler TEW_Menus.js
 
+import { Ammunition } from "../../../_types/ammunition";
 import { Item } from "../../../_types/item";
 import HalfWindow_Details, { IHalfWindow_Details } from "../../base/HalfWindow_Details";
 
@@ -7,8 +8,13 @@ type ItemWithQuantity = Item & {
     quantity: number;
 };
 
+type AmmoWithQuantity = Ammunition & {
+    quantity: number;
+};
+
 export interface IWindow_InventoryItemDetails extends IHalfWindow_Details {
     _item: [string, ItemWithQuantity][];
+    _ammo: [string, AmmoWithQuantity][];
 
     refresh: () => void;
     drawDetails: (item: [string, ItemWithQuantity]) => void;
@@ -37,18 +43,20 @@ Window_InventoryItemDetails.prototype.initialize = function() {
 // Refreshing the window
 Window_InventoryItemDetails.prototype.refresh = function() {
     this.contents.clear();
-    if (this._item){
-        this.drawDetails(this._item);
+    if (this._item) {
+        this.drawItemDetails(this._item);
+    } else if (this._ammo) {
+        this.drawAmmoDetails(this._ammo);
     }
 };
 
 // Erase window content
 Window_InventoryItemDetails.prototype.empty = function() {
-    this._item = null;
+    this._item = undefined;
 };
 
-// Drawing the details
-Window_InventoryItemDetails.prototype.drawDetails = function(item: [string, ItemWithQuantity]){
+// Drawing item details
+Window_InventoryItemDetails.prototype.drawItemDetails = function(item: [string, ItemWithQuantity]){
     // Title
     this.drawUnderlinedText(item[1].name, 0, 0, this.contentsWidth(), "center");
 
@@ -62,11 +70,34 @@ Window_InventoryItemDetails.prototype.drawDetails = function(item: [string, Item
     this.drawTable2Columns(0, 80, this.contentsWidth(), 3, [
         ["Owned :", "x" + item[1].quantity],
         ["Group :", item[1].groupLabel],
-        ["Enc. :", item[1].enc]
+        ["Enc. :", item[1].enc || 0]
     ]);
 
     this.drawLine(200);
 
     // Description
     this.drawWrappedTextManually(item[1].description, 0, 220, 24);
+};
+
+// Drawing ammunition details
+Window_InventoryItemDetails.prototype.drawAmmoDetails = function(ammo: [string, AmmoWithQuantity]){
+    // Title
+    this.drawUnderlinedText(ammo[1].name, 0, 0, this.contentsWidth(), "center");
+
+    // Item's Icon
+    this.drawIcon(ammo[1].groupIcon, 0, 0);
+
+    // Availability Icon
+    this.drawIcon(ammo[1].availabilityIcon, this.contentsWidth() - 32, 0)
+
+    // Table
+    this.drawTable2Columns(0, 80, this.contentsWidth(), 2, [
+        ["Owned :", "x" + ammo[1].quantity],
+        ["Group :", ammo[1].groupLabel]
+    ]);
+
+    this.drawLine(200);
+
+    // Description
+    this.drawWrappedTextManually(ammo[1].description, 0, 220, 24);
 };

@@ -16,6 +16,8 @@ import Window_InventoryItems from "./Window_InventoryItems";
 import Window_InventoryItemDetails from "./Window_InventoryItemDetails";
 import Window_InventoryItemCommand from "./Window_InventoryItemCommand";
 import Window_InventoryTransferCommand from "../Window_InventoryTransferCommand";
+import { Ammunition } from "../../../_types/ammunition";
+import { Item } from "../../../_types/item";
 
 // ----------------------
 // $StartCompilation
@@ -59,7 +61,7 @@ Scene_Equip.prototype.createItemsCommandWindow = function() {
 };
 
 Scene_Equip.prototype.activateInventoryItems = function(index = 0) {
-    const nbItems = this._itemsWindow._items.length;
+    const nbItems = this._itemsWindow._maxItems;
     this.hideAllWindows();
     this._currentMainWindow = this._itemsWindow;
     this._itemsWindow.show();
@@ -77,7 +79,6 @@ Scene_Equip.prototype.activateInventoryItems = function(index = 0) {
         this._itemsWindow.deselect();
         this._itemDetailsWindow.empty();
         this._itemDetailsWindow.clear();
-        this._itemsCommandWindow.clearCommandList();
         this._itemsCommandWindow.clear();
     }
     this._itemsWindow.refresh();
@@ -93,11 +94,19 @@ Scene_Equip.prototype.activateCommandWindowItem = function() {
 }
 
 Scene_Equip.prototype.showItemDetails = function() {
-    const item = this._itemsWindow.itemFromIndex(this._itemsWindow.index());
-    if (item) {
-        item[1].quantity = this._itemsWindow._actor.item(item[0]);
-        this._itemDetailsWindow._item = item;
-        this._itemDetailsWindow.refresh();
+    const itemOrAmmo : Item | Ammunition = this._itemsWindow.itemOrAmmoFromIndex(this._itemsWindow.index());
+    if (itemOrAmmo) {
+        if ((itemOrAmmo as Item).enc) { // If Item
+            itemOrAmmo[1].quantity = this._itemsWindow._actor.item(itemOrAmmo[0]);
+            this._itemDetailsWindow._ammo = undefined;
+            this._itemDetailsWindow._item = itemOrAmmo;
+            this._itemDetailsWindow.refresh();
+        } else { // Else Ammo
+            itemOrAmmo[1].quantity = this._itemsWindow._actor.ammo(itemOrAmmo[0]);
+            this._itemDetailsWindow._item = undefined;
+            this._itemDetailsWindow._ammo = itemOrAmmo;
+            this._itemDetailsWindow.refresh();
+        }
     } else {
         this._itemDetailsWindow.clear();
         this._itemsCommandWindow.clear();
@@ -110,7 +119,12 @@ Scene_Equip.prototype.useItem = function() {
 }
 
 Scene_Equip.prototype.transferItem = function() {
-    this._transferCommandWindow.setItemType(Window_InventoryTransferCommand.ITEM)
+    const itemOrAmmo : Item | Ammunition = this._itemsWindow.item();
+    if ((itemOrAmmo as Item).enc) { // if Item
+        this._transferCommandWindow.setItemType(Window_InventoryTransferCommand.ITEM);
+    } else { // Else Ammo
+        this._transferCommandWindow.setItemType(Window_InventoryTransferCommand.AMMO);
+    }
     this._transferCommandWindow.activate();
     this._transferCommandWindow.show();
     this._transferCommandWindow.select(0);

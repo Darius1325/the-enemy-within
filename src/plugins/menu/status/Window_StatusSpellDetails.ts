@@ -39,6 +39,11 @@ Window_StatusSpellDetails.prototype.refresh = function () {
     }
 };
 
+/** Clear all contents */
+Window_StatusSpellDetails.prototype.empty = function() {
+    this._spell = null;
+};
+
 // Drawing the details
 Window_StatusSpellDetails.prototype.drawDetails = function (spell:[string, Spell]) {
     // Title
@@ -79,5 +84,5 @@ Window_StatusSpellDetails.prototype.drawDetails = function (spell:[string, Spell
 
     // Description
     // const descPadding = 20;
-    this.drawWrappedText(spell[1].desc, 0, 280, this.width - 2 * this.standardPadding(), 20);
+    this.drawWrappedTextManually(spell[1].desc, 0, 280, 24);
 };

@@ -16,7 +16,6 @@ export interface Scene_Equip {
     WEAPONS_WINDOW_INDEX: 1;
     ARMORS_WINDOW_INDEX: 2;
     ITEMS_WINDOW_INDEX: 3;
-    AMMO_WINDOW_INDEX: 4;
 
     _actor: Game_Actor;
 
@@ -45,7 +44,6 @@ export interface Scene_Equip {
     createItemsWindow: () => void;
     createItemsCommandWindow: () => void;
     createItemsDetailsWindow: () => void;
-    createAmmoWindow: () => void;
     createTransferCommandWindow: () => void;
     createTransferSpinnerWindow: () => void;
 
@@ -56,7 +54,6 @@ export interface Scene_Equip {
     activateInventoryWeapons: () => void;
     activateInventoryArmors: () => void;
     activateInventoryItems: () => void;
-    activateInventoryAmmo: () => void;
     activateCommandWindowItem: () => void;
     activateCommandWindowWeapon: () => void;
     activateCommandWindowArmor: () => void;

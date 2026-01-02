@@ -25,7 +25,6 @@ Scene_Equip.INFOS_WINDOW_INDEX = 0;
 Scene_Equip.WEAPONS_WINDOW_INDEX = 1;
 Scene_Equip.ARMORS_WINDOW_INDEX = 2;
 Scene_Equip.ITEMS_WINDOW_INDEX = 3;
-Scene_Equip.AMMO_WINDOW_INDEX = 4;
 
 // Creating the scene
 Scene_Equip.prototype.create = function() {
@@ -54,16 +53,12 @@ Scene_Equip.prototype.create = function() {
     this.createItemsCommandWindow();
     this.createItemsDetailsWindow();
 
-    // Ammo Windows
-    this.createAmmoWindow();
-
     // // Help window
     // this.createHelpWindow();
     // this._helpWindow.hide();
     // this._weaponsWindow.setHelpWindow(this._helpWindow);
     // this._armorsWindow.setHelpWindow(this._helpWindow);
     // // this._itemsWindow.setHelpWindow(this._helpWindow);
-    // this._ammoWindow.setHelpWindow(this._helpWindow);
 
     // Transfer windows
     this.createTransferCommandWindow();
@@ -86,7 +81,6 @@ Scene_Equip.prototype.refreshActor = function() {
     this._weaponsWindow.setActor(actor);
     this._armorsWindow.setActor(actor);
     this._itemsWindow.setActor(actor);
-    this._ammoWindow.setActor(actor);
     this._transferCommandWindow.setActor(actor);
 };
 
@@ -111,7 +105,6 @@ Scene_Equip.prototype.createCommandWindow = function() {
     this._commandWindow.setHandler('inventory_weapons', this.activateInventoryWeapons.bind(this));
     this._commandWindow.setHandler('inventory_armors', this.activateInventoryArmors.bind(this));
     this._commandWindow.setHandler('inventory_items', this.activateInventoryItems.bind(this));
-    this._commandWindow.setHandler('inventory_ammo', this.activateInventoryAmmo.bind(this));
     this.addWindow(this._commandWindow);
 };
 
@@ -132,7 +125,7 @@ Scene_Equip.prototype.createTransferCommandWindow = function() {
                 this.activateInventoryArmors(this._armorsWindow.index());
                 break;
             case Window_InventoryTransferCommand.AMMO:
-                this.activateInventoryAmmo(this._ammoWindow.index());
+                this.activateInventoryItems(this._itemsWindow.index());
                 break;
         }
     });
@@ -192,9 +185,6 @@ Scene_Equip.prototype.hideAllWindows = function() {
     this._itemsCommandWindow.hide();
     this._itemsCommandWindow.deactivate();
 
-    this._ammoWindow.hide();
-    this._ammoWindow.deactivate();
-
     this._transferCommandWindow.hide();
     this._transferCommandWindow.deactivate();
 
@@ -232,9 +222,6 @@ Scene_Equip.prototype.displayWindow = function() {
         this._itemsWindow.refresh();
         this._itemDetailsWindow.refresh();
         this._itemsCommandWindow.clear();
-    } else if (this._commandWindow.index() == Scene_Equip.AMMO_WINDOW_INDEX) {
-        this._ammoWindow.show();
-        this._ammoWindow.refresh();
     }
 };
 
@@ -256,7 +243,12 @@ Scene_Equip.prototype.initTransfer = function() {
             this.doTransfer();
             break;
         case Window_InventoryTransferCommand.AMMO:
-            // TODO
+            const selectedAmmo = this._itemsWindow.item()[0];
+            this._transferCommandWindow.item = selectedAmmo;
+            this._transferCommandWindow.deactivate();
+            this._transferSpinnerWindow.setMax(this._actor.ammo(selectedAmmo));
+            this._transferSpinnerWindow.start();
+            break;
     }
 }
 

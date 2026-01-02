@@ -139,7 +139,7 @@ TEW.DATABASE.ITEMS.SET = {
         enc: 0,
         availability: Availability.COMMON,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
-        description: "Usefull to keep your head dry, or to hide it."
+        description: "Useful to keep your head dry, or to hide it."
     },
     JEWELLERY: {
         name: "Jewellery",
@@ -787,7 +787,7 @@ TEW.DATABASE.ITEMS.SET = {
         enc: 2,
         availability: Availability.COMMON,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
-        description: "Usefull to removes leaves from your garden."
+        description: "Useful to removes leaves from your garden."
     },
     READING_LENS: {
         name: "Reading Lens",
@@ -871,7 +871,7 @@ TEW.DATABASE.ITEMS.SET = {
         enc: 0,
         availability: Availability.COMMON,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
-        description: "Usefull to spread laundry."
+        description: "Useful to spread laundry."
     },
     TELESCOPE: {
         name: "Telescope",
@@ -895,7 +895,7 @@ TEW.DATABASE.ITEMS.SET = {
         enc: 0,
         availability: Availability.SCARCE,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
-        description: "Usefull."
+        description: "Useful."
     },
     WRITING_KIT: {
         name: "Writing Kit",
@@ -1027,7 +1027,7 @@ TEW.DATABASE.ITEMS.SET = {
         enc: 0,
         availability: Availability.COMMON,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
-        description: "Leaflets contain usefull information about the local city and customs."
+        description: "Leaflets contain useful information about the local city and customs."
     },
     LEGAL_DOCUMENT: {
         name: "Legal Document",

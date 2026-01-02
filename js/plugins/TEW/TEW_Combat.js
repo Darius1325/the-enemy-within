@@ -4041,37 +4041,31 @@ HalfWindow_TacticsDetails.prototype.drawTable2Columns = function (x, y, width, r
         this.drawText(textArray[row][1], cellXTd + 5, cellY, cellWidthSecondRow - 10, "left");
     }
 };
-// Drawing a wrapped text - used to draw to description
-HalfWindow_TacticsDetails.prototype.drawWrappedTextManually = function (text, x, y, fontSize) {
-    const words = text.split(" ");
-    const maxWidth = this.contentsWidth() - x;
-    if (text.length <= 100) {
-        this.contents.fontSize = 28;
-    }
-    else if (text.length <= 200) {
-        this.contents.fontSize = 20;
-    }
-    // else if (text.length <= 200) { this.contents.fontSize = 16; }
-    else {
-        this.contents.fontSize = 16;
-    }
-    const spaceWidth = this.textWidth(" ");
-    const lineHeight = fontSize * 1.2;
-    let currentX = x;
-    let currentY = y;
-    words.forEach(word => {
-        const wordWidth = this.textWidth(word);
-        // If the word is too long, drawing it on the next line
-        if (currentX + wordWidth > maxWidth) {
-            currentX = x; // begining of the line
-            currentY += lineHeight; // next line
-        }
-        // drawing it on the current line
-        this.drawText(word, currentX, currentY, wordWidth, 'left');
-        currentX += wordWidth + spaceWidth;
-    });
-    this.resetFontSettings();
-};
+// // Drawing a wrapped text - used to draw to description
+// HalfWindow_TacticsDetails.prototype.drawWrappedTextManually = function(text: string, x: number, y: number, fontSize: number) {
+//     const words = text.split(" ");
+//     const maxWidth = this.contentsWidth() - x;
+//     if (text.length <= 100){ this.contents.fontSize = 28; }
+//     else if (text.length <= 200){ this.contents.fontSize = 20; }
+//     // else if (text.length <= 200) { this.contents.fontSize = 16; }
+//     else { this.contents.fontSize = 16; }
+//     const spaceWidth = this.textWidth(" ");
+//     const lineHeight = fontSize * 1.2;
+//     let currentX = x;
+//     let currentY = y;
+//     words.forEach(word => {
+//         const wordWidth = this.textWidth(word);
+//         // If the word is too long, drawing it on the next line
+//         if (currentX + wordWidth > maxWidth) {
+//             currentX = x; // begining of the line
+//             currentY += lineHeight; // next line
+//         }
+//         // drawing it on the current line
+//         this.drawText(word, currentX, currentY, wordWidth, 'left');
+//         currentX += wordWidth + spaceWidth;
+//     });
+//     this.resetFontSettings();
+// };
 HalfWindow_TacticsDetails.prototype.drawLine = function (y) {
     const lineWidth = 40;
     const lineSize = 2;
