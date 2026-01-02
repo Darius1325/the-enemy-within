@@ -26,8 +26,8 @@ function Window_StatusSpellDetails() {
 export default Window_StatusSpellDetails.prototype = Object.create(HalfWindow_Details.prototype);
 Window_StatusSpellDetails.prototype.constructor = Window_StatusSpellDetails;
 
-Window_StatusSpellDetails.prototype.initialize = function (commandWindowHeight = 0) {
-    HalfWindow_Details.prototype.initialize.call(this, commandWindowHeight);
+Window_StatusSpellDetails.prototype.initialize = function () {
+    HalfWindow_Details.prototype.initialize.call(this);
     this._spell = null;
 };
 

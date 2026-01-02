@@ -1,7 +1,26 @@
 // $PluginCompiler TEW_Menus.js
+
+import { Sprite } from "../../rmmv/core/Sprite";
+import TEW from "../_types/tew";
+
 // $StartCompilation
 
-Window_Base.prototype.drawWrappedText= function(text, x, y, width, fontsize = this.contents.fontSize) {
+TEW.MEMORY.windowBaseInitialize = Window_Base.prototype.initialize;
+Window_Base.prototype.initialize = function(x, y, width, height) {
+    TEW.MEMORY.windowBaseInitialize.call(this, x, y, width, height);
+    const bg = this.backgroundImageName();
+    if (bg) {
+        this._bgSprite = new Sprite();
+        this._bgSprite.bitmap = ImageManager.loadSystem(bg);
+        this.addChildAt(this._bgSprite, 0);
+    }
+};
+
+Window_Base.prototype.backgroundImageName = function() {
+    return undefined;
+};
+
+Window_Base.prototype.drawWrappedText = function(text, x, y, width, fontsize = this.contents.fontSize) {
     this.contents.fontSize = fontsize;
     const words = text.split(" ");
     let line = "";
@@ -55,4 +74,34 @@ Window_Base.prototype.drawCurrentOverMax = function(
 
 Window_Base.prototype.standardBackOpacity = function() {
     return 255;
+};
+
+Window_Base.prototype.verticalBorderPadding = function() {
+    return 30;
+};
+
+Window_Base.prototype.horizontalBorderPadding = function() {
+    return 30;
+};
+
+Window_Base.prototype.contentsWidth = function() {
+    return this.width - this.horizontalBorderPadding() * 2;
+};
+
+Window_Base.prototype.contentsHeight = function() {
+    return this.height - this.verticalBorderPadding() * 2;
+};
+
+Window_Base.prototype.fittingHeight = function(numLines) {
+    return numLines * this.lineHeight() + this.verticalBorderPadding() * 2;
+};
+
+// TODO no need for color picker, we can optimize everything here?
+Window_Base.prototype.normalColor = function() {
+    return this.textColor(15);
+};
+
+Window_Base.prototype.resetTextColor = function() {
+    this.changeTextColor(this.normalColor());
+    this.contents.outlineWidth = 0;
 };

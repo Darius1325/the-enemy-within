@@ -130,5 +130,8 @@ Game_Actor.prototype.initCheplu = function() {
     this._fortune = 4;
     this._resilience = 2;
     this._resolve = 2;
+
+    // Test data
+    this.addSpell("BOLT");
 }
 // #endregion =========================== Init TEW ============================== //

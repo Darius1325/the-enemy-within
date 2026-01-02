@@ -80,6 +80,7 @@ declare global {
     var Window_ActorCommand: any;
     var Window_Command: any;
     var Window_Gold: any;
+    var Window_TitleCommand: any;
     var Bitmap: any;
     var Game_Actor: any;
     var Game_BattlerBase: any;

@@ -31,6 +31,19 @@ function HalfWindow_List() {
 export default HalfWindow_List.prototype = Object.create(Window_Selectable.prototype);
 HalfWindow_List.prototype.constructor = HalfWindow_List;
 
+// TODO define fixed window dimensions (and graphical details?) in dedicated file
+HalfWindow_List.prototype.windowWidth = function() {
+    return 640;
+};
+
+HalfWindow_List.prototype.windowHeight = function() {
+    return 648;
+};
+
+HalfWindow_List.prototype.backgroundImageName = function() {
+    return "bg_statusHalfWindowLeft";
+};
+
 // Inializing the window
 HalfWindow_List.prototype.initialize = function() {
     Window_Selectable.prototype.initialize.call(this,

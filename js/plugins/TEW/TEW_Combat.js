@@ -379,13 +379,12 @@ Array.prototype.last = function () {
     return this[this.length - 1];
 };
 // Retrieve weapon info
-TEW.COMBAT.getWeaponQualityEffects = (weaponId) => {
-    const weapon = TEW.COMBAT.getWeaponFromId(weaponId);
+TEW.COMBAT.getWeaponQualityEffects = (weapon) => {
     let attackMod = 0;
     let defenceMod = 0;
     let slashLevel = 0;
-    let attackBonusDR = 0;
-    let defenceBonusDR = 0;
+    let attackBonusSL = 0;
+    let defenceBonusSL = 0;
     let bonusPA = 0;
     let ignoredPA = 0;
     let effects = {};
@@ -428,7 +427,7 @@ TEW.COMBAT.getWeaponQualityEffects = (weaponId) => {
             ignoredPA += 1;
         }
         else if (quality === 4 /* WeaponQuality.PRECISE */) {
-            attackBonusDR += 1;
+            attackBonusSL += 1;
         }
         else if (quality === 7 /* WeaponQuality.PUMMEL */) {
             effects.PUMMEL = true;
@@ -440,13 +439,13 @@ TEW.COMBAT.getWeaponQualityEffects = (weaponId) => {
             slashLevel = 2;
         }
         else if (quality === 1 /* WeaponQuality.UNBALANCED */) {
-            defenceBonusDR -= 1;
+            defenceBonusSL -= 1;
         }
         else if (quality === 16 /* WeaponQuality.IMPACT */) {
             effects.IMPACT = true;
         }
         else if (quality === 17 /* WeaponQuality.FAST */) {
-            attackBonusDR += 1;
+            attackBonusSL += 1;
         }
         else if (quality === 18 /* WeaponQuality.TRIP */) {
             effects.TRIP = true;
@@ -455,13 +454,13 @@ TEW.COMBAT.getWeaponQualityEffects = (weaponId) => {
             effects.ENTANGLE = true;
         }
         else if (quality === 20 /* WeaponQuality.SLOW */) {
-            attackBonusDR -= 1;
+            attackBonusSL -= 1;
         }
         else if (quality === 22 /* WeaponQuality.WRAP */) {
-            attackBonusDR += 1;
+            attackBonusSL += 1;
         }
         else if (quality === 26 /* WeaponQuality.IMPRECISE */) {
-            attackBonusDR -= 1;
+            attackBonusSL -= 1;
         }
         else if (quality === 23 /* WeaponQuality.TIRING */) {
             effects.TIRING = true;
@@ -479,8 +478,8 @@ TEW.COMBAT.getWeaponQualityEffects = (weaponId) => {
     return {
         attackMod,
         defenceMod,
-        attackBonusDR,
-        defenceBonusDR,
+        attackBonusSL,
+        defenceBonusSL,
         bonusPA,
         ignoredPA,
         ignoredArmorTypes,
@@ -977,6 +976,10 @@ BattleManager.updateChargeTarget = function () {
     if ($gameSelector.selectTarget(action) >= 0) { // -1 if invalid target
         SoundManager.playOk();
         // TODO limit path to actual movement range
+        // TODO select target using $gameTroopTs instead of $gameTroop
+        // TODO enemy position is not trimmed correctly
+        // TODO exact corner hits when ray tracing make an impossible path
+        //       either choose only one adjacent tile for collisions or trim it later
         console.log($gameMap._straightPaths[`${startX},${startY}`][`${targetX},${targetY}`]);
         this._subject.moveAlongPredefinedPath($gameMap._straightPaths[`${startX},${startY}`][`${targetX},${targetY}`]);
         $gameMap._flexibleMovement = true; // Go back to free movement range for next action
@@ -1722,7 +1725,9 @@ Game_Action.prototype.apply = function (target) {
     result.clear();
     const attacker = this.subject();
     const attackerWeapon = TEW.COMBAT.getWeaponFromId(attacker.equippedWeapon().id); // TODO attack with second hand
+    const attackerWeaponEffects = TEW.COMBAT.getWeaponQualityEffects(attackerWeapon);
     const defenderWeapon = TEW.COMBAT.getWeaponFromId(target.equippedWeapon().id); // TODO defend with second hand
+    const defenderWeaponEffects = TEW.COMBAT.getWeaponQualityEffects(defenderWeapon);
     // Damage calc
     //
     // Choose weapon (elsewhere)
@@ -1738,8 +1743,26 @@ Game_Action.prototype.apply = function (target) {
     // TODO Check sizes
     // TODO Check outnumberment
     // Roll dice
-    const combatResult = TEW.DICE.combatOpposedSkillTest(attackerCombatSkill.value, defenderCombatSkill.value, true, false // GIGA TODO
+    const combatResult = TEW.DICE.combatOpposedSkillTest(attackerCombatSkill.value + attackerWeaponEffects.attackMod, defenderCombatSkill.value + defenderWeaponEffects.defenceMod, true, false // GIGA TODO
     );
+    // Special weapon quality checks
+    // Impale
+    if (attackerWeaponEffects.effects.IMPALE) {
+        if (combatResult.rollAttacker % 10 === 0) {
+            combatResult.criticalAttacker = true;
+        }
+    }
+    // Damaging
+    if (attackerWeaponEffects.effects.DAMAGING) {
+        const damagingSL = (combatResult.rollAttacker % 10) || 10; // 10 SL if roll is a multiple of 10
+        if (damagingSL > combatResult.slAttacker) {
+            combatResult.slAttacker = damagingSL;
+        }
+    }
+    // FIXME do we add bonus SL before or after hit check ?
+    combatResult.slAttacker += attackerWeaponEffects.attackBonusSL;
+    combatResult.slDefender += attackerWeaponEffects.defenceBonusSL;
+    // TODO wait X seconds here for player input (fortune points)
     // TODO Check attacker's talents on dice roll (make a list)
     // TODO Check weapon effects on dice roll (make a list)
     // Check hit/miss
@@ -2805,7 +2828,6 @@ Game_Map.prototype.computeUsefulCorners = function (dx, dy, corners) {
  * Trust the process (we are engineers)
  */
 Game_Map.prototype.computeExcludedCornersForRayTracing = function (dx, dy, startCorners, targetCorners) {
-    let result = [];
     if (dx > 0) {
         if (dy > 0) { // SOUTH EAST - remove all target corners
             return [targetCorners[0], targetCorners[1], targetCorners[2]];
@@ -2817,13 +2839,13 @@ Game_Map.prototype.computeExcludedCornersForRayTracing = function (dx, dy, start
     }
     else {
         if (dy > 0) { // SOUTH WEST - keep subject W and target NE
-            result.push(startCorners[1], startCorners[3], targetCorners[0], targetCorners[3]);
+            return [startCorners[1], startCorners[3],
+                targetCorners[0], targetCorners[3]];
         }
         else { // NORTH WEST - keep subject NW
-            result.push(startCorners[1], startCorners[2], startCorners[3]);
+            return [startCorners[1], startCorners[2], startCorners[3]];
         }
     }
-    return result;
 };
 /**
  * Trace a ray from a tile corner to another, and compute the ray's supercover with Amanatides & Woo's algorithm
@@ -6101,5 +6123,17 @@ Spriteset_Tactics.prototype.isEffecting = function () {
     });
 };
 // #endregion =========================== Spriteset_Tactics ============================== //
+// ============================== //
+// #region ============================== backgrounds ============================== //
+Window_TacticsCommand.prototype.backgroundImageName = function () {
+    return "bg_battle";
+};
+Window_TitleCommand.prototype.windowWidth = function () {
+    return 204; // 4 * line height + 2 * text padding + 2 * bg padding
+};
+Window_TitleCommand.prototype.windowHeight = function () {
+    return 204; // 4 * line height + 2 * text padding + 2 * bg padding
+};
+// #endregion =========================== backgrounds ============================== //
 // ============================== //
 

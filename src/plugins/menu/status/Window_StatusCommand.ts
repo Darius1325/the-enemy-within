@@ -17,15 +17,9 @@ export default Window_StatusCommand.prototype = Object.create(Window_HorzCommand
 Window_StatusCommand.prototype.constructor = Window_StatusCommand;
 
 // Initializing the command window
-Window_StatusCommand.prototype.initialize = function(x: number, y: number, width: number) {
-    this._windowWidth = width;
+Window_StatusCommand.prototype.initialize = function(x: number, y: number) {
     this._windowHeight = TEW.MENU.STATUS_WINDOW_TOPBAR_HEIGHT;
     Window_HorzCommand.prototype.initialize.call(this, x, y);
-};
-
-// Window Width
-Window_StatusCommand.prototype.windowWidth = function() {
-    return this._windowWidth;
 };
 
 // Max column number
@@ -41,7 +35,6 @@ Window_StatusCommand.prototype.makeCommandList = function() {
     this.addCommand(TextManager.statusSpells, 'status_spells');
 };
 
-
 Window_StatusCommand.prototype.cursorRight = function(wrap: boolean) {
     Window_HorzCommand.prototype.cursorRight.call(this, wrap);
     this.callHandler('right');
@@ -50,4 +43,8 @@ Window_StatusCommand.prototype.cursorRight = function(wrap: boolean) {
 Window_StatusCommand.prototype.cursorLeft = function(wrap: boolean) {
     Window_HorzCommand.prototype.cursorLeft.call(this, wrap);
     this.callHandler('left');
+};
+
+Window_StatusCommand.prototype.verticalBorderPadding = function() {
+    return TEW.MENU.STANDARD_PADDING;
 };

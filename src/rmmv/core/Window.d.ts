@@ -225,6 +225,16 @@ export declare class Window extends PIXI.Container {
 	 * Updates the transformation properties of the window.
 	 */
 	public updateTransform(): void;
+
+	/**
+	 * Updates the transformation properties of the window.
+	 */
+	public horizontalBorderPadding(): number;
+
+	/**
+	 * Updates the transformation properties of the window.
+	 */
+	public verticalBorderPadding(): number;
 	// #endregion =========================== Public methods ============================== //
 	// ============================== //
 	// #region ============================== Protected methods ============================== //
@@ -256,12 +266,12 @@ export declare class Window extends PIXI.Container {
 	/**
 	 * Refreshes the cursor of the window.
 	 */
-	protected _refreshCursor(): void;
+	public _refreshCursor(): void;
 
 	/**
 	 * Refreshes the contents displayed in the window.
 	 */
-	protected _refreshContents(): void;
+	public _refreshContents(): void;
 
 	/**
 	 * Refreshes the arrow indicators for scrolling.
@@ -281,7 +291,7 @@ export declare class Window extends PIXI.Container {
 	/**
 	 * Updates the window contents visibility and animations.
 	 */
-	protected _updateContents(): void;
+	public _updateContents(): void;
 
 	/**
 	 * Updates the arrows visibility and position.

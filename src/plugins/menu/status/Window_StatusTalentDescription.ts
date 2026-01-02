@@ -7,6 +7,7 @@
 // Date: 01/05/2025 
 // Description: This file contains the implementation of the Window_StatusTalentDescription class, which is responsible for displaying the description of a selected talent in the status screen. It includes methods for initializing the window, refreshing its content, and drawing the talent description.
 
+import TEW from "../../_types/tew";
 
 // ----------------------
 // $StartCompilation
@@ -46,7 +47,7 @@ Window_StatusTalentDescription.prototype.refresh = function () {
 /**
  * Draws the description of the selected talent.
  */
-Window_StatusTalentDescription.prototype.drawDescription = function (talent) {
+Window_StatusTalentDescription.prototype.drawDescription = function(talent) {
     this.drawWrappedText(
         talent[1].description,
         10,
@@ -55,4 +56,6 @@ Window_StatusTalentDescription.prototype.drawDescription = function (talent) {
     )
 };
 
-
+Window_StatusTalentDescription.prototype.verticalBorderPadding = function() {
+    return 18;
+};

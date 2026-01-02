@@ -1,0 +1,15 @@
+// $PluginCompiler TEW_Menus.js
+// $StartCompilation
+
+// TODO define fixed window dimensions (and graphical details?) in dedicated file
+Window_MenuStatus.prototype.windowWidth = function() {
+    return 800;
+};
+
+Window_MenuStatus.prototype.windowHeight = function() {
+    return 700;
+};
+
+Window_MenuStatus.prototype.backgroundImageName = function() {
+    return "bg_menuStatus";
+};

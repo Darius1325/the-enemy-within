@@ -121,8 +121,13 @@ const TEW: {
     MENU?: {
         /** Links commands (used to control interactions with windows) to human-readable names */
         COMMAND_NAMES?: Record<number, string>;
+
         /** Common line height for several menus */
         LINE_HEIGHT?: number;
+        /** Common text vertical padding */
+        STANDARD_PADDING?: number;
+        /** Menu window background vertical padding on top of standard padding */
+        WINDOW_BACKGROUND_PADDING?: number;
 
         /** Status menu tab switch height */
         STATUS_WINDOW_TOPBAR_HEIGHT?: number;
