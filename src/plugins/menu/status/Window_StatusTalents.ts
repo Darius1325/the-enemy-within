@@ -42,10 +42,6 @@ Window_StatusTalents.prototype.initialize = function() {
     this.refresh();
 };
 
-Window_StatusTalents.prototype.backgroundImageName = function() {
-    return "bg_statusTalents";
-};
-
 /**
  * Sets the actor for the window.
  */

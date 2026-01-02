@@ -20,7 +20,7 @@ Window_Base.prototype.backgroundImageName = function() {
     return undefined;
 };
 
-Window_Base.prototype.drawWrappedText= function(text, x, y, width, fontsize = this.contents.fontSize) {
+Window_Base.prototype.drawWrappedText = function(text, x, y, width, fontsize = this.contents.fontSize) {
     this.contents.fontSize = fontsize;
     const words = text.split(" ");
     let line = "";

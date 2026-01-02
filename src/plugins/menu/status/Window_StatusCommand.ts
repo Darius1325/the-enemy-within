@@ -22,15 +22,6 @@ Window_StatusCommand.prototype.initialize = function(x: number, y: number) {
     Window_HorzCommand.prototype.initialize.call(this, x, y);
 };
 
-Window_StatusCommand.prototype.backgroundImageName = function() {
-    return "bg_menuTopbarCommands";
-};
-
-// Window Width
-Window_StatusCommand.prototype.windowWidth = function() {
-    return 1280; // TODO constants
-};
-
 // Max column number
 Window_StatusCommand.prototype.maxCols = function() {
     return 4;
@@ -55,5 +46,5 @@ Window_StatusCommand.prototype.cursorLeft = function(wrap: boolean) {
 };
 
 Window_StatusCommand.prototype.verticalBorderPadding = function() {
-    return 18;
+    return TEW.MENU.STANDARD_PADDING;
 };

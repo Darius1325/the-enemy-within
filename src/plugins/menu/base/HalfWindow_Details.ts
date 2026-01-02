@@ -29,12 +29,12 @@ export default HalfWindow_Details.prototype = Object.create(Window_Base.prototyp
 HalfWindow_Details.prototype.constructor = HalfWindow_Details;
 
 // Initalizing the window
-HalfWindow_Details.prototype.initialize = function(commandWindowHeight: number) {
+HalfWindow_Details.prototype.initialize = function() {
     Window_Base.prototype.initialize.call(this,
         Graphics.boxWidth / 2,
         TEW.MENU.INVENTORY_WINDOW_TOPBAR_HEIGHT,
-        Graphics.boxWidth / 2,
-        Graphics.boxHeight - TEW.MENU.INVENTORY_WINDOW_TOPBAR_HEIGHT - commandWindowHeight);
+        this.windowWidth(),
+        this.windowHeight());
     this.width = Graphics.boxWidth / 2;
     this.activate();
     this.refresh();

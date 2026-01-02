@@ -48,6 +48,8 @@ TEW.MENU.COMMAND_NAMES[89] = TEW.CHARACTERS.ARRAY[3];
 TEW.MENU.COMMAND_NAMES[90] = TEW.CHARACTERS.ARRAY[4];
 TEW.MENU.COMMAND_NAMES[91] = TEW.CHARACTERS.ARRAY[5];
 TEW.MENU.LINE_HEIGHT = 36;
+TEW.MENU.STANDARD_PADDING = 18;
+TEW.MENU.WINDOW_BACKGROUND_PADDING = 12; // 30px total padding
 // TextManager
 // Override commands
 TextManager.command = function (commandId) {
@@ -61,7 +63,7 @@ TextManager.command = function (commandId) {
 // A key
 Input.keyMapper[65] = "A_Key";
 Input.keyMapper[69] = "E_Key";
-// Windows
+// Windows TODO move
 TEW.MENU.INVENTORY_WINDOW_TOPBAR_HEIGHT = 72;
 TEW.MENU.STATUS_WINDOW_TOPBAR_HEIGHT = 72;
 TEW.MENU.STATUS_WINDOW_BOTTOM_DESCRIPTION_HEIGHT = 134;
@@ -233,8 +235,8 @@ function HalfWindow_Details() {
 HalfWindow_Details.prototype = Object.create(Window_Base.prototype);
 HalfWindow_Details.prototype.constructor = HalfWindow_Details;
 // Initalizing the window
-HalfWindow_Details.prototype.initialize = function (commandWindowHeight) {
-    Window_Base.prototype.initialize.call(this, Graphics.boxWidth / 2, TEW.MENU.INVENTORY_WINDOW_TOPBAR_HEIGHT, Graphics.boxWidth / 2, Graphics.boxHeight - TEW.MENU.INVENTORY_WINDOW_TOPBAR_HEIGHT - commandWindowHeight);
+HalfWindow_Details.prototype.initialize = function () {
+    Window_Base.prototype.initialize.call(this, Graphics.boxWidth / 2, TEW.MENU.INVENTORY_WINDOW_TOPBAR_HEIGHT, this.windowWidth(), this.windowHeight());
     this.width = Graphics.boxWidth / 2;
     this.activate();
     this.refresh();
@@ -322,6 +324,7 @@ HalfWindow_Details.prototype.clear = function () {
 function HalfWindow_DetailsCommand() {
     this.initialize.apply(this, arguments);
 }
+;
 // TODO maybe just fix every window's position?
 HalfWindow_DetailsCommand.MARGIN_X = 180;
 HalfWindow_DetailsCommand.MARGIN_Y = 20;
@@ -331,9 +334,6 @@ HalfWindow_DetailsCommand.prototype.constructor = HalfWindow_DetailsCommand;
 HalfWindow_DetailsCommand.prototype.initialize = function (actionsNumber = 2) {
     this._actionsNumber = actionsNumber;
     Window_Command.prototype.initialize.call(this, Graphics.boxWidth / 2 + HalfWindow_DetailsCommand.MARGIN_X, Graphics.boxHeight - this.fittingHeight(actionsNumber) - HalfWindow_DetailsCommand.MARGIN_Y);
-};
-HalfWindow_DetailsCommand.prototype.backgroundImageName = function () {
-    return "bg_inventoryCommand" + this._actionsNumber;
 };
 HalfWindow_DetailsCommand.prototype.addCommand = function (name, symbol, enabled = true, ext = null) {
     this._list.push({ name: name, symbol: symbol, enabled: enabled, ext: ext });
@@ -354,6 +354,16 @@ function HalfWindow_List() {
 }
 HalfWindow_List.prototype = Object.create(Window_Selectable.prototype);
 HalfWindow_List.prototype.constructor = HalfWindow_List;
+// TODO define fixed window dimensions (and graphical details?) in dedicated file
+HalfWindow_List.prototype.windowWidth = function () {
+    return 640;
+};
+HalfWindow_List.prototype.windowHeight = function () {
+    return 648;
+};
+HalfWindow_List.prototype.backgroundImageName = function () {
+    return "bg_statusHalfWindowLeft";
+};
 // Inializing the window
 HalfWindow_List.prototype.initialize = function () {
     Window_Selectable.prototype.initialize.call(this, 0, TEW.MENU.INVENTORY_WINDOW_TOPBAR_HEIGHT, Graphics.boxWidth / 2, Graphics.boxHeight - TEW.MENU.INVENTORY_WINDOW_TOPBAR_HEIGHT);
@@ -539,8 +549,8 @@ function Window_InventoryArmorDetails() {
 }
 Window_InventoryArmorDetails.prototype = Object.create(HalfWindow_Details.prototype);
 Window_InventoryArmorDetails.prototype.constructor = Window_InventoryArmorDetails;
-Window_InventoryArmorDetails.prototype.initialize = function (commandWindowHeight = 0) {
-    HalfWindow_Details.prototype.initialize.call(this, commandWindowHeight);
+Window_InventoryArmorDetails.prototype.initialize = function () {
+    HalfWindow_Details.prototype.initialize.call(this);
     this._armor = null;
 };
 // Refreshing the window
@@ -730,8 +740,8 @@ function Window_InventoryItemDetails() {
 }
 Window_InventoryItemDetails.prototype = Object.create(HalfWindow_Details.prototype);
 Window_InventoryItemDetails.prototype.constructor = Window_InventoryItemDetails;
-Window_InventoryItemDetails.prototype.initialize = function (commandWindowHeight = 0) {
-    HalfWindow_Details.prototype.initialize.call(this, commandWindowHeight);
+Window_InventoryItemDetails.prototype.initialize = function () {
+    HalfWindow_Details.prototype.initialize.call(this);
     this._item = null;
 };
 // Refreshing the window
@@ -902,8 +912,8 @@ function Window_InventoryWeaponDetails() {
 }
 Window_InventoryWeaponDetails.prototype = Object.create(HalfWindow_Details.prototype);
 Window_InventoryWeaponDetails.prototype.constructor = Window_InventoryWeaponDetails;
-Window_InventoryWeaponDetails.prototype.initialize = function (commandWindowHeight = 0) {
-    HalfWindow_Details.prototype.initialize.call(this, commandWindowHeight);
+Window_InventoryWeaponDetails.prototype.initialize = function () {
+    HalfWindow_Details.prototype.initialize.call(this);
     this._weapon = null;
 };
 // Refreshing the window
@@ -1075,13 +1085,8 @@ Window_InventoryCommand.prototype = Object.create(Window_HorzCommand.prototype);
 Window_InventoryCommand.prototype.constructor = Window_InventoryCommand;
 // Initializing the command window
 Window_InventoryCommand.prototype.initialize = function (x, y, width) {
-    this._windowWidth = width;
     this._windowHeight = TEW.MENU.INVENTORY_WINDOW_TOPBAR_HEIGHT;
     Window_HorzCommand.prototype.initialize.call(this, x, y);
-};
-// Window Width
-Window_InventoryCommand.prototype.windowWidth = function () {
-    return this._windowWidth;
 };
 // Max column number
 Window_InventoryCommand.prototype.maxCols = function () {
@@ -1102,6 +1107,9 @@ Window_InventoryCommand.prototype.cursorRight = function (wrap) {
 Window_InventoryCommand.prototype.cursorLeft = function (wrap) {
     Window_HorzCommand.prototype.cursorLeft.call(this, wrap);
     this.callHandler('left');
+};
+Window_InventoryCommand.prototype.verticalBorderPadding = function () {
+    return TEW.MENU.STANDARD_PADDING;
 };
 // #endregion =========================== Window_InventoryCommand ============================== //
 // ============================== //
@@ -1531,13 +1539,6 @@ Window_StatusCommand.prototype.initialize = function (x, y) {
     this._windowHeight = TEW.MENU.STATUS_WINDOW_TOPBAR_HEIGHT;
     Window_HorzCommand.prototype.initialize.call(this, x, y);
 };
-Window_StatusCommand.prototype.backgroundImageName = function () {
-    return "bg_menuTopbarCommands";
-};
-// Window Width
-Window_StatusCommand.prototype.windowWidth = function () {
-    return 1280; // TODO constants
-};
 // Max column number
 Window_StatusCommand.prototype.maxCols = function () {
     return 4;
@@ -1558,7 +1559,7 @@ Window_StatusCommand.prototype.cursorLeft = function (wrap) {
     this.callHandler('left');
 };
 Window_StatusCommand.prototype.verticalBorderPadding = function () {
-    return 18;
+    return TEW.MENU.STANDARD_PADDING;
 };
 // #endregion =========================== Window_StatusCommand ============================== //
 // ============================== //
@@ -1577,13 +1578,10 @@ Window_StatusCompetences.prototype.initialize = function () {
     this._actor = null;
     this._maxItems = 0;
     this._leftPadding = 10;
-    this._compColumnWidth = 350; // TODO constants
+    this._compColumnWidth = 340; // TODO constants
     this._levelColumnWidth = 100;
-    this._statColumnWidth = 150;
+    this._statColumnWidth = 140;
     this.refresh();
-};
-Window_StatusCompetences.prototype.backgroundImageName = function () {
-    return "bg_statusCompetences";
 };
 /**
  * Sets the actor for the window.
@@ -1687,8 +1685,8 @@ function Window_StatusSpellDetails() {
 }
 Window_StatusSpellDetails.prototype = Object.create(HalfWindow_Details.prototype);
 Window_StatusSpellDetails.prototype.constructor = Window_StatusSpellDetails;
-Window_StatusSpellDetails.prototype.initialize = function (commandWindowHeight = 0) {
-    HalfWindow_Details.prototype.initialize.call(this, commandWindowHeight);
+Window_StatusSpellDetails.prototype.initialize = function () {
+    HalfWindow_Details.prototype.initialize.call(this);
     this._spell = null;
 };
 // Refreshing the window
@@ -1886,9 +1884,6 @@ Window_StatusTalentDescription.prototype.initialize = function () {
     this.refresh();
     this._talent = null;
 };
-Window_StatusTalentDescription.prototype.backgroundImageName = function () {
-    return "bg_statusTalentDescription";
-};
 /**
  * Refreshes the content of the window.
  */
@@ -1904,7 +1899,7 @@ Window_StatusTalentDescription.prototype.refresh = function () {
 Window_StatusTalentDescription.prototype.drawDescription = function (talent) {
     this.drawWrappedText(talent[1].description, 10, 0, Graphics.boxWidth);
 };
-Window_StatusTalentDescription.prototype.verticalBorderPadding = function (talent) {
+Window_StatusTalentDescription.prototype.verticalBorderPadding = function () {
     return 18;
 };
 // #endregion =========================== Window_StatusTalentDescription ============================== //
@@ -1928,9 +1923,6 @@ Window_StatusTalents.prototype.initialize = function () {
     this._levelColumnWidth = this.width / 6;
     this.activate();
     this.refresh();
-};
-Window_StatusTalents.prototype.backgroundImageName = function () {
-    return "bg_statusTalents";
 };
 /**
  * Sets the actor for the window.
@@ -2212,6 +2204,102 @@ Window_Selectable.prototype.maxPageRows = function () {
     return Math.floor(pageHeight / this.itemHeight());
 };
 // #endregion =========================== Window_Selectable ============================== //
+// ============================== //
+// #region ============================== backgrounds ============================== //
+Window_TitleCommand.prototype.backgroundImageName = function () {
+    return "bg_menuDetailsCommand3";
+};
+Window_TitleCommand.prototype.windowHeight = function () {
+    return 168; // 3 * line height + 2 * text padding + 2 * bg padding
+};
+Window_StatusCompetences.prototype.backgroundImageName = function () {
+    return "bg_statusCompetences";
+};
+Window_StatusTalents.prototype.backgroundImageName = function () {
+    return "bg_statusTalents";
+};
+Window_StatusTalentDescription.prototype.backgroundImageName = function () {
+    return "bg_statusTalentDescription";
+};
+Window_StatusCommand.prototype.backgroundImageName = function () {
+    return "bg_menuTopbarCommands";
+};
+Window_StatusCommand.prototype.windowWidth = function () {
+    return Graphics.boxWidth;
+};
+Window_InventoryCommand.prototype.backgroundImageName = function () {
+    return "bg_menuTopbarCommands";
+};
+Window_InventoryCommand.prototype.windowWidth = function () {
+    return Graphics.boxWidth;
+};
+HalfWindow_List.prototype.windowWidth = function () {
+    return Graphics.boxWidth / 2;
+};
+HalfWindow_List.prototype.windowHeight = function () {
+    return 648; // total height - topbar height
+};
+HalfWindow_List.prototype.backgroundImageName = function () {
+    return "bg_menuHalfWindow";
+};
+HalfWindow_Details.prototype.windowWidth = function () {
+    return Graphics.boxWidth / 2;
+};
+Window_StatusSpellDetails.prototype.windowHeight = function () {
+    return 512; // total height - topbar height - (1 command window height + margins)
+};
+Window_StatusSpellDetails.prototype.backgroundImageName = function () {
+    return "bg_menuHalfWindowDetails1";
+};
+Window_InventoryItemDetails.prototype.windowHeight = function () {
+    return 476; // total height - topbar height - (2 commands window height + margins)
+};
+Window_InventoryItemDetails.prototype.backgroundImageName = function () {
+    return "bg_menuHalfWindowDetails2";
+};
+Window_InventoryArmorDetails.prototype.windowHeight = function () {
+    return 476; // total height - topbar height - (2 commands window height + margins)
+};
+Window_InventoryArmorDetails.prototype.backgroundImageName = function () {
+    return "bg_menuHalfWindowDetails2";
+};
+Window_InventoryWeaponDetails.prototype.windowHeight = function () {
+    return 440; // total height - topbar height - (3 commands window height + margins)
+};
+Window_InventoryWeaponDetails.prototype.backgroundImageName = function () {
+    return "bg_menuHalfWindowDetails3";
+};
+HalfWindow_DetailsCommand.prototype.backgroundImageName = function () {
+    return "bg_inventoryCommand" + this._actionsNumber;
+};
+HalfWindow_DetailsCommand.prototype.windowWidth = function () {
+    return 280; // total width / 2 - margins
+};
+Window_StatusSpellCommand.prototype.windowHeight = function () {
+    return 96; // line height + 2 * text padding + 2 * bg padding
+};
+Window_StatusSpellCommand.prototype.backgroundImageName = function () {
+    return "bg_menuDetailsCommand1";
+};
+Window_InventoryItemCommand.prototype.windowHeight = function () {
+    return 132; // 2 * line height + 2 * text padding + 2 * bg padding
+};
+Window_InventoryItemCommand.prototype.backgroundImageName = function () {
+    return "bg_menuDetailsCommand2";
+};
+Window_InventoryArmorCommand.prototype.windowHeight = function () {
+    return 132; // 2 * line height + 2 * text padding + 2 * bg padding
+};
+Window_InventoryArmorCommand.prototype.backgroundImageName = function () {
+    return "bg_menuDetailsCommand2";
+};
+Window_InventoryWeaponCommand.prototype.windowHeight = function () {
+    return 168; // 3 * line height + 2 * text padding + 2 * bg padding
+};
+Window_InventoryWeaponCommand.prototype.backgroundImageName = function () {
+    return "bg_menuDetailsCommand3";
+};
+// #endregion =========================== backgrounds ============================== //
 // ============================== //
 // #region ============================== Scene_Equip ============================== //
 // ----------------------

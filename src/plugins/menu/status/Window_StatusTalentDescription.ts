@@ -34,10 +34,6 @@ Window_StatusTalentDescription.prototype.initialize = function () {
     this._talent = null;
 };
 
-Window_StatusTalentDescription.prototype.backgroundImageName = function() {
-    return "bg_statusTalentDescription";
-};
-
 /**
  * Refreshes the content of the window.
  */
@@ -51,7 +47,7 @@ Window_StatusTalentDescription.prototype.refresh = function () {
 /**
  * Draws the description of the selected talent.
  */
-Window_StatusTalentDescription.prototype.drawDescription = function (talent) {
+Window_StatusTalentDescription.prototype.drawDescription = function(talent) {
     this.drawWrappedText(
         talent[1].description,
         10,
@@ -60,6 +56,6 @@ Window_StatusTalentDescription.prototype.drawDescription = function (talent) {
     )
 };
 
-Window_StatusTalentDescription.prototype.verticalBorderPadding = function (talent) {
+Window_StatusTalentDescription.prototype.verticalBorderPadding = function() {
     return 18;
 };

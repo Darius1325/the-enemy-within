@@ -35,14 +35,10 @@ Window_StatusCompetences.prototype.initialize = function() {
     this._actor = null;
     this._maxItems = 0;
     this._leftPadding = 10;
-    this._compColumnWidth = 350; // TODO constants
+    this._compColumnWidth = 340; // TODO constants
     this._levelColumnWidth = 100;
-    this._statColumnWidth = 150;
+    this._statColumnWidth = 140;
     this.refresh();
-};
-
-Window_StatusCompetences.prototype.backgroundImageName = function() {
-    return "bg_statusCompetences";
 };
 
 /**

@@ -25,8 +25,8 @@ function Window_InventoryWeaponDetails() {
 export default Window_InventoryWeaponDetails.prototype = Object.create(HalfWindow_Details.prototype);
 Window_InventoryWeaponDetails.prototype.constructor = Window_InventoryWeaponDetails;
 
-Window_InventoryWeaponDetails.prototype.initialize = function (commandWindowHeight = 0) {
-    HalfWindow_Details.prototype.initialize.call(this, commandWindowHeight);
+Window_InventoryWeaponDetails.prototype.initialize = function () {
+    HalfWindow_Details.prototype.initialize.call(this);
     this._weapon = null;
 };
 

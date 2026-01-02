@@ -29,8 +29,8 @@ function Window_InventoryItemDetails() {
 export default Window_InventoryItemDetails.prototype = Object.create(HalfWindow_Details.prototype);
 Window_InventoryItemDetails.prototype.constructor = Window_InventoryItemDetails;
 
-Window_InventoryItemDetails.prototype.initialize = function(commandWindowHeight = 0) {
-    HalfWindow_Details.prototype.initialize.call(this, commandWindowHeight);
+Window_InventoryItemDetails.prototype.initialize = function() {
+    HalfWindow_Details.prototype.initialize.call(this);
     this._item = null;
 };
 
