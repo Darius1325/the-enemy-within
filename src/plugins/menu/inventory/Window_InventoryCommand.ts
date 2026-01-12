@@ -47,5 +47,5 @@ Window_InventoryCommand.prototype.cursorLeft = function(wrap: boolean) {
 };
 
 Window_InventoryCommand.prototype.verticalBorderPadding = function() {
-    return TEW.MENU.STANDARD_PADDING;
+    return 18;
 };

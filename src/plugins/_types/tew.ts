@@ -23,6 +23,8 @@ import {Game_Actor} from "../base/stats/Game_Actor";
 import {Game_BattlerBase} from "../base/stats/Game_BattlerBase";
 import { Troop } from "./troop";
 import { BattlerAI } from "./battlerAI";
+import { Quest } from "./quest";
+import { Glossary } from "./glossary";
 
 /** Storage object for all TEW plugins */
 const TEW: {
@@ -119,6 +121,13 @@ const TEW: {
 
             AI?: Record<string, BattlerAI>;
         };
+
+        /** Quest progression, displayed in quest log and controlled by $gameVariables:
+         *   0 is locked, 1 through 999 are steps for long quests, 1000 is done */
+        QUESTS?: Quest[];
+
+        /** Glossary entries, displayed in glossary and controlled by an id list: */
+        GLOSSARY?: Glossary[];
     };
 
     /** Constants used in menu plugins for readability */
@@ -140,6 +149,10 @@ const TEW: {
 
         /** Inventory menu tab switch height */
         INVENTORY_WINDOW_TOPBAR_HEIGHT?: number;
+
+        JOURNALS_LEFT_PAGE_X_OFFSET: number;
+        JOURNALS_RIGHT_PAGE_X_OFFSET: number;
+        JOURNALS_CONTENT_AREA: { y: number; w: number; h: number; };
     };
 
     /** Playable character data */

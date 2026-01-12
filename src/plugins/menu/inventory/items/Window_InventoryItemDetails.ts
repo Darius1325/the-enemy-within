@@ -76,7 +76,12 @@ Window_InventoryItemDetails.prototype.drawItemDetails = function(item: [string, 
     this.drawLine(200);
 
     // Description
-    this.drawWrappedTextManually(item[1].description, 0, 220, 24);
+    this.drawWrappedTextManually(
+        item[1].description,
+        0,
+        220,
+        160 // 440 (Height) - 60 (2 * Padding) - 220 (Starting Y)
+    );
 };
 
 // Drawing ammunition details
@@ -99,5 +104,10 @@ Window_InventoryItemDetails.prototype.drawAmmoDetails = function(ammo: [string, 
     this.drawLine(200);
 
     // Description
-    this.drawWrappedTextManually(ammo[1].description, 0, 220, 24);
+    this.drawWrappedTextManually(
+        ammo[1].description,
+        0, 
+        220,
+        160 // 440 (Height) - 60 (2 * Padding) - 220 (Starting Y)
+    );
 };

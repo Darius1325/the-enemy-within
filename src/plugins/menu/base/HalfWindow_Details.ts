@@ -2,6 +2,7 @@
 
 import { Game_Actor } from "../../base/stats/Game_Actor";
 import TEW from "../../_types/tew";
+import HalfWindow_DetailsCommand from "./HalfWindow_DetailsCommand";
 
 export interface IHalfWindow_Details {
     width: number;
@@ -9,7 +10,6 @@ export interface IHalfWindow_Details {
     setActor: (actor: Game_Actor) => void;
     drawUnderlinedtext: (text: string, x: number, y: number, width: number, align: string) => void;
     drawTable2Columns: (x: number, y: number, width: number, rows: number, textArray: [string, string][]) => void;
-    drawWrappedtextManually: (text: string, x: number, y: number, fontSize: number) => void;
     drawLine: (y: number) => void;
     clear: () => void;
 };
@@ -29,12 +29,14 @@ export default HalfWindow_Details.prototype = Object.create(Window_Base.prototyp
 HalfWindow_Details.prototype.constructor = HalfWindow_Details;
 
 // Initalizing the window
-HalfWindow_Details.prototype.initialize = function() {
+HalfWindow_Details.prototype.initialize = function(fullHeight: boolean = false) {
     Window_Base.prototype.initialize.call(this,
         Graphics.boxWidth / 2,
         TEW.MENU.INVENTORY_WINDOW_TOPBAR_HEIGHT,
-        this.windowWidth(),
-        this.windowHeight());
+        Graphics.boxWidth / 2,
+        Graphics.boxHeight - TEW.MENU.STATUS_WINDOW_TOPBAR_HEIGHT -
+            (fullHeight ? 0 : 2 * HalfWindow_DetailsCommand.MARGIN_Y - HalfWindow_DetailsCommand.TOTAL_HEIGHT)
+        );
     this.width = Graphics.boxWidth / 2;
     this.activate();
     this.refresh();

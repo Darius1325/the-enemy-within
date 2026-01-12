@@ -46,5 +46,5 @@ Window_StatusCommand.prototype.cursorLeft = function(wrap: boolean) {
 };
 
 Window_StatusCommand.prototype.verticalBorderPadding = function() {
-    return TEW.MENU.STANDARD_PADDING;
+    return 18;
 };

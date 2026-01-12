@@ -12,14 +12,15 @@
 // ----------------------
 
 import Window_StatusCommand from "./Window_StatusCommand";
-import Window_StatusCompetences from "./Window_StatusCompetences";
-import Window_StatusSpells from "./Window_StatusSpells";
+import Window_StatusCompetences from "./competences/Window_StatusCompetences";
+import Window_StatusSpells from "./spells/Window_StatusSpells";
 import Window_StatusStats from "./Window_StatusStats";
-import Window_StatusTalents from "./Window_StatusTalents";
-import Window_StatusTalentDescription from "./Window_StatusTalentDescription";
-import Window_StatusSpellCommand from "./Window_StatusSpellCommand";
-import Window_StatusSpellDetails from "./Window_StatusSpellDetails";
+import Window_StatusTalents from "./talents/Window_StatusTalents";
+import Window_StatusSpellCommand from "./spells/Window_StatusSpellCommand";
+import Window_StatusSpellDetails from "./spells/Window_StatusSpellDetails";
 import { Sprite } from "../../../rmmv/core/Sprite";
+import Window_StatusTalentDetails from "./talents/Window_StatusTalentDetails";
+import Window_StatusCompetenceDetails from "./competences/Window_StatusCompetenceDetails";
 
 // ----------------------
 // $StartCompilation
@@ -45,10 +46,11 @@ Scene_Status.prototype.create = function() {
 
     // Competences window
     this.createCompsWindow();
+    this.createCompDetailsWindow();
 
     // Talents windows
     this.createTalentsWindow();
-    this.createTalentDescriptionWindow();
+    this.createTalentDetailsWindow();
 
     // Spells windows
     this.createSpellsWindow();
@@ -72,11 +74,13 @@ Scene_Status.prototype.hideAllWindows = function() {
 
     this._competencesWindow.hide();
     this._competencesWindow.deactivate();
+    this._competenceDetailsWindow.hide();
+    this._competenceDetailsWindow.deactivate();
 
     this._talentsWindow.hide();
     this._talentsWindow.deactivate();
-    this._talentDescriptionWindow.hide();
-    this._talentDescriptionWindow.deactivate();
+    this._talentDetailsWindow.hide();
+    this._talentDetailsWindow.deactivate();
 
     this._spellsWindow.hide();
     this._spellsWindow.deactivate();
@@ -98,11 +102,13 @@ Scene_Status.prototype.displayWindow = function() {
     } else if (this._commandWindow.index() === this.COMPS_WINDOW_INDEX){
         this._competencesWindow.show();
         this._competencesWindow.refresh();
+        this._competenceDetailsWindow.show();
+        this._competenceDetailsWindow.refresh();
     } else if (this._commandWindow.index() === this.TALENTS_WINDOW_INDEX){
         this._talentsWindow.show();
         this._talentsWindow.refresh();
-        this._talentDescriptionWindow.show();
-        this._talentDescriptionWindow.refresh();
+        this._talentDetailsWindow.show();
+        this._talentDetailsWindow.refresh();
     } else if (this._commandWindow.index() === this.SPELLS_WINDOW_INDEX){
         this._spellsWindow.show();
         this._spellsDetailsWindow.show();
@@ -165,8 +171,21 @@ Scene_Status.prototype.createCompsWindow = function() {
         this._commandWindow.activate();
         this._competencesWindow.deselect();
     });
+    this._competencesWindow.setHandler('show_details', () => {
+        const selectedComp = this._competencesWindow.competence();
+        console.log(selectedComp);
+        if (selectedComp) {
+            this._competenceDetailsWindow.setCompetence(selectedComp[1]);
+        }
+    });
     this._competencesWindow.hide();
     this.addWindow(this._competencesWindow);
+};
+
+Scene_Status.prototype.createCompDetailsWindow = function() {
+    this._competenceDetailsWindow = new Window_StatusCompetenceDetails();
+    this._competenceDetailsWindow.hide();
+    this.addWindow(this._competenceDetailsWindow);
 };
 
 // Activating the competences window
@@ -177,6 +196,8 @@ Scene_Status.prototype.activateStatusComps = function(index:number = 0) {
     this._competencesWindow.activate();
     this._competencesWindow.select(index);
     this._competencesWindow.refresh();
+    this._competenceDetailsWindow.show();
+    this._competenceDetailsWindow.refresh();
 };
 // #endregion === Competences window === //
 // === //
@@ -193,13 +214,13 @@ Scene_Status.prototype.createTalentsWindow = function() {
 };
 
 // Creating the items details Window for the scene
-Scene_Status.prototype.createTalentDescriptionWindow = function(){
-    this._talentDescriptionWindow = new Window_StatusTalentDescription();
+Scene_Status.prototype.createTalentDetailsWindow = function(){
+    this._talentDetailsWindow = new Window_StatusTalentDetails();
     this._talentsWindow.setHandler('show_talent_description', () => {
-        this.showTalentDescription();
+        this.showTalentDetails();
     });
-    this._talentDescriptionWindow.hide();
-    this.addWindow(this._talentDescriptionWindow);
+    this._talentDetailsWindow.hide();
+    this.addWindow(this._talentDetailsWindow);
 };
 
 // Activating the talents window
@@ -207,7 +228,7 @@ Scene_Status.prototype.activateStatusTalents = function(index:number = 0) {
     const nbTalents = this._talentsWindow._talents.length;
     this.hideAllWindows();
     this._talentsWindow.show();
-    this._talentDescriptionWindow.show();
+    this._talentDetailsWindow.show();
     if (nbTalents > 0) {
         this._commandWindow.deactivate();
         this._talentsWindow.activate();
@@ -215,17 +236,17 @@ Scene_Status.prototype.activateStatusTalents = function(index:number = 0) {
     } else {
         this._commandWindow.activate();
         this._talentsWindow.deselect();
-        this._talentDescriptionWindow.empty();
-        this._talentDescriptionWindow.clear();
+        this._talentDetailsWindow.empty();
+        this._talentDetailsWindow.clear();
     }
     this._talentsWindow.refresh();
 };
 
 // Showing the talent description
-Scene_Status.prototype.showTalentDescription = function() {
+Scene_Status.prototype.showTalentDetails = function() {
     const talent = this._talentsWindow.talentFromIndex(this._talentsWindow.index());
-    this._talentDescriptionWindow._talent = talent;
-    this._talentDescriptionWindow.refresh();
+    this._talentDetailsWindow._talent = talent;
+    this._talentDetailsWindow.refresh();
 };
 // #endregion === Talents windows === //
 // === //
@@ -258,9 +279,7 @@ Scene_Status.prototype.createSpellCommandWindow = function() {
 };
 
 Scene_Status.prototype.createSpellDetailsWindow = function() {
-    this._spellsDetailsWindow = new Window_StatusSpellDetails(
-        this._spellsCommandWindow.fittingHeight(this._spellsCommandWindow._actionsNumber)
-    );
+    this._spellsDetailsWindow = new Window_StatusSpellDetails();
     this._spellsWindow.setHandler('show_spell_details', () => {
         this.showSpellDetails();
     });

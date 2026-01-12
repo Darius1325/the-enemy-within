@@ -27,6 +27,12 @@ Array.prototype.last = function() {
     return this[this.length - 1];
 };
 
+Array.prototype.addItemsAt = function(index: number, items: any[]) {
+    const copy = this.slice();
+    copy.splice(index, 0, ...items);
+    return copy;
+};
+
 // Retrieve weapon info
 TEW.COMBAT.getWeaponQualityEffects = (weapon: MeleeWeapon | RangedWeapon) => {
     let attackMod: number = 0;

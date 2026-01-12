@@ -11,9 +11,9 @@
 // Imports
 // ----------------------
 
-import { SpellDuration, SpellTarget } from "../../_types/enum";
-import { Spell } from "../../_types/spell";
-import HalfWindow_Details from "../base/HalfWindow_Details";
+import { SpellDuration, SpellTarget } from "../../../_types/enum";
+import { Spell } from "../../../_types/spell";
+import HalfWindow_Details from "../../base/HalfWindow_Details";
 
 // ----------------------
 // $StartCompilation
@@ -84,5 +84,10 @@ Window_StatusSpellDetails.prototype.drawDetails = function (spell:[string, Spell
 
     // Description
     // const descPadding = 20;
-    this.drawWrappedTextManually(spell[1].desc, 0, 280, 24);
+    this.drawWrappedTextManually(
+        spell[1].desc,
+        0,
+        280,
+        100 // 440 (Height) - 60 (2 * Padding) - 280 (Starting Y)
+    );
 };

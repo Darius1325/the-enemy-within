@@ -85,6 +85,9 @@ Game_Actor.prototype.initCecile = function() {
     this.addTalent('COOLHEADED');
     this.addTalent('WARRIOR_BORN');
     this.addTalent('FEINT');
+    // test
+    this.addTalent('DUAL_WIELDER');
+    
 
     // spells
 

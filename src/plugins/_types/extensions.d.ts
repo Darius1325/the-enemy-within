@@ -20,6 +20,7 @@ declare global {
     }
     interface Array<T> {
         last() : T;
+        addItemsAt(index: number, items: T[]) : Array<T>;
     }
 
     var Math: Math;

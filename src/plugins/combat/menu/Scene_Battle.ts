@@ -14,6 +14,7 @@ import Window_TacticsWeapons, { LoadedWeapon } from "./weapons/Window_TacticsWea
 import Window_TacticsWeaponDetails from "./weapons/Window_TacticsWeaponDetails";
 import Window_TacticsWeaponCommand from "./weapons/Window_TacticsWeaponCommand";
 import { WeaponGroup, WeaponQuality } from "../../_types/enum";
+import { Sprite } from "../../../rmmv/core/Sprite";
 
 // $StartCompilation
 
@@ -41,6 +42,7 @@ Scene_Battle.prototype.create = function() {
 Scene_Battle.prototype.createDisplayObjects = function() {
     this.createSpriteset();
     this.createWindowLayer();
+    this.createBackground();
     this.createAllWindows();
     BattleManager.setLogWindow(this._logWindow);
     BattleManager.setCommandWindow(this._tacticsCommandWindow);
@@ -54,6 +56,17 @@ Scene_Battle.prototype.createDisplayObjects = function() {
 Scene_Battle.prototype.createSpriteset = function() {
     this._spriteset = new Spriteset_Tactics();
     this.addChild(this._spriteset);
+};
+
+Scene_Battle.prototype.createBackground = function() {
+    this._background = new Sprite(ImageManager.loadSystem('bg_battle_command1'));
+    this.addChildAt(this._background, this.getChildIndex(this._windowLayer));
+};
+
+Scene_Battle.prototype.changeBackground = function(commandLevel = 0) {
+    this._background = new Sprite(ImageManager.loadSystem(
+        commandLevel ? 'bg_battle' : ('bg_battle_command' + commandLevel)
+    ));
 };
 
 Scene_Battle.prototype.createAllWindows = function() {

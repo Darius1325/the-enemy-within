@@ -10,7 +10,9 @@
 // ----------------------
 // Imports
 // ----------------------
-import TEW from "../../_types/tew";
+import { Competence } from "../../../_types/competence";
+import TEW from "../../../_types/tew";
+import HalfWindow_List from "../../base/HalfWindow_List";
 
 // ----------------------
 // $StartCompilation
@@ -18,26 +20,21 @@ import TEW from "../../_types/tew";
 
 function Window_StatusCompetences() {
     this.initialize.apply(this, arguments);
-}
+};
 
-export default Window_StatusCompetences.prototype = Object.create(Window_Selectable.prototype);
+Window_StatusCompetences.NAME_COLUMN_WIDTH = 500;
+Window_StatusCompetences.LEVEL_COLUMN_WIDTH = 80;
+
+export default Window_StatusCompetences.prototype = Object.create(HalfWindow_List.prototype);
 Window_StatusCompetences.prototype.constructor = Window_StatusCompetences;
 
 /**
  * Constructor for the Window_StatusCompetences class.
  */
 Window_StatusCompetences.prototype.initialize = function() {
-    Window_Selectable.prototype.initialize.call(this,
-        0,
-        TEW.MENU.STATUS_WINDOW_TOPBAR_HEIGHT,
-        Graphics.boxWidth,
-        Graphics.boxHeight - TEW.MENU.STATUS_WINDOW_TOPBAR_HEIGHT);
+    HalfWindow_List.prototype.initialize.call(this);
     this._actor = null;
     this._maxItems = 0;
-    this._leftPadding = 10;
-    this._compColumnWidth = 340; // TODO constants
-    this._levelColumnWidth = 100;
-    this._statColumnWidth = 140;
     this.refresh();
 };
 
@@ -56,7 +53,7 @@ Window_StatusCompetences.prototype.setActor = function(actor: any) {
 /**
  * Returns the maximum number of columns in the window.
  */
-Window_StatusCompetences.prototype.maxCols = () => 2;
+Window_StatusCompetences.prototype.maxCols = () => 1;
 
 /**
  * Draws all items in the window.
@@ -76,60 +73,74 @@ Window_StatusCompetences.prototype.drawAllItems = function() {
  */
 Window_StatusCompetences.prototype.drawItem = function(index: number) {
     const normalizedIndex = index - this.topIndex();
-    const x = index % 2 * this.width / 2 + this._leftPadding;
-    const y = Math.floor(normalizedIndex / 2) * TEW.MENU.LINE_HEIGHT;
-
+    const y = normalizedIndex * TEW.MENU.LINE_HEIGHT;
     const comp = this.competenceFromIndex(index);
+
     // Comp name
     this.changeTextColor(this.systemColor());
-    this.drawText(comp[1].name, x, y, this._compColumnWidth);
+    this.drawText(comp[1].name, 0, y, Window_StatusCompetences.NAME_COLUMN_WIDTH, 'left');
     this.resetTextColor();
 
-    // Level of the comp
+    // Comp bonus
     const compLevel = this._actor.compPlus(comp[0])
-    const compLevelText = compLevel > 0 ? `Lvl${compLevel}` : "Base";
+    const compLevelText = compLevel > 0 ? `${compLevel}` : "Base";
     this.drawText(
         compLevelText,
-        x + this._compColumnWidth,
+        Window_StatusCompetences.NAME_COLUMN_WIDTH,
         y,
-        this._levelColumnWidth,
-        'left');
+        Window_StatusCompetences.LEVEL_COLUMN_WIDTH,
+        'left'
+    );
 
     // Stats which the comp depends on
-    const statName = comp ? comp[1].stat : null;
-    const statNumber = this._actor.comp(comp[0]);
-    const statText = `${statName} (${statNumber})`;
+    // const statName = comp ? comp[1].stat : null;
+    // const statNumber = this._actor.comp(comp[0]);
+    // const statText = `${statName} (${statNumber})`;
 
-    this.drawText(
-        statText,
-        x + this._compColumnWidth + this._levelColumnWidth,
-        y,
-        this._statColumnWidth,
-        'left'
-    )
+    // this.drawText(
+    //     statText,
+    //     x + this._compColumnWidth + this._levelColumnWidth,
+    //     y,
+    //     this._statColumnWidth,
+    //     'left'
+    // )
 };
 
 /**
  * Returns the competence from the given index.
  */
 Window_StatusCompetences.prototype.competenceFromIndex = function(index: number) {
-    return index < TEW.DATABASE.COMPS.BASE_ARRAY.length  // [<internal name>, {<competence data>}]
+    const comp: [string, Competence] = index < TEW.DATABASE.COMPS.BASE_ARRAY.length  // [<internal name>, {<competence data>}]
         ? TEW.DATABASE.COMPS.BASE_ARRAY[index]
         : this._advancedCompsList[index - TEW.DATABASE.COMPS.BASE_ARRAY.length];
+    const level = this._actor.compPlus(comp[0]);
+
+        console.log([comp[0], {
+        ...comp[1],
+        level,
+        value: level + this._actor.paramByName(comp[1].stat)
+    }]);
+    return [comp[0], {
+        ...comp[1],
+        level,
+        value: level + this._actor.paramByName(comp[1].stat)
+    }];
+};
+
+Window_StatusCompetences.prototype.competence = function() {
+    return this.competenceFromIndex(this.index());
 };
 
 /**
  * Called when the process successfully completes.
  */
-Window_StatusCompetences.prototype.processOk = function() {
-    if (this.isCurrentItemEnabled()) {
-        this.playOkSound();
-        this.updateInputData();
-        this.callOkHandler();
-    } else {
-        this.playBuzzerSound();
+Window_StatusCompetences.prototype.select = function(index: number) {
+    const changed = this.index() !== index;
+    HalfWindow_List.prototype.select.call(this, index);
+    if (changed && this.index() >= 0) {
+        this.callHandler("show_details");
     }
-};
+}
 
 /**
  * Returns the maximum number of items in the window.

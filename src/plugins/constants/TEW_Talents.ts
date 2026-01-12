@@ -393,7 +393,7 @@ TEW.DATABASE.TALENTS.SET = {
     },
     FEINT: {
         name: "Feint",
-        description: "You have trained how to make false attacks in close combat to fool your opponent. You may now make a Feint for your Action against any opponent using a weapon. This is resolved with an Opposed Melee (Fencing)/Melee Test. If you win, and you attack the same opponent before the end of the next Round, you may add the SL of your Feint to your attack roll.",
+        description: "You have trained how to make false attacks in close combat to fool your opponent. You may now make a Feint for your Action against any opponent using a weapon.\\n \\n This is resolved with an Opposed Melee (Fencing)/Melee Test.\\n \\n If you win, and you attack the same opponent before the end of the next Round, you may add the SL of your Feint to your attack roll.",
         maxTaken: Stat.WEAS
     },
     FIELD_DRESSING: {

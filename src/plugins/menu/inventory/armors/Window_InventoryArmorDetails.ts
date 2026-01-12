@@ -65,5 +65,10 @@ Window_InventoryArmorDetails.prototype.drawDetails = function(armor: [string, Ar
     this.drawLine(200);
 
     // Description
-    this.drawWrappedTextManually(armor[1].description, 0, 220, 24);
+    this.drawWrappedTextManually(
+        armor[1].description,
+        0,
+        220,
+        160 // 440 (Height) - 60 (2 * Padding) - 220 (Starting Y)
+    ); 
 };
