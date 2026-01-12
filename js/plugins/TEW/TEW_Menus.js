@@ -13,7 +13,7 @@ TEW.MENU.COMMAND_NAMES = TEW.MENU.COMMAND_NAMES || {};
 // Main Menu
 TEW.MENU.COMMAND_NAMES[30] = "Status";
 TEW.MENU.COMMAND_NAMES[31] = "Inventory";
-TEW.MENU.COMMAND_NAMES[32] = "Quests";
+TEW.MENU.COMMAND_NAMES[32] = "Journals";
 TEW.MENU.COMMAND_NAMES[33] = "Formation";
 TEW.MENU.COMMAND_NAMES[34] = "Options";
 TEW.MENU.COMMAND_NAMES[35] = "Save";
@@ -47,9 +47,21 @@ TEW.MENU.COMMAND_NAMES[88] = TEW.CHARACTERS.ARRAY[2];
 TEW.MENU.COMMAND_NAMES[89] = TEW.CHARACTERS.ARRAY[3];
 TEW.MENU.COMMAND_NAMES[90] = TEW.CHARACTERS.ARRAY[4];
 TEW.MENU.COMMAND_NAMES[91] = TEW.CHARACTERS.ARRAY[5];
+// Journals
+TEW.MENU.COMMAND_NAMES[92] = "Quest log";
+TEW.MENU.COMMAND_NAMES[93] = "Documents";
+TEW.MENU.COMMAND_NAMES[94] = "Characters";
+TEW.MENU.COMMAND_NAMES[95] = "Glossary";
+TEW.MENU.COMMAND_NAMES[96] = "Tutorials";
 TEW.MENU.LINE_HEIGHT = 36;
-TEW.MENU.STANDARD_PADDING = 18;
+// TODO this is wrong and useless
+TEW.MENU.STANDARD_PADDING = 30;
 TEW.MENU.WINDOW_BACKGROUND_PADDING = 12; // 30px total padding
+TEW.MENU.JOURNALS_LEFT_PAGE_X_OFFSET = 60;
+TEW.MENU.JOURNALS_RIGHT_PAGE_X_OFFSET = 650;
+TEW.MENU.JOURNALS_CONTENT_AREA = {
+    y: 20, w: 570, h: 670
+};
 // TextManager
 // Override commands
 TextManager.command = function (commandId) {
@@ -73,7 +85,7 @@ Object.defineProperties(TextManager, {
     // Main Menu
     mainMenuStatus: TextManager.getter('command', 30),
     mainMenuInventory: TextManager.getter('command', 31),
-    mainMenuQuests: TextManager.getter('command', 32),
+    mainMenuJournals: TextManager.getter('command', 32),
     mainMenuFormation: TextManager.getter('command', 33),
     mainMenuOptions: TextManager.getter('command', 34),
     mainMenuSave: TextManager.getter('command', 35),
@@ -110,6 +122,105 @@ Object.defineProperties(TextManager, {
 });
 // #endregion =========================== properties ============================== //
 // ============================== //
+// #region ============================== Scene_QuestLog ============================== //
+function Scene_QuestLog() {
+    this.initialize.apply(this, arguments);
+}
+Scene_QuestLog.prototype = Object.create(Scene_Base.prototype);
+Scene_QuestLog.prototype.constructor = Scene_QuestLog;
+Scene_QuestLog.prototype.initialize = function () {
+    Scene_Base.prototype.initialize.call(this);
+    this.createWindowLayer();
+    this.fetchQuests();
+};
+Scene_QuestLog.prototype.fetchQuests = function () {
+    this._quests = [];
+    for (let quest of TEW.DATABASE.QUESTS) {
+        const currentStep = $gameVariables.value(quest.gameVariableId);
+        if (currentStep === 1000) { // quest resolved
+            this._quests.push(quest);
+        }
+        else if (currentStep > 0) { // quest in progress
+            this._quests.push({
+                title: quest.title,
+                description: quest.description,
+                objective: quest.objective,
+                steps: quest.steps.slice(0, currentStep),
+                expandable: quest.steps.length > 0
+            });
+        }
+    }
+};
+Scene_QuestLog.prototype.create = function () {
+    Scene_Base.prototype.create.call(this);
+    this.addFullscreenBackground();
+    this.createQuestDetails();
+    this.createQuestList();
+};
+Scene_QuestLog.prototype.addFullscreenBackground = function () {
+    this._background = new Sprite(ImageManager.loadSystem('bg_questlog'));
+    this.addChildAt(this._background, this.getChildIndex(this._windowLayer));
+};
+Scene_QuestLog.prototype.createQuestDetails = function () {
+    this._windowQuestDetails = new Window_QuestDetails();
+    this.addWindow(this._windowQuestDetails);
+    this._windowQuestDetails.show();
+};
+Scene_QuestLog.prototype.createQuestList = function () {
+    this._windowQuestList = new Window_QuestList(this._quests);
+    this._windowQuestList.setHandler('cancel', this.popScene.bind(this));
+    this._windowQuestList.setHandler('show_quest_details', () => {
+        this._windowQuestDetails._text = this._windowQuestList.selectedQuestDetails();
+        this._windowQuestDetails.refresh();
+    });
+    this.addWindow(this._windowQuestList);
+    this._windowQuestList.show();
+    this._windowQuestList.activate();
+    this._windowQuestList.select(0);
+};
+// #endregion =========================== Scene_QuestLog ============================== //
+// ============================== //
+// #region ============================== Scene_Journals ============================== //
+function Scene_Journals() {
+    this.initialize.apply(this, arguments);
+}
+Scene_Journals.prototype = Object.create(Scene_Base.prototype);
+Scene_Journals.prototype.constructor = Scene_Journals;
+Scene_Journals.prototype.initialize = function () {
+    Scene_Base.prototype.initialize.call(this);
+    this.createWindowLayer();
+};
+Scene_Journals.prototype.create = function () {
+    Scene_Base.prototype.create.call(this);
+    this.createJournalsCommands();
+};
+Scene_Journals.prototype.createJournalsCommands = function () {
+    this._windowJournals = new Window_Journals();
+    this._windowJournals.setHandler('cancel', this.popScene.bind(this));
+    this._windowJournals.setHandler('ok', this.openJournal.bind(this));
+    this.addWindow(this._windowJournals);
+    this._windowJournals.show();
+    this._windowJournals.activate();
+    this._windowJournals.select(0);
+};
+Scene_Journals.prototype.openJournal = function () {
+    const selectedJournal = this._windowJournals.item();
+    switch (selectedJournal) {
+        case "journal_quest_log":
+            SceneManager.push(Scene_QuestLog);
+            break;
+        case "journal_documents":
+            break;
+        case "journal_characters":
+            break;
+        case "journal_glossary":
+            break;
+        case "journal_tutorials":
+            break;
+    }
+};
+// #endregion =========================== Scene_Journals ============================== //
+// ============================== //
 // #region ============================== Scene_Menu ============================== //
 // ----------------------
 function Scene_Menu() {
@@ -140,7 +251,7 @@ Scene_Menu.prototype.createCommandWindow = function () {
     this._commandWindow.setHandler('menu_status', this.commandPersonal.bind(this));
     this._commandWindow.setHandler('menu_inventory', this.commandPersonal.bind(this));
     this._commandWindow.setHandler('menu_formation', this.commandFormation.bind(this));
-    this._commandWindow.setHandler('menu_quest', this.commandQuests.bind(this));
+    this._commandWindow.setHandler('menu_journals', this.commandJournals.bind(this));
     this._commandWindow.setHandler('options', this.commandOptions.bind(this));
     this._commandWindow.setHandler('save', this.commandSave.bind(this));
     this._commandWindow.setHandler('gameEnd', this.commandGameEnd.bind(this));
@@ -170,8 +281,8 @@ Scene_Menu.prototype.commandFormation = function () {
     this._statusMenuWindow.setHandler('ok', this.onFormationOk.bind(this));
     this._statusMenuWindow.setHandler('cancel', this.onFormationCancel.bind(this));
 };
-Scene_Menu.prototype.commandQuests = function () {
-    // SceneManager.push(Scene_Quests); // TODO
+Scene_Menu.prototype.commandJournals = function () {
+    SceneManager.push(Scene_Journals);
 };
 Scene_Menu.prototype.commandOptions = function () {
     SceneManager.push(Scene_Options);
@@ -235,8 +346,9 @@ function HalfWindow_Details() {
 HalfWindow_Details.prototype = Object.create(Window_Base.prototype);
 HalfWindow_Details.prototype.constructor = HalfWindow_Details;
 // Initalizing the window
-HalfWindow_Details.prototype.initialize = function () {
-    Window_Base.prototype.initialize.call(this, Graphics.boxWidth / 2, TEW.MENU.INVENTORY_WINDOW_TOPBAR_HEIGHT, this.windowWidth(), this.windowHeight());
+HalfWindow_Details.prototype.initialize = function (fullHeight = false) {
+    Window_Base.prototype.initialize.call(this, Graphics.boxWidth / 2, TEW.MENU.INVENTORY_WINDOW_TOPBAR_HEIGHT, Graphics.boxWidth / 2, Graphics.boxHeight - TEW.MENU.STATUS_WINDOW_TOPBAR_HEIGHT -
+        (fullHeight ? 0 : 2 * HalfWindow_DetailsCommand.MARGIN_Y - HalfWindow_DetailsCommand.TOTAL_HEIGHT));
     this.width = Graphics.boxWidth / 2;
     this.activate();
     this.refresh();
@@ -320,21 +432,46 @@ function HalfWindow_DetailsCommand() {
 }
 ;
 // TODO maybe just fix every window's position?
-HalfWindow_DetailsCommand.MARGIN_X = 180;
+HalfWindow_DetailsCommand.MARGIN_X = 20;
 HalfWindow_DetailsCommand.MARGIN_Y = 20;
+HalfWindow_DetailsCommand.TOTAL_HEIGHT = TEW.MENU.LINE_HEIGHT * 3 + TEW.MENU.STANDARD_PADDING * 2;
 HalfWindow_DetailsCommand.prototype = Object.create(Window_Command.prototype);
 HalfWindow_DetailsCommand.prototype.constructor = HalfWindow_DetailsCommand;
 // Initializing the command window
 HalfWindow_DetailsCommand.prototype.initialize = function (actionsNumber = 2) {
     this._actionsNumber = actionsNumber;
-    Window_Command.prototype.initialize.call(this, Graphics.boxWidth / 2 + HalfWindow_DetailsCommand.MARGIN_X, Graphics.boxHeight - this.fittingHeight(actionsNumber) - HalfWindow_DetailsCommand.MARGIN_Y);
+    Window_Command.prototype.initialize.call(this, Graphics.boxWidth / 2 + HalfWindow_DetailsCommand.MARGIN_X, Graphics.boxHeight - HalfWindow_DetailsCommand.TOTAL_HEIGHT - HalfWindow_DetailsCommand.MARGIN_Y);
 };
 HalfWindow_DetailsCommand.prototype.addCommand = function (name, symbol, enabled = true, ext = null) {
     this._list.push({ name: name, symbol: symbol, enabled: enabled, ext: ext });
 };
+HalfWindow_DetailsCommand.prototype.maxCols = function () {
+    return this._actionsNumber <= 3 ? 1 : 2;
+};
 HalfWindow_DetailsCommand.prototype.clear = function () {
     this.clearCommandList();
     Window_Selectable.prototype.refresh.call(this);
+};
+HalfWindow_DetailsCommand.prototype.horizontalBorderPadding = function () {
+    //const defaultPadding = Window_Command.prototype.horizontalBorderPadding.call(this); // 30
+    return this.maxCols === 1 ? 150 : 80;
+};
+HalfWindow_DetailsCommand.prototype.verticalBorderPadding = function () {
+    const defaultPadding = Window_Command.prototype.verticalBorderPadding.call(this); // 30
+    switch (this._actionsNumber) {
+        // total window height is 168 (bg padding + three lines of text)
+        case 1:
+            return 66; // total height / 2 - line height / 2 (one line centered)
+        case 2:
+        case 4:
+            return 48; // total height / 2 - line height (two lines centered)
+        case 3:
+        case 5:
+        case 6:
+            return 30; // total height / 2 - 3/2 * line height (three lines centered)
+        default:
+            return defaultPadding;
+    }
 };
 // #endregion =========================== HalfWindow_DetailsCommand ============================== //
 // ============================== //
@@ -348,16 +485,6 @@ function HalfWindow_List() {
 }
 HalfWindow_List.prototype = Object.create(Window_Selectable.prototype);
 HalfWindow_List.prototype.constructor = HalfWindow_List;
-// TODO define fixed window dimensions (and graphical details?) in dedicated file
-HalfWindow_List.prototype.windowWidth = function () {
-    return 640;
-};
-HalfWindow_List.prototype.windowHeight = function () {
-    return 648;
-};
-HalfWindow_List.prototype.backgroundImageName = function () {
-    return "bg_statusHalfWindowLeft";
-};
 // Inializing the window
 HalfWindow_List.prototype.initialize = function () {
     Window_Selectable.prototype.initialize.call(this, 0, TEW.MENU.INVENTORY_WINDOW_TOPBAR_HEIGHT, Graphics.boxWidth / 2, Graphics.boxHeight - TEW.MENU.INVENTORY_WINDOW_TOPBAR_HEIGHT);
@@ -471,6 +598,21 @@ Window_InventoryTransferCommand.prototype.makeCommandList = function () {
 };
 // #endregion =========================== Window_InventoryTransferCommand ============================== //
 // ============================== //
+// #region ============================== Window_JournalPage ============================== //
+function Window_JournalPage() {
+    this.initialize.apply(this, arguments);
+}
+Window_JournalPage.prototype = Object.create(Window_Selectable.prototype);
+Window_JournalPage.prototype.constructor = Window_JournalPage;
+Window_JournalPage.prototype.initialize = function (isLeftPage = true) {
+    const dimensions = TEW.MENU.JOURNALS_CONTENT_AREA;
+    Window_Selectable.prototype.initialize.call(this, isLeftPage ? TEW.MENU.JOURNALS_LEFT_PAGE_X_OFFSET : TEW.MENU.JOURNALS_RIGHT_PAGE_X_OFFSET, dimensions.y, dimensions.w, dimensions.h);
+};
+Window_JournalPage.prototype.maxItems = function () {
+    return this._items.length;
+};
+// #endregion =========================== Window_JournalPage ============================== //
+// ============================== //
 // #region ============================== Window_InventoryAmmo ============================== //
 // //-----------------------------------------------------------------------------
 // // Window_InventoryInfo
@@ -574,7 +716,8 @@ Window_InventoryArmorDetails.prototype.drawDetails = function (armor) {
     ]);
     this.drawLine(200);
     // Description
-    this.drawWrappedTextManually(armor[1].description, 0, 220, 24);
+    this.drawWrappedTextManually(armor[1].description, 0, 220, 160 // 440 (Height) - 60 (2 * Padding) - 220 (Starting Y)
+    );
 };
 // #endregion =========================== Window_InventoryArmorDetails ============================== //
 // ============================== //
@@ -768,7 +911,8 @@ Window_InventoryItemDetails.prototype.drawItemDetails = function (item) {
     ]);
     this.drawLine(200);
     // Description
-    this.drawWrappedTextManually(item[1].description, 0, 220, 24);
+    this.drawWrappedTextManually(item[1].description, 0, 220, 160 // 440 (Height) - 60 (2 * Padding) - 220 (Starting Y)
+    );
 };
 // Drawing ammunition details
 Window_InventoryItemDetails.prototype.drawAmmoDetails = function (ammo) {
@@ -785,7 +929,8 @@ Window_InventoryItemDetails.prototype.drawAmmoDetails = function (ammo) {
     ]);
     this.drawLine(200);
     // Description
-    this.drawWrappedTextManually(ammo[1].description, 0, 220, 24);
+    this.drawWrappedTextManually(ammo[1].description, 0, 220, 160 // 440 (Height) - 60 (2 * Padding) - 220 (Starting Y)
+    );
 };
 // #endregion =========================== Window_InventoryItemDetails ============================== //
 // ============================== //
@@ -966,7 +1111,8 @@ Window_InventoryWeaponDetails.prototype.drawDetails = function (weapon) {
     ]);
     this.drawLine(200);
     // Description
-    this.drawWrappedTextManually(weapon.description, 0, 220, 24);
+    this.drawWrappedTextManually(weapon.description, 0, 220, 160 // 440 (Height) - 60 (2 * Padding) - 220 (Starting Y)
+    );
 };
 // #endregion =========================== Window_InventoryWeaponDetails ============================== //
 // ============================== //
@@ -1131,7 +1277,7 @@ Window_InventoryCommand.prototype.cursorLeft = function (wrap) {
     this.callHandler('left');
 };
 Window_InventoryCommand.prototype.verticalBorderPadding = function () {
-    return TEW.MENU.STANDARD_PADDING;
+    return 18;
 };
 // #endregion =========================== Window_InventoryCommand ============================== //
 // ============================== //
@@ -1191,6 +1337,303 @@ Window_InventoryHelp.prototype.refresh = function () {
 };
 // #endregion =========================== Window_InventoryHelp ============================== //
 // ============================== //
+// #region ============================== Window_QuestDetails ============================== //
+function Window_QuestDetails() {
+    this.initialize.apply(this, arguments);
+}
+Window_QuestDetails.prototype = Object.create(Window_Base.prototype);
+Window_QuestDetails.prototype.constructor = Window_QuestDetails;
+Window_QuestDetails.prototype.initialize = function () {
+    Window_Base.prototype.initialize.call(this);
+    const dimensions = TEW.MENU.JOURNALS_CONTENT_AREA;
+    Window_Selectable.prototype.initialize.call(this, TEW.MENU.JOURNALS_RIGHT_PAGE_X_OFFSET, dimensions.y, dimensions.w, dimensions.h);
+    this._title = undefined;
+    this._paragraphs = undefined;
+};
+Window_QuestDetails.prototype.refresh = function () {
+    this.contents.clear();
+    if (this._title && this._paragraphs) {
+        this.drawDetails();
+    }
+};
+Window_QuestDetails.prototype.drawDetails = function () {
+    // Title
+    this.drawUnderlinedText(this._title, 0, 0, this.contentsWidth(), "center");
+    // // Paragraphs
+    // let startY = 80;
+    // this._paragraphs?.forEach(paragraph => {
+    //     this.drawWrappedTextManually(
+    //         paragraph.content,
+    //         0, 
+    //         startY,
+    //     )
+    // });
+};
+// #endregion =========================== Window_QuestDetails ============================== //
+// ============================== //
+// #region ============================== Window_QuestList ============================== //
+function Window_QuestList() {
+    this.initialize.apply(this, arguments);
+}
+Window_QuestList.prototype = Object.create(Window_JournalPage.prototype);
+Window_QuestList.prototype.constructor = Window_QuestList;
+Window_QuestList.prototype.initialize = function (quests) {
+    Window_JournalPage.prototype.initialize.call(this, true);
+    this._quests = quests;
+    this._collapsedState = this._quests.map(quest => quest.title); // display when no quest is expanded
+    this._items = this._collapsedState.slice();
+    this._expandedIndex = undefined;
+    this.refresh();
+};
+// Add selected quest steps to display under the main entry with an offset
+Window_QuestList.prototype.expandSelectedQuest = function () {
+    const index = this.index();
+    let isQuestSelected = true;
+    let questIndex = index;
+    if (this._expandedIndex !== undefined) {
+        const questCount = this._collapsedState.length;
+        const collapsibleCount = this._items.length - questCount;
+        const indexBeforeExpanded = index <= this._expandedIndex;
+        questIndex = indexBeforeExpanded ? index : index - collapsibleCount;
+        isQuestSelected = indexBeforeExpanded || (index > this._expandedIndex + collapsibleCount);
+    }
+    if (isQuestSelected && this._quests[questIndex].expandable) {
+        this._items = this._collapsedState.addItemsAt(index + 1, this._quests[questIndex].steps.map((step) => "    " + step.title));
+        this._expandedIndex = questIndex;
+        this.select(questIndex);
+    }
+    this.refresh();
+};
+// Drawing one item
+// TODO add arrow icon for expandable quests
+Window_QuestList.prototype.drawItem = function (index) {
+    const normalizedIndex = index - this.topIndex();
+    const y = normalizedIndex * TEW.MENU.LINE_HEIGHT;
+    this.drawText(this._items[index], 0, y, this._width, 'left');
+};
+// Getting the current selected quest or step description
+Window_QuestList.prototype.selectedQuestDetails = function () {
+    // TODO extract function
+    const index = this.index();
+    let isQuestSelected = true;
+    let questIndex = index;
+    if (this._expandedIndex !== undefined) {
+        const questCount = this._collapsedState.length;
+        const collapsibleCount = this._items.length - questCount;
+        const indexBeforeExpanded = index <= this._expandedIndex;
+        questIndex = indexBeforeExpanded ? index : index - collapsibleCount;
+        isQuestSelected = indexBeforeExpanded || (index > this._expandedIndex + collapsibleCount);
+    }
+    const selected = isQuestSelected
+        ? this._quests[questIndex]
+        : this._quests[this._expandedIndex]
+            .steps[index - this._expandedIndex - 1];
+    return { title: selected.title, paragraphs: selected.paragraphs };
+};
+// Selecting an item
+Window_QuestList.prototype.select = function (index) {
+    if (this._index !== index) {
+        this._index = index;
+        if (this._index >= 0) {
+            this.callHandler("show_quest_details");
+        }
+        this._stayCount = 0;
+        this.ensureCursorVisible();
+        this.updateCursor();
+    }
+};
+Window_QuestList.prototype.isOkEnabled = () => true;
+// handling process OK
+Window_QuestList.prototype.processOk = function () {
+    this.playOkSound(); // TODO other sound ?
+    this.updateInputData();
+    this.expandSelectedQuest();
+};
+// #endregion =========================== Window_QuestList ============================== //
+// ============================== //
+// #region ============================== Window_Journals ============================== //
+function Window_Journals() {
+    this.initialize.apply(this, arguments);
+}
+Window_Journals.COMMAND_INDEX_OFFSET = 92;
+Window_Journals.SELECTION_COLOR = "#fedc22ff";
+Window_Journals.prototype = Object.create(Window_Selectable.prototype);
+Window_Journals.prototype.constructor = Window_Journals;
+// Initializing the command window
+Window_Journals.prototype.initialize = function () {
+    Window_Selectable.prototype.initialize.call(this, 0, 0, Graphics.boxWidth, Graphics.boxHeight);
+    this._commandList = [
+        "journal_quest_log",
+        "journal_documents",
+        "journal_characters",
+        "journal_glossary",
+        "journal_tutorials"
+    ];
+    this._drawParameters = [{
+            x: 400,
+            y: 70,
+            rect: {
+                x: 180,
+                y: 70,
+                w: 1012,
+                h: 136
+            },
+            fontSize: 80,
+            color: "#f0f0f0"
+        }, {
+            x: 678,
+            y: 190,
+            rect: {
+                x: 200,
+                y: 207,
+                w: 924,
+                h: 62
+            },
+            fontSize: 52,
+            color: "#f0f0f0"
+        }, {
+            x: 570,
+            y: 260,
+            rect: {
+                x: 276,
+                y: 270,
+                w: 820,
+                h: 75
+            },
+            fontSize: 44,
+            color: "#101010"
+        }, {
+            x: 455,
+            y: 360,
+            rect: {
+                x: 110,
+                y: 346,
+                w: 1095,
+                h: 163
+            },
+            fontSize: 92,
+            color: "#f0f0f0"
+        }, {
+            x: 540,
+            y: 525,
+            rect: {
+                x: 156,
+                y: 510,
+                w: 1073,
+                h: 126
+            },
+            fontSize: 80,
+            color: "#f0f0e1"
+        }];
+    this.refresh();
+    this._maxItems = 5;
+};
+Window_Journals.prototype.drawAllItems = function () {
+    this.drawItem(0);
+    this.drawItem(1);
+    this.drawItem(2);
+    this.drawItem(3);
+    this.drawItem(4);
+};
+Window_Journals.prototype.drawItem = function (index) {
+    const params = this._drawParameters[index];
+    this.changeTextColor(this.index() === index ? Window_Journals.SELECTION_COLOR : params.color);
+    this.contents.fontSize = params.fontSize;
+    this.drawText(TextManager.command(index + Window_Journals.COMMAND_INDEX_OFFSET), params.x, params.y, 500, 'left');
+    this.contents.fontSize = this.standardFontSize();
+    this.changeTextColor(this.normalColor());
+};
+Window_Journals.prototype.itemRect = function (index) {
+    const r = this._drawParameters[index].rect;
+    return new Rectangle(r.x, r.y, r.w, r.h);
+};
+Window_Journals.prototype.hitTest = function (x, y) {
+    const params = this._drawParameters;
+    for (let i = 0; i < 5; i++) {
+        const rect = params[i].rect;
+        const right = rect.x + rect.w;
+        const bottom = rect.y + rect.h;
+        if (x >= rect.x && y >= rect.y && x < right && y < bottom) {
+            return i;
+        }
+    }
+    return -1;
+};
+Window_Journals.prototype.itemRectForText = function (index) {
+    return this.itemRect(index);
+};
+Window_Journals.prototype.items = function () {
+    return this._commandList;
+};
+Window_Journals.prototype.item = function () {
+    return this._commandList[this.index()];
+};
+Window_Journals.prototype.processOk = function () {
+    if (this.isCurrentItemEnabled()) {
+        this.playOkSound();
+        this.updateInputData();
+        this.callOkHandler();
+    }
+    else {
+        this.playBuzzerSound();
+    }
+};
+Window_Journals.prototype.standardFontFace = function () {
+    return 'handwritten';
+};
+Window_Journals.prototype.select = function (index) {
+    const changed = index >= 0 && index !== this.index();
+    Window_Selectable.prototype.select.call(this, index);
+    if (changed) {
+        this.refresh();
+    }
+};
+Window_Journals.prototype.updateCursor = function () {
+    this.setCursorRect(0, 0, 0, 0);
+};
+// TODO superclass without extra features
+Window_Journals.prototype.maxItems = function () {
+    return this._maxItems;
+};
+Window_Journals.prototype.cursorDown = function () {
+    var index = this.index();
+    index++;
+    if (index > 4) {
+        index = 0;
+    }
+    this.select(index);
+};
+Window_Journals.prototype.cursorUp = function () {
+    var index = this.index();
+    index--;
+    if (index < 0) {
+        index = 4;
+    }
+    this.select(index);
+};
+Window_Journals.prototype.cursorRight = () => { };
+Window_Journals.prototype.cursorLeft = () => { };
+Window_Journals.prototype.cursorPagedown = function () {
+    this.select(4);
+};
+Window_Journals.prototype.cursorPageup = function () {
+    this.select(0);
+};
+Window_Journals.prototype.scrollDown = () => { };
+Window_Journals.prototype.scrollUp = () => { };
+Window_Journals.prototype.isCursorVisible = () => true;
+Window_Journals.prototype.ensureCursorVisible = () => { };
+Window_Journals.prototype.topRow = () => 0;
+Window_Journals.prototype.maxTopRow = () => 0;
+Window_Journals.prototype.setTopRow = () => { };
+Window_Journals.prototype.maxCols = () => 1;
+Window_Journals.prototype.maxPageRows = () => 5;
+Window_Journals.prototype.maxPageItems = () => 5;
+Window_Journals.prototype.isHorizontal = () => false;
+Window_Journals.prototype.bottomRow = () => 4;
+Window_Journals.prototype.setBottomRow = () => { };
+// #endregion =========================== Window_Journals ============================== //
+// ============================== //
 // #region ============================== Window_Gold ============================== //
 // TODO define fixed window dimensions (and graphical details?) in dedicated file
 Window_Gold.prototype.windowWidth = function () {
@@ -1232,7 +1675,7 @@ Window_MenuCommand.prototype.makeCommandList = function () {
 Window_MenuCommand.prototype.addMainCommands = function () {
     this.addCommand(TextManager.mainMenuStatus, 'menu_status', true);
     this.addCommand(TextManager.mainMenuInventory, 'menu_inventory', true);
-    this.addCommand(TextManager.mainMenuQuests, 'menu_quests', false);
+    this.addCommand(TextManager.mainMenuJournals, 'menu_journals', true);
 };
 Window_MenuCommand.prototype.addFormationCommand = function () {
     this.addCommand(TextManager.mainMenuFormation, 'menu_formation', false); // TODO
@@ -1268,6 +1711,154 @@ Window_MenuStatus.prototype.backgroundImageName = function () {
 };
 // #endregion =========================== Window_MenuStatus ============================== //
 // ============================== //
+// #region ============================== Window_StatusCompetenceDetails ============================== //
+function Window_StatusCompetenceDetails() {
+    this.initialize.apply(this, arguments);
+}
+;
+Window_StatusCompetenceDetails.prototype = Object.create(HalfWindow_Details.prototype);
+Window_StatusCompetenceDetails.prototype.constructor = Window_StatusCompetenceDetails;
+Window_StatusCompetenceDetails.prototype.initialize = function () {
+    HalfWindow_Details.prototype.initialize.call(this);
+    this._comp = undefined;
+    this.refresh();
+};
+Window_StatusCompetenceDetails.prototype.setCompetence = function (comp) {
+    console.log(this._comp, comp);
+    if (this._comp !== comp) {
+        this._comp = comp;
+        this.refresh();
+    }
+};
+Window_StatusCompetenceDetails.prototype.refresh = function () {
+    this.contents.clear();
+    if (this._comp) {
+        console.log("window competence details drawing");
+        this.drawDetails(this._comp);
+    }
+};
+Window_StatusCompetenceDetails.prototype.empty = function () {
+    this._comp = undefined;
+};
+// Drawing item details
+Window_StatusCompetenceDetails.prototype.drawDetails = function (comp) {
+    // Name
+    this.drawUnderlinedText(comp.name, 0, 0, this.contentsWidth(), "center");
+    // Table
+    this.drawTable2Columns(0, 80, this.contentsWidth(), 4, [
+        ["Type :", comp.isBase ? "Base" : "Advanced"],
+        ["Characteristic :", comp.stat],
+        ["Level :", comp.level],
+        ["Value :", comp.value]
+    ]);
+};
+// #endregion =========================== Window_StatusCompetenceDetails ============================== //
+// ============================== //
+// #region ============================== Window_StatusCompetences ============================== //
+// ----------------------
+function Window_StatusCompetences() {
+    this.initialize.apply(this, arguments);
+}
+;
+Window_StatusCompetences.NAME_COLUMN_WIDTH = 500;
+Window_StatusCompetences.LEVEL_COLUMN_WIDTH = 80;
+Window_StatusCompetences.prototype = Object.create(HalfWindow_List.prototype);
+Window_StatusCompetences.prototype.constructor = Window_StatusCompetences;
+/**
+ * Constructor for the Window_StatusCompetences class.
+ */
+Window_StatusCompetences.prototype.initialize = function () {
+    HalfWindow_List.prototype.initialize.call(this);
+    this._actor = null;
+    this._maxItems = 0;
+    this.refresh();
+};
+/**
+ * Sets the actor for the window.
+ */
+Window_StatusCompetences.prototype.setActor = function (actor) {
+    if (this._actor !== actor) {
+        this._actor = actor;
+        this._advancedCompsList = TEW.DATABASE.COMPS.ADVANCED_ARRAY.filter(comp => actor.hasComp(comp[0]));
+        this._maxItems = TEW.DATABASE.COMPS.BASE_ARRAY.length + this._advancedCompsList.length;
+        this.refresh();
+    }
+};
+/**
+ * Returns the maximum number of columns in the window.
+ */
+Window_StatusCompetences.prototype.maxCols = () => 1;
+/**
+ * Draws all items in the window.
+ */
+Window_StatusCompetences.prototype.drawAllItems = function () {
+    var topIndex = this.topIndex();
+    for (var i = 0; i < this.maxPageItems(); i++) {
+        var index = topIndex + i;
+        if (index < this.maxItems()) {
+            this.drawItem(index);
+        }
+    }
+};
+/**
+ * Draws a single item in the window.
+ */
+Window_StatusCompetences.prototype.drawItem = function (index) {
+    const normalizedIndex = index - this.topIndex();
+    const y = normalizedIndex * TEW.MENU.LINE_HEIGHT;
+    const comp = this.competenceFromIndex(index);
+    // Comp name
+    this.changeTextColor(this.systemColor());
+    this.drawText(comp[1].name, 0, y, Window_StatusCompetences.NAME_COLUMN_WIDTH, 'left');
+    this.resetTextColor();
+    // Comp bonus
+    const compLevel = this._actor.compPlus(comp[0]);
+    const compLevelText = compLevel > 0 ? `${compLevel}` : "Base";
+    this.drawText(compLevelText, Window_StatusCompetences.NAME_COLUMN_WIDTH, y, Window_StatusCompetences.LEVEL_COLUMN_WIDTH, 'left');
+    // Stats which the comp depends on
+    // const statName = comp ? comp[1].stat : null;
+    // const statNumber = this._actor.comp(comp[0]);
+    // const statText = `${statName} (${statNumber})`;
+    // this.drawText(
+    //     statText,
+    //     x + this._compColumnWidth + this._levelColumnWidth,
+    //     y,
+    //     this._statColumnWidth,
+    //     'left'
+    // )
+};
+/**
+ * Returns the competence from the given index.
+ */
+Window_StatusCompetences.prototype.competenceFromIndex = function (index) {
+    const comp = index < TEW.DATABASE.COMPS.BASE_ARRAY.length // [<internal name>, {<competence data>}]
+        ? TEW.DATABASE.COMPS.BASE_ARRAY[index]
+        : this._advancedCompsList[index - TEW.DATABASE.COMPS.BASE_ARRAY.length];
+    const level = this._actor.compPlus(comp[0]);
+    console.log([comp[0], Object.assign(Object.assign({}, comp[1]), { level, value: level + this._actor.paramByName(comp[1].stat) })]);
+    return [comp[0], Object.assign(Object.assign({}, comp[1]), { level, value: level + this._actor.paramByName(comp[1].stat) })];
+};
+Window_StatusCompetences.prototype.competence = function () {
+    return this.competenceFromIndex(this.index());
+};
+/**
+ * Called when the process successfully completes.
+ */
+Window_StatusCompetences.prototype.select = function (index) {
+    const changed = this.index() !== index;
+    HalfWindow_List.prototype.select.call(this, index);
+    if (changed && this.index() >= 0) {
+        this.callHandler("show_details");
+    }
+};
+/**
+ * Returns the maximum number of items in the window.
+ */
+Window_StatusCompetences.prototype.maxItems = function () {
+    return this._maxItems;
+};
+// #endregion =========================== Window_StatusCompetences ============================== //
+// ============================== //
 // #region ============================== Scene_Status ============================== //
 // ----------------------
 Scene_Status.prototype.STATS_WINDOW_INDEX = 0;
@@ -1285,9 +1876,10 @@ Scene_Status.prototype.create = function () {
     this.createStatsWindow();
     // Competences window
     this.createCompsWindow();
+    this.createCompDetailsWindow();
     // Talents windows
     this.createTalentsWindow();
-    this.createTalentDescriptionWindow();
+    this.createTalentDetailsWindow();
     // Spells windows
     this.createSpellsWindow();
     this.createSpellCommandWindow();
@@ -1306,10 +1898,12 @@ Scene_Status.prototype.hideAllWindows = function () {
     this._statsWindow.deactivate();
     this._competencesWindow.hide();
     this._competencesWindow.deactivate();
+    this._competenceDetailsWindow.hide();
+    this._competenceDetailsWindow.deactivate();
     this._talentsWindow.hide();
     this._talentsWindow.deactivate();
-    this._talentDescriptionWindow.hide();
-    this._talentDescriptionWindow.deactivate();
+    this._talentDetailsWindow.hide();
+    this._talentDetailsWindow.deactivate();
     this._spellsWindow.hide();
     this._spellsWindow.deactivate();
     this._spellsCommandWindow.hide();
@@ -1329,12 +1923,14 @@ Scene_Status.prototype.displayWindow = function () {
     else if (this._commandWindow.index() === this.COMPS_WINDOW_INDEX) {
         this._competencesWindow.show();
         this._competencesWindow.refresh();
+        this._competenceDetailsWindow.show();
+        this._competenceDetailsWindow.refresh();
     }
     else if (this._commandWindow.index() === this.TALENTS_WINDOW_INDEX) {
         this._talentsWindow.show();
         this._talentsWindow.refresh();
-        this._talentDescriptionWindow.show();
-        this._talentDescriptionWindow.refresh();
+        this._talentDetailsWindow.show();
+        this._talentDetailsWindow.refresh();
     }
     else if (this._commandWindow.index() === this.SPELLS_WINDOW_INDEX) {
         this._spellsWindow.show();
@@ -1395,8 +1991,20 @@ Scene_Status.prototype.createCompsWindow = function () {
         this._commandWindow.activate();
         this._competencesWindow.deselect();
     });
+    this._competencesWindow.setHandler('show_details', () => {
+        const selectedComp = this._competencesWindow.competence();
+        console.log(selectedComp);
+        if (selectedComp) {
+            this._competenceDetailsWindow.setCompetence(selectedComp[1]);
+        }
+    });
     this._competencesWindow.hide();
     this.addWindow(this._competencesWindow);
+};
+Scene_Status.prototype.createCompDetailsWindow = function () {
+    this._competenceDetailsWindow = new Window_StatusCompetenceDetails();
+    this._competenceDetailsWindow.hide();
+    this.addWindow(this._competenceDetailsWindow);
 };
 // Activating the competences window
 Scene_Status.prototype.activateStatusComps = function (index = 0) {
@@ -1406,6 +2014,8 @@ Scene_Status.prototype.activateStatusComps = function (index = 0) {
     this._competencesWindow.activate();
     this._competencesWindow.select(index);
     this._competencesWindow.refresh();
+    this._competenceDetailsWindow.show();
+    this._competenceDetailsWindow.refresh();
 };
 // #endregion === Competences window === //
 // === //
@@ -1421,20 +2031,20 @@ Scene_Status.prototype.createTalentsWindow = function () {
     this.addWindow(this._talentsWindow);
 };
 // Creating the items details Window for the scene
-Scene_Status.prototype.createTalentDescriptionWindow = function () {
-    this._talentDescriptionWindow = new Window_StatusTalentDescription();
+Scene_Status.prototype.createTalentDetailsWindow = function () {
+    this._talentDetailsWindow = new Window_StatusTalentDetails();
     this._talentsWindow.setHandler('show_talent_description', () => {
-        this.showTalentDescription();
+        this.showTalentDetails();
     });
-    this._talentDescriptionWindow.hide();
-    this.addWindow(this._talentDescriptionWindow);
+    this._talentDetailsWindow.hide();
+    this.addWindow(this._talentDetailsWindow);
 };
 // Activating the talents window
 Scene_Status.prototype.activateStatusTalents = function (index = 0) {
     const nbTalents = this._talentsWindow._talents.length;
     this.hideAllWindows();
     this._talentsWindow.show();
-    this._talentDescriptionWindow.show();
+    this._talentDetailsWindow.show();
     if (nbTalents > 0) {
         this._commandWindow.deactivate();
         this._talentsWindow.activate();
@@ -1443,16 +2053,16 @@ Scene_Status.prototype.activateStatusTalents = function (index = 0) {
     else {
         this._commandWindow.activate();
         this._talentsWindow.deselect();
-        this._talentDescriptionWindow.empty();
-        this._talentDescriptionWindow.clear();
+        this._talentDetailsWindow.empty();
+        this._talentDetailsWindow.clear();
     }
     this._talentsWindow.refresh();
 };
 // Showing the talent description
-Scene_Status.prototype.showTalentDescription = function () {
+Scene_Status.prototype.showTalentDetails = function () {
     const talent = this._talentsWindow.talentFromIndex(this._talentsWindow.index());
-    this._talentDescriptionWindow._talent = talent;
-    this._talentDescriptionWindow.refresh();
+    this._talentDetailsWindow._talent = talent;
+    this._talentDetailsWindow.refresh();
 };
 // #endregion === Talents windows === //
 // === //
@@ -1483,7 +2093,7 @@ Scene_Status.prototype.createSpellCommandWindow = function () {
     this.addWindow(this._spellsCommandWindow);
 };
 Scene_Status.prototype.createSpellDetailsWindow = function () {
-    this._spellsDetailsWindow = new Window_StatusSpellDetails(this._spellsCommandWindow.fittingHeight(this._spellsCommandWindow._actionsNumber));
+    this._spellsDetailsWindow = new Window_StatusSpellDetails();
     this._spellsWindow.setHandler('show_spell_details', () => {
         this.showSpellDetails();
     });
@@ -1533,6 +2143,305 @@ Scene_Status.prototype.activateCommandWindowSpells = function () {
 };
 // #endregion === Spells windows === //
 // #endregion =========================== Scene_Status ============================== //
+// ============================== //
+// #region ============================== Window_StatusSpellCommand ============================== //
+// ----------------------
+function Window_StatusSpellCommand() {
+    this.initialize.apply(this, arguments);
+}
+Window_StatusSpellCommand.prototype = Object.create(HalfWindow_DetailsCommand.prototype);
+Window_StatusSpellCommand.prototype.constructor = Window_StatusSpellCommand;
+// Initializing the command window
+Window_StatusSpellCommand.prototype.initialize = function () {
+    HalfWindow_DetailsCommand.prototype.initialize.call(this, 5);
+};
+// Making the 3 lines
+Window_StatusSpellCommand.prototype.makeCommandList = function () {
+    this.addCommand(TextManager.statusCastSpell, 'status_cast_spell');
+    this.addCommand('test1', 'a', false);
+    this.addCommand('test2', 'b', false);
+    this.addCommand('test3', 'c', false);
+    this.addCommand('test4', 'c', false);
+};
+// #endregion =========================== Window_StatusSpellCommand ============================== //
+// ============================== //
+// #region ============================== Window_StatusSpellDetails ============================== //
+// ----------------------
+function Window_StatusSpellDetails() {
+    this.initialize.apply(this, arguments);
+}
+Window_StatusSpellDetails.prototype = Object.create(HalfWindow_Details.prototype);
+Window_StatusSpellDetails.prototype.constructor = Window_StatusSpellDetails;
+Window_StatusSpellDetails.prototype.initialize = function () {
+    HalfWindow_Details.prototype.initialize.call(this);
+    this._spell = null;
+};
+// Refreshing the window
+Window_StatusSpellDetails.prototype.refresh = function () {
+    this.contents.clear();
+    if (this._spell) {
+        this.drawDetails(this._spell);
+    }
+};
+/** Clear all contents */
+Window_StatusSpellDetails.prototype.empty = function () {
+    this._spell = null;
+};
+// Drawing the details
+Window_StatusSpellDetails.prototype.drawDetails = function (spell) {
+    var _a;
+    // Title
+    this.drawUnderlinedText(spell[1].name, 0, 0, this.contentsWidth(), "center");
+    // // Item's Icon
+    // this.drawIcon(weapon[1].icon, 0, 0);
+    // // Availability Icon
+    // this.drawIcon(weapon[1].availabilityIcon, this.contentsWidth() - 32, 0)
+    // Target text
+    const targetText = spell[1].target.type === "AoE" /* SpellTarget.AOE */
+        ? `${spell[1].target.type} (${spell[1].target.distance})`
+        : spell[1].target.type;
+    // Duration text
+    const duration = spell[1].duration;
+    let durationText;
+    if (duration.type === "Number" /* SpellDuration.NUMBER */) {
+        durationText = `${duration.duration} rounds`;
+    }
+    else if (duration.multiplier > 0) {
+        durationText = `${duration.type} x ${duration.multiplier}`;
+    }
+    else {
+        durationText = `${duration.type}`;
+    }
+    // Table
+    this.drawTable2Columns(0, 60, this.contentsWidth(), 5, [
+        ["Domain", spell[1].domain],
+        ["CN", spell[1].cn],
+        ["Target", targetText],
+        ["Range", ((_a = spell[1].range) === null || _a === void 0 ? void 0 : _a.type) || "N/A"],
+        ["Duration", durationText]
+    ]);
+    this.drawLine(260);
+    // Description
+    // const descPadding = 20;
+    this.drawWrappedTextManually(spell[1].desc, 0, 280, 100 // 440 (Height) - 60 (2 * Padding) - 280 (Starting Y)
+    );
+};
+// #endregion =========================== Window_StatusSpellDetails ============================== //
+// ============================== //
+// #region ============================== Window_StatusSpells ============================== //
+// ----------------------
+function Window_StatusSpells() {
+    this.initialize.apply(this, arguments);
+}
+Window_StatusSpells.prototype = Object.create(HalfWindow_List.prototype);
+Window_StatusSpells.prototype.constructor = Window_StatusSpells;
+Window_StatusSpells.prototype.initialize = function () {
+    HalfWindow_List.prototype.initialize.call(this);
+};
+Window_StatusSpells.prototype.setActor = function (actor) {
+    if (this._actor !== actor) {
+        this._actor = actor;
+        this._spells = TEW.DATABASE.SPELLS.ARRAY.filter(spell => actor.hasSpell(spell[0])); // [<internal name>, {<talent data>}] // TODO
+        this._maxItems = this._spells.length;
+        this.refresh();
+    }
+};
+Window_StatusSpells.prototype.drawAllItems = function () {
+    var topIndex = this.topIndex();
+    for (var i = 0; i < this.maxPageItems(); i++) {
+        var index = topIndex + i;
+        if (index < this.maxItems()) {
+            this.drawItem(index);
+        }
+    }
+};
+Window_StatusSpells.prototype.drawItem = function (index) {
+    const normalizedIndex = index - this.topIndex();
+    const x = 48;
+    const y = normalizedIndex * TEW.MENU.LINE_HEIGHT;
+    const spell = this.spellFromIndex(index);
+    this.changeTextColor(this.systemColor());
+    this.drawText(spell[1].name, x, y, 160);
+    this.resetTextColor();
+};
+Window_StatusSpells.prototype.spellFromIndex = function (index) {
+    return this._spells[index];
+};
+Window_StatusSpells.prototype.select = function (index) {
+    this._index = index;
+    if (this._index >= 0) {
+        this.callHandler("show_spell_details");
+    }
+    this._stayCount = 0;
+    this.ensureCursorVisible();
+    this.updateCursor();
+    this.callUpdateHelp();
+};
+Window_StatusSpells.prototype.processOk = function () {
+    if (this.isCurrentItemEnabled()) {
+        this.playOkSound();
+        this.updateInputData();
+        this.callOkHandler();
+    }
+    else {
+        this.playBuzzerSound();
+    }
+};
+// #endregion =========================== Window_StatusSpells ============================== //
+// ============================== //
+// #region ============================== Window_StatusTalentDetails ============================== //
+// ----------------------
+function Window_StatusTalentDetails() {
+    this.initialize.apply(this, arguments);
+}
+Window_StatusTalentDetails.prototype = Object.create(HalfWindow_Details.prototype);
+Window_StatusTalentDetails.prototype.constructor = Window_StatusTalentDetails;
+/**
+ * Constructor for the Window_StatusTalentDetails class.
+ */
+Window_StatusTalentDetails.prototype.initialize = function () {
+    HalfWindow_Details.prototype.initialize.call(this, true);
+    this._talent = undefined;
+};
+/**
+ * Refreshes the content of the window.
+ */
+Window_StatusTalentDetails.prototype.refresh = function () {
+    this.contents.clear();
+    if (this._talent) {
+        this.drawDetails(this._talent);
+    }
+};
+/** Clear all contents */
+Window_StatusTalentDetails.prototype.empty = function () {
+    this._talent = null;
+};
+/**
+ * Draws the description of the selected talent.
+ */
+Window_StatusTalentDetails.prototype.drawDetails = function (talent) {
+    this.drawWrappedTextManually(talent[1].description, 10, 0, 588 // 720 (Height) - 60 (2 * Padding) - 0 (Starting Y) - 68 (Top Bar Height)
+    );
+};
+// #endregion =========================== Window_StatusTalentDetails ============================== //
+// ============================== //
+// #region ============================== Window_StatusTalents ============================== //
+// ----------------------
+function Window_StatusTalents() {
+    this.initialize.apply(this, arguments);
+}
+Window_StatusTalents.prototype = Object.create(HalfWindow_List.prototype);
+Window_StatusTalents.prototype.constructor = Window_StatusTalents;
+/**
+ * Constructor for the Window_StatusTalents class.
+ */
+Window_StatusTalents.prototype.initialize = function () {
+    HalfWindow_List.prototype.initialize.call(this);
+};
+/**
+ * Sets the actor for the window.
+ */
+Window_StatusTalents.prototype.setActor = function (actor) {
+    if (this._actor !== actor) {
+        this._actor = actor;
+        this._talents = TEW.DATABASE.TALENTS.ARRAY.filter(talent => actor.hasTalent(talent[0])); // [<internal name>, {<talent data>}]
+        this._maxItems = this._talents.length;
+        this.refresh();
+    }
+};
+/**
+ * Draws all items in the window.
+ */
+Window_StatusTalents.prototype.drawAllItems = function () {
+    var topIndex = this.topIndex();
+    for (var i = 0; i < this.maxPageItems(); i++) {
+        var index = topIndex + i;
+        if (index < this.maxItems()) {
+            this.drawItem(index);
+        }
+    }
+};
+/**
+ * Draws a single item in the window.
+ */
+Window_StatusTalents.prototype.drawItem = function (index) {
+    const normalizedIndex = index - this.topIndex();
+    const x = 48;
+    const y = normalizedIndex * TEW.MENU.LINE_HEIGHT;
+    const talent = this.talentFromIndex(index);
+    // Talent name
+    this.changeTextColor(this.systemColor());
+    this.drawText(talent[1].name, x, y, this._talentColumnWidth);
+    this.resetTextColor();
+    // Talent level
+    const level = this._actor.talent(talent[0]);
+    const levelText = `lvl${level}`;
+    this.drawText(levelText, x + this._talentColumnWidth, y, this._levelColumnWidth, 'right');
+};
+/**
+ * Returns the talent from the given index.
+ */
+Window_StatusTalents.prototype.talentFromIndex = function (index) {
+    return this._talents[index];
+};
+Window_StatusTalents.prototype.select = function (index) {
+    this._index = index;
+    if (this._index >= 0) {
+        this.callHandler("show_talent_description");
+    }
+    this._stayCount = 0;
+    this.ensureCursorVisible();
+    this.updateCursor();
+    this.callUpdateHelp();
+};
+// Window_StatusTalents.prototype.item = function() {
+//     const talent = this.talentFromIndex(this._index);
+//     return talent[1].name + ': ' + talent[1].desc;
+// };
+// // TODO
+// Window_StatusTalents.prototype.select = function(index) {
+//     // if (this._index !== index) {
+//     //     this.hideHelpWindow();
+//     // }
+//     // this._index = index;
+//     // if (this._index >= 0) {
+//     //     this._helpWindow.setText(this.item());
+//     // }
+//     this._stayCount = 0;
+//     this.ensureCursorVisible();
+//     this.updateCursor();
+//     this.callUpdateHelp();
+// };
+/**
+ * Called when the process successfully completes.
+ */
+Window_StatusTalents.prototype.processOk = function () {
+    if (this.isCurrentItemEnabled()) {
+        this.playOkSound();
+        this.updateInputData();
+        this.callOkHandler();
+    }
+    else {
+        this.playBuzzerSound();
+    }
+};
+// Window_StatusTalents.prototype.isCurrentItemEnabled = function() {
+//     return true; // TODO
+// };
+// Window_StatusTalents.prototype.showHelpWindow = function() {
+//     if (this._helpWindow && this.active) {
+//         this._helpWindow.show();
+//         this._helpWindow.refresh();
+//     }
+// };
+// Window_StatusTalents.prototype.updateHelp = () => {};
+/**
+ * Returns the maximum number of items in the window.
+ */
+// Window_StatusTalents.prototype.maxItems = function() {
+//     return this._maxItems;
+// };
+// #endregion =========================== Window_StatusTalents ============================== //
 // ============================== //
 // #region ============================== Window_Status ============================== //
 // -----------------------------------------------------------------------------
@@ -1602,247 +2511,9 @@ Window_StatusCommand.prototype.cursorLeft = function (wrap) {
     this.callHandler('left');
 };
 Window_StatusCommand.prototype.verticalBorderPadding = function () {
-    return TEW.MENU.STANDARD_PADDING;
+    return 18;
 };
 // #endregion =========================== Window_StatusCommand ============================== //
-// ============================== //
-// #region ============================== Window_StatusCompetences ============================== //
-// ----------------------
-function Window_StatusCompetences() {
-    this.initialize.apply(this, arguments);
-}
-Window_StatusCompetences.prototype = Object.create(Window_Selectable.prototype);
-Window_StatusCompetences.prototype.constructor = Window_StatusCompetences;
-/**
- * Constructor for the Window_StatusCompetences class.
- */
-Window_StatusCompetences.prototype.initialize = function () {
-    Window_Selectable.prototype.initialize.call(this, 0, TEW.MENU.STATUS_WINDOW_TOPBAR_HEIGHT, Graphics.boxWidth, Graphics.boxHeight - TEW.MENU.STATUS_WINDOW_TOPBAR_HEIGHT);
-    this._actor = null;
-    this._maxItems = 0;
-    this._leftPadding = 10;
-    this._compColumnWidth = 340; // TODO constants
-    this._levelColumnWidth = 100;
-    this._statColumnWidth = 140;
-    this.refresh();
-};
-/**
- * Sets the actor for the window.
- */
-Window_StatusCompetences.prototype.setActor = function (actor) {
-    if (this._actor !== actor) {
-        this._actor = actor;
-        this._advancedCompsList = TEW.DATABASE.COMPS.ADVANCED_ARRAY.filter(comp => actor.hasComp(comp[0]));
-        this._maxItems = TEW.DATABASE.COMPS.BASE_ARRAY.length + this._advancedCompsList.length;
-        this.refresh();
-    }
-};
-/**
- * Returns the maximum number of columns in the window.
- */
-Window_StatusCompetences.prototype.maxCols = () => 2;
-/**
- * Draws all items in the window.
- */
-Window_StatusCompetences.prototype.drawAllItems = function () {
-    var topIndex = this.topIndex();
-    for (var i = 0; i < this.maxPageItems(); i++) {
-        var index = topIndex + i;
-        if (index < this.maxItems()) {
-            this.drawItem(index);
-        }
-    }
-};
-/**
- * Draws a single item in the window.
- */
-Window_StatusCompetences.prototype.drawItem = function (index) {
-    const normalizedIndex = index - this.topIndex();
-    const x = index % 2 * this.width / 2 + this._leftPadding;
-    const y = Math.floor(normalizedIndex / 2) * TEW.MENU.LINE_HEIGHT;
-    const comp = this.competenceFromIndex(index);
-    // Comp name
-    this.changeTextColor(this.systemColor());
-    this.drawText(comp[1].name, x, y, this._compColumnWidth);
-    this.resetTextColor();
-    // Level of the comp
-    const compLevel = this._actor.compPlus(comp[0]);
-    const compLevelText = compLevel > 0 ? `Lvl${compLevel}` : "Base";
-    this.drawText(compLevelText, x + this._compColumnWidth, y, this._levelColumnWidth, 'left');
-    // Stats which the comp depends on
-    const statName = comp ? comp[1].stat : null;
-    const statNumber = this._actor.comp(comp[0]);
-    const statText = `${statName} (${statNumber})`;
-    this.drawText(statText, x + this._compColumnWidth + this._levelColumnWidth, y, this._statColumnWidth, 'left');
-};
-/**
- * Returns the competence from the given index.
- */
-Window_StatusCompetences.prototype.competenceFromIndex = function (index) {
-    return index < TEW.DATABASE.COMPS.BASE_ARRAY.length // [<internal name>, {<competence data>}]
-        ? TEW.DATABASE.COMPS.BASE_ARRAY[index]
-        : this._advancedCompsList[index - TEW.DATABASE.COMPS.BASE_ARRAY.length];
-};
-/**
- * Called when the process successfully completes.
- */
-Window_StatusCompetences.prototype.processOk = function () {
-    if (this.isCurrentItemEnabled()) {
-        this.playOkSound();
-        this.updateInputData();
-        this.callOkHandler();
-    }
-    else {
-        this.playBuzzerSound();
-    }
-};
-/**
- * Returns the maximum number of items in the window.
- */
-Window_StatusCompetences.prototype.maxItems = function () {
-    return this._maxItems;
-};
-// #endregion =========================== Window_StatusCompetences ============================== //
-// ============================== //
-// #region ============================== Window_StatusSpellCommand ============================== //
-// ----------------------
-function Window_StatusSpellCommand() {
-    this.initialize.apply(this, arguments);
-}
-Window_StatusSpellCommand.prototype = Object.create(HalfWindow_DetailsCommand.prototype);
-Window_StatusSpellCommand.prototype.constructor = Window_StatusSpellCommand;
-// Initializing the command window
-Window_StatusSpellCommand.prototype.initialize = function () {
-    HalfWindow_DetailsCommand.prototype.initialize.call(this, 1);
-};
-// Making the 3 lines
-Window_StatusSpellCommand.prototype.makeCommandList = function () {
-    this.addCommand(TextManager.statusCastSpell, 'status_cast_spell');
-};
-// #endregion =========================== Window_StatusSpellCommand ============================== //
-// ============================== //
-// #region ============================== Window_StatusSpellDetails ============================== //
-// ----------------------
-function Window_StatusSpellDetails() {
-    this.initialize.apply(this, arguments);
-}
-Window_StatusSpellDetails.prototype = Object.create(HalfWindow_Details.prototype);
-Window_StatusSpellDetails.prototype.constructor = Window_StatusSpellDetails;
-Window_StatusSpellDetails.prototype.initialize = function () {
-    HalfWindow_Details.prototype.initialize.call(this);
-    this._spell = null;
-};
-// Refreshing the window
-Window_StatusSpellDetails.prototype.refresh = function () {
-    this.contents.clear();
-    if (this._spell) {
-        this.drawDetails(this._spell);
-    }
-};
-/** Clear all contents */
-Window_StatusSpellDetails.prototype.empty = function () {
-    this._spell = null;
-};
-// Drawing the details
-Window_StatusSpellDetails.prototype.drawDetails = function (spell) {
-    var _a;
-    // Title
-    this.drawUnderlinedText(spell[1].name, 0, 0, this.contentsWidth(), "center");
-    // // Item's Icon
-    // this.drawIcon(weapon[1].icon, 0, 0);
-    // // Availability Icon
-    // this.drawIcon(weapon[1].availabilityIcon, this.contentsWidth() - 32, 0)
-    // Target text
-    const targetText = spell[1].target.type === "AoE" /* SpellTarget.AOE */
-        ? `${spell[1].target.type} (${spell[1].target.distance})`
-        : spell[1].target.type;
-    // Duration text
-    const duration = spell[1].duration;
-    let durationText;
-    if (duration.type === "Number" /* SpellDuration.NUMBER */) {
-        durationText = `${duration.duration} rounds`;
-    }
-    else if (duration.multiplier > 0) {
-        durationText = `${duration.type} x ${duration.multiplier}`;
-    }
-    else {
-        durationText = `${duration.type}`;
-    }
-    // Table
-    this.drawTable2Columns(0, 60, this.contentsWidth(), 5, [
-        ["Domain", spell[1].domain],
-        ["CN", spell[1].cn],
-        ["Target", targetText],
-        ["Range", ((_a = spell[1].range) === null || _a === void 0 ? void 0 : _a.type) || "N/A"],
-        ["Duration", durationText]
-    ]);
-    this.drawLine(260);
-    // Description
-    // const descPadding = 20;
-    this.drawWrappedTextManually(spell[1].desc, 0, 280, 24);
-};
-// #endregion =========================== Window_StatusSpellDetails ============================== //
-// ============================== //
-// #region ============================== Window_StatusSpells ============================== //
-// ----------------------
-function Window_StatusSpells() {
-    this.initialize.apply(this, arguments);
-}
-Window_StatusSpells.prototype = Object.create(HalfWindow_List.prototype);
-Window_StatusSpells.prototype.constructor = Window_StatusSpells;
-Window_StatusSpells.prototype.initialize = function () {
-    HalfWindow_List.prototype.initialize.call(this);
-};
-Window_StatusSpells.prototype.setActor = function (actor) {
-    if (this._actor !== actor) {
-        this._actor = actor;
-        this._spells = TEW.DATABASE.SPELLS.ARRAY.filter(spell => actor.hasSpell(spell[0])); // [<internal name>, {<talent data>}] // TODO
-        this._maxItems = this._spells.length;
-        this.refresh();
-    }
-};
-Window_StatusSpells.prototype.drawAllItems = function () {
-    var topIndex = this.topIndex();
-    for (var i = 0; i < this.maxPageItems(); i++) {
-        var index = topIndex + i;
-        if (index < this.maxItems()) {
-            this.drawItem(index);
-        }
-    }
-};
-Window_StatusSpells.prototype.drawItem = function (index) {
-    const normalizedIndex = index - this.topIndex();
-    const x = 48;
-    const y = normalizedIndex * TEW.MENU.LINE_HEIGHT;
-    const spell = this.spellFromIndex(index);
-    this.changeTextColor(this.systemColor());
-    this.drawText(spell[1].name, x, y, 160);
-    this.resetTextColor();
-};
-Window_StatusSpells.prototype.spellFromIndex = function (index) {
-    return this._spells[index];
-};
-Window_StatusSpells.prototype.select = function (index) {
-    this._index = index;
-    if (this._index >= 0) {
-        this.callHandler("show_spell_details");
-    }
-    this._stayCount = 0;
-    this.ensureCursorVisible();
-    this.updateCursor();
-    this.callUpdateHelp();
-};
-Window_StatusSpells.prototype.processOk = function () {
-    if (this.isCurrentItemEnabled()) {
-        this.playOkSound();
-        this.updateInputData();
-        this.callOkHandler();
-    }
-    else {
-        this.playBuzzerSound();
-    }
-};
-// #endregion =========================== Window_StatusSpells ============================== //
 // ============================== //
 // #region ============================== Window_StatusStats ============================== //
 // -----------------------------------------------------------------------------
@@ -1914,186 +2585,6 @@ Window_StatusStats.prototype.drawParameters = function (x, y, offset) {
     }
 };
 // #endregion =========================== Window_StatusStats ============================== //
-// ============================== //
-// #region ============================== Window_StatusTalentDescription ============================== //
-// ----------------------
-function Window_StatusTalentDescription() {
-    this.initialize.apply(this, arguments);
-}
-Window_StatusTalentDescription.prototype = Object.create(Window_Base.prototype);
-Window_StatusTalentDescription.prototype.constructor = Window_StatusTalentDescription;
-/**
- * Constructor for the Window_StatusTalentDescription class.
- */
-Window_StatusTalentDescription.prototype.initialize = function () {
-    Window_Base.prototype.initialize.call(this, 0, Graphics.boxHeight - TEW.MENU.STATUS_WINDOW_BOTTOM_DESCRIPTION_HEIGHT, Graphics.boxWidth, TEW.MENU.STATUS_WINDOW_BOTTOM_DESCRIPTION_HEIGHT);
-    this.activate();
-    this.refresh();
-    this._talent = null;
-};
-/**
- * Refreshes the content of the window.
- */
-Window_StatusTalentDescription.prototype.refresh = function () {
-    this.contents.clear();
-    if (this._talent) {
-        this.drawDescription(this._talent);
-    }
-};
-/** Clear all contents */
-Window_StatusTalentDescription.prototype.empty = function () {
-    this._talent = null;
-};
-Window_StatusTalentDescription.prototype.clear = function () {
-    if (this.contents) {
-        this.contents.clear();
-    }
-};
-/**
- * Draws the description of the selected talent.
- */
-Window_StatusTalentDescription.prototype.drawDescription = function (talent) {
-    this.drawWrappedTextManually(talent[1].description, 10, 0, 24);
-    // this.drawWrappedText(
-    //     talent[1].description,
-    //     10,
-    //     0,
-    //     Graphics.boxWidth
-    // );
-};
-Window_StatusTalentDescription.prototype.verticalBorderPadding = function () {
-    return 18;
-};
-// #endregion =========================== Window_StatusTalentDescription ============================== //
-// ============================== //
-// #region ============================== Window_StatusTalents ============================== //
-// ----------------------
-function Window_StatusTalents() {
-    this.initialize.apply(this, arguments);
-}
-Window_StatusTalents.prototype = Object.create(Window_Selectable.prototype);
-Window_StatusTalents.prototype.constructor = Window_StatusTalents;
-/**
- * Constructor for the Window_StatusTalents class.
- */
-Window_StatusTalents.prototype.initialize = function () {
-    Window_Selectable.prototype.initialize.call(this, 0, TEW.MENU.STATUS_WINDOW_TOPBAR_HEIGHT, Graphics.boxWidth, Graphics.boxHeight - TEW.MENU.STATUS_WINDOW_TOPBAR_HEIGHT - TEW.MENU.STATUS_WINDOW_BOTTOM_DESCRIPTION_HEIGHT);
-    this._actor = null;
-    this._maxItems = 0;
-    this._leftPadding = 10;
-    this._talentColumnWidth = (this.width / 4) - this._leftPadding;
-    this._levelColumnWidth = this.width / 6;
-    this.activate();
-    this.refresh();
-};
-/**
- * Sets the actor for the window.
- */
-Window_StatusTalents.prototype.setActor = function (actor) {
-    if (this._actor !== actor) {
-        this._actor = actor;
-        this._talents = TEW.DATABASE.TALENTS.ARRAY.filter(talent => actor.hasTalent(talent[0])); // [<internal name>, {<talent data>}]
-        this._maxItems = this._talents.length;
-        this.refresh();
-    }
-};
-/**
- * Returns the maximum number of columns in the window.
- */
-Window_StatusTalents.prototype.maxCols = () => 2;
-/**
- * Draws all items in the window.
- */
-Window_StatusTalents.prototype.drawAllItems = function () {
-    var topIndex = this.topIndex();
-    for (var i = 0; i < this.maxPageItems(); i++) {
-        var index = topIndex + i;
-        if (index < this.maxItems()) {
-            this.drawItem(index);
-        }
-    }
-};
-/**
- * Draws a single item in the window.
- */
-Window_StatusTalents.prototype.drawItem = function (index) {
-    const normalizedIndex = index - this.topIndex();
-    const x = index % 2 * this.width / 2 + this._leftPadding;
-    const y = Math.floor(normalizedIndex / 2) * TEW.MENU.LINE_HEIGHT;
-    const talent = this.talentFromIndex(index);
-    // Talent name
-    this.changeTextColor(this.systemColor());
-    this.drawText(talent[1].name, x, y, this._talentColumnWidth);
-    this.resetTextColor();
-    // Talent level
-    const level = this._actor.talent(talent[0]);
-    const levelText = `lvl${level}`;
-    this.drawText(levelText, x + this._talentColumnWidth, y, this._levelColumnWidth, 'right');
-};
-/**
- * Returns the talent from the given index.
- */
-Window_StatusTalents.prototype.talentFromIndex = function (index) {
-    return this._talents[index];
-};
-// Window_StatusTalents.prototype.item = function() {
-//     const talent = this.talentFromIndex(this._index);
-//     return talent[1].name + ': ' + talent[1].desc;
-// };
-// // TODO
-// Window_StatusTalents.prototype.select = function(index) {
-//     // if (this._index !== index) {
-//     //     this.hideHelpWindow();
-//     // }
-//     // this._index = index;
-//     // if (this._index >= 0) {
-//     //     this._helpWindow.setText(this.item());
-//     // }
-//     this._stayCount = 0;
-//     this.ensureCursorVisible();
-//     this.updateCursor();
-//     this.callUpdateHelp();
-// };
-/**
- * Called when the process successfully completes.
- */
-Window_StatusTalents.prototype.processOk = function () {
-    if (this.isCurrentItemEnabled()) {
-        this.playOkSound();
-        this.updateInputData();
-        this.callOkHandler();
-    }
-    else {
-        this.playBuzzerSound();
-    }
-};
-Window_StatusTalents.prototype.select = function (index) {
-    this._index = index;
-    if (this._index >= 0) {
-        this.callHandler("show_talent_description");
-    }
-    this._stayCount = 0;
-    this.ensureCursorVisible();
-    this.updateCursor();
-    this.callUpdateHelp();
-};
-// Window_StatusTalents.prototype.isCurrentItemEnabled = function() {
-//     return true; // TODO
-// };
-// Window_StatusTalents.prototype.showHelpWindow = function() {
-//     if (this._helpWindow && this.active) {
-//         this._helpWindow.show();
-//         this._helpWindow.refresh();
-//     }
-// };
-// Window_StatusTalents.prototype.updateHelp = () => {};
-/**
- * Returns the maximum number of items in the window.
- */
-Window_StatusTalents.prototype.maxItems = function () {
-    return this._maxItems;
-};
-// #endregion =========================== Window_StatusTalents ============================== //
 // ============================== //
 // #region ============================== Window ============================== //
 Window.prototype.horizontalBorderPadding = function () {
@@ -2182,32 +2673,54 @@ Window_Base.prototype.drawWrappedText = function (text, x, y, width, fontsize = 
     this.resetFontSettings();
 };
 // Drawing a wrapped text - used to draw to description
-Window_Base.prototype.drawWrappedTextManually = function (text, x, y, fontSize) {
+Window_Base.prototype.drawWrappedTextManually = function (text, x, y, maxHeight, fontSize = 28) {
+    const lineJumpCount = text.split('\n').length;
     const words = text.split(" ");
+    console.log(words);
     const maxWidth = this.contentsWidth() - x;
-    if (text.length <= 100) {
-        this.contents.fontSize = 28;
-    }
-    else if (text.length <= 200) {
-        this.contents.fontSize = 20;
-    }
-    // else if (text.length <= 200) { this.contents.fontSize = 16; }
-    else {
-        this.contents.fontSize = 16;
-    }
+    this.contents.fontSize = fontSize;
+    let lineHeight = this.contents.fontSize * 1.2;
     const spaceWidth = this.textWidth(" ");
-    const lineHeight = fontSize * 1.2;
+    let doesFit = false;
     let currentX = x;
     let currentY = y;
+    do {
+        let nbLine = lineJumpCount;
+        // Calculating number of lines needed
+        words.forEach(word => {
+            word.replace('\n', ''); // They are already counted
+            const wordWidth = this.textWidth(word);
+            // If the word is too long, adding a new line
+            if (currentX + wordWidth > maxWidth) {
+                currentX = x; // begining of the line
+                nbLine++;
+            }
+            currentX += wordWidth + spaceWidth;
+        });
+        // does the text fit ?
+        doesFit = nbLine <= Math.floor(maxHeight / lineHeight);
+        // If it doesnt fit, lets shrink the font
+        if (!doesFit) {
+            this.contents.fontSize -= 1;
+            lineHeight = this.contents.fontSize * 1.2;
+        }
+    } while (!doesFit && this.contents.fontSize > 16);
+    // Lets reset our positions
+    currentX = x;
+    currentY = y;
+    let startANewLine = false;
     words.forEach(word => {
-        const wordWidth = this.textWidth(word);
+        const wordWidth = this.textWidth(word.replace('\n', ''));
         // If the word is too long, drawing it on the next line
-        if (currentX + wordWidth > maxWidth) {
+        if (currentX + wordWidth > maxWidth || startANewLine) {
             currentX = x; // begining of the line
             currentY += lineHeight; // next line
         }
+        // Handling 
+
+        startANewLine = word.includes('\n');
         // drawing it on the current line
-        this.drawText(word, currentX, currentY, wordWidth, 'left');
+        this.drawText(word.replace('\n', ''), currentX, currentY, wordWidth, 'left');
         currentX += wordWidth + spaceWidth;
     });
     this.resetFontSettings();
@@ -2251,6 +2764,9 @@ Window_Base.prototype.fittingHeight = function (numLines) {
     return numLines * this.lineHeight() + this.verticalBorderPadding() * 2;
 };
 // TODO no need for color picker, we can optimize everything here?
+Window_Base.prototype.whiteColor = function () {
+    return this.textColor(0);
+};
 Window_Base.prototype.normalColor = function () {
     return this.textColor(15);
 };
@@ -2305,14 +2821,14 @@ Window_TitleCommand.prototype.backgroundImageName = function () {
 Window_TitleCommand.prototype.windowHeight = function () {
     return 168; // 3 * line height + 2 * text padding + 2 * bg padding
 };
-Window_StatusCompetences.prototype.backgroundImageName = function () {
-    return "bg_statusCompetences";
+Window_Journals.prototype.backgroundImageName = function () {
+    return "bg_journals";
 };
-Window_StatusTalents.prototype.backgroundImageName = function () {
-    return "bg_statusTalents";
+Window_Journals.prototype.windowWidth = function () {
+    return Graphics.boxWidth;
 };
-Window_StatusTalentDescription.prototype.backgroundImageName = function () {
-    return "bg_statusTalentDescription";
+Window_Journals.prototype.windowHeight = function () {
+    return Graphics.boxHeight;
 };
 Window_StatusCommand.prototype.backgroundImageName = function () {
     return "bg_menuTopbarCommands";
@@ -2338,59 +2854,26 @@ HalfWindow_List.prototype.backgroundImageName = function () {
 HalfWindow_Details.prototype.windowWidth = function () {
     return Graphics.boxWidth / 2;
 };
-Window_StatusSpellDetails.prototype.windowHeight = function () {
-    return 512; // total height - topbar height - (1 command window height + margins)
-};
-Window_StatusSpellDetails.prototype.backgroundImageName = function () {
-    return "bg_menuHalfWindowDetails1";
-};
-Window_InventoryItemDetails.prototype.windowHeight = function () {
-    return 476; // total height - topbar height - (2 commands window height + margins)
-};
-Window_InventoryItemDetails.prototype.backgroundImageName = function () {
-    return "bg_menuHalfWindowDetails2";
-};
-Window_InventoryArmorDetails.prototype.windowHeight = function () {
-    return 476; // total height - topbar height - (2 commands window height + margins)
-};
-Window_InventoryArmorDetails.prototype.backgroundImageName = function () {
-    return "bg_menuHalfWindowDetails2";
-};
-Window_InventoryWeaponDetails.prototype.windowHeight = function () {
+HalfWindow_Details.prototype.windowHeight = function () {
     return 440; // total height - topbar height - (3 commands window height + margins)
 };
-Window_InventoryWeaponDetails.prototype.backgroundImageName = function () {
+HalfWindow_Details.prototype.backgroundImageName = function () {
     return "bg_menuHalfWindowDetails3";
 };
+Window_StatusTalentDetails.prototype.backgroundImageName = function () {
+    return "bg_menuHalfWindow";
+};
+Window_StatusTalentDetails.prototype.windowHeight = function () {
+    return Graphics.boxHeight - TEW.MENU.STATUS_WINDOW_TOPBAR_HEIGHT;
+};
 HalfWindow_DetailsCommand.prototype.backgroundImageName = function () {
-    return "bg_inventoryCommand" + this._actionsNumber;
+    return "bg_menuDetailsCommand";
 };
 HalfWindow_DetailsCommand.prototype.windowWidth = function () {
-    return 280; // total width / 2 - margins
+    return 600; // total width / 2 - margins
 };
-Window_StatusSpellCommand.prototype.windowHeight = function () {
-    return 96; // line height + 2 * text padding + 2 * bg padding
-};
-Window_StatusSpellCommand.prototype.backgroundImageName = function () {
-    return "bg_menuDetailsCommand1";
-};
-Window_InventoryItemCommand.prototype.windowHeight = function () {
-    return 132; // 2 * line height + 2 * text padding + 2 * bg padding
-};
-Window_InventoryItemCommand.prototype.backgroundImageName = function () {
-    return "bg_menuDetailsCommand2";
-};
-Window_InventoryArmorCommand.prototype.windowHeight = function () {
-    return 132; // 2 * line height + 2 * text padding + 2 * bg padding
-};
-Window_InventoryArmorCommand.prototype.backgroundImageName = function () {
-    return "bg_menuDetailsCommand2";
-};
-Window_InventoryWeaponCommand.prototype.windowHeight = function () {
-    return 168; // 3 * line height + 2 * text padding + 2 * bg padding
-};
-Window_InventoryWeaponCommand.prototype.backgroundImageName = function () {
-    return "bg_menuDetailsCommand3";
+HalfWindow_DetailsCommand.prototype.windowHeight = function () {
+    return 168; // line height * 3 + bg padding
 };
 // #endregion =========================== backgrounds ============================== //
 // ============================== //

@@ -378,6 +378,11 @@ String.prototype.toBoolean = function () {
 Array.prototype.last = function () {
     return this[this.length - 1];
 };
+Array.prototype.addItemsAt = function (index, items) {
+    const copy = this.slice();
+    copy.splice(index, 0, ...items);
+    return copy;
+};
 // Retrieve weapon info
 TEW.COMBAT.getWeaponQualityEffects = (weapon) => {
     let attackMod = 0;
@@ -4249,6 +4254,7 @@ Scene_Battle.prototype.create = function () {
 Scene_Battle.prototype.createDisplayObjects = function () {
     this.createSpriteset();
     this.createWindowLayer();
+    this.createBackground();
     this.createAllWindows();
     BattleManager.setLogWindow(this._logWindow);
     BattleManager.setCommandWindow(this._tacticsCommandWindow);
@@ -4261,6 +4267,13 @@ Scene_Battle.prototype.createDisplayObjects = function () {
 Scene_Battle.prototype.createSpriteset = function () {
     this._spriteset = new Spriteset_Tactics();
     this.addChild(this._spriteset);
+};
+Scene_Battle.prototype.createBackground = function () {
+    this._background = new Sprite(ImageManager.loadSystem('bg_battle_command1'));
+    this.addChildAt(this._background, this.getChildIndex(this._windowLayer));
+};
+Scene_Battle.prototype.changeBackground = function (commandLevel = 0) {
+    this._background = new Sprite(ImageManager.loadSystem(commandLevel ? 'bg_battle' : ('bg_battle_command' + commandLevel)));
 };
 Scene_Battle.prototype.createAllWindows = function () {
     this.createLogWindow();
@@ -4964,7 +4977,8 @@ Window_TacticsWeaponDetails.prototype.drawDetails = function (weapon) {
     ]);
     this.drawLine(200);
     // Description
-    this.drawWrappedTextManually(weapon.description, 0, 220, 24);
+    this.drawWrappedTextManually(weapon.description, 0, 220, 160 // 440 (Height) - 60 (2 * Padding) - 220 (Starting Y)
+    );
 };
 // #endregion =========================== Window_TacticsWeaponDetails ============================== //
 // ============================== //
@@ -6119,14 +6133,11 @@ Spriteset_Tactics.prototype.isEffecting = function () {
 // #endregion =========================== Spriteset_Tactics ============================== //
 // ============================== //
 // #region ============================== backgrounds ============================== //
-Window_TacticsCommand.prototype.backgroundImageName = function () {
-    return "bg_battle";
+Window_TacticsCommand.prototype.windowWidth = function () {
+    return 230; // 4 * line height + 2 * text padding + 2 * bg padding
 };
-Window_TitleCommand.prototype.windowWidth = function () {
-    return 204; // 4 * line height + 2 * text padding + 2 * bg padding
-};
-Window_TitleCommand.prototype.windowHeight = function () {
-    return 204; // 4 * line height + 2 * text padding + 2 * bg padding
+Window_TacticsCommand.prototype.windowHeight = function () {
+    return 240; // 4 * line height + 2 * text padding + 2 * bg padding
 };
 // #endregion =========================== backgrounds ============================== //
 // ============================== //

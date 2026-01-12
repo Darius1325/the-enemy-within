@@ -8,7 +8,6 @@ export interface IHalfWindow_TacticsDetails {
     setActor: (actor: Game_Actor) => void;
     drawUnderlinedtext: (text: string, x: number, y: number, width: number, align: string) => void;
     drawTable2Columns: (x: number, y: number, width: number, rows: number, textArray: [string, string][]) => void;
-    drawWrappedtextManually: (text: string, x: number, y: number, fontSize: number) => void;
     drawLine: (y: number) => void;
     clear: () => void;
 };

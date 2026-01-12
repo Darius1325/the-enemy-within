@@ -10,7 +10,8 @@
 // ----------------------
 // Imports
 // ----------------------
-import TEW from "../../_types/tew";
+import TEW from "../../../_types/tew";
+import HalfWindow_List from "../../base/HalfWindow_List";
 
 // ----------------------
 // $StartCompilation
@@ -21,31 +22,20 @@ function Window_StatusTalents() {
     this.initialize.apply(this, arguments);
 }
 
-export default Window_StatusTalents.prototype = Object.create(Window_Selectable.prototype);
+export default Window_StatusTalents.prototype = Object.create(HalfWindow_List.prototype);
 Window_StatusTalents.prototype.constructor = Window_StatusTalents;
 
 /**
  * Constructor for the Window_StatusTalents class.
  */
 Window_StatusTalents.prototype.initialize = function() {
-    Window_Selectable.prototype.initialize.call(this,
-        0,
-        TEW.MENU.STATUS_WINDOW_TOPBAR_HEIGHT,
-        Graphics.boxWidth,
-        Graphics.boxHeight - TEW.MENU.STATUS_WINDOW_TOPBAR_HEIGHT - TEW.MENU.STATUS_WINDOW_BOTTOM_DESCRIPTION_HEIGHT);
-    this._actor = null;
-    this._maxItems = 0;
-    this._leftPadding = 10;
-    this._talentColumnWidth = (this.width / 4) - this._leftPadding;
-    this._levelColumnWidth = this.width / 6;
-    this.activate();
-    this.refresh();
+    HalfWindow_List.prototype.initialize.call(this);
 };
 
 /**
  * Sets the actor for the window.
  */
-Window_StatusTalents.prototype.setActor = function(actor) {
+Window_StatusTalents.prototype.setActor = function(actor:any) {
     if (this._actor !== actor) {
         this._actor = actor;
         this._talents = TEW.DATABASE.TALENTS.ARRAY.filter(talent => actor.hasTalent(talent[0]));   // [<internal name>, {<talent data>}]
@@ -53,11 +43,6 @@ Window_StatusTalents.prototype.setActor = function(actor) {
         this.refresh();
     }
 };
-
-/**
- * Returns the maximum number of columns in the window.
- */
-Window_StatusTalents.prototype.maxCols = () => 2;
 
 /**
  * Draws all items in the window.
@@ -75,10 +60,10 @@ Window_StatusTalents.prototype.drawAllItems = function() {
 /**
  * Draws a single item in the window.
  */
-Window_StatusTalents.prototype.drawItem = function(index) {
+Window_StatusTalents.prototype.drawItem = function(index: number) {
     const normalizedIndex = index - this.topIndex();
-    const x = index % 2 * this.width / 2 + this._leftPadding;
-    const y = Math.floor(normalizedIndex / 2) * TEW.MENU.LINE_HEIGHT;
+    const x = 48;
+    const y = normalizedIndex * TEW.MENU.LINE_HEIGHT;
 
     const talent = this.talentFromIndex(index);
 
@@ -103,6 +88,17 @@ Window_StatusTalents.prototype.drawItem = function(index) {
  */
 Window_StatusTalents.prototype.talentFromIndex = function(index) {
     return this._talents[index];
+};
+
+Window_StatusTalents.prototype.select = function(index: number) {
+    this._index = index;
+    if (this._index >= 0) {
+        this.callHandler("show_talent_description");
+    }
+    this._stayCount = 0;
+    this.ensureCursorVisible();
+    this.updateCursor();
+    this.callUpdateHelp();
 };
 
 // Window_StatusTalents.prototype.item = function() {
@@ -138,17 +134,6 @@ Window_StatusTalents.prototype.processOk = function() {
     }
 };
 
-Window_StatusTalents.prototype.select = function(index: number) {
-    this._index = index;
-    if (this._index >= 0) {
-        this.callHandler("show_talent_description");
-    }
-    this._stayCount = 0;
-    this.ensureCursorVisible();
-    this.updateCursor();
-    this.callUpdateHelp();
-};
-
 // Window_StatusTalents.prototype.isCurrentItemEnabled = function() {
 //     return true; // TODO
 // };
@@ -164,6 +149,6 @@ Window_StatusTalents.prototype.select = function(index: number) {
 /**
  * Returns the maximum number of items in the window.
  */
-Window_StatusTalents.prototype.maxItems = function() {
-    return this._maxItems;
-};
+// Window_StatusTalents.prototype.maxItems = function() {
+//     return this._maxItems;
+// };

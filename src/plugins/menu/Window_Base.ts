@@ -41,32 +41,65 @@ Window_Base.prototype.drawWrappedText = function(text, x, y, width, fontsize = t
 
 
 // Drawing a wrapped text - used to draw to description
-Window_Base.prototype.drawWrappedTextManually = function(text: string, x: number, y: number, fontSize: number) {
+Window_Base.prototype.drawWrappedTextManually = function(text: string, x: number, y: number, maxHeight: number, fontSize = 28) {
+
+    const lineJumpCount = text.split('\\n').length;
 
     const words = text.split(" ");
     const maxWidth = this.contentsWidth() - x;
-
-    if (text.length <= 100){ this.contents.fontSize = 28; }
-    else if (text.length <= 200){ this.contents.fontSize = 20; }
-    // else if (text.length <= 200) { this.contents.fontSize = 16; }
-    else { this.contents.fontSize = 16; }
+    this.contents.fontSize = fontSize;
+    let lineHeight = this.contents.fontSize * 1.2;
 
     const spaceWidth = this.textWidth(" ");
-    const lineHeight = fontSize * 1.2;
+    let doesFit = false;
     let currentX = x;
     let currentY = y;
 
-    words.forEach(word => {
-        const wordWidth = this.textWidth(word);
+    do {
+        let nbLine = lineJumpCount;
+        // Calculating number of lines needed
+        words.forEach(word => {
+            word.replace('\\n', ''); // They are already counted
+            const wordWidth = this.textWidth(word);
 
+            // If the word is too long, adding a new line
+            if (currentX + wordWidth > maxWidth) {
+                currentX = x; // begining of the line
+                nbLine++;
+            }
+            currentX += wordWidth + spaceWidth;
+        });
+
+        // does the text fit ?
+        doesFit = nbLine <= Math.floor(maxHeight / lineHeight)
+
+        // If it doesnt fit, lets shrink the font
+        if (!doesFit) {
+            this.contents.fontSize -= 1;
+            lineHeight = this.contents.fontSize * 1.2;
+        }
+
+    } while (!doesFit && this.contents.fontSize > 16);
+
+    // Lets reset our positions
+    currentX = x;
+    currentY = y;
+    let startANewLine = false;
+
+    words.forEach(word => {
+
+        const wordWidth = this.textWidth(word.replace('\\n', ''));
         // If the word is too long, drawing it on the next line
-        if (currentX + wordWidth > maxWidth) {
+        if (currentX + wordWidth > maxWidth || startANewLine) {
             currentX = x; // begining of the line
             currentY += lineHeight; // next line
         }
 
+        // Handling \n
+        startANewLine = word.includes('\\n');
+
         // drawing it on the current line
-        this.drawText(word, currentX, currentY, wordWidth, 'left');
+        this.drawText(word.replace('\\n', ''), currentX, currentY, wordWidth, 'left');
         currentX += wordWidth + spaceWidth;
     });
     this.resetFontSettings();
@@ -130,6 +163,9 @@ Window_Base.prototype.fittingHeight = function(numLines) {
 };
 
 // TODO no need for color picker, we can optimize everything here?
+Window_Base.prototype.whiteColor = function() {
+    return this.textColor(0);
+};
 Window_Base.prototype.normalColor = function() {
     return this.textColor(15);
 };

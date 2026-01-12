@@ -29,12 +29,12 @@
     },
     {
         "id": 4,
-        "expanded": true,
+        "expanded": false,
         "name": "Coach and Horses - Ext",
         "order": 1,
         "parentId": 0,
-        "scrollX": 1320.8571428571427,
-        "scrollY": 1287.4285714285713
+        "scrollX": 1027.3333333333333,
+        "scrollY": 1470.6666666666667
     },
     {
         "id": 5,
@@ -52,6 +52,6 @@
         "order": 6,
         "parentId": 0,
         "scrollX": 1027.3333333333333,
-        "scrollY": 750.6666666666666
+        "scrollY": 721.3333333333334
     }
 ]

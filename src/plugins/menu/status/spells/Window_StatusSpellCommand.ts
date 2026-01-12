@@ -11,7 +11,7 @@
 // Imports
 // ----------------------
 
-import HalfWindow_DetailsCommand from "../base/HalfWindow_DetailsCommand";
+import HalfWindow_DetailsCommand from "../../base/HalfWindow_DetailsCommand";
 
 // ----------------------
 // $StartCompilation
@@ -26,10 +26,14 @@ Window_StatusSpellCommand.prototype.constructor = Window_StatusSpellCommand;
 
 // Initializing the command window
 Window_StatusSpellCommand.prototype.initialize = function() {
-    HalfWindow_DetailsCommand.prototype.initialize.call(this, 1);
+    HalfWindow_DetailsCommand.prototype.initialize.call(this, 5);
 };
 
 // Making the 3 lines
 Window_StatusSpellCommand.prototype.makeCommandList = function() {
     this.addCommand(TextManager.statusCastSpell, 'status_cast_spell');
+    this.addCommand('test1', 'a', false);
+    this.addCommand('test2', 'b', false);
+    this.addCommand('test3', 'c', false);
+    this.addCommand('test4', 'c', false);
 };

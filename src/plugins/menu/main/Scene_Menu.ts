@@ -12,6 +12,7 @@
 // ----------------------
 import { Sprite } from "../../../rmmv/core/Sprite";
 import { Window_MenuCommand } from "../../../rmmv/windows/Window_MenuCommand";
+import Scene_Journals from "../journals/Scene_Journals";
 
 // ----------------------
 // $StartCompilation
@@ -51,7 +52,7 @@ Scene_Menu.prototype.createCommandWindow = function() {
     this._commandWindow.setHandler('menu_status',    this.commandPersonal.bind(this));
     this._commandWindow.setHandler('menu_inventory',     this.commandPersonal.bind(this));
     this._commandWindow.setHandler('menu_formation', this.commandFormation.bind(this));
-    this._commandWindow.setHandler('menu_quest',     this.commandQuests.bind(this));
+    this._commandWindow.setHandler('menu_journals',     this.commandJournals.bind(this));
     this._commandWindow.setHandler('options',   this.commandOptions.bind(this));
     this._commandWindow.setHandler('save',      this.commandSave.bind(this));
     this._commandWindow.setHandler('gameEnd',   this.commandGameEnd.bind(this));
@@ -86,8 +87,8 @@ Scene_Menu.prototype.commandFormation = function() {
     this._statusMenuWindow.setHandler('cancel', this.onFormationCancel.bind(this));
 };
 
-Scene_Menu.prototype.commandQuests = function() {
-    // SceneManager.push(Scene_Quests); // TODO
+Scene_Menu.prototype.commandJournals = function() {
+    SceneManager.push(Scene_Journals);
 };
 
 Scene_Menu.prototype.commandOptions = function() {

@@ -344,6 +344,13 @@ Window_Dice.prototype.update = function () {
 };
 // #endregion =========================== Window_Dice ============================== //
 // ============================== //
+// #region ============================== Graphics ============================== //
+Graphics._createGameFontLoader = function () {
+    this._createFontLoader('GameFont');
+    this._createFontLoader('handwritten');
+};
+// #endregion =========================== Graphics ============================== //
+// ============================== //
 // #region ============================== Game_Actor ============================== //
 // Game_Actor
 Game_Actor.prototype.initialize = function (actorId) {
@@ -415,6 +422,8 @@ Game_Actor.prototype.initCecile = function () {
     this.addTalent('COOLHEADED');
     this.addTalent('WARRIOR_BORN');
     this.addTalent('FEINT');
+    // test
+    this.addTalent('DUAL_WIELDER');
     // spells
     // items
     this.addItem('BANDAGE', 5);

@@ -5,12 +5,9 @@ import Window_TacticsCommand from "./Window_TacticsCommand";
 
 // $StartCompilation
 
-Window_TacticsCommand.prototype.backgroundImageName = function() {
-    return "bg_battle";
+Window_TacticsCommand.prototype.windowWidth = function() {
+    return 230; // 4 * line height + 2 * text padding + 2 * bg padding
 };
-Window_TitleCommand.prototype.windowWidth = function() {
-    return 204; // 4 * line height + 2 * text padding + 2 * bg padding
-};
-Window_TitleCommand.prototype.windowHeight = function() {
-    return 204; // 4 * line height + 2 * text padding + 2 * bg padding
+Window_TacticsCommand.prototype.windowHeight = function() {
+    return 240; // 4 * line height + 2 * text padding + 2 * bg padding
 };

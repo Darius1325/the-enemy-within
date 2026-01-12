@@ -16,7 +16,7 @@ TEW.MENU.COMMAND_NAMES = TEW.MENU.COMMAND_NAMES || {};
 // Main Menu
 TEW.MENU.COMMAND_NAMES[30] = "Status";
 TEW.MENU.COMMAND_NAMES[31] = "Inventory";
-TEW.MENU.COMMAND_NAMES[32] = "Quests";
+TEW.MENU.COMMAND_NAMES[32] = "Journals";
 TEW.MENU.COMMAND_NAMES[33] = "Formation";
 TEW.MENU.COMMAND_NAMES[34] = "Options";
 TEW.MENU.COMMAND_NAMES[35] = "Save";
@@ -53,13 +53,27 @@ TEW.MENU.COMMAND_NAMES[89] = TEW.CHARACTERS.ARRAY[3];
 TEW.MENU.COMMAND_NAMES[90] = TEW.CHARACTERS.ARRAY[4];
 TEW.MENU.COMMAND_NAMES[91] = TEW.CHARACTERS.ARRAY[5];
 
+// Journals
+TEW.MENU.COMMAND_NAMES[92] = "Quest log";
+TEW.MENU.COMMAND_NAMES[93] = "Documents";
+TEW.MENU.COMMAND_NAMES[94] = "Characters";
+TEW.MENU.COMMAND_NAMES[95] = "Glossary";
+TEW.MENU.COMMAND_NAMES[96] = "Tutorials";
+
 TEW.MENU.LINE_HEIGHT = 36;
-TEW.MENU.STANDARD_PADDING = 18;
+// TODO this is wrong and useless
+TEW.MENU.STANDARD_PADDING = 30;
 TEW.MENU.WINDOW_BACKGROUND_PADDING = 12; // 30px total padding
+
+TEW.MENU.JOURNALS_LEFT_PAGE_X_OFFSET = 60;
+TEW.MENU.JOURNALS_RIGHT_PAGE_X_OFFSET = 650;
+TEW.MENU.JOURNALS_CONTENT_AREA = {
+    y: 20, w: 570, h: 670
+};
 
 // TextManager
 // Override commands
-TextManager.command = function(commandId) {
+TextManager.command = function(commandId: number) {
     if (commandId <= 25) {
         return $dataSystem.terms.commands[commandId] || '';
     } else {
@@ -84,7 +98,7 @@ Object.defineProperties(TextManager, {
     // Main Menu
     mainMenuStatus :          TextManager.getter('command', 30),
     mainMenuInventory :       TextManager.getter('command', 31),
-    mainMenuQuests :          TextManager.getter('command', 32),
+    mainMenuJournals :          TextManager.getter('command', 32),
     mainMenuFormation :       TextManager.getter('command', 33),
     mainMenuOptions :         TextManager.getter('command', 34),
     mainMenuSave :            TextManager.getter('command', 35),

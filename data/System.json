@@ -126,7 +126,7 @@
         "Armure",
         "Accessoire"
     ],
-    "gameTitle": "Warhammer - L'ennemis Int\u00e9rieur",
+    "gameTitle": "Warhammer - The Enemy Within",
     "gameoverMe": {
         "name": "Gameover1",
         "pan": 0,
@@ -640,9 +640,9 @@
         "",
         "",
         "",
-        "",
-        "",
-        "Ratchett Lines price",
+        "Debug Q: Test quest",
+        "B1C1 Q: Enemy in Shadows",
+        "B1C1 Ratchett Lines price",
         "",
         "",
         "",
@@ -653,7 +653,7 @@
         "",
         ""
     ],
-    "versionId": 8969389,
+    "versionId": 9387493,
     "victoryMe": {
         "name": "Victory1",
         "pan": 0,

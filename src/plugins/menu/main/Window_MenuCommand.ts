@@ -35,7 +35,7 @@ Window_MenuCommand.prototype.makeCommandList = function () {
 Window_MenuCommand.prototype.addMainCommands = function () {
     this.addCommand(TextManager.mainMenuStatus, 'menu_status', true);
     this.addCommand(TextManager.mainMenuInventory, 'menu_inventory', true);
-    this.addCommand(TextManager.mainMenuQuests, 'menu_quests', false);
+    this.addCommand(TextManager.mainMenuJournals, 'menu_journals', true);
 };
 
 Window_MenuCommand.prototype.addFormationCommand = function () {

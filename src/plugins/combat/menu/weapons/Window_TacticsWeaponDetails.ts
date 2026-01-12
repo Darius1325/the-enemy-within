@@ -64,5 +64,10 @@ Window_TacticsWeaponDetails.prototype.drawDetails = function (weapon: LoadedWeap
     this.drawLine(200);
 
     // Description
-    this.drawWrappedTextManually(weapon.description, 0, 220, 24);
+    this.drawWrappedTextManually(
+        weapon.description,
+        0,
+        220,
+        160 // 440 (Height) - 60 (2 * Padding) - 220 (Starting Y)
+    ); 
 };

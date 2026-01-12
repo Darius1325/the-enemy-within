@@ -11,8 +11,8 @@
 // Imports
 // ----------------------
 
-import TEW from "../../_types/tew";
-import HalfWindow_List from "../base/HalfWindow_List";
+import TEW from "../../../_types/tew";
+import HalfWindow_List from "../../base/HalfWindow_List";
 
 // ----------------------
 // $StartCompilation
