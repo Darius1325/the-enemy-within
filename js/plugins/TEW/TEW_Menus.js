@@ -59,8 +59,11 @@ TEW.MENU.STANDARD_PADDING = 30;
 TEW.MENU.WINDOW_BACKGROUND_PADDING = 12; // 30px total padding
 TEW.MENU.JOURNALS_LEFT_PAGE_X_OFFSET = 60;
 TEW.MENU.JOURNALS_RIGHT_PAGE_X_OFFSET = 650;
-TEW.MENU.JOURNALS_CONTENT_AREA = {
+TEW.MENU.JOURNALS_PAGE_CONTENT_AREA = {
     y: 20, w: 570, h: 670
+};
+TEW.MENU.JOURNALS_CONTENT_AREA = {
+    x: 60, y: 20, w: 1160, h: 670
 };
 // TextManager
 // Override commands
@@ -122,6 +125,64 @@ Object.defineProperties(TextManager, {
 });
 // #endregion =========================== properties ============================== //
 // ============================== //
+// #region ============================== Scene_Glossary ============================== //
+function Scene_Glossary() {
+    this.initialize.apply(this, arguments);
+}
+Scene_Glossary.prototype = Object.create(Scene_Base.prototype);
+Scene_Glossary.prototype.constructor = Scene_Glossary;
+Scene_Glossary.prototype.initialize = function () {
+    Scene_Base.prototype.initialize.call(this);
+    this.createWindowLayer();
+    this.fetchEntries();
+};
+Scene_Glossary.prototype.fetchEntries = function () {
+    const unlockedEntryIds = $gameGlossary.unlockedEntries();
+    this._entries = unlockedEntryIds
+        .map(id => TEW.DATABASE.GLOSSARY[id])
+        .sort((a, b) => a.title.localeCompare(b.title));
+};
+Scene_Glossary.prototype.create = function () {
+    Scene_Base.prototype.create.call(this);
+    this.addFullscreenBackground();
+    this.createEntryWindow();
+    this.createContentsTable();
+};
+Scene_Glossary.prototype.addFullscreenBackground = function () {
+    this._background = new Sprite(ImageManager.loadSystem('bg_glossary'));
+    this.addChildAt(this._background, this.getChildIndex(this._windowLayer));
+};
+Scene_Glossary.prototype.createEntryWindow = function () {
+    this._windowEntryDetails = new Window_GlossaryEntry();
+    this._windowEntryDetails._cancelHandler = () => {
+        this._windowEntryDetails.hide();
+        this._windowEntryDetails.deactivate();
+        this._windowContentsTable.show();
+        this._windowContentsTable.activate();
+    };
+    this.addWindow(this._windowEntryDetails);
+};
+Scene_Glossary.prototype.createContentsTable = function () {
+    this._windowContentsTable = new Window_GlossaryContentsTable(this._entries);
+    this._windowContentsTable.setHandler('cancel', this.popScene.bind(this));
+    this._windowContentsTable.setHandler('ok', () => {
+        const selectedEntry = this._entries[this._windowContentsTable.index()];
+        this._windowEntryDetails._title = selectedEntry.title;
+        this._windowEntryDetails._paragraphs = selectedEntry.paragraphs;
+        this._windowContentsTable.deactivate();
+        this._windowContentsTable.hide();
+        this._windowEntryDetails.show();
+        this._windowEntryDetails.activate();
+        this._windowEntryDetails.refresh();
+    });
+    this.addWindow(this._windowContentsTable);
+    this._windowContentsTable.show();
+    this._windowContentsTable.activate();
+    this._windowContentsTable.refresh();
+    this._windowContentsTable.select(0);
+};
+// #endregion =========================== Scene_Glossary ============================== //
+// ============================== //
 // #region ============================== Scene_QuestLog ============================== //
 function Scene_QuestLog() {
     this.initialize.apply(this, arguments);
@@ -143,7 +204,7 @@ Scene_QuestLog.prototype.fetchQuests = function () {
         else if (currentStep > 0) { // quest in progress
             this._quests.push({
                 title: quest.title,
-                description: quest.description,
+                paragraphs: quest.paragraphs,
                 objective: quest.objective,
                 steps: quest.steps.slice(0, currentStep),
                 expandable: quest.steps.length > 0
@@ -170,7 +231,10 @@ Scene_QuestLog.prototype.createQuestList = function () {
     this._windowQuestList = new Window_QuestList(this._quests);
     this._windowQuestList.setHandler('cancel', this.popScene.bind(this));
     this._windowQuestList.setHandler('show_quest_details', () => {
-        this._windowQuestDetails._text = this._windowQuestList.selectedQuestDetails();
+        const details = this._windowQuestList.selectedQuestDetails();
+        console.log(details);
+        this._windowQuestDetails._title = details.title;
+        this._windowQuestDetails._paragraphs = details.paragraphs;
         this._windowQuestDetails.refresh();
     });
     this.addWindow(this._windowQuestList);
@@ -214,6 +278,7 @@ Scene_Journals.prototype.openJournal = function () {
         case "journal_characters":
             break;
         case "journal_glossary":
+            SceneManager.push(Scene_Glossary);
             break;
         case "journal_tutorials":
             break;
@@ -358,19 +423,6 @@ HalfWindow_Details.prototype.setActor = function (actor) {
         this._actor = actor;
         this.refresh();
     }
-};
-// Drawing an underlined Text
-HalfWindow_Details.prototype.drawUnderlinedText = function (text, x, y, width, align) {
-    // Draw text
-    this.drawText(text, x, y, width, align);
-    // Getting position of the line
-    const textSize = this.contents.fontSize;
-    const textWidth = this.textWidth(text);
-    const lineY = y + textSize + 2;
-    // Drawing the line
-    this.contents.paintOpacity = 255;
-    this.contents.fillRect(x + (align === "center" ? (width - textWidth) / 2 : align === "right" ? width - textWidth : 0), lineY, textWidth, 2, // Thickness
-    this.normalColor());
 };
 // Drawing a table with 2 columns
 HalfWindow_Details.prototype.drawTable2Columns = function (x, y, width, rows, textArray) {
@@ -605,7 +657,7 @@ function Window_JournalPage() {
 Window_JournalPage.prototype = Object.create(Window_Selectable.prototype);
 Window_JournalPage.prototype.constructor = Window_JournalPage;
 Window_JournalPage.prototype.initialize = function (isLeftPage = true) {
-    const dimensions = TEW.MENU.JOURNALS_CONTENT_AREA;
+    const dimensions = TEW.MENU.JOURNALS_PAGE_CONTENT_AREA;
     Window_Selectable.prototype.initialize.call(this, isLeftPage ? TEW.MENU.JOURNALS_LEFT_PAGE_X_OFFSET : TEW.MENU.JOURNALS_RIGHT_PAGE_X_OFFSET, dimensions.y, dimensions.w, dimensions.h);
 };
 Window_JournalPage.prototype.maxItems = function () {
@@ -1337,6 +1389,76 @@ Window_InventoryHelp.prototype.refresh = function () {
 };
 // #endregion =========================== Window_InventoryHelp ============================== //
 // ============================== //
+// #region ============================== Window_GlossaryContentsTable ============================== //
+function Window_GlossaryContentsTable() {
+    this.initialize.apply(this, arguments);
+}
+Window_GlossaryContentsTable.prototype = Object.create(Window_Selectable.prototype);
+Window_GlossaryContentsTable.prototype.constructor = Window_GlossaryContentsTable;
+Window_GlossaryContentsTable.prototype.initialize = function (entries) {
+    const dimensions = TEW.MENU.JOURNALS_CONTENT_AREA;
+    this._entries = entries;
+    Window_Selectable.prototype.initialize.call(this, dimensions.x, dimensions.y, dimensions.w, dimensions.h);
+};
+Window_GlossaryContentsTable.prototype.refresh = function () {
+    this.contents.clear();
+    if (this._entries) {
+        this.drawAllItems();
+    }
+};
+Window_GlossaryContentsTable.prototype.drawItem = function (index) {
+    const normalizedIndex = index - this.topIndex();
+    const x = normalizedIndex % 2 === 0 ? 0 : 620;
+    const y = normalizedIndex * TEW.MENU.LINE_HEIGHT;
+    const entry = this._entries[index];
+    this.drawText(entry.title, x, y, TEW.MENU.JOURNALS_PAGE_CONTENT_AREA.w, 'left');
+};
+Window_GlossaryContentsTable.prototype.maxCols = () => 2;
+Window_GlossaryContentsTable.prototype.maxItems = function () {
+    return this._entries.length;
+};
+Window_GlossaryContentsTable.prototype.itemRect = function (index) {
+    const normalizedIndex = index - this.topIndex();
+    const x = normalizedIndex % 2 === 0 ? 0 : 620;
+    const y = normalizedIndex * TEW.MENU.LINE_HEIGHT;
+    return new Rectangle(x, y, 510, TEW.MENU.LINE_HEIGHT);
+};
+// #endregion =========================== Window_GlossaryContentsTable ============================== //
+// ============================== //
+// #region ============================== Window_GlossaryEntry ============================== //
+function Window_GlossaryEntry() {
+    this.initialize.apply(this, arguments);
+}
+Window_GlossaryEntry.prototype = Object.create(Window_Base.prototype);
+Window_GlossaryEntry.prototype.constructor = Window_GlossaryEntry;
+Window_GlossaryEntry.prototype.initialize = function () {
+    const dimensions = TEW.MENU.JOURNALS_CONTENT_AREA;
+    Window_Base.prototype.initialize.call(this, dimensions.x, dimensions.y, dimensions.w, dimensions.h);
+    this._title = undefined;
+    this._paragraphs = undefined;
+};
+Window_GlossaryEntry.prototype.refresh = function () {
+    this.contents.clear();
+    if (this._title && this._paragraphs) {
+        this.drawDetails();
+    }
+};
+// TODO split on two pages
+Window_GlossaryEntry.prototype.drawDetails = function () {
+    // Title
+    this.drawUnderlinedText(this._title, 0, 0, this.contentsWidth(), "center");
+    // Paragraphs
+    const text = this._paragraphs.map((p) => p.content).join('\n \n ');
+    this.drawWrappedTextManually(text, 0, 80, this.contentsHeight());
+};
+Window_GlossaryEntry.prototype.update = function () {
+    Window_Base.prototype.update.call(this);
+    if (this.active && Input.isRepeated('cancel') && this._cancelHandler) {
+        this._cancelHandler();
+    }
+};
+// #endregion =========================== Window_GlossaryEntry ============================== //
+// ============================== //
 // #region ============================== Window_QuestDetails ============================== //
 function Window_QuestDetails() {
     this.initialize.apply(this, arguments);
@@ -1344,9 +1466,8 @@ function Window_QuestDetails() {
 Window_QuestDetails.prototype = Object.create(Window_Base.prototype);
 Window_QuestDetails.prototype.constructor = Window_QuestDetails;
 Window_QuestDetails.prototype.initialize = function () {
-    Window_Base.prototype.initialize.call(this);
-    const dimensions = TEW.MENU.JOURNALS_CONTENT_AREA;
-    Window_Selectable.prototype.initialize.call(this, TEW.MENU.JOURNALS_RIGHT_PAGE_X_OFFSET, dimensions.y, dimensions.w, dimensions.h);
+    const dimensions = TEW.MENU.JOURNALS_PAGE_CONTENT_AREA;
+    Window_Base.prototype.initialize.call(this, TEW.MENU.JOURNALS_RIGHT_PAGE_X_OFFSET, dimensions.y, dimensions.w, dimensions.h);
     this._title = undefined;
     this._paragraphs = undefined;
 };
@@ -1359,15 +1480,9 @@ Window_QuestDetails.prototype.refresh = function () {
 Window_QuestDetails.prototype.drawDetails = function () {
     // Title
     this.drawUnderlinedText(this._title, 0, 0, this.contentsWidth(), "center");
-    // // Paragraphs
-    // let startY = 80;
-    // this._paragraphs?.forEach(paragraph => {
-    //     this.drawWrappedTextManually(
-    //         paragraph.content,
-    //         0, 
-    //         startY,
-    //     )
-    // });
+    // Paragraphs
+    const text = this._paragraphs.map((p) => p.content).join('\n \n ');
+    this.drawWrappedTextManually(text, 0, 80, this.contentsHeight());
 };
 // #endregion =========================== Window_QuestDetails ============================== //
 // ============================== //
@@ -2654,6 +2769,19 @@ Window_Base.prototype.initialize = function (x, y, width, height) {
 Window_Base.prototype.backgroundImageName = function () {
     return undefined;
 };
+// Drawing an underlined Text
+Window_Base.prototype.drawUnderlinedText = function (text, x, y, width, align) {
+    // Draw text
+    this.drawText(text, x, y, width, align);
+    // Getting position of the line
+    const textSize = this.contents.fontSize;
+    const textWidth = this.textWidth(text);
+    const lineY = y + textSize + 2;
+    // Drawing the line
+    this.contents.paintOpacity = 255;
+    this.contents.fillRect(x + (align === "center" ? (width - textWidth) / 2 : align === "right" ? width - textWidth : 0), lineY, textWidth, 2, // Thickness
+    this.normalColor());
+};
 Window_Base.prototype.drawWrappedText = function (text, x, y, width, fontsize = this.contents.fontSize) {
     this.contents.fontSize = fontsize;
     const words = text.split(" ");
@@ -2676,7 +2804,6 @@ Window_Base.prototype.drawWrappedText = function (text, x, y, width, fontsize = 
 Window_Base.prototype.drawWrappedTextManually = function (text, x, y, maxHeight, fontSize = 28) {
     const lineJumpCount = text.split('\n').length;
     const words = text.split(" ");
-    console.log(words);
     const maxWidth = this.contentsWidth() - x;
     this.contents.fontSize = fontSize;
     let lineHeight = this.contents.fontSize * 1.2;

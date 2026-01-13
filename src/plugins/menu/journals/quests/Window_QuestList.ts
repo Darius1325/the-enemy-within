@@ -71,7 +71,7 @@ Window_QuestList.prototype.selectedQuestDetails = function() {
     const selected = isQuestSelected
         ? this._quests[questIndex]
         : this._quests[this._expandedIndex]
-            .steps[index - this._expandedIndex - 1]
+            .steps[index - this._expandedIndex - 1];
     return { title: selected.title, paragraphs: selected.paragraphs };
 }
 

@@ -15,7 +15,7 @@ Window_TacticsCommand.prototype.constructor = Window_TacticsCommand;
 
 Window_TacticsCommand.prototype.initialize = function() {
     var y = Graphics.boxHeight - this.windowHeight();
-    Window_Command.prototype.initialize.call(this, 0, y);
+    Window_Command.prototype.initialize.call(this, 40, Graphics.boxHeight - this.windowHeight());
     this.openness = 0;
     this.deactivate();
     this._actor = null;

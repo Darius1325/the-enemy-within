@@ -43,27 +43,6 @@ HalfWindow_TacticsDetails.prototype.setActor = function(actor: Game_Actor) {
     }
 };
 
-// Drawing an underlined Text
-HalfWindow_TacticsDetails.prototype.drawUnderlinedText = function(text: string, x: number, y: number, width: number, align: string) {
-    // Draw text
-    this.drawText(text, x, y, width, align);
-
-    // Getting position of the line
-    const textSize = this.contents.fontSize;
-    const textWidth = this.textWidth(text);
-    const lineY = y + textSize + 2;
-
-    // Drawing the line
-    this.contents.paintOpacity = 255;
-    this.contents.fillRect(
-        x + (align === "center" ? (width - textWidth) / 2 : align === "right" ? width - textWidth : 0),
-        lineY,
-        textWidth,
-        2, // Thickness
-        this.normalColor()
-    );
-};
-
 // Drawing a table with 2 columns
 HalfWindow_TacticsDetails.prototype.drawTable2Columns = function(x: number, y: number, width: number, rows: number, textArray: [string, string][]) {
     const cellWidthFirstRow = width / 3;

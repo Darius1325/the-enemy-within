@@ -152,7 +152,8 @@ const TEW: {
 
         JOURNALS_LEFT_PAGE_X_OFFSET: number;
         JOURNALS_RIGHT_PAGE_X_OFFSET: number;
-        JOURNALS_CONTENT_AREA: { y: number; w: number; h: number; };
+        JOURNALS_PAGE_CONTENT_AREA: { y: number; w: number; h: number; };
+        JOURNALS_CONTENT_AREA: { x: number, y: number; w: number; h: number; };
     };
 
     /** Playable character data */

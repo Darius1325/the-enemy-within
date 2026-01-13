@@ -126,12 +126,12 @@ TEW.DATABASE.QUESTS = [{
                 content: "Beat Phillipe at his own game."
             }],
         }, {
+            title: "Cheater !",
             paragraphs: [{
                 content: "Phillipe was caught cheating by the group ! He is going for the run."
             }, {
                 content: "Catch Phillipe and get your money back."
             }],
-            title: "Cheater !",
         }, {
             title: "Welcome to the lockup",
             paragraphs: [{

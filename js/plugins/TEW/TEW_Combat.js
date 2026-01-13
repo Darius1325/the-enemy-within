@@ -982,10 +982,6 @@ BattleManager.updateChargeTarget = function () {
         SoundManager.playOk();
         // TODO limit path to actual movement range
         // TODO select target using $gameTroopTs instead of $gameTroop
-        // TODO enemy position is not trimmed correctly
-        // TODO exact corner hits when ray tracing make an impossible path
-        //       either choose only one adjacent tile for collisions or trim it later
-        console.log($gameMap._straightPaths[`${startX},${startY}`][`${targetX},${targetY}`]);
         this._subject.moveAlongPredefinedPath($gameMap._straightPaths[`${startX},${startY}`][`${targetX},${targetY}`]);
         $gameMap._flexibleMovement = true; // Go back to free movement range for next action
         this._battlePhase = BattlePhase.ProcessMove;
@@ -2701,13 +2697,17 @@ Game_Map.prototype.chargeRange = function (distance, event, through) {
     const startX = event.x;
     const startY = event.y;
     const startKey = `${startX},${startY}`;
-    this._straightPaths[startKey] = {};
+    this._straightPaths[startKey] = this._straightPaths[startKey] || {};
     const enemiesInRange = $gameTroopTs.members(); // TODO exclude dead + adapt for enemy side
     const targettableEnemies = [];
     for (const enemy of enemiesInRange) {
         const enemyX = enemy._tx;
         const enemyY = enemy._ty;
         const enemyKey = `${enemyX},${enemyY}`;
+        // GIGA TODO reset memory when anything moves
+        if (this._straightPaths[startKey][enemyKey]) {
+            return this._straightPaths[startKey][enemyKey];
+        }
         const enemyPos = { x: enemyX, y: enemyY };
         const dx = enemyX - startX;
         const dy = enemyY - startY;
@@ -2767,11 +2767,15 @@ Game_Map.prototype.chargeRange = function (distance, event, through) {
             const rays = [];
             for (const start of startCorners) {
                 for (const target of usefulCorners) {
-                    let path = this.amanatidesWooSupercover(start, target);
-                    const trimmedPath = path.filter(point => !excludedCorners.includes(point));
-                    if (this.isPathClear(start, trimmedPath, event)) {
-                        if (this.isMapPassableWithoutEventCheck(trimmedPath.last(), enemyPos)) {
-                            rays.push({ start, target, path: trimmedPath });
+                    let supercover = this.amanatidesWooSupercover(start, target);
+                    const trimmedCover = supercover.tilesCrossed.filter(point => excludedCorners.every(({ x, y }) => x !== point.x || y !== point.y));
+                    if (this.isPathClear(start, trimmedCover, event)) {
+                        if (this.isMapPassableWithoutEventCheck(trimmedCover.last(), enemyPos)) {
+                            rays.push({
+                                start,
+                                target,
+                                path: supercover.path.filter(point => excludedCorners.every(({ x, y }) => x !== point.x || y !== point.y))
+                            });
                         }
                     }
                 }
@@ -2857,6 +2861,7 @@ Game_Map.prototype.computeExcludedCornersForRayTracing = function (dx, dy, start
  */
 Game_Map.prototype.amanatidesWooSupercover = function (start, end) {
     const tilesCrossed = [];
+    const path = [];
     // Skip in case of horizontal or vertical ray
     if (start.x === end.x) {
         const lowestY = Math.min(start.y, end.y);
@@ -2864,7 +2869,10 @@ Game_Map.prototype.amanatidesWooSupercover = function (start, end) {
         for (let y = lowestY; y < highestY; y++) {
             tilesCrossed.push({ x: start.x, y });
         }
-        return tilesCrossed;
+        return {
+            tilesCrossed,
+            path: tilesCrossed
+        };
     }
     if (start.y === end.y) {
         const lowestX = Math.min(start.x, end.x);
@@ -2872,11 +2880,15 @@ Game_Map.prototype.amanatidesWooSupercover = function (start, end) {
         for (let x = lowestX; x < highestX; x++) {
             tilesCrossed.push({ x, y: start.y });
         }
-        return tilesCrossed;
+        return {
+            tilesCrossed,
+            path: tilesCrossed
+        };
     }
     let x = start.x;
     let y = start.y;
     tilesCrossed.push({ x, y });
+    path.push({ x, y });
     const dx = end.x - x;
     const dy = end.y - y;
     const stepX = dx > 0 ? 1 : -1;
@@ -2907,6 +2919,7 @@ Game_Map.prototype.amanatidesWooSupercover = function (start, end) {
                 tMaxX += tDeltaX;
                 tMaxY += tDeltaY;
                 tilesCrossed.push(adjacentTileX, adjacentTileY);
+                path.push(adjacentTileX); // only case where path differs from cover
             }
         }
         else if (tMaxX < tMaxY) {
@@ -2918,8 +2931,9 @@ Game_Map.prototype.amanatidesWooSupercover = function (start, end) {
             tMaxY += tDeltaY;
         }
         tilesCrossed.push({ x, y });
+        path.push({ x, y });
     }
-    return tilesCrossed;
+    return { tilesCrossed, path };
 };
 Game_Map.prototype.isPathClear = function (startTile, tiles, event) {
     if (!tiles.length)
@@ -3971,7 +3985,7 @@ Window_TacticsActionCommand.prototype = Object.create(Window_ActorCommand.protot
 Window_TacticsActionCommand.prototype.constructor = Window_TacticsActionCommand;
 Window_TacticsActionCommand.prototype.initialize = function () {
     var y = Graphics.boxHeight - this.windowHeight();
-    Window_Command.prototype.initialize.call(this, this.windowWidth(), y);
+    Window_Command.prototype.initialize.call(this, 240, Graphics.boxHeight - this.windowHeight());
     this.openness = 0;
     this.deactivate();
     this._actor = null;
@@ -4019,19 +4033,6 @@ HalfWindow_TacticsDetails.prototype.setActor = function (actor) {
         this._actor = actor;
         this.refresh();
     }
-};
-// Drawing an underlined Text
-HalfWindow_TacticsDetails.prototype.drawUnderlinedText = function (text, x, y, width, align) {
-    // Draw text
-    this.drawText(text, x, y, width, align);
-    // Getting position of the line
-    const textSize = this.contents.fontSize;
-    const textWidth = this.textWidth(text);
-    const lineY = y + textSize + 2;
-    // Drawing the line
-    this.contents.paintOpacity = 255;
-    this.contents.fillRect(x + (align === "center" ? (width - textWidth) / 2 : align === "right" ? width - textWidth : 0), lineY, textWidth, 2, // Thickness
-    this.normalColor());
 };
 // Drawing a table with 2 columns
 HalfWindow_TacticsDetails.prototype.drawTable2Columns = function (x, y, width, rows, textArray) {
@@ -4179,8 +4180,7 @@ Window_TacticsMoveCommand.CHARGE_MOVE_MULTIPLIER = 2;
 Window_TacticsMoveCommand.SWITCH_WEAPON_COMMAND_INDEX = 3;
 Window_TacticsMoveCommand.SWITCH_WEAPON_MOVE_MULTIPLIER = 0;
 Window_TacticsMoveCommand.prototype.initialize = function () {
-    var y = Graphics.boxHeight - this.windowHeight();
-    Window_Command.prototype.initialize.call(this, this.windowWidth(), y);
+    Window_Command.prototype.initialize.call(this, 240, Graphics.boxHeight - this.windowHeight());
     this.openness = 0;
     this.deactivate();
     this._actor = null;
@@ -4273,7 +4273,10 @@ Scene_Battle.prototype.createBackground = function () {
     this.addChildAt(this._background, this.getChildIndex(this._windowLayer));
 };
 Scene_Battle.prototype.changeBackground = function (commandLevel = 0) {
-    this._background = new Sprite(ImageManager.loadSystem(commandLevel ? 'bg_battle' : ('bg_battle_command' + commandLevel)));
+    console.log("background:" + commandLevel);
+    this.removeChildAt(this.getChildIndex(this._background));
+    this._background = new Sprite(ImageManager.loadSystem(commandLevel === 0 ? 'bg_battle' : ('bg_battle_command' + commandLevel)));
+    this.addChildAt(this._background, this.getChildIndex(this._windowLayer));
 };
 Scene_Battle.prototype.createAllWindows = function () {
     this.createLogWindow();
@@ -4392,6 +4395,7 @@ Scene_Battle.prototype.createMoveCommandWindow = function () {
         this._tacticsCommandWindow.activate();
         this._moveCommandWindow.deactivate();
         this._moveCommandWindow.hide();
+        this.changeBackground(1);
     });
     this.addWindow(this._moveCommandWindow);
 };
@@ -4403,6 +4407,7 @@ Scene_Battle.prototype.createActionCommandWindow = function () {
         this._tacticsCommandWindow.activate();
         this._actionCommandWindow.deactivate();
         this._actionCommandWindow.hide();
+        this.changeBackground(1);
     });
     this.addWindow(this._actionCommandWindow);
 };
@@ -4630,12 +4635,14 @@ Scene_Battle.prototype.isAnyInputWindowActive = function () {
         this._mapWindow.active ||
         this._statusWindow.active ||
         this._moveCommandWindow.active ||
+        this._actionCommandWindow.active ||
         this._weaponsWindow.active ||
         this._weaponsCommandWindow.active);
 };
 Scene_Battle.prototype.startActorCommandSelection = function () {
     this._actorWindow.show();
     this._tacticsCommandWindow.setup(BattleManager.actor());
+    this.changeBackground(1);
 };
 // Scene_Battle.prototype.commandAttack = function() {
 //     var action = BattleManager.inputtingAction();
@@ -4676,6 +4683,7 @@ Scene_Battle.prototype.commandMove = function () {
     this._actorWindow.hide();
     this._moveCommandWindow.setActor(BattleManager.actor());
     this._moveCommandWindow.refresh();
+    this.changeBackground(2);
     this._moveCommandWindow.show();
     this._tacticsCommandWindow.deactivate();
     this._moveCommandWindow.activate();
@@ -4724,6 +4732,7 @@ Scene_Battle.prototype.commandCharge = function () {
 };
 Scene_Battle.prototype.commandWalkOrRun = function () {
     BattleManager._battlePhase = BattlePhase.InputMove;
+    this.changeBackground();
     this._moveCommandWindow.close();
     this._tacticsCommandWindow.close();
     BattleManager.refreshMoveTiles();
@@ -4757,15 +4766,17 @@ Scene_Battle.prototype.commandSwitchWeapon = function () {
 Scene_Battle.prototype.commandWait = function () {
     BattleManager.inputtingAction().setWait();
     BattleManager.setupAction();
+    this.changeBackground();
     this._tacticsCommandWindow.close();
 };
 Scene_Battle.prototype.commandAction = function () {
     this._actorWindow.hide();
     this._actionCommandWindow.setActor(BattleManager.actor());
     this._actionCommandWindow.refresh();
+    this.changeBackground(2);
     this._actionCommandWindow.show();
-    this._tacticsCommandWindow.deactivate();
     this._actionCommandWindow.activate();
+    this._tacticsCommandWindow.deactivate();
     $gameSelector.performTransfer(BattleManager._subject.x, BattleManager._subject.y);
     BattleManager.refreshMoveTiles();
 };
@@ -4831,12 +4842,15 @@ Scene_Battle.prototype.onItemCancel = function () {
     this._tacticsCommandWindow.activate();
 };
 Scene_Battle.prototype.onSelectAction = function () {
+    this.changeBackground();
     this._skillWindow.hide();
     this._itemWindow.hide();
+    this._actionCommandWindow.close();
     this._tacticsCommandWindow.close();
     BattleManager.processTarget();
 };
 Scene_Battle.prototype.endCommandSelection = function () {
+    this.changeBackground();
     this._tacticsCommandWindow.close();
 };
 Scene_Battle.prototype.stop = function () {
@@ -5162,7 +5176,7 @@ Window_TacticsCommand.prototype = Object.create(Window_ActorCommand.prototype);
 Window_TacticsCommand.prototype.constructor = Window_TacticsCommand;
 Window_TacticsCommand.prototype.initialize = function () {
     var y = Graphics.boxHeight - this.windowHeight();
-    Window_Command.prototype.initialize.call(this, 0, y);
+    Window_Command.prototype.initialize.call(this, 40, Graphics.boxHeight - this.windowHeight());
     this.openness = 0;
     this.deactivate();
     this._actor = null;
@@ -6134,9 +6148,21 @@ Spriteset_Tactics.prototype.isEffecting = function () {
 // ============================== //
 // #region ============================== backgrounds ============================== //
 Window_TacticsCommand.prototype.windowWidth = function () {
-    return 230; // 4 * line height + 2 * text padding + 2 * bg padding
+    return 200; // 4 * line height + 2 * text padding + 2 * bg padding
 };
 Window_TacticsCommand.prototype.windowHeight = function () {
+    return 240; // 4 * line height + 2 * text padding + 2 * bg padding
+};
+Window_TacticsActionCommand.prototype.windowWidth = function () {
+    return 200; // 4 * line height + 2 * text padding + 2 * bg padding
+};
+Window_TacticsActionCommand.prototype.windowHeight = function () {
+    return 240; // 4 * line height + 2 * text padding + 2 * bg padding
+};
+Window_TacticsMoveCommand.prototype.windowWidth = function () {
+    return 200; // 4 * line height + 2 * text padding + 2 * bg padding
+};
+Window_TacticsMoveCommand.prototype.windowHeight = function () {
     return 240; // 4 * line height + 2 * text padding + 2 * bg padding
 };
 // #endregion =========================== backgrounds ============================== //

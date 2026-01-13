@@ -28,7 +28,7 @@ Scene_QuestLog.prototype.fetchQuests = function() {
         } else if (currentStep > 0) { // quest in progress
             this._quests.push({
                 title: quest.title,
-                description: quest.description,
+                paragraphs: quest.paragraphs,
                 objective: quest.objective,
                 steps: quest.steps.slice(0, currentStep),
                 expandable: quest.steps.length > 0
@@ -59,7 +59,10 @@ Scene_QuestLog.prototype.createQuestList = function() {
     this._windowQuestList = new Window_QuestList(this._quests);
     this._windowQuestList.setHandler('cancel', this.popScene.bind(this));
     this._windowQuestList.setHandler('show_quest_details', () => {
-        this._windowQuestDetails._text = this._windowQuestList.selectedQuestDetails();
+        const details = this._windowQuestList.selectedQuestDetails();
+        console.log(details);
+        this._windowQuestDetails._title = details.title;
+        this._windowQuestDetails._paragraphs = details.paragraphs;
         this._windowQuestDetails.refresh();
     });
     this.addWindow(this._windowQuestList);

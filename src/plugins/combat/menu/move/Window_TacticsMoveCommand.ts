@@ -26,8 +26,7 @@ Window_TacticsMoveCommand.SWITCH_WEAPON_COMMAND_INDEX = 3;
 Window_TacticsMoveCommand.SWITCH_WEAPON_MOVE_MULTIPLIER = 0;
 
 Window_TacticsMoveCommand.prototype.initialize = function() {
-    var y = Graphics.boxHeight - this.windowHeight();
-    Window_Command.prototype.initialize.call(this, this.windowWidth(), y);
+    Window_Command.prototype.initialize.call(this, 240, Graphics.boxHeight - this.windowHeight());
     this.openness = 0;
     this.deactivate();
     this._actor = null;

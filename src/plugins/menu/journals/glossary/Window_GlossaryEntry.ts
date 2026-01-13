@@ -1,20 +1,18 @@
 // $PluginCompiler TEW_Menus.js
 
-import TEW from "../../../_types/tew";
-
 // $StartCompilation
 
-function Window_QuestDetails() {
+function Window_GlossaryEntry() {
     this.initialize.apply(this, arguments);
 }
 
-export default Window_QuestDetails.prototype = Object.create(Window_Base.prototype);
-Window_QuestDetails.prototype.constructor = Window_QuestDetails;
+export default Window_GlossaryEntry.prototype = Object.create(Window_Base.prototype);
+Window_GlossaryEntry.prototype.constructor = Window_GlossaryEntry;
 
-Window_QuestDetails.prototype.initialize = function() {
-    const dimensions = TEW.MENU.JOURNALS_PAGE_CONTENT_AREA;
+Window_GlossaryEntry.prototype.initialize = function() {
+    const dimensions = TEW.MENU.JOURNALS_CONTENT_AREA;
     Window_Base.prototype.initialize.call(this,
-        TEW.MENU.JOURNALS_RIGHT_PAGE_X_OFFSET,
+        dimensions.x,
         dimensions.y,
         dimensions.w,
         dimensions.h
@@ -24,18 +22,26 @@ Window_QuestDetails.prototype.initialize = function() {
     this._paragraphs = undefined;
 };
 
-Window_QuestDetails.prototype.refresh = function() {
+Window_GlossaryEntry.prototype.refresh = function() {
     this.contents.clear();
     if (this._title && this._paragraphs) {
         this.drawDetails();
     }
 };
 
-Window_QuestDetails.prototype.drawDetails = function() {
+// TODO split on two pages
+Window_GlossaryEntry.prototype.drawDetails = function() {
     // Title
     this.drawUnderlinedText(this._title, 0, 0, this.contentsWidth(), "center");
 
     // Paragraphs
     const text = this._paragraphs.map((p: { content: string }) => p.content).join('\\n \\n ');
     this.drawWrappedTextManually(text, 0, 80, this.contentsHeight());
+};
+
+Window_GlossaryEntry.prototype.update = function() {
+    Window_Base.prototype.update.call(this);
+    if (this.active && Input.isRepeated('cancel') && this._cancelHandler) {
+        this._cancelHandler();
+    }
 };

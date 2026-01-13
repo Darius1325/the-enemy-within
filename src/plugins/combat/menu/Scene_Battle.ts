@@ -64,9 +64,12 @@ Scene_Battle.prototype.createBackground = function() {
 };
 
 Scene_Battle.prototype.changeBackground = function(commandLevel = 0) {
+    console.log("background:" + commandLevel);
+    this.removeChildAt(this.getChildIndex(this._background));
     this._background = new Sprite(ImageManager.loadSystem(
-        commandLevel ? 'bg_battle' : ('bg_battle_command' + commandLevel)
+        commandLevel === 0 ? 'bg_battle' : ('bg_battle_command' + commandLevel)
     ));
+    this.addChildAt(this._background, this.getChildIndex(this._windowLayer));
 };
 
 Scene_Battle.prototype.createAllWindows = function() {
@@ -201,6 +204,7 @@ Scene_Battle.prototype.createMoveCommandWindow = function() {
         this._tacticsCommandWindow.activate();
         this._moveCommandWindow.deactivate();
         this._moveCommandWindow.hide();
+        this.changeBackground(1);
     });
     this.addWindow(this._moveCommandWindow);
 };
@@ -213,6 +217,7 @@ Scene_Battle.prototype.createActionCommandWindow = function() {
         this._tacticsCommandWindow.activate();
         this._actionCommandWindow.deactivate();
         this._actionCommandWindow.hide();
+        this.changeBackground(1);
     });
     this.addWindow(this._actionCommandWindow);
 };
@@ -468,6 +473,7 @@ Scene_Battle.prototype.isAnyInputWindowActive = function() {
         this._mapWindow.active ||
         this._statusWindow.active ||
         this._moveCommandWindow.active ||
+        this._actionCommandWindow.active ||
         this._weaponsWindow.active ||
         this._weaponsCommandWindow.active
     );
@@ -476,6 +482,7 @@ Scene_Battle.prototype.isAnyInputWindowActive = function() {
 Scene_Battle.prototype.startActorCommandSelection = function() {
     this._actorWindow.show();
     this._tacticsCommandWindow.setup(BattleManager.actor());
+    this.changeBackground(1);
 };
 
 // Scene_Battle.prototype.commandAttack = function() {
@@ -522,6 +529,7 @@ Scene_Battle.prototype.commandMove = function() {
     this._actorWindow.hide();
     this._moveCommandWindow.setActor(BattleManager.actor());
     this._moveCommandWindow.refresh();
+    this.changeBackground(2);
     this._moveCommandWindow.show();
     this._tacticsCommandWindow.deactivate();
     this._moveCommandWindow.activate();
@@ -570,6 +578,7 @@ Scene_Battle.prototype.commandCharge = function() {
 
 Scene_Battle.prototype.commandWalkOrRun = function() {
     BattleManager._battlePhase = BattlePhase.InputMove;
+    this.changeBackground();
     this._moveCommandWindow.close();
     this._tacticsCommandWindow.close();
     BattleManager.refreshMoveTiles();
@@ -603,6 +612,7 @@ Scene_Battle.prototype.commandSwitchWeapon = function() {
 Scene_Battle.prototype.commandWait = function() {
     BattleManager.inputtingAction().setWait();
     BattleManager.setupAction();
+    this.changeBackground();
     this._tacticsCommandWindow.close();
 };
 
@@ -610,9 +620,10 @@ Scene_Battle.prototype.commandAction = function() {
     this._actorWindow.hide();
     this._actionCommandWindow.setActor(BattleManager.actor());
     this._actionCommandWindow.refresh();
+    this.changeBackground(2);
     this._actionCommandWindow.show();
-    this._tacticsCommandWindow.deactivate();
     this._actionCommandWindow.activate();
+    this._tacticsCommandWindow.deactivate();
     $gameSelector.performTransfer(BattleManager._subject.x, BattleManager._subject.y);
     BattleManager.refreshMoveTiles();
 };
@@ -688,13 +699,16 @@ Scene_Battle.prototype.onItemCancel = function() {
 };
 
 Scene_Battle.prototype.onSelectAction = function() {
+    this.changeBackground();
     this._skillWindow.hide();
     this._itemWindow.hide();
+    this._actionCommandWindow.close();
     this._tacticsCommandWindow.close();
     BattleManager.processTarget();
 };
 
 Scene_Battle.prototype.endCommandSelection = function() {
+    this.changeBackground();
     this._tacticsCommandWindow.close();
 };
 

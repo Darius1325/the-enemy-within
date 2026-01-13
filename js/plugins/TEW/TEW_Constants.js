@@ -1140,6 +1140,17 @@ TEW.DATABASE.NPCS.AI = {
 // #region ====== GLOSSARY === //
 TEW.DATABASE.GLOSSARY = [
     {
+        id: 0,
+        title: "Debug",
+        paragraphs: [
+            {
+                content: "Now residence dashwoods she excellent you."
+            },
+            {
+                content: "'Violence is sometimes the answer.' - Sun Tzu, The Art of War"
+            }
+        ]
+    }, {
         id: 1,
         title: "Reikland",
         paragraphs: [
@@ -3473,12 +3484,12 @@ TEW.DATABASE.QUESTS = [{
                         content: "Beat Phillipe at his own game."
                     }],
             }, {
+                title: "Cheater !",
                 paragraphs: [{
                         content: "Phillipe was caught cheating by the group ! He is going for the run."
                     }, {
                         content: "Catch Phillipe and get your money back."
                     }],
-                title: "Cheater !",
             }, {
                 title: "Welcome to the lockup",
                 paragraphs: [{

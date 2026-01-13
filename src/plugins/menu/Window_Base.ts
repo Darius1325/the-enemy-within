@@ -20,6 +20,27 @@ Window_Base.prototype.backgroundImageName = function() {
     return undefined;
 };
 
+// Drawing an underlined Text
+Window_Base.prototype.drawUnderlinedText = function(text: string, x: number, y: number, width: number, align: string) {
+    // Draw text
+    this.drawText(text, x, y, width, align);
+
+    // Getting position of the line
+    const textSize = this.contents.fontSize;
+    const textWidth = this.textWidth(text);
+    const lineY = y + textSize + 2;
+
+    // Drawing the line
+    this.contents.paintOpacity = 255;
+    this.contents.fillRect(
+        x + (align === "center" ? (width - textWidth) / 2 : align === "right" ? width - textWidth : 0),
+        lineY,
+        textWidth,
+        2, // Thickness
+        this.normalColor()
+    );
+};
+
 Window_Base.prototype.drawWrappedText = function(text, x, y, width, fontsize = this.contents.fontSize) {
     this.contents.fontSize = fontsize;
     const words = text.split(" ");

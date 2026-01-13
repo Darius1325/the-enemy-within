@@ -185,7 +185,7 @@ Game_Map.prototype.chargeRange = function(distance: number, event: Game_Characte
     const startX = event.x;
     const startY = event.y;
     const startKey = `${startX},${startY}`;
-    this._straightPaths[startKey] = {};
+    this._straightPaths[startKey] = this._straightPaths[startKey] || {};
 
     const enemiesInRange: Game_Enemy[] = $gameTroopTs.members(); // TODO exclude dead + adapt for enemy side
     const targettableEnemies: Point[] = [];
@@ -195,6 +195,12 @@ Game_Map.prototype.chargeRange = function(distance: number, event: Game_Characte
         const enemyX = enemy._tx;
         const enemyY = enemy._ty;
         const enemyKey = `${enemyX},${enemyY}`;
+
+        // GIGA TODO reset memory when anything moves
+        if (this._straightPaths[startKey][enemyKey]) {
+            return this._straightPaths[startKey][enemyKey];
+        }
+
         const enemyPos: Point = { x: enemyX, y: enemyY };
 
         const dx = enemyX - startX;
@@ -264,11 +270,15 @@ Game_Map.prototype.chargeRange = function(distance: number, event: Game_Characte
             }[] = [];
             for (const start of startCorners) {
                 for (const target of usefulCorners) {
-                    let path: Point[] = this.amanatidesWooSupercover(start, target);
-                    const trimmedPath = path.filter(point => !excludedCorners.includes(point));
-                    if (this.isPathClear(start, trimmedPath, event)) {
-                        if (this.isMapPassableWithoutEventCheck(trimmedPath.last(), enemyPos)) {
-                            rays.push({start, target, path: trimmedPath});
+                    let supercover: { tilesCrossed: Point[], path: Point[] } = this.amanatidesWooSupercover(start, target);
+                    const trimmedCover = supercover.tilesCrossed.filter(point => excludedCorners.every(({x, y}) => x !== point.x || y !== point.y));
+                    if (this.isPathClear(start, trimmedCover, event)) {
+                        if (this.isMapPassableWithoutEventCheck(trimmedCover.last(), enemyPos)) {
+                            rays.push({
+                                start,
+                                target,
+                                path: supercover.path.filter(point => excludedCorners.every(({x, y}) => x !== point.x || y !== point.y))
+                            });
                         }
                     }
                 }
@@ -352,8 +362,9 @@ Game_Map.prototype.computeExcludedCornersForRayTracing = function(dx: number, dy
 /**
  * Trace a ray from a tile corner to another, and compute the ray's supercover with Amanatides & Woo's algorithm
  */
-Game_Map.prototype.amanatidesWooSupercover = function (start: Point, end: Point): Point[] {
+Game_Map.prototype.amanatidesWooSupercover = function (start: Point, end: Point): { tilesCrossed: Point[], path: Point[] } {
     const tilesCrossed: Point[] = [];
+    const path: Point[] = [];
     
     // Skip in case of horizontal or vertical ray
     if (start.x === end.x) {
@@ -362,7 +373,10 @@ Game_Map.prototype.amanatidesWooSupercover = function (start: Point, end: Point)
         for (let y = lowestY; y < highestY; y++) {
             tilesCrossed.push({ x: start.x, y });
         }
-        return tilesCrossed;
+        return {
+            tilesCrossed,
+            path: tilesCrossed
+        };
     }
     if (start.y === end.y) {
         const lowestX = Math.min(start.x, end.x);
@@ -370,13 +384,17 @@ Game_Map.prototype.amanatidesWooSupercover = function (start: Point, end: Point)
         for (let x = lowestX; x < highestX; x++) {
             tilesCrossed.push({ x, y: start.y });
         }
-        return tilesCrossed;
+        return {
+            tilesCrossed,
+            path: tilesCrossed
+        };
     }
 
     let x = start.x;
     let y = start.y;
 
     tilesCrossed.push({ x, y });
+    path.push({ x, y })
 
     const dx = end.x - x;
     const dy = end.y - y;
@@ -412,6 +430,7 @@ Game_Map.prototype.amanatidesWooSupercover = function (start: Point, end: Point)
                 tMaxX += tDeltaX;
                 tMaxY += tDeltaY;
                 tilesCrossed.push(adjacentTileX, adjacentTileY);
+                path.push(adjacentTileX); // only case where path differs from cover
             }
         } else if (tMaxX < tMaxY) {
             x += stepX;
@@ -421,9 +440,10 @@ Game_Map.prototype.amanatidesWooSupercover = function (start: Point, end: Point)
             tMaxY += tDeltaY;
         }
         tilesCrossed.push({ x, y });
+        path.push({ x, y });
     }
 
-    return tilesCrossed;
+    return { tilesCrossed, path };
 }
 
 Game_Map.prototype.isPathClear = function(startTile: Point, tiles: Point[], event: Game_CharacterBase) {

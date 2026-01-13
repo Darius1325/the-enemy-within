@@ -351,6 +351,73 @@ Graphics._createGameFontLoader = function () {
 };
 // #endregion =========================== Graphics ============================== //
 // ============================== //
+// #region ============================== DataManager ============================== //
+DataManager.createGameObjects = function () {
+    $gameTemp = new Game_Temp();
+    $gameSystem = new Game_System();
+    $gameScreen = new Game_Screen();
+    $gameTimer = new Game_Timer();
+    $gameMessage = new Game_Message();
+    $gameSwitches = new Game_Switches();
+    $gameVariables = new Game_Variables();
+    $gameSelfSwitches = new Game_SelfSwitches();
+    $gameActors = new Game_Actors();
+    $gameParty = new Game_Party();
+    $gameTroop = new Game_Troop();
+    $gameMap = new Game_Map();
+    $gamePlayer = new Game_Player();
+    $gameGlossary = new Game_Glossary();
+};
+DataManager.makeSaveContents = function () {
+    // A save data does not contain $gameTemp, $gameMessage, and $gameTroop.
+    var contents = {};
+    contents.system = $gameSystem;
+    contents.screen = $gameScreen;
+    contents.timer = $gameTimer;
+    contents.switches = $gameSwitches;
+    contents.variables = $gameVariables;
+    contents.selfSwitches = $gameSelfSwitches;
+    contents.actors = $gameActors;
+    contents.party = $gameParty;
+    contents.map = $gameMap;
+    contents.player = $gamePlayer;
+    contents.glossary = $gameGlossary;
+    return contents;
+};
+DataManager.extractSaveContents = function (contents) {
+    $gameSystem = contents.system;
+    $gameScreen = contents.screen;
+    $gameTimer = contents.timer;
+    $gameSwitches = contents.switches;
+    $gameVariables = contents.variables;
+    $gameSelfSwitches = contents.selfSwitches;
+    $gameActors = contents.actors;
+    $gameParty = contents.party;
+    $gameMap = contents.map;
+    $gamePlayer = contents.player;
+    $gameGlossary = contents.glossary;
+};
+// #endregion =========================== DataManager ============================== //
+// ============================== //
+// #region ============================== Game_Glossary ============================== //
+function Game_Glossary() {
+    this.initialize.apply(this, arguments);
+}
+;
+Game_Glossary.prototype.initialize = function () {
+    this.clear();
+};
+Game_Glossary.prototype.clear = function () {
+    this._data = [];
+};
+Game_Glossary.prototype.unlockEntry = function (id) {
+    this._data.push(id);
+};
+Game_Glossary.prototype.unlockedEntries = function () {
+    return this._data;
+};
+// #endregion =========================== Game_Glossary ============================== //
+// ============================== //
 // #region ============================== Game_Actor ============================== //
 // Game_Actor
 Game_Actor.prototype.initialize = function (actorId) {
@@ -376,7 +443,6 @@ Game_Actor.prototype.initTEW = function (actorId) {
             break;
     }
     this.recoverAll(); // Set max wounds to MAX (HP)
-    console.log(this);
 };
 // #region ============================== Init TEW ============================== //
 // Initialization function for Cecile

@@ -12,7 +12,7 @@ export default Window_JournalPage.prototype = Object.create(Window_Selectable.pr
 Window_JournalPage.prototype.constructor = Window_JournalPage;
 
 Window_JournalPage.prototype.initialize = function(isLeftPage = true) {
-    const dimensions = TEW.MENU.JOURNALS_CONTENT_AREA;
+    const dimensions = TEW.MENU.JOURNALS_PAGE_CONTENT_AREA;
     Window_Selectable.prototype.initialize.call(this,
         isLeftPage ? TEW.MENU.JOURNALS_LEFT_PAGE_X_OFFSET : TEW.MENU.JOURNALS_RIGHT_PAGE_X_OFFSET,
         dimensions.y,

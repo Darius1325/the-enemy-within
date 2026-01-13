@@ -38,12 +38,14 @@ declare global {
     var $gameSwitches: any;
     var $gameTimer: any;
     var $gameScreen: any;
+    var $gameSelfSwitches: any;
     var $gameSystem: any;
     var $gameTemp: any;
     var $gameParty: any;
     var $gameTroop: any;
     var $gameVariables: any;
     var $gameMessage: any;
+    var $gameGlossary: any;
     var Input: any;
     var TouchInput: any;
     var TextManager: any;

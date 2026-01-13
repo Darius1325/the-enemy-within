@@ -481,10 +481,6 @@ BattleManager.updateChargeTarget = function() {
         SoundManager.playOk();
         // TODO limit path to actual movement range
         // TODO select target using $gameTroopTs instead of $gameTroop
-        // TODO enemy position is not trimmed correctly
-        // TODO exact corner hits when ray tracing make an impossible path
-        //       either choose only one adjacent tile for collisions or trim it later
-        console.log($gameMap._straightPaths[`${startX},${startY}`][`${targetX},${targetY}`]);
         this._subject.moveAlongPredefinedPath(
             $gameMap._straightPaths[`${startX},${startY}`][`${targetX},${targetY}`]
         );

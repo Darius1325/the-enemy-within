@@ -7,6 +7,17 @@ import TEW from "../_types/tew";
 // #region ====== GLOSSARY === //
 TEW.DATABASE.GLOSSARY = [
     {
+        id: 0,
+        title: "Debug",
+        paragraphs: [
+            {
+                content: "Now residence dashwoods she excellent you."
+            },
+            {
+                content: "'Violence is sometimes the answer.' - Sun Tzu, The Art of War"
+            }
+        ]
+    }, {
         id: 1,
         title: "Reikland",
         paragraphs: [
