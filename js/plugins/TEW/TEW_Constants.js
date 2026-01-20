@@ -1144,10 +1144,19 @@ TEW.DATABASE.GLOSSARY = [
         title: "Debug",
         paragraphs: [
             {
-                content: "Now residence dashwoods she excellent you."
+                content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc id elit pellentesque, congue nisl pretium, placerat arcu. Curabitur dictum blandit mattis. Ut non consequat diam. Phasellus tempus a eros ut convallis. Nullam dignissim libero suscipit augue dignissim molestie. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vivamus dictum, mi a sodales dapibus, sem mi accumsan sapien, at congue est lacus in tellus. Praesent vestibulum sollicitudin tellus quis dictum. Donec scelerisque nisi a interdum laoreet. Nunc dui libero, rhoncus vitae mi eget, efficitur efficitur sem. Nullam sit amet mi orci. Nulla convallis ante ut nibh rutrum, vitae sagittis lectus vestibulum. Suspendisse vehicula suscipit lacus non maximus. In sit amet finibus tellus. Mauris et gravida mi. Vestibulum dictum dui quis nisi consequat ullamcorper sit amet et eros."
             },
             {
-                content: "'Violence is sometimes the answer.' - Sun Tzu, The Art of War"
+                content: "Nullam ut felis imperdiet, vestibulum sapien a, tristique erat. In ut nibh ipsum. Proin commodo, mi non ultricies ullamcorper, ipsum ante pulvinar est, eu molestie diam odio non augue. Suspendisse eget dui dui. Nunc facilisis turpis sit amet dolor euismod faucibus. Vivamus in nunc in justo sagittis tempor. Aenean tempor ultrices tincidunt. Proin quis tempor lacus, in pharetra justo."
+            },
+            {
+                content: "Sed feugiat felis vel libero suscipit fermentum. Curabitur venenatis felis ut tortor tristique, at porttitor mi porta. Sed sed consectetur massa. Ut sed porta quam. Cras eu magna vel massa porttitor tincidunt ac in justo. Mauris vitae nisl placerat, commodo dolor eu, consequat mauris. Etiam hendrerit, nibh volutpat porttitor semper, lectus nibh auctor justo, interdum porta velit purus vel eros. Vestibulum nec ex ut massa dapibus feugiat."
+            },
+            {
+                content: "Proin dapibus interdum metus sed iaculis. Donec eu sem vitae lorem bibendum ornare a eget arcu. Sed semper non lacus eget pellentesque. Praesent a ex at neque gravida posuere. Sed pretium finibus nibh ut tincidunt. Aenean pulvinar, velit et ultrices dignissim, justo felis efficitur metus, a malesuada libero augue nec sapien. Integer semper a ipsum at molestie. In hac habitasse platea dictumst. Pellentesque lacinia, sem non tempus gravida, felis metus dapibus ex, laoreet rhoncus velit odio non urna. Duis fermentum mi non dui pellentesque, hendrerit accumsan felis eleifend. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Nullam interdum purus justo, eu lacinia ipsum gravida at. Mauris at lectus tellus. Nulla a pharetra elit. Nulla vel dolor est."
+            },
+            {
+                content: "Suspendisse potenti. Duis vitae euismod neque, vel molestie orci. Maecenas vitae orci commodo, tempus erat a, dignissim nibh. Vestibulum pulvinar, justo at ultricies varius, purus justo volutpat neque, vel auctor magna elit non est. Cras non ipsum vehicula, molestie felis et, feugiat justo. Etiam rhoncus mi vel arcu laoreet posuere. Maecenas mattis lectus id lacus dignissim, accumsan rutrum ante venenatis. Aenean at feugiat lectus, vel eleifend eros. Proin laoreet mollis erat."
             }
         ]
     }, {

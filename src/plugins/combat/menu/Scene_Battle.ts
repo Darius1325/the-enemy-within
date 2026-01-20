@@ -201,6 +201,7 @@ Scene_Battle.prototype.createMoveCommandWindow = function() {
     this._moveCommandWindow.setHandler('switchWeapon', this.commandSwitchWeapon.bind(this));
     this._moveCommandWindow.setHandler('cancel', () => {
         $gameMap.clearTiles();
+        $gameMap._flexibleMovement = true; // Go back to free movement range if charge was selected
         this._tacticsCommandWindow.activate();
         this._moveCommandWindow.deactivate();
         this._moveCommandWindow.hide();
@@ -562,9 +563,8 @@ Scene_Battle.prototype.commandRun = function() {
 
 Scene_Battle.prototype.commandCharge = function() {
     if (BattleManager.canRun()) {
-        BattleManager.moveCount -= 1;
-        BattleManager.actionCount -= 1;
         BattleManager._battlePhase = BattlePhase.InputCharge;
+        this.changeBackground();
         this._moveCommandWindow.close();
         this._tacticsCommandWindow.close();
         // TODO account for critical failure
@@ -577,6 +577,7 @@ Scene_Battle.prototype.commandCharge = function() {
 }
 
 Scene_Battle.prototype.commandWalkOrRun = function() {
+    // TODO restore move/action points
     BattleManager._battlePhase = BattlePhase.InputMove;
     this.changeBackground();
     this._moveCommandWindow.close();

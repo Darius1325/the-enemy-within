@@ -35,6 +35,7 @@ export enum BattlePhase {
     Explore = "explore", // TODO remove?
     Target = "target",
     ProcessMove = "processMove",
+    ProcessCharge = "processCharge",
     Action = "action",
     TurnEnd = "turnEnd",
     Open = "open",
@@ -247,7 +248,10 @@ BattleManager.updatePhase = function() {
             this.updateStart();
             break;
         case BattlePhase.ProcessMove:
-            this.updateMove();
+            this.updateMove(false);
+            break;
+        case BattlePhase.ProcessCharge:
+            this.updateMove(true);
             break;
         case BattlePhase.Open:
             this.processAction();
@@ -479,35 +483,35 @@ BattleManager.updateChargeTarget = function() {
     action.setAttack();
     if ($gameSelector.selectTarget(action) >= 0) { // -1 if invalid target
         SoundManager.playOk();
+        BattleManager.moveCount -= 1;
+        BattleManager.actionCount -= 1;
         // TODO limit path to actual movement range
         // TODO select target using $gameTroopTs instead of $gameTroop
         this._subject.moveAlongPredefinedPath(
             $gameMap._straightPaths[`${startX},${startY}`][`${targetX},${targetY}`]
         );
         $gameMap._flexibleMovement = true; // Go back to free movement range for next action
-        this._battlePhase = BattlePhase.ProcessMove;
+        this._battlePhase = BattlePhase.ProcessCharge;
         $gameMap.clearTiles();
     }
     if ($gameSelector.isCancelled()) {
         SoundManager.playCancel();
-        this.previousSelect(); // TODO go back to previous menu instead
+        this.previousSelect();
     }
 };
 
-// TODO should be removed
 BattleManager.previousSelect = function() {
     console.log("previousSelect");
-    this._battlePhase = BattlePhase.Explore;
-    this._subject.restorePosition();
-    this._subject = null;
+    this._battlePhase = BattlePhase.InputCommand;
+    // this._subject = null; // TODO wtf
     $gameSelector.updateSelect();
     this.refreshMoveTiles();
-    const select = $gameSelector.select();
-    if (select && select.isAlive()) {
-        this._actorWindow.open(select);
-    } else {
-        this._actorWindow.close();
-    }
+    // const select = $gameSelector.select();
+    // if (select && select.isAlive()) {
+    //     this._actorWindow.open(select);
+    // } else {
+    //     this._actorWindow.close();
+    // }
 };
 
 BattleManager.processTarget = function() {
@@ -664,7 +668,7 @@ BattleManager.updateEnemyPhase = function() {
     }
 };
 
-BattleManager.updateMove = function() {
+BattleManager.updateMove = function(forceAttackAfterMove = false) {
     if (!this._subject.isMoving()) {
         var action = this._subject.currentMove();
         if (action && action.isMove()) {
@@ -672,7 +676,15 @@ BattleManager.updateMove = function() {
             this._subject.nextMove();
         }
         if (!action || !action.isMove()){
-            if (this.canInput() && this._subject.canInput() && this._subject.isActor()) {
+            if (forceAttackAfterMove) {
+                // TODO better handling with processAction ?
+                const action = new Game_Action(this._subject);
+                action.setAttack();
+                const target = $gameSelector.select();
+                // TODO only if melee weapon + adjacent to target
+                action.apply(target);
+                this.endAction();
+            } else if (this.canInput() && this._subject.canInput() && this._subject.isActor()) {
                 this._battlePhase = BattlePhase.InputCommand;
             } else {
                 this.setupAction();

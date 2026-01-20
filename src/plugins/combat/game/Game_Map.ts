@@ -195,13 +195,14 @@ Game_Map.prototype.chargeRange = function(distance: number, event: Game_Characte
         const enemyX = enemy._tx;
         const enemyY = enemy._ty;
         const enemyKey = `${enemyX},${enemyY}`;
+        const enemyPos: Point = { x: enemyX, y: enemyY };
 
         // GIGA TODO reset memory when anything moves
         if (this._straightPaths[startKey][enemyKey]) {
+            targettableEnemies.push(enemyPos);
+            this.addTile(this.tile(enemyX, enemyY));
             return this._straightPaths[startKey][enemyKey];
         }
-
-        const enemyPos: Point = { x: enemyX, y: enemyY };
 
         const dx = enemyX - startX;
         const dy = enemyY - startY;
@@ -223,10 +224,7 @@ Game_Map.prototype.chargeRange = function(distance: number, event: Game_Characte
             if (this.isPathClear({ x: startX, y: startY }, path, event)
                 && this.isMapPassableWithoutEventCheck(path.last(), enemyPos)
             ) {
-                targettableEnemies.push({
-                    x: enemyX,
-                    y: enemyY
-                });
+                targettableEnemies.push(enemyPos);
                 this.addTile(this.tile(enemyX, enemyY));
                 // Remove start position for move processing
                 // FIXME possible optimization by never including start tile ?
@@ -243,10 +241,7 @@ Game_Map.prototype.chargeRange = function(distance: number, event: Game_Characte
             if (this.isPathClear({ x: startX, y: startY }, path, event)
                 && this.isMapPassableWithoutEventCheck(path.last(), enemyPos)
             ) {
-                targettableEnemies.push({
-                    x: enemyX,
-                    y: enemyY
-                });
+                targettableEnemies.push(enemyPos);
                 this.addTile(this.tile(enemyX, enemyY));
                 // Remove start position for move processing
                 path.shift();
@@ -292,10 +287,7 @@ Game_Map.prototype.chargeRange = function(distance: number, event: Game_Characte
                     for (const ray1 of usefulRays) {
                         for (const ray2 of usefulRays) {
                             if ((ray1.start.x == ray2.start.x) != (ray1.start.y == ray2.start.y)) { // adjacent subject corners
-                                targettableEnemies.push({
-                                    x: target.x,
-                                    y: target.y,
-                                });
+                                targettableEnemies.push(enemyPos);
                                 this.addTile(this.tile(target.x, target.y));
                                 // Remove start position for move processing
                                 ray1.path.shift();

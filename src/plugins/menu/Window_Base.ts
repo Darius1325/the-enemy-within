@@ -41,23 +41,11 @@ Window_Base.prototype.drawUnderlinedText = function(text: string, x: number, y: 
     );
 };
 
-Window_Base.prototype.drawWrappedText = function(text, x, y, width, fontsize = this.contents.fontSize) {
-    this.contents.fontSize = fontsize;
+Window_Base.prototype.drawWrappedText = function(text: string, x: number, y: number, maxWidth: number, fontSize = this.contents.fontSize) {
+    this.contents.fontSize = fontSize;
     const words = text.split(" ");
-    let line = "";
-    let currentY = y;
 
-    for (const word of words) {
-        if (this.textWidth(line + word) > width) {
-            this.drawText(line, x, currentY, width);
-            line = word + " ";
-            currentY += fontsize;
-        } else {
-            line += word + " ";
-        }
-    }
-    this.drawText(line, x, currentY, width);
-    this.resetFontSettings();
+    this.drawWrappedTextWordByWord(words, x, y, maxWidth);
 }
 
 
@@ -74,7 +62,6 @@ Window_Base.prototype.drawWrappedTextManually = function(text: string, x: number
     const spaceWidth = this.textWidth(" ");
     let doesFit = false;
     let currentX = x;
-    let currentY = y;
 
     do {
         let nbLine = lineJumpCount;
@@ -102,16 +89,20 @@ Window_Base.prototype.drawWrappedTextManually = function(text: string, x: number
 
     } while (!doesFit && this.contents.fontSize > 16);
 
-    // Lets reset our positions
-    currentX = x;
-    currentY = y;
+    this.drawWrappedTextWordByWord(words, x, y, maxWidth);
+};
+
+Window_Base.prototype.drawWrappedTextWordByWord = function(words: string[], x: number, y: number, width: number) {
+    let currentX = x;
+    let currentY = y;
     let startANewLine = false;
+    let spaceWidth = this.textWidth(" ");
+    let lineHeight = this.contents.fontSize * 1.2;
 
     words.forEach(word => {
-
         const wordWidth = this.textWidth(word.replace('\\n', ''));
         // If the word is too long, drawing it on the next line
-        if (currentX + wordWidth > maxWidth || startANewLine) {
+        if (currentX + wordWidth > width || startANewLine) {
             currentX = x; // begining of the line
             currentY += lineHeight; // next line
         }

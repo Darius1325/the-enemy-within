@@ -593,6 +593,7 @@ var BattlePhase;
     BattlePhase["Explore"] = "explore";
     BattlePhase["Target"] = "target";
     BattlePhase["ProcessMove"] = "processMove";
+    BattlePhase["ProcessCharge"] = "processCharge";
     BattlePhase["Action"] = "action";
     BattlePhase["TurnEnd"] = "turnEnd";
     BattlePhase["Open"] = "open";
@@ -780,7 +781,10 @@ BattleManager.updatePhase = function () {
             this.updateStart();
             break;
         case BattlePhase.ProcessMove:
-            this.updateMove();
+            this.updateMove(false);
+            break;
+        case BattlePhase.ProcessCharge:
+            this.updateMove(true);
             break;
         case BattlePhase.Open:
             this.processAction();
@@ -980,33 +984,32 @@ BattleManager.updateChargeTarget = function () {
     action.setAttack();
     if ($gameSelector.selectTarget(action) >= 0) { // -1 if invalid target
         SoundManager.playOk();
+        BattleManager.moveCount -= 1;
+        BattleManager.actionCount -= 1;
         // TODO limit path to actual movement range
         // TODO select target using $gameTroopTs instead of $gameTroop
         this._subject.moveAlongPredefinedPath($gameMap._straightPaths[`${startX},${startY}`][`${targetX},${targetY}`]);
         $gameMap._flexibleMovement = true; // Go back to free movement range for next action
-        this._battlePhase = BattlePhase.ProcessMove;
+        this._battlePhase = BattlePhase.ProcessCharge;
         $gameMap.clearTiles();
     }
     if ($gameSelector.isCancelled()) {
         SoundManager.playCancel();
-        this.previousSelect(); // TODO go back to previous menu instead
+        this.previousSelect();
     }
 };
-// TODO should be removed
 BattleManager.previousSelect = function () {
     console.log("previousSelect");
-    this._battlePhase = BattlePhase.Explore;
-    this._subject.restorePosition();
-    this._subject = null;
+    this._battlePhase = BattlePhase.InputCommand;
+    // this._subject = null; // TODO wtf
     $gameSelector.updateSelect();
     this.refreshMoveTiles();
-    const select = $gameSelector.select();
-    if (select && select.isAlive()) {
-        this._actorWindow.open(select);
-    }
-    else {
-        this._actorWindow.close();
-    }
+    // const select = $gameSelector.select();
+    // if (select && select.isAlive()) {
+    //     this._actorWindow.open(select);
+    // } else {
+    //     this._actorWindow.close();
+    // }
 };
 BattleManager.processTarget = function () {
     this._battlePhase = BattlePhase.Target;
@@ -1150,7 +1153,7 @@ BattleManager.updateEnemyPhase = function () {
         $gameSelector.performTransfer(x, y);
     }
 };
-BattleManager.updateMove = function () {
+BattleManager.updateMove = function (forceAttackAfterMove = false) {
     if (!this._subject.isMoving()) {
         var action = this._subject.currentMove();
         if (action && action.isMove()) {
@@ -1158,7 +1161,16 @@ BattleManager.updateMove = function () {
             this._subject.nextMove();
         }
         if (!action || !action.isMove()) {
-            if (this.canInput() && this._subject.canInput() && this._subject.isActor()) {
+            if (forceAttackAfterMove) {
+                // TODO better handling with processAction ?
+                const action = new Game_Action(this._subject);
+                action.setAttack();
+                const target = $gameSelector.select();
+                // TODO only if melee weapon + adjacent to target
+                action.apply(target);
+                this.endAction();
+            }
+            else if (this.canInput() && this._subject.canInput() && this._subject.isActor()) {
                 this._battlePhase = BattlePhase.InputCommand;
             }
             else {
@@ -2469,6 +2481,16 @@ Game_Enemy.prototype.getAI = function () {
     const aiId = this.tparam('AI') || 'DEFAULT';
     return TEW.DATABASE.NPCS.AI[aiId];
 };
+// TODO this is RMMV base implem, we need to change KO/death handling
+Game_Battler.prototype.refresh = function () {
+    Game_BattlerBase.prototype.refresh.call(this);
+    if (this.hp === 0) {
+        this.addState(this.deathStateId());
+    }
+    else {
+        this.removeState(this.deathStateId());
+    }
+};
 // #endregion =========================== Game_Enemy ============================== //
 // ============================== //
 // #region ============================== Game_Event ============================== //
@@ -2704,11 +2726,13 @@ Game_Map.prototype.chargeRange = function (distance, event, through) {
         const enemyX = enemy._tx;
         const enemyY = enemy._ty;
         const enemyKey = `${enemyX},${enemyY}`;
+        const enemyPos = { x: enemyX, y: enemyY };
         // GIGA TODO reset memory when anything moves
         if (this._straightPaths[startKey][enemyKey]) {
+            targettableEnemies.push(enemyPos);
+            this.addTile(this.tile(enemyX, enemyY));
             return this._straightPaths[startKey][enemyKey];
         }
-        const enemyPos = { x: enemyX, y: enemyY };
         const dx = enemyX - startX;
         const dy = enemyY - startY;
         const manhattanDistance = Math.floor(dx) + Math.floor(dy);
@@ -2726,10 +2750,7 @@ Game_Map.prototype.chargeRange = function (distance, event, through) {
             }
             if (this.isPathClear({ x: startX, y: startY }, path, event)
                 && this.isMapPassableWithoutEventCheck(path.last(), enemyPos)) {
-                targettableEnemies.push({
-                    x: enemyX,
-                    y: enemyY
-                });
+                targettableEnemies.push(enemyPos);
                 this.addTile(this.tile(enemyX, enemyY));
                 // Remove start position for move processing
                 // FIXME possible optimization by never including start tile ?
@@ -2746,10 +2767,7 @@ Game_Map.prototype.chargeRange = function (distance, event, through) {
             }
             if (this.isPathClear({ x: startX, y: startY }, path, event)
                 && this.isMapPassableWithoutEventCheck(path.last(), enemyPos)) {
-                targettableEnemies.push({
-                    x: enemyX,
-                    y: enemyY
-                });
+                targettableEnemies.push(enemyPos);
                 this.addTile(this.tile(enemyX, enemyY));
                 // Remove start position for move processing
                 path.shift();
@@ -2787,10 +2805,7 @@ Game_Map.prototype.chargeRange = function (distance, event, through) {
                     for (const ray1 of usefulRays) {
                         for (const ray2 of usefulRays) {
                             if ((ray1.start.x == ray2.start.x) != (ray1.start.y == ray2.start.y)) { // adjacent subject corners
-                                targettableEnemies.push({
-                                    x: target.x,
-                                    y: target.y,
-                                });
+                                targettableEnemies.push(enemyPos);
                                 this.addTile(this.tile(target.x, target.y));
                                 // Remove start position for move processing
                                 ray1.path.shift();
@@ -4392,6 +4407,7 @@ Scene_Battle.prototype.createMoveCommandWindow = function () {
     this._moveCommandWindow.setHandler('switchWeapon', this.commandSwitchWeapon.bind(this));
     this._moveCommandWindow.setHandler('cancel', () => {
         $gameMap.clearTiles();
+        $gameMap._flexibleMovement = true; // Go back to free movement range if charge was selected
         this._tacticsCommandWindow.activate();
         this._moveCommandWindow.deactivate();
         this._moveCommandWindow.hide();
@@ -4716,9 +4732,8 @@ Scene_Battle.prototype.commandRun = function () {
 };
 Scene_Battle.prototype.commandCharge = function () {
     if (BattleManager.canRun()) {
-        BattleManager.moveCount -= 1;
-        BattleManager.actionCount -= 1;
         BattleManager._battlePhase = BattlePhase.InputCharge;
+        this.changeBackground();
         this._moveCommandWindow.close();
         this._tacticsCommandWindow.close();
         // TODO account for critical failure
@@ -4731,6 +4746,7 @@ Scene_Battle.prototype.commandCharge = function () {
     }
 };
 Scene_Battle.prototype.commandWalkOrRun = function () {
+    // TODO restore move/action points
     BattleManager._battlePhase = BattlePhase.InputMove;
     this.changeBackground();
     this._moveCommandWindow.close();

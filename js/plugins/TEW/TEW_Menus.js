@@ -650,6 +650,129 @@ Window_InventoryTransferCommand.prototype.makeCommandList = function () {
 };
 // #endregion =========================== Window_InventoryTransferCommand ============================== //
 // ============================== //
+// #region ============================== Window_JournalEntry ============================== //
+function Window_JournalEntry() {
+    this.initialize.apply(this, arguments);
+}
+Window_JournalEntry.prototype = Object.create(Window_Base.prototype);
+Window_JournalEntry.prototype.constructor = Window_JournalEntry;
+Window_JournalEntry.prototype.initialize = function () {
+    const dimensions = TEW.MENU.JOURNALS_CONTENT_AREA;
+    Window_Base.prototype.initialize.call(this, dimensions.x, dimensions.y, dimensions.w, dimensions.h);
+    this._title = undefined;
+    this._paragraphs = undefined;
+    this._leftPageIndex = 0;
+    this._formattedContent = undefined;
+};
+Window_JournalEntry.prototype.refresh = function () {
+    this.contents.clear();
+    if (this._title && this._paragraphs) {
+        this.drawDetails();
+    }
+};
+Window_JournalEntry.prototype.drawDetails = function () {
+    // Title
+    if (this._leftPageIndex === 0) {
+        this.drawUnderlinedText(this._title, 0, 0, 510, "center");
+    }
+    // Format content or read from memory
+    if (!this._formattedContent) {
+        const text = this._paragraphs.map((p) => p.content).join('\n \n ');
+        this._formattedContent = this.cutTextIntoPages(text, 80, 590, 510); // TODO constants ?
+    }
+    const displayedPages = [this._formattedContent[this._leftPageIndex]];
+    if (this._formattedContent.length >= this._leftPageIndex + 2) {
+        displayedPages.push(this._formattedContent[this._leftPageIndex + 1]);
+    }
+    for (let page of displayedPages) {
+        for (let line of page.lines) {
+            this.drawText(line.text, page.x, line.y, 510, 'left');
+        }
+    }
+};
+Window_JournalEntry.prototype.cutTextIntoPages = function (text, firstPageYOffset, secondPageXOffset, width) {
+    const words = text.split(" ");
+    const spaceWidth = this.textWidth(" ");
+    const lineHeight = this.contents.fontSize * 1.2;
+    const firstPageMaxLines = Math.floor((this.contentsHeight() - firstPageYOffset) / lineHeight);
+    const subsequentPagesMaxLines = Math.floor(this.contentsHeight() / lineHeight);
+    const pages = [];
+    let pageNumber = 1;
+    let currentX = 0;
+    let currentY = firstPageYOffset;
+    let nbLines = 1;
+    let newlineXOffset = 0;
+    let currentLine = "";
+    let currentPage = {
+        x: 0,
+        lines: [{
+                text: "",
+                y: firstPageYOffset
+            }]
+    };
+    for (let word of words) {
+        let startNewLine = false;
+        if (word.includes('\n')) {
+            word.replace('\n', '');
+            startNewLine = true;
+        }
+        const wordWidth = this.textWidth(word);
+        // If the word is too long, adding a new line
+        if (currentX + wordWidth > width + newlineXOffset) {
+            currentPage.lines.push({ text: currentLine, y: currentY });
+            currentY += lineHeight;
+            currentX = newlineXOffset;
+            currentLine = "";
+            nbLines++;
+        }
+        if (nbLines > (pageNumber === 1 ? firstPageMaxLines : subsequentPagesMaxLines)) {
+            pages.push(JSON.parse(JSON.stringify(currentPage))); // deep clone
+            pageNumber++;
+            nbLines = 1;
+            newlineXOffset = (pageNumber % 2 === 0) ? secondPageXOffset : 0;
+            currentX = newlineXOffset;
+            currentY = 0;
+            currentLine = "";
+            currentPage = {
+                x: newlineXOffset,
+                lines: [{
+                        text: "",
+                        y: 0
+                    }]
+            };
+        }
+        currentLine += word + " ";
+        currentX += wordWidth + spaceWidth;
+        if (startNewLine) {
+            currentPage.lines.push({ text: currentLine, y: currentY });
+            currentY += lineHeight;
+            currentX = newlineXOffset;
+            currentLine = "";
+            nbLines++;
+        }
+    }
+    currentPage.lines.push({ text: currentLine, y: currentY });
+    pages.push(currentPage);
+    return pages;
+};
+Window_JournalEntry.prototype.update = function () {
+    Window_Base.prototype.update.call(this);
+    if (this.active) {
+        if (Input.isRepeated('cancel') && this._cancelHandler) {
+            this._cancelHandler();
+        }
+        else if (Input.isRepeated('right') && this._formattedContent.length > this._leftPageIndex + 2) {
+            this._leftPageIndex += 2;
+            this.refresh();
+        }
+        else if (Input.isRepeated('left') && this._leftPageIndex >= 2) {
+            this._leftPageIndex -= 2;
+            this.refresh();
+        }
+    }
+};
+// #endregion =========================== Window_JournalEntry ============================== //
+// ============================== //
 // #region ============================== Window_JournalPage ============================== //
 function Window_JournalPage() {
     this.initialize.apply(this, arguments);
@@ -1429,33 +1552,11 @@ Window_GlossaryContentsTable.prototype.itemRect = function (index) {
 function Window_GlossaryEntry() {
     this.initialize.apply(this, arguments);
 }
-Window_GlossaryEntry.prototype = Object.create(Window_Base.prototype);
+;
+Window_GlossaryEntry.prototype = Object.create(Window_JournalEntry.prototype);
 Window_GlossaryEntry.prototype.constructor = Window_GlossaryEntry;
 Window_GlossaryEntry.prototype.initialize = function () {
-    const dimensions = TEW.MENU.JOURNALS_CONTENT_AREA;
-    Window_Base.prototype.initialize.call(this, dimensions.x, dimensions.y, dimensions.w, dimensions.h);
-    this._title = undefined;
-    this._paragraphs = undefined;
-};
-Window_GlossaryEntry.prototype.refresh = function () {
-    this.contents.clear();
-    if (this._title && this._paragraphs) {
-        this.drawDetails();
-    }
-};
-// TODO split on two pages
-Window_GlossaryEntry.prototype.drawDetails = function () {
-    // Title
-    this.drawUnderlinedText(this._title, 0, 0, this.contentsWidth(), "center");
-    // Paragraphs
-    const text = this._paragraphs.map((p) => p.content).join('\n \n ');
-    this.drawWrappedTextManually(text, 0, 80, this.contentsHeight());
-};
-Window_GlossaryEntry.prototype.update = function () {
-    Window_Base.prototype.update.call(this);
-    if (this.active && Input.isRepeated('cancel') && this._cancelHandler) {
-        this._cancelHandler();
-    }
+    Window_JournalEntry.prototype.initialize.call(this);
 };
 // #endregion =========================== Window_GlossaryEntry ============================== //
 // ============================== //
@@ -2782,23 +2883,10 @@ Window_Base.prototype.drawUnderlinedText = function (text, x, y, width, align) {
     this.contents.fillRect(x + (align === "center" ? (width - textWidth) / 2 : align === "right" ? width - textWidth : 0), lineY, textWidth, 2, // Thickness
     this.normalColor());
 };
-Window_Base.prototype.drawWrappedText = function (text, x, y, width, fontsize = this.contents.fontSize) {
-    this.contents.fontSize = fontsize;
+Window_Base.prototype.drawWrappedText = function (text, x, y, maxWidth, fontSize = this.contents.fontSize) {
+    this.contents.fontSize = fontSize;
     const words = text.split(" ");
-    let line = "";
-    let currentY = y;
-    for (const word of words) {
-        if (this.textWidth(line + word) > width) {
-            this.drawText(line, x, currentY, width);
-            line = word + " ";
-            currentY += fontsize;
-        }
-        else {
-            line += word + " ";
-        }
-    }
-    this.drawText(line, x, currentY, width);
-    this.resetFontSettings();
+    this.drawWrappedTextWordByWord(words, x, y, maxWidth);
 };
 // Drawing a wrapped text - used to draw to description
 Window_Base.prototype.drawWrappedTextManually = function (text, x, y, maxHeight, fontSize = 28) {
@@ -2810,7 +2898,6 @@ Window_Base.prototype.drawWrappedTextManually = function (text, x, y, maxHeight,
     const spaceWidth = this.textWidth(" ");
     let doesFit = false;
     let currentX = x;
-    let currentY = y;
     do {
         let nbLine = lineJumpCount;
         // Calculating number of lines needed
@@ -2832,14 +2919,18 @@ Window_Base.prototype.drawWrappedTextManually = function (text, x, y, maxHeight,
             lineHeight = this.contents.fontSize * 1.2;
         }
     } while (!doesFit && this.contents.fontSize > 16);
-    // Lets reset our positions
-    currentX = x;
-    currentY = y;
+    this.drawWrappedTextWordByWord(words, x, y, maxWidth);
+};
+Window_Base.prototype.drawWrappedTextWordByWord = function (words, x, y, width) {
+    let currentX = x;
+    let currentY = y;
     let startANewLine = false;
+    let spaceWidth = this.textWidth(" ");
+    let lineHeight = this.contents.fontSize * 1.2;
     words.forEach(word => {
         const wordWidth = this.textWidth(word.replace('\n', ''));
         // If the word is too long, drawing it on the next line
-        if (currentX + wordWidth > maxWidth || startANewLine) {
+        if (currentX + wordWidth > width || startANewLine) {
             currentX = x; // begining of the line
             currentY += lineHeight; // next line
         }
