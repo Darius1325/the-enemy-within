@@ -37,7 +37,7 @@ HalfWindow_DetailsCommand.prototype.initialize = function(actionsNumber = 2) {
     this._actionsNumber = actionsNumber;
     Window_Command.prototype.initialize.call(
         this,
-        Graphics.boxWidth / 2 + HalfWindow_DetailsCommand.MARGIN_X,
+        HalfWindow_DetailsCommand.MARGIN_X,
         Graphics.boxHeight - HalfWindow_DetailsCommand.TOTAL_HEIGHT - HalfWindow_DetailsCommand.MARGIN_Y);
 };
 

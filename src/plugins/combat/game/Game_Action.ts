@@ -225,6 +225,7 @@ Game_Action.prototype.apply = function(target) {
     const defenderCombatSkill = TEW.COMBAT.getDefenceCompOrDefault(
         target,
         defenderWeapon.group,
+        0, // TODO cc bonus
         TEW.COMBAT.isMeleeWeapon(defenderWeapon)
     );
 

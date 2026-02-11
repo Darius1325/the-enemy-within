@@ -3,6 +3,7 @@
 import Sprite_Selector from "../../combat/sprite/Sprite_Selector";
 import Scene_Glossary from "./glossary/Scene_Glossary";
 import Scene_QuestLog from "./quests/Scene_QuestLog";
+import Scene_Tutorials from "./tutorials/Scene_Tutorials";
 import Window_Journals from "./Window_Journals";
 
 // $StartCompilation
@@ -48,6 +49,7 @@ Scene_Journals.prototype.openJournal = function() {
             SceneManager.push(Scene_Glossary);
             break;
         case "journal_tutorials":
+            SceneManager.push(Scene_Tutorials);
             break;
     } 
 };

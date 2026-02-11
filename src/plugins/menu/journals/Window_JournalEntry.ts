@@ -1,6 +1,6 @@
 // $PluginCompiler TEW_Menus.js 10
 
-type FormattedPage = {
+export type FormattedPage = {
     x: number;
     lines: {
         text: string;
@@ -26,6 +26,7 @@ Window_JournalEntry.prototype.initialize = function() {
         dimensions.h
     );
 
+    this._id = undefined;
     this._title = undefined;
     this._paragraphs = undefined;
     this._leftPageIndex = 0;
@@ -48,7 +49,7 @@ Window_JournalEntry.prototype.drawDetails = function() {
     // Format content or read from memory
     if (!this._formattedContent) {
         const text = this._paragraphs.map((p: { content: string }) => p.content).join('\\n \\n ');
-        this._formattedContent = this.cutTextIntoPages(text, 80, 590, 510); // TODO constants ?
+        this._formattedContent = this.cutTextIntoPages(text, 80, 0, 590, 510); // TODO constants ?
     }
 
     const displayedPages: FormattedPage[] = [this._formattedContent[this._leftPageIndex]];
@@ -65,6 +66,7 @@ Window_JournalEntry.prototype.drawDetails = function() {
 Window_JournalEntry.prototype.cutTextIntoPages = function(
     text: string,
     firstPageYOffset: number,
+    firstPageXOffset: number,
     secondPageXOffset: number,
     width: number
 ) {
@@ -89,7 +91,7 @@ Window_JournalEntry.prototype.cutTextIntoPages = function(
             y: number;
         }[];
     } = {
-        x: 0,
+        x: firstPageXOffset,
         lines: [{
             text: "",
             y: firstPageYOffset
@@ -117,7 +119,7 @@ Window_JournalEntry.prototype.cutTextIntoPages = function(
             pages.push(JSON.parse(JSON.stringify(currentPage))); // deep clone
             pageNumber++;
             nbLines = 1;
-            newlineXOffset = (pageNumber % 2 === 0) ? secondPageXOffset : 0;
+            newlineXOffset = (pageNumber % 2 === 0) ? secondPageXOffset : firstPageXOffset;
             currentX = newlineXOffset;
             currentY = 0;
             currentLine = "";
@@ -151,13 +153,17 @@ Window_JournalEntry.prototype.update = function() {
     Window_Base.prototype.update.call(this);
     if (this.active) {
         if (Input.isRepeated('cancel') && this._cancelHandler) {
+            SoundManager.playCancel();
             this._cancelHandler();
+            Input.update();
         } else if (Input.isRepeated('right') && this._formattedContent.length > this._leftPageIndex + 2) {
             this._leftPageIndex += 2;
             this.refresh();
+            Input.update();
         } else if (Input.isRepeated('left') && this._leftPageIndex >= 2) {
             this._leftPageIndex -= 2;
             this.refresh();
+            Input.update();
         }
     }
 };

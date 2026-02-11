@@ -25,6 +25,7 @@ import { Troop } from "./troop";
 import { BattlerAI } from "./battlerAI";
 import { Quest } from "./quest";
 import { Glossary } from "./glossary";
+import { Tutorial } from "./tutorial";
 
 /** Storage object for all TEW plugins */
 const TEW: {
@@ -128,6 +129,9 @@ const TEW: {
 
         /** Glossary entries, displayed in glossary and controlled by an id list: */
         GLOSSARY?: Glossary[];
+
+        /** Tutorial entries, displayed in tutorials and controlled by an id list: */
+        TUTORIALS?: Tutorial[];
     };
 
     /** Constants used in menu plugins for readability */
@@ -424,7 +428,7 @@ const TEW: {
          * @param isMelee true if the weapon is melee, false if it is ranged
          * @returns Whether the battler has the right competence and the effective value
          */
-        getDefenceCompOrDefault?: (battler: Game_BattlerBase, weaponGroup: WeaponGroup, isMelee: boolean) => {
+        getDefenceCompOrDefault?: (battler: Game_BattlerBase, weaponGroup: WeaponGroup, ccBonus: number, isMelee: boolean) => {
             /**
              * True if the battler has the competence matching weaponGroup
              */

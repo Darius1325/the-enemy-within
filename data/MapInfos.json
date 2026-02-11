@@ -1,57 +1,9 @@
 [
-    null,
-    {
-        "id": 1,
-        "expanded": true,
-        "name": "Coach and Horses - RDC1",
-        "order": 4,
-        "parentId": 4,
-        "scrollX": 1334.5714285714284,
-        "scrollY": 824.5714285714286
-    },
-    {
-        "id": 2,
-        "expanded": false,
-        "name": "Coach and Horses - RDC2",
-        "order": 3,
-        "parentId": 4,
-        "scrollX": 1334.5714285714284,
-        "scrollY": 824.5714285714286
-    },
-    {
-        "id": 3,
-        "expanded": false,
-        "name": "Coach and Horses - 1st",
-        "order": 2,
-        "parentId": 4,
-        "scrollX": 1334.5714285714284,
-        "scrollY": 824.5714285714286
-    },
-    {
-        "id": 4,
-        "expanded": false,
-        "name": "Coach and Horses - Ext",
-        "order": 1,
-        "parentId": 0,
-        "scrollX": 1027.3333333333333,
-        "scrollY": 1470.6666666666667
-    },
-    {
-        "id": 5,
-        "expanded": false,
-        "name": "Coach and Horses - Annex",
-        "order": 5,
-        "parentId": 4,
-        "scrollX": 1334.5714285714284,
-        "scrollY": 824.5714285714286
-    },
-    {
-        "id": 6,
-        "expanded": false,
-        "name": "Debug",
-        "order": 6,
-        "parentId": 0,
-        "scrollX": 1027.3333333333333,
-        "scrollY": 641.3333333333334
-    }
+null,
+{"id":1,"expanded":true,"name":"Coach and Horses - RDC1","order":4,"parentId":4,"scrollX":513.6666666666666,"scrollY":320.6666666666667},
+{"id":2,"expanded":false,"name":"Coach and Horses - RDC2","order":3,"parentId":4,"scrollX":1038,"scrollY":641.3333333333334},
+{"id":3,"expanded":false,"name":"Coach and Horses - 1st","order":2,"parentId":4,"scrollX":1027.3333333333333,"scrollY":1001.3333333333334},
+{"id":4,"expanded":true,"name":"Coach and Horses - Ext","order":1,"parentId":0,"scrollX":1027.3333333333333,"scrollY":1469.3333333333333},
+{"id":5,"expanded":false,"name":"Coach and Horses - Annex","order":5,"parentId":4,"scrollX":1038,"scrollY":630.6666666666666},
+{"id":6,"expanded":false,"name":"Debug","order":6,"parentId":0,"scrollX":1027.3333333333333,"scrollY":641.3333333333334}
 ]

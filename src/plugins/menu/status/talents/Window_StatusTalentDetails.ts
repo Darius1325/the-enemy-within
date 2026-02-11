@@ -10,6 +10,7 @@
 import TEW from "../../../_types/tew";
 import { Talent } from "../../../_types/talent";
 import HalfWindow_Details from "../../base/HalfWindow_Details";
+import HalfWindow_DetailsScrollable from "../../base/HalfWindow_DetailsScrollable";
 
 // ----------------------
 // $StartCompilation
@@ -19,14 +20,14 @@ function Window_StatusTalentDetails() {
     this.initialize.apply(this, arguments);
 }
 
-export default Window_StatusTalentDetails.prototype = Object.create(HalfWindow_Details.prototype);
+export default Window_StatusTalentDetails.prototype = Object.create(HalfWindow_DetailsScrollable.prototype);
 Window_StatusTalentDetails.prototype.constructor = Window_StatusTalentDetails;
 
 /**
  * Constructor for the Window_StatusTalentDetails class.
  */
 Window_StatusTalentDetails.prototype.initialize = function () {
-    HalfWindow_Details.prototype.initialize.call(this, true);
+    HalfWindow_DetailsScrollable.prototype.initialize.call(this, true);
     this._talent = undefined;
 };
 
@@ -48,11 +49,16 @@ Window_StatusTalentDetails.prototype.empty = function() {
 /**
  * Draws the description of the selected talent.
  */
-Window_StatusTalentDetails.prototype.drawDetails = function(talent:[string, Talent]) {
-    this.drawWrappedTextManually(
-        talent[1].description,
-        10,
-        0,
-        588 // 720 (Height) - 60 (2 * Padding) - 0 (Starting Y) - 68 (Top Bar Height)
-    );
+Window_StatusTalentDetails.prototype.drawDetails = function(talent: [string, Talent]) {
+    console.log("Drawing talent details:", talent);
+    this.setText(talent[1].description);
+    console.log("talent description:", talent[1].description);
+    this.drawAllItems();
+
+    // this.drawWrappedTextManually(
+    //     talent[1].description,
+    //     10,
+    //     0,
+    //     588 // 720 (Height) - 60 (2 * Padding) - 0 (Starting Y) - 68 (Top Bar Height)
+    // );
 };

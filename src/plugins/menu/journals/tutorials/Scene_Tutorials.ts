@@ -4,44 +4,42 @@ import TEW from '../../../_types/tew';
 import { Sprite } from "../../../../rmmv/core/Sprite";
 import Window_JournalContentsTable from "../Window_JournalContentsTable";
 import { Glossary } from '../../../_types/glossary';
-import Window_GlossaryEntry from './Window_GlossaryEntry';
+import { Tutorial } from '../../../_types/tutorial';
+import Window_TutorialEntry from './Window_TutorialEntry';
 
 // $StartCompilation
 
-function Scene_Glossary() {
+function Scene_Tutorials() {
     this.initialize.apply(this, arguments);
 }
 
-export default Scene_Glossary.prototype = Object.create(Scene_Base.prototype);
-Scene_Glossary.prototype.constructor = Scene_Glossary;
+export default Scene_Tutorials.prototype = Object.create(Scene_Base.prototype);
+Scene_Tutorials.prototype.constructor = Scene_Tutorials;
 
-Scene_Glossary.prototype.initialize = function() {
+Scene_Tutorials.prototype.initialize = function() {
     Scene_Base.prototype.initialize.call(this);
     this.createWindowLayer();
     this.fetchEntries();
 };
 
-Scene_Glossary.prototype.fetchEntries = function() {
-    const unlockedEntryIds: number[] = $gameGlossary.unlockedEntries();
-    this._entries = unlockedEntryIds
-        .map(id => TEW.DATABASE.GLOSSARY[id])
-        .sort((a, b) => a.title.localeCompare(b.title));
+Scene_Tutorials.prototype.fetchEntries = function() {
+    this._entries = TEW.DATABASE.TUTORIALS.sort((a, b) => a.title.localeCompare(b.title));
 };
 
-Scene_Glossary.prototype.create = function() {
+Scene_Tutorials.prototype.create = function() {
     Scene_Base.prototype.create.call(this);
     this.addFullscreenBackground();
     this.createEntryWindow();
     this.createContentsTable();
 };
 
-Scene_Glossary.prototype.addFullscreenBackground = function() {
-    this._background = new Sprite(ImageManager.loadSystem('bg_glossary'));
+Scene_Tutorials.prototype.addFullscreenBackground = function() {
+    this._background = new Sprite(ImageManager.loadSystem('bg_tutorials'));
     this.addChildAt(this._background, this.getChildIndex(this._windowLayer));
 };
 
-Scene_Glossary.prototype.createEntryWindow = function() {
-    this._windowEntryDetails = new Window_GlossaryEntry();
+Scene_Tutorials.prototype.createEntryWindow = function() {
+    this._windowEntryDetails = new Window_TutorialEntry();
     this._windowEntryDetails._cancelHandler = () => {
         this._windowEntryDetails.hide();
         this._windowEntryDetails.deactivate();
@@ -51,11 +49,11 @@ Scene_Glossary.prototype.createEntryWindow = function() {
     this.addWindow(this._windowEntryDetails);
 };
 
-Scene_Glossary.prototype.createContentsTable = function() {
+Scene_Tutorials.prototype.createContentsTable = function() {
     this._windowContentsTable = new Window_JournalContentsTable(this._entries);
     this._windowContentsTable.setHandler('cancel', this.popScene.bind(this));
     this._windowContentsTable.setHandler('ok', () => {
-        const selectedEntry: Glossary = this._entries[this._windowContentsTable.index()];
+        const selectedEntry: Tutorial = this._entries[this._windowContentsTable.index()];
         if (this._windowEntryDetails._id !== selectedEntry.id) {
             this._windowEntryDetails.reset(selectedEntry);
         }

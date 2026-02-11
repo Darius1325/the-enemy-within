@@ -2,6 +2,7 @@
 
 import { Game_Actor } from "../../base/stats/Game_Actor";
 import TEW from "../../_types/tew";
+import HalfWindow_DetailsCommand from "./HalfWindow_DetailsCommand";
 
 export interface IHalfWindow_List {
     _actor: Game_Actor;
@@ -37,7 +38,11 @@ HalfWindow_List.prototype.initialize = function() {
         0,
         TEW.MENU.INVENTORY_WINDOW_TOPBAR_HEIGHT,
         Graphics.boxWidth / 2,
-        Graphics.boxHeight - TEW.MENU.INVENTORY_WINDOW_TOPBAR_HEIGHT);
+        Graphics.boxHeight
+            - TEW.MENU.STATUS_WINDOW_TOPBAR_HEIGHT
+            - 2 * HalfWindow_DetailsCommand.MARGIN_Y
+            - HalfWindow_DetailsCommand.TOTAL_HEIGHT
+    );
     this._actor = null;
     this._maxItems = 0;
     this._leftPadding = 10;

@@ -621,6 +621,11 @@ TEW.DATABASE.COMPS.SET = {
         stat: Stat.AGIL,
         isBase: false
     },
+    SWIM: {
+        name: "Swim",
+        stat: Stat.STRG,
+        isBase: false
+    },
     TRACK: {
         name: "Track",
         stat: Stat.INIT,
@@ -683,6 +688,11 @@ TEW.DATABASE.COMPS.SET = {
     },
     TRADE_GOLDSMITH: {
         name: "Trade (Goldsmith)",
+        stat: Stat.DEXT,
+        isBase: false
+    },
+    TRADE_HERBALIST: {
+        name: "Trade (Herbalist)",
         stat: Stat.DEXT,
         isBase: false
     },

@@ -175,19 +175,26 @@ TEW.COMBAT.getAttackCompOrDefault = (battler: Game_BattlerBase, weaponGroup: Wea
 
 // Get battler's stat value for combat depending on the wielded weapon's group
 // TODO is Dodge
-TEW.COMBAT.getDefenceCompOrDefault = (battler: Game_BattlerBase, weaponGroup: WeaponGroup, isMelee: boolean) => {
-    const compName = isMelee ? ('MELEE' + '_' + TEW.DATABASE.WEAPONS.GROUP_IDS[weaponGroup]) : 'DODGE';
-    if (battler.hasComp(compName)) {
+TEW.COMBAT.getDefenceCompOrDefault = (battler: Game_BattlerBase, weaponGroup: WeaponGroup, ccBonus: number, isMelee: boolean) => {
+    const dodgeValue = battler.comp('DODGE');
+    if (!isMelee) {
         return {
             match: true,
-            value: battler.comp(compName)
-        };
-    } else {
-        return {
-            match: false,
-            value: battler.weas
+            value: dodgeValue
         };
     }
+    const compName = 'MELEE' + '_' + TEW.DATABASE.WEAPONS.GROUP_IDS[weaponGroup];
+    if (battler.hasComp(compName)) {
+        const compValue = battler.comp(compName);
+        return {
+            match: true,
+            value: Math.max(compValue, dodgeValue) // TODO opt out if shield
+        };
+    }
+    return {
+        match: false,
+        value: Math.max(battler.weas, dodgeValue)
+    };
 };
 
 // Get weapon data defined in TEW_Weapons.js from its ID

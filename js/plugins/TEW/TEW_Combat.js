@@ -547,20 +547,26 @@ TEW.COMBAT.getAttackCompOrDefault = (battler, weaponGroup, isMelee) => {
 };
 // Get battler's stat value for combat depending on the wielded weapon's group
 // TODO is Dodge
-TEW.COMBAT.getDefenceCompOrDefault = (battler, weaponGroup, isMelee) => {
-    const compName = isMelee ? ('MELEE' + '_' + TEW.DATABASE.WEAPONS.GROUP_IDS[weaponGroup]) : 'DODGE';
-    if (battler.hasComp(compName)) {
+TEW.COMBAT.getDefenceCompOrDefault = (battler, weaponGroup, ccBonus, isMelee) => {
+    const dodgeValue = battler.comp('DODGE');
+    if (!isMelee) {
         return {
             match: true,
-            value: battler.comp(compName)
+            value: dodgeValue
         };
     }
-    else {
+    const compName = 'MELEE' + '_' + TEW.DATABASE.WEAPONS.GROUP_IDS[weaponGroup];
+    if (battler.hasComp(compName)) {
+        const compValue = battler.comp(compName);
         return {
-            match: false,
-            value: battler.weas
+            match: true,
+            value: Math.max(compValue, dodgeValue) // TODO opt out if shield
         };
     }
+    return {
+        match: false,
+        value: Math.max(battler.weas, dodgeValue)
+    };
 };
 // Get weapon data defined in TEW_Weapons.js from its ID
 TEW.COMBAT.getWeaponFromId = (weaponId) => {
@@ -1748,7 +1754,8 @@ Game_Action.prototype.apply = function (target) {
     const attackerCombatSkill = TEW.COMBAT.getAttackCompOrDefault(attacker, attackerWeapon.group, TEW.COMBAT.isMeleeWeapon(attackerWeapon));
     // TODO Get (best) weapon from defender
     //   Get combat characteristic associated with weapon
-    const defenderCombatSkill = TEW.COMBAT.getDefenceCompOrDefault(target, defenderWeapon.group, TEW.COMBAT.isMeleeWeapon(defenderWeapon));
+    const defenderCombatSkill = TEW.COMBAT.getDefenceCompOrDefault(target, defenderWeapon.group, 0, // TODO cc bonus
+    TEW.COMBAT.isMeleeWeapon(defenderWeapon));
     // TODO Check for opponent's defensive tools (shield)
     // TODO Check attacker's talents for modifiers (make a list)
     // TODO Check defender's talents for modifiers (make a list)

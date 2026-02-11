@@ -217,6 +217,8 @@ Scene_Status.prototype.createTalentsWindow = function() {
 Scene_Status.prototype.createTalentDetailsWindow = function(){
     this._talentDetailsWindow = new Window_StatusTalentDetails();
     this._talentsWindow.setHandler('show_talent_description', () => {
+        // this._talentsWindow.deactivate();
+        // this._talentDetailWindow.activate();
         this.showTalentDetails();
     });
     this._talentDetailsWindow.hide();

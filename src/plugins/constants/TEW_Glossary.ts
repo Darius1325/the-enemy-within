@@ -324,4 +324,4 @@ TEW.DATABASE.GLOSSARY = [
             }
         ]
     }
-]
+];

@@ -8,6 +8,7 @@ import Window_InventoryCommand from "./inventory/Window_InventoryCommand";
 import Window_Journals from "./journals/Window_Journals";
 import Window_StatusCommand from "./status/Window_StatusCommand";
 import Window_StatusTalentDetails from "./status/talents/Window_StatusTalentDetails";
+import Window_StatusTalents from "./status/talents/Window_StatusTalents";
 
 // $StartCompilation
 
@@ -49,10 +50,17 @@ HalfWindow_List.prototype.windowWidth = function() {
     return Graphics.boxWidth / 2;
 };
 HalfWindow_List.prototype.windowHeight = function() {
-    return 648; // total height - topbar height
+    return 440; // total height - topbar height - (3 commands window height + margins)
 };
 HalfWindow_List.prototype.backgroundImageName = function() {
-    return "bg_menuHalfWindow";
+    return "bg_menuHalfWindowList";
+};
+
+Window_StatusTalents.prototype.backgroundImageName = function() {
+    return "bg_menuHalfWindowFullHeight";
+};
+Window_StatusTalents.prototype.windowHeight = function() {
+    return Graphics.boxHeight - TEW.MENU.STATUS_WINDOW_TOPBAR_HEIGHT;
 };
 
 
@@ -60,14 +68,14 @@ HalfWindow_Details.prototype.windowWidth = function() {
     return Graphics.boxWidth / 2;
 };
 HalfWindow_Details.prototype.windowHeight = function() {
-    return 440; // total height - topbar height - (3 commands window height + margins)
+    return 648; // total height - topbar height
 };
 HalfWindow_Details.prototype.backgroundImageName = function() {
-    return "bg_menuHalfWindowDetails3";
+    return "bg_menuHalfWindowFullHeight";
 };
 
 Window_StatusTalentDetails.prototype.backgroundImageName = function() {
-    return "bg_menuHalfWindow";
+    return "bg_menuHalfWindowFullHeight";
 };
 Window_StatusTalentDetails.prototype.windowHeight = function() {
     return Graphics.boxHeight - TEW.MENU.STATUS_WINDOW_TOPBAR_HEIGHT;

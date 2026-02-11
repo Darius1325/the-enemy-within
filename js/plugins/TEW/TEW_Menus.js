@@ -8,6 +8,15 @@ TEW.MENU = TEW.MENU || {};
 // #region ============================== Scene_Equip ============================== //
 // #endregion =========================== Scene_Equip ============================== //
 // ============================== //
+// #region ============================== ImageManager ============================== //
+ImageManager.reserveTutorial = function (filename, reservationId) {
+    return this.reserveBitmap('img/tutorials/', filename, 0, true, reservationId);
+};
+ImageManager.loadTutorial = function (filename) {
+    return this.loadBitmap('img/tutorials/', filename, 0, true);
+};
+// #endregion =========================== ImageManager ============================== //
+// ============================== //
 // #region ============================== properties ============================== //
 TEW.MENU.COMMAND_NAMES = TEW.MENU.COMMAND_NAMES || {};
 // Main Menu
@@ -163,12 +172,13 @@ Scene_Glossary.prototype.createEntryWindow = function () {
     this.addWindow(this._windowEntryDetails);
 };
 Scene_Glossary.prototype.createContentsTable = function () {
-    this._windowContentsTable = new Window_GlossaryContentsTable(this._entries);
+    this._windowContentsTable = new Window_JournalContentsTable(this._entries);
     this._windowContentsTable.setHandler('cancel', this.popScene.bind(this));
     this._windowContentsTable.setHandler('ok', () => {
         const selectedEntry = this._entries[this._windowContentsTable.index()];
-        this._windowEntryDetails._title = selectedEntry.title;
-        this._windowEntryDetails._paragraphs = selectedEntry.paragraphs;
+        if (this._windowEntryDetails._id !== selectedEntry.id) {
+            this._windowEntryDetails.reset(selectedEntry);
+        }
         this._windowContentsTable.deactivate();
         this._windowContentsTable.hide();
         this._windowEntryDetails.show();
@@ -281,10 +291,67 @@ Scene_Journals.prototype.openJournal = function () {
             SceneManager.push(Scene_Glossary);
             break;
         case "journal_tutorials":
+            SceneManager.push(Scene_Tutorials);
             break;
     }
 };
 // #endregion =========================== Scene_Journals ============================== //
+// ============================== //
+// #region ============================== Scene_Tutorials ============================== //
+function Scene_Tutorials() {
+    this.initialize.apply(this, arguments);
+}
+Scene_Tutorials.prototype = Object.create(Scene_Base.prototype);
+Scene_Tutorials.prototype.constructor = Scene_Tutorials;
+Scene_Tutorials.prototype.initialize = function () {
+    Scene_Base.prototype.initialize.call(this);
+    this.createWindowLayer();
+    this.fetchEntries();
+};
+Scene_Tutorials.prototype.fetchEntries = function () {
+    this._entries = TEW.DATABASE.TUTORIALS.sort((a, b) => a.title.localeCompare(b.title));
+};
+Scene_Tutorials.prototype.create = function () {
+    Scene_Base.prototype.create.call(this);
+    this.addFullscreenBackground();
+    this.createEntryWindow();
+    this.createContentsTable();
+};
+Scene_Tutorials.prototype.addFullscreenBackground = function () {
+    this._background = new Sprite(ImageManager.loadSystem('bg_tutorials'));
+    this.addChildAt(this._background, this.getChildIndex(this._windowLayer));
+};
+Scene_Tutorials.prototype.createEntryWindow = function () {
+    this._windowEntryDetails = new Window_TutorialEntry();
+    this._windowEntryDetails._cancelHandler = () => {
+        this._windowEntryDetails.hide();
+        this._windowEntryDetails.deactivate();
+        this._windowContentsTable.show();
+        this._windowContentsTable.activate();
+    };
+    this.addWindow(this._windowEntryDetails);
+};
+Scene_Tutorials.prototype.createContentsTable = function () {
+    this._windowContentsTable = new Window_JournalContentsTable(this._entries);
+    this._windowContentsTable.setHandler('cancel', this.popScene.bind(this));
+    this._windowContentsTable.setHandler('ok', () => {
+        const selectedEntry = this._entries[this._windowContentsTable.index()];
+        if (this._windowEntryDetails._id !== selectedEntry.id) {
+            this._windowEntryDetails.reset(selectedEntry);
+        }
+        this._windowContentsTable.deactivate();
+        this._windowContentsTable.hide();
+        this._windowEntryDetails.show();
+        this._windowEntryDetails.activate();
+        this._windowEntryDetails.refresh();
+    });
+    this.addWindow(this._windowContentsTable);
+    this._windowContentsTable.show();
+    this._windowContentsTable.activate();
+    this._windowContentsTable.refresh();
+    this._windowContentsTable.select(0);
+};
+// #endregion =========================== Scene_Tutorials ============================== //
 // ============================== //
 // #region ============================== Scene_Menu ============================== //
 // ----------------------
@@ -412,8 +479,7 @@ HalfWindow_Details.prototype = Object.create(Window_Base.prototype);
 HalfWindow_Details.prototype.constructor = HalfWindow_Details;
 // Initalizing the window
 HalfWindow_Details.prototype.initialize = function (fullHeight = false) {
-    Window_Base.prototype.initialize.call(this, Graphics.boxWidth / 2, TEW.MENU.INVENTORY_WINDOW_TOPBAR_HEIGHT, Graphics.boxWidth / 2, Graphics.boxHeight - TEW.MENU.STATUS_WINDOW_TOPBAR_HEIGHT -
-        (fullHeight ? 0 : 2 * HalfWindow_DetailsCommand.MARGIN_Y - HalfWindow_DetailsCommand.TOTAL_HEIGHT));
+    Window_Base.prototype.initialize.call(this, Graphics.boxWidth / 2, TEW.MENU.INVENTORY_WINDOW_TOPBAR_HEIGHT, Graphics.boxWidth / 2, Graphics.boxHeight - TEW.MENU.INVENTORY_WINDOW_TOPBAR_HEIGHT);
     this.width = Graphics.boxWidth / 2;
     this.activate();
     this.refresh();
@@ -492,7 +558,7 @@ HalfWindow_DetailsCommand.prototype.constructor = HalfWindow_DetailsCommand;
 // Initializing the command window
 HalfWindow_DetailsCommand.prototype.initialize = function (actionsNumber = 2) {
     this._actionsNumber = actionsNumber;
-    Window_Command.prototype.initialize.call(this, Graphics.boxWidth / 2 + HalfWindow_DetailsCommand.MARGIN_X, Graphics.boxHeight - HalfWindow_DetailsCommand.TOTAL_HEIGHT - HalfWindow_DetailsCommand.MARGIN_Y);
+    Window_Command.prototype.initialize.call(this, HalfWindow_DetailsCommand.MARGIN_X, Graphics.boxHeight - HalfWindow_DetailsCommand.TOTAL_HEIGHT - HalfWindow_DetailsCommand.MARGIN_Y);
 };
 HalfWindow_DetailsCommand.prototype.addCommand = function (name, symbol, enabled = true, ext = null) {
     this._list.push({ name: name, symbol: symbol, enabled: enabled, ext: ext });
@@ -527,6 +593,88 @@ HalfWindow_DetailsCommand.prototype.verticalBorderPadding = function () {
 };
 // #endregion =========================== HalfWindow_DetailsCommand ============================== //
 // ============================== //
+// #region ============================== HalfWindow_DetailsScrollable ============================== //
+//-----------------------------------------------------------------------------
+// HalfWindow_DetailsScrollable
+//
+// Super object to manage all item details windows when scrollable content is needed.
+function HalfWindow_DetailsScrollable() {
+    this.initialize.apply(this, arguments);
+}
+;
+// reduce contents height a bit to fit 17 lines of text (font size 28)
+HalfWindow_DetailsScrollable.OFFSET_Y = 8;
+HalfWindow_DetailsScrollable.prototype = Object.create(Window_Selectable.prototype);
+HalfWindow_DetailsScrollable.prototype.constructor = HalfWindow_DetailsScrollable;
+// Initalizing the window
+HalfWindow_DetailsScrollable.prototype.initialize = function (fullHeight = false) {
+    Window_Selectable.prototype.initialize.call(this, Graphics.boxWidth / 2, TEW.MENU.INVENTORY_WINDOW_TOPBAR_HEIGHT, Graphics.boxWidth / 2, Graphics.boxHeight - TEW.MENU.STATUS_WINDOW_TOPBAR_HEIGHT -
+        (fullHeight ? 0 : 2 * HalfWindow_DetailsCommand.MARGIN_Y - HalfWindow_DetailsCommand.TOTAL_HEIGHT));
+    this.width = Graphics.boxWidth / 2;
+    this._text = "";
+    this._lines = [];
+    this.activate();
+    this.refresh();
+};
+HalfWindow_DetailsScrollable.prototype.setActor = function (actor) {
+    if (this._actor !== actor) {
+        this._actor = actor;
+        this.refresh();
+    }
+};
+HalfWindow_DetailsScrollable.prototype.setText = function (text) {
+    if (this._text !== text) {
+        this._text = text;
+        this._lines = this.splitTextToLines(this._text, 0, 0, this.contentsWidth());
+        this.refresh();
+    }
+};
+HalfWindow_DetailsScrollable.prototype.maxItems = function () {
+    var _a, _b;
+    return (_b = (_a = this._lines) === null || _a === void 0 ? void 0 : _a.length) !== null && _b !== void 0 ? _b : 1;
+};
+HalfWindow_DetailsScrollable.prototype.isCursorVisible = function () {
+    return false;
+};
+HalfWindow_DetailsScrollable.prototype.drawLine = function (y) {
+    const lineWidth = 40;
+    const lineSize = 2;
+    this.contents.fillRect((this.contentsWidth() - lineWidth) / 2, y, lineWidth, lineSize, this.normalColor());
+};
+HalfWindow_DetailsScrollable.prototype.clear = function () {
+    if (this.contents) {
+        this.contents.clear();
+    }
+};
+HalfWindow_DetailsScrollable.prototype.itemHeight = function () {
+    return this.contents.fontSize * 1.2;
+};
+HalfWindow_DetailsScrollable.prototype.drawItem = function (index) {
+    console.log("Drawing line:", this._lines[index], "at index:", index);
+    const normalizedIndex = index - this.topIndex();
+    const y = normalizedIndex * this.itemHeight();
+    this.drawText(this._lines[index], 0, y, this.contentsWidth(), 'left');
+};
+HalfWindow_DetailsScrollable.prototype.cursorDown = function () { };
+HalfWindow_DetailsScrollable.prototype.cursorUp = function () { };
+HalfWindow_DetailsScrollable.prototype.cursorPagedown = function () { };
+HalfWindow_DetailsScrollable.prototype.cursorPageup = function () { };
+HalfWindow_DetailsScrollable.prototype.processWheel = function () {
+    if (this.visible) {
+        const threshold = 20;
+        if (TouchInput.wheelY >= threshold) {
+            this.scrollDown();
+        }
+        if (TouchInput.wheelY <= -threshold) {
+            this.scrollUp();
+        }
+    }
+};
+HalfWindow_DetailsScrollable.prototype.verticalBorderPadding = function () {
+    return Window_Selectable.prototype.verticalBorderPadding.call(this) + HalfWindow_DetailsScrollable.OFFSET_Y;
+};
+// #endregion =========================== HalfWindow_DetailsScrollable ============================== //
+// ============================== //
 // #region ============================== HalfWindow_List ============================== //
 //-----------------------------------------------------------------------------
 // HalfWindow_List
@@ -539,7 +687,10 @@ HalfWindow_List.prototype = Object.create(Window_Selectable.prototype);
 HalfWindow_List.prototype.constructor = HalfWindow_List;
 // Inializing the window
 HalfWindow_List.prototype.initialize = function () {
-    Window_Selectable.prototype.initialize.call(this, 0, TEW.MENU.INVENTORY_WINDOW_TOPBAR_HEIGHT, Graphics.boxWidth / 2, Graphics.boxHeight - TEW.MENU.INVENTORY_WINDOW_TOPBAR_HEIGHT);
+    Window_Selectable.prototype.initialize.call(this, 0, TEW.MENU.INVENTORY_WINDOW_TOPBAR_HEIGHT, Graphics.boxWidth / 2, Graphics.boxHeight
+        - TEW.MENU.STATUS_WINDOW_TOPBAR_HEIGHT
+        - 2 * HalfWindow_DetailsCommand.MARGIN_Y
+        - HalfWindow_DetailsCommand.TOTAL_HEIGHT);
     this._actor = null;
     this._maxItems = 0;
     this._leftPadding = 10;
@@ -659,6 +810,7 @@ Window_JournalEntry.prototype.constructor = Window_JournalEntry;
 Window_JournalEntry.prototype.initialize = function () {
     const dimensions = TEW.MENU.JOURNALS_CONTENT_AREA;
     Window_Base.prototype.initialize.call(this, dimensions.x, dimensions.y, dimensions.w, dimensions.h);
+    this._id = undefined;
     this._title = undefined;
     this._paragraphs = undefined;
     this._leftPageIndex = 0;
@@ -678,7 +830,7 @@ Window_JournalEntry.prototype.drawDetails = function () {
     // Format content or read from memory
     if (!this._formattedContent) {
         const text = this._paragraphs.map((p) => p.content).join('\n \n ');
-        this._formattedContent = this.cutTextIntoPages(text, 80, 590, 510); // TODO constants ?
+        this._formattedContent = this.cutTextIntoPages(text, 80, 0, 590, 510); // TODO constants ?
     }
     const displayedPages = [this._formattedContent[this._leftPageIndex]];
     if (this._formattedContent.length >= this._leftPageIndex + 2) {
@@ -690,7 +842,7 @@ Window_JournalEntry.prototype.drawDetails = function () {
         }
     }
 };
-Window_JournalEntry.prototype.cutTextIntoPages = function (text, firstPageYOffset, secondPageXOffset, width) {
+Window_JournalEntry.prototype.cutTextIntoPages = function (text, firstPageYOffset, firstPageXOffset, secondPageXOffset, width) {
     const words = text.split(" ");
     const spaceWidth = this.textWidth(" ");
     const lineHeight = this.contents.fontSize * 1.2;
@@ -704,7 +856,7 @@ Window_JournalEntry.prototype.cutTextIntoPages = function (text, firstPageYOffse
     let newlineXOffset = 0;
     let currentLine = "";
     let currentPage = {
-        x: 0,
+        x: firstPageXOffset,
         lines: [{
                 text: "",
                 y: firstPageYOffset
@@ -729,7 +881,7 @@ Window_JournalEntry.prototype.cutTextIntoPages = function (text, firstPageYOffse
             pages.push(JSON.parse(JSON.stringify(currentPage))); // deep clone
             pageNumber++;
             nbLines = 1;
-            newlineXOffset = (pageNumber % 2 === 0) ? secondPageXOffset : 0;
+            newlineXOffset = (pageNumber % 2 === 0) ? secondPageXOffset : firstPageXOffset;
             currentX = newlineXOffset;
             currentY = 0;
             currentLine = "";
@@ -759,15 +911,19 @@ Window_JournalEntry.prototype.update = function () {
     Window_Base.prototype.update.call(this);
     if (this.active) {
         if (Input.isRepeated('cancel') && this._cancelHandler) {
+            SoundManager.playCancel();
             this._cancelHandler();
+            Input.update();
         }
         else if (Input.isRepeated('right') && this._formattedContent.length > this._leftPageIndex + 2) {
             this._leftPageIndex += 2;
             this.refresh();
+            Input.update();
         }
         else if (Input.isRepeated('left') && this._leftPageIndex >= 2) {
             this._leftPageIndex -= 2;
             this.refresh();
+            Input.update();
         }
     }
 };
@@ -1512,42 +1668,6 @@ Window_InventoryHelp.prototype.refresh = function () {
 };
 // #endregion =========================== Window_InventoryHelp ============================== //
 // ============================== //
-// #region ============================== Window_GlossaryContentsTable ============================== //
-function Window_GlossaryContentsTable() {
-    this.initialize.apply(this, arguments);
-}
-Window_GlossaryContentsTable.prototype = Object.create(Window_Selectable.prototype);
-Window_GlossaryContentsTable.prototype.constructor = Window_GlossaryContentsTable;
-Window_GlossaryContentsTable.prototype.initialize = function (entries) {
-    const dimensions = TEW.MENU.JOURNALS_CONTENT_AREA;
-    this._entries = entries;
-    Window_Selectable.prototype.initialize.call(this, dimensions.x, dimensions.y, dimensions.w, dimensions.h);
-};
-Window_GlossaryContentsTable.prototype.refresh = function () {
-    this.contents.clear();
-    if (this._entries) {
-        this.drawAllItems();
-    }
-};
-Window_GlossaryContentsTable.prototype.drawItem = function (index) {
-    const normalizedIndex = index - this.topIndex();
-    const x = normalizedIndex % 2 === 0 ? 0 : 620;
-    const y = normalizedIndex * TEW.MENU.LINE_HEIGHT;
-    const entry = this._entries[index];
-    this.drawText(entry.title, x, y, TEW.MENU.JOURNALS_PAGE_CONTENT_AREA.w, 'left');
-};
-Window_GlossaryContentsTable.prototype.maxCols = () => 2;
-Window_GlossaryContentsTable.prototype.maxItems = function () {
-    return this._entries.length;
-};
-Window_GlossaryContentsTable.prototype.itemRect = function (index) {
-    const normalizedIndex = index - this.topIndex();
-    const x = normalizedIndex % 2 === 0 ? 0 : 620;
-    const y = normalizedIndex * TEW.MENU.LINE_HEIGHT;
-    return new Rectangle(x, y, 510, TEW.MENU.LINE_HEIGHT);
-};
-// #endregion =========================== Window_GlossaryContentsTable ============================== //
-// ============================== //
 // #region ============================== Window_GlossaryEntry ============================== //
 function Window_GlossaryEntry() {
     this.initialize.apply(this, arguments);
@@ -1557,6 +1677,12 @@ Window_GlossaryEntry.prototype = Object.create(Window_JournalEntry.prototype);
 Window_GlossaryEntry.prototype.constructor = Window_GlossaryEntry;
 Window_GlossaryEntry.prototype.initialize = function () {
     Window_JournalEntry.prototype.initialize.call(this);
+};
+Window_GlossaryEntry.prototype.reset = function (entry) {
+    this._id = entry.id;
+    this._title = entry.title;
+    this._paragraphs = entry.paragraphs;
+    this._formattedContent = undefined;
 };
 // #endregion =========================== Window_GlossaryEntry ============================== //
 // ============================== //
@@ -1666,6 +1792,161 @@ Window_QuestList.prototype.processOk = function () {
     this.expandSelectedQuest();
 };
 // #endregion =========================== Window_QuestList ============================== //
+// ============================== //
+// #region ============================== Window_TutorialEntry ============================== //
+function Window_TutorialEntry() {
+    this.initialize.apply(this, arguments);
+}
+;
+Window_TutorialEntry.prototype = Object.create(Window_JournalEntry.prototype);
+Window_TutorialEntry.prototype.constructor = Window_TutorialEntry;
+Window_TutorialEntry.prototype.initialize = function () {
+    Window_JournalEntry.prototype.initialize.call(this);
+};
+Window_TutorialEntry.prototype.reset = function (entry) {
+    this._id = entry.id;
+    this._title = entry.title;
+    this._paragraphs = entry.paragraphs;
+    this._formattedContent = undefined;
+};
+// TODO preload all images at once if laggy
+Window_TutorialEntry.prototype.drawDetails = function () {
+    // Title
+    if (this._leftPageIndex === 0) {
+        this.drawUnderlinedText(this._title, 0, 0, 510, "center");
+    }
+    // Pre-load all bitmaps
+    const images = this._paragraphs
+        .map((p) => p.image)
+        .filter((image) => image !== undefined);
+    for (let image of images) {
+        ImageManager.reserveTutorial(image, image);
+    }
+    const readyCheck = resolve => {
+        if (ImageManager.isReady())
+            resolve();
+        else
+            setTimeout(() => readyCheck(resolve), 100);
+    };
+    new Promise(readyCheck).then(() => {
+        // Format content or read from memory
+        if (!this._formattedContent) {
+            this._formattedContent = {
+                pages: [],
+                images: []
+            };
+            const lineHeight = this.contents.fontSize * 1.2;
+            // In case of a page with text + image + text, we need to fuse both text parts into a single formatted page
+            let currentPage = 0;
+            let fuseWithPreviousPage = false;
+            let nextBlockStartY = 80;
+            let text = "";
+            for (let i = 0; i < this._paragraphs.length; i++) {
+                const paragraph = this._paragraphs[i];
+                if (paragraph.content) {
+                    text += paragraph.content + "\n \n ";
+                }
+                // Cut a text block into pages, because we have an image to place or this is the last bit of content
+                if (paragraph.image || i === this._paragraphs.length - 1) {
+                    if (text.length) {
+                        const block = this.cutTextIntoPages(text, nextBlockStartY, currentPage % 2 * 590, (currentPage + 1) % 2 * 590, 510); // TODO constants ?
+                        // Page cut in two by image: we need to fuse both parts
+                        if (fuseWithPreviousPage) {
+                            fuseWithPreviousPage = false;
+                            const currentPageBottomPart = block.shift();
+                            this._formattedContent.pages[currentPage].lines =
+                                this._formattedContent.pages[currentPage].lines.concat(currentPageBottomPart.lines);
+                        }
+                        this._formattedContent.pages = this._formattedContent.pages.concat(block);
+                        // Find the Y offset of the last line to display the image under. Only one image per page in case of text.
+                        const lastPage = block[block.length - 1];
+                        nextBlockStartY = lastPage.lines[lastPage.lines.length - 1].y;
+                        currentPage += block.length - 1;
+                        text = "";
+                    }
+                    if (paragraph.image) {
+                        const previousPage = currentPage;
+                        const bitmap = ImageManager.loadTutorial(paragraph.image);
+                        // Next page if image is too tall to fit under the text
+                        if (nextBlockStartY + bitmap.rect.height > this.contentsHeight()) {
+                            nextBlockStartY = 0;
+                            currentPage += 1;
+                        }
+                        this._formattedContent.images.push({
+                            page: currentPage,
+                            y: nextBlockStartY,
+                            name: paragraph.image
+                        });
+                        nextBlockStartY += bitmap.rect.height + lineHeight;
+                        // Next page if we can't display text under the image
+                        if (nextBlockStartY + lineHeight > this.contentsHeight()) {
+                            nextBlockStartY = 0;
+                            currentPage += 1;
+                        }
+                        if (previousPage === currentPage) {
+                            fuseWithPreviousPage = true;
+                        }
+                    }
+                }
+            }
+        }
+        // Render formatted content
+        const displayedPages = [this._formattedContent.pages[this._leftPageIndex]];
+        if (this._formattedContent.pages.length >= this._leftPageIndex + 2) {
+            displayedPages.push(this._formattedContent.pages[this._leftPageIndex + 1]);
+        }
+        for (let page of displayedPages) {
+            for (let line of page.lines) {
+                this.drawText(line.text, page.x, line.y, 510, 'left');
+            }
+        }
+        const displayedImages = this._formattedContent.images.filter(image => image.page === this._leftPageIndex || image.page === this._leftPageIndex + 1);
+        for (let image of displayedImages) {
+            const bitmap = ImageManager.loadTutorial(image.name);
+            this.contents.blt(bitmap, 0, 0, bitmap.rect.width, bitmap.rect.height, image.page % 2 * 590, image.y);
+        }
+    });
+};
+Window_TutorialEntry.prototype.close = function () {
+    Window_JournalEntry.prototype.close.call(this);
+};
+// #endregion =========================== Window_TutorialEntry ============================== //
+// ============================== //
+// #region ============================== Window_JournalContentsTable ============================== //
+function Window_JournalContentsTable() {
+    this.initialize.apply(this, arguments);
+}
+Window_JournalContentsTable.prototype = Object.create(Window_Selectable.prototype);
+Window_JournalContentsTable.prototype.constructor = Window_JournalContentsTable;
+Window_JournalContentsTable.prototype.initialize = function (entries) {
+    const dimensions = TEW.MENU.JOURNALS_CONTENT_AREA;
+    this._entries = entries;
+    Window_Selectable.prototype.initialize.call(this, dimensions.x, dimensions.y, dimensions.w, dimensions.h);
+};
+Window_JournalContentsTable.prototype.refresh = function () {
+    this.contents.clear();
+    if (this._entries) {
+        this.drawAllItems();
+    }
+};
+Window_JournalContentsTable.prototype.drawItem = function (index) {
+    const normalizedIndex = index - this.topIndex();
+    const x = normalizedIndex % 2 === 0 ? 0 : 620;
+    const y = normalizedIndex * TEW.MENU.LINE_HEIGHT;
+    const entry = this._entries[index];
+    this.drawText(entry.title, x, y, TEW.MENU.JOURNALS_PAGE_CONTENT_AREA.w, 'left');
+};
+Window_JournalContentsTable.prototype.maxCols = () => 2;
+Window_JournalContentsTable.prototype.maxItems = function () {
+    return this._entries.length;
+};
+Window_JournalContentsTable.prototype.itemRect = function (index) {
+    const normalizedIndex = index - this.topIndex();
+    const x = normalizedIndex % 2 === 0 ? 0 : 620;
+    const y = normalizedIndex * TEW.MENU.LINE_HEIGHT;
+    return new Rectangle(x, y, 510, TEW.MENU.LINE_HEIGHT);
+};
+// #endregion =========================== Window_JournalContentsTable ============================== //
 // ============================== //
 // #region ============================== Window_Journals ============================== //
 function Window_Journals() {
@@ -2250,6 +2531,8 @@ Scene_Status.prototype.createTalentsWindow = function () {
 Scene_Status.prototype.createTalentDetailsWindow = function () {
     this._talentDetailsWindow = new Window_StatusTalentDetails();
     this._talentsWindow.setHandler('show_talent_description', () => {
+        // this._talentsWindow.deactivate();
+        // this._talentDetailWindow.activate();
         this.showTalentDetails();
     });
     this._talentDetailsWindow.hide();
@@ -2510,13 +2793,13 @@ Window_StatusSpells.prototype.processOk = function () {
 function Window_StatusTalentDetails() {
     this.initialize.apply(this, arguments);
 }
-Window_StatusTalentDetails.prototype = Object.create(HalfWindow_Details.prototype);
+Window_StatusTalentDetails.prototype = Object.create(HalfWindow_DetailsScrollable.prototype);
 Window_StatusTalentDetails.prototype.constructor = Window_StatusTalentDetails;
 /**
  * Constructor for the Window_StatusTalentDetails class.
  */
 Window_StatusTalentDetails.prototype.initialize = function () {
-    HalfWindow_Details.prototype.initialize.call(this, true);
+    HalfWindow_DetailsScrollable.prototype.initialize.call(this, true);
     this._talent = undefined;
 };
 /**
@@ -2536,8 +2819,16 @@ Window_StatusTalentDetails.prototype.empty = function () {
  * Draws the description of the selected talent.
  */
 Window_StatusTalentDetails.prototype.drawDetails = function (talent) {
-    this.drawWrappedTextManually(talent[1].description, 10, 0, 588 // 720 (Height) - 60 (2 * Padding) - 0 (Starting Y) - 68 (Top Bar Height)
-    );
+    console.log("Drawing talent details:", talent);
+    this.setText(talent[1].description);
+    console.log("talent description:", talent[1].description);
+    this.drawAllItems();
+    // this.drawWrappedTextManually(
+    //     talent[1].description,
+    //     10,
+    //     0,
+    //     588 // 720 (Height) - 60 (2 * Padding) - 0 (Starting Y) - 68 (Top Bar Height)
+    // );
 };
 // #endregion =========================== Window_StatusTalentDetails ============================== //
 // ============================== //
@@ -2943,6 +3234,34 @@ Window_Base.prototype.drawWrappedTextWordByWord = function (words, x, y, width) 
     });
     this.resetFontSettings();
 };
+Window_Base.prototype.splitTextToLines = function (text, x, y, maxWidth, fontSize = this.contents.fontSize) {
+    let currentX = x;
+    let currentY = y;
+    let startANewLine = false;
+    const spaceWidth = this.textWidth(" ");
+    const lineHeight = fontSize * 1.2;
+    const words = text.split(" ");
+    let currentLine = "";
+    const lines = [];
+    words.forEach(word => {
+        const wordWidth = this.textWidth(word.replace('\n', ''));
+        // If the word is too long, drawing it on the next line
+        if (currentX + wordWidth > maxWidth || startANewLine) {
+            currentX = x; // begining of the line
+            currentY += lineHeight; // next line
+            lines.push(currentLine.trim());
+            currentLine = "";
+        }
+        // Handling 
+
+        startANewLine = word.includes('\n');
+        // Adding the current line into the array
+        currentLine += word + " ";
+        currentX += wordWidth + spaceWidth;
+    });
+    lines.push(currentLine.trim());
+    return lines;
+};
 // Window_Base.prototype.drawText = function(text, x, y, maxWidth, align, lineHeight = this.lineHeight()) {
 //     this.contents.drawText(text, x, y, maxWidth, lineHeight, align);
 // };
@@ -3064,22 +3383,28 @@ HalfWindow_List.prototype.windowWidth = function () {
     return Graphics.boxWidth / 2;
 };
 HalfWindow_List.prototype.windowHeight = function () {
-    return 648; // total height - topbar height
+    return 440; // total height - topbar height - (3 commands window height + margins)
 };
 HalfWindow_List.prototype.backgroundImageName = function () {
-    return "bg_menuHalfWindow";
+    return "bg_menuHalfWindowList";
+};
+Window_StatusTalents.prototype.backgroundImageName = function () {
+    return "bg_menuHalfWindowFullHeight";
+};
+Window_StatusTalents.prototype.windowHeight = function () {
+    return Graphics.boxHeight - TEW.MENU.STATUS_WINDOW_TOPBAR_HEIGHT;
 };
 HalfWindow_Details.prototype.windowWidth = function () {
     return Graphics.boxWidth / 2;
 };
 HalfWindow_Details.prototype.windowHeight = function () {
-    return 440; // total height - topbar height - (3 commands window height + margins)
+    return 648; // total height - topbar height
 };
 HalfWindow_Details.prototype.backgroundImageName = function () {
-    return "bg_menuHalfWindowDetails3";
+    return "bg_menuHalfWindowFullHeight";
 };
 Window_StatusTalentDetails.prototype.backgroundImageName = function () {
-    return "bg_menuHalfWindow";
+    return "bg_menuHalfWindowFullHeight";
 };
 Window_StatusTalentDetails.prototype.windowHeight = function () {
     return Graphics.boxHeight - TEW.MENU.STATUS_WINDOW_TOPBAR_HEIGHT;

@@ -117,6 +117,38 @@ Window_Base.prototype.drawWrappedTextWordByWord = function(words: string[], x: n
     this.resetFontSettings();
 };
 
+Window_Base.prototype.splitTextToLines = function(text: string, x: number, y: number, maxWidth: number, fontSize = this.contents.fontSize): string[] {
+    let currentX = x;
+    let currentY = y;
+    let startANewLine = false;
+    const spaceWidth = this.textWidth(" ");
+    const lineHeight = fontSize * 1.2;
+    const words = text.split(" ");
+    let currentLine = "";
+    const lines: string[] = [];
+    
+    words.forEach(word => {
+        const wordWidth = this.textWidth(word.replace('\\n', ''));
+        // If the word is too long, drawing it on the next line
+        if (currentX + wordWidth > maxWidth || startANewLine) {
+            currentX = x; // begining of the line
+            currentY += lineHeight; // next line
+            lines.push(currentLine.trim());
+            currentLine = "";
+        }
+
+        // Handling \n
+        startANewLine = word.includes('\\n');
+
+        // Adding the current line into the array
+        currentLine += word + " ";
+        currentX += wordWidth + spaceWidth;
+    });
+    lines.push(currentLine.trim());
+
+    return lines;
+};
+
 // Window_Base.prototype.drawText = function(text, x, y, maxWidth, align, lineHeight = this.lineHeight()) {
 //     this.contents.drawText(text, x, y, maxWidth, lineHeight, align);
 // };

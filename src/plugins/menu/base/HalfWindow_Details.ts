@@ -34,9 +34,8 @@ HalfWindow_Details.prototype.initialize = function(fullHeight: boolean = false) 
         Graphics.boxWidth / 2,
         TEW.MENU.INVENTORY_WINDOW_TOPBAR_HEIGHT,
         Graphics.boxWidth / 2,
-        Graphics.boxHeight - TEW.MENU.STATUS_WINDOW_TOPBAR_HEIGHT -
-            (fullHeight ? 0 : 2 * HalfWindow_DetailsCommand.MARGIN_Y - HalfWindow_DetailsCommand.TOTAL_HEIGHT)
-        );
+        Graphics.boxHeight - TEW.MENU.INVENTORY_WINDOW_TOPBAR_HEIGHT
+    );
     this.width = Graphics.boxWidth / 2;
     this.activate();
     this.refresh();

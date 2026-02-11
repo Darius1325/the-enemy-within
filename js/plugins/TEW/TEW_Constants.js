@@ -1027,6 +1027,11 @@ TEW.DATABASE.COMPS.SET = {
         stat: "AGIL" /* Stat.AGIL */,
         isBase: false
     },
+    SWIM: {
+        name: "Swim",
+        stat: "STRG" /* Stat.STRG */,
+        isBase: false
+    },
     TRACK: {
         name: "Track",
         stat: "INIT" /* Stat.INIT */,
@@ -1089,6 +1094,11 @@ TEW.DATABASE.COMPS.SET = {
     },
     TRADE_GOLDSMITH: {
         name: "Trade (Goldsmith)",
+        stat: "DEXT" /* Stat.DEXT */,
+        isBase: false
+    },
+    TRADE_HERBALIST: {
+        name: "Trade (Herbalist)",
         stat: "DEXT" /* Stat.DEXT */,
         isBase: false
     },
@@ -5239,6 +5249,30 @@ TEW.DATABASE.TALENTS.ARRAY = Object.keys(TEW.DATABASE.TALENTS.SET)
     .map(talent => [talent, TEW.DATABASE.TALENTS.SET[talent]]);
 // #endregion === TALENTS ARRAY === //
 // #endregion =========================== TEW_Talents ============================== //
+// ============================== //
+// #region ============================== TEW_Tutorials ============================== //
+// #region ====== TUTORIALS === //
+TEW.DATABASE.TUTORIALS = [
+    {
+        id: 0,
+        title: "Debug map",
+        paragraphs: [
+            {
+                content: "The debug map is made for quick testing without the need to go through parts of the actual game."
+            },
+            {
+                content: "It is made with a tileset that has every possible combination of passability for a tile, plus some special tiles to highlight your debug events:"
+            },
+            {
+                image: "debug"
+            },
+            {
+                content: "This text is here to test if the tutorial entry correctly displays."
+            }
+        ]
+    }
+];
+// #endregion =========================== TEW_Tutorials ============================== //
 // ============================== //
 // #region ============================== TEW_Weapons ============================== //
 // ----------------------
