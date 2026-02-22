@@ -301,6 +301,7 @@ Scene_Journals.prototype.openJournal = function () {
 function Scene_Tutorials() {
     this.initialize.apply(this, arguments);
 }
+;
 Scene_Tutorials.prototype = Object.create(Scene_Base.prototype);
 Scene_Tutorials.prototype.constructor = Scene_Tutorials;
 Scene_Tutorials.prototype.initialize = function () {
@@ -1855,7 +1856,7 @@ Window_TutorialEntry.prototype.drawDetails = function () {
                             fuseWithPreviousPage = false;
                             const currentPageBottomPart = block.shift();
                             this._formattedContent.pages[currentPage].lines =
-                                this._formattedContent.pages[currentPage].lines.concat(currentPageBottomPart.lines);
+                                this._formattedContent.pages[currentPage].lines.concat(currentPageBottomPart === null || currentPageBottomPart === void 0 ? void 0 : currentPageBottomPart.lines);
                         }
                         this._formattedContent.pages = this._formattedContent.pages.concat(block);
                         // Find the Y offset of the last line to display the image under. Only one image per page in case of text.

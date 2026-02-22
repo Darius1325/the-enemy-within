@@ -1,5 +1,9 @@
 {
     "compilerOptions": {
+        "noImplicitAny": false,
+        "noImplicitThis": false,
+        "strictNullChecks": false,
+        "rootDir": ".",
         "outDir": "./dist",
         "target": "es2016"
     },

@@ -79,7 +79,7 @@ Window_TutorialEntry.prototype.drawDetails = function() {
                             fuseWithPreviousPage = false;
                             const currentPageBottomPart = block.shift();
                             this._formattedContent.pages[currentPage].lines =
-                                this._formattedContent.pages[currentPage].lines.concat(currentPageBottomPart.lines);
+                                this._formattedContent.pages[currentPage].lines.concat(currentPageBottomPart?.lines);
                         }
                         this._formattedContent.pages = this._formattedContent.pages.concat(block);
 

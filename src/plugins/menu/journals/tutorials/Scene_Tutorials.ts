@@ -3,7 +3,6 @@
 import TEW from '../../../_types/tew';
 import { Sprite } from "../../../../rmmv/core/Sprite";
 import Window_JournalContentsTable from "../Window_JournalContentsTable";
-import { Glossary } from '../../../_types/glossary';
 import { Tutorial } from '../../../_types/tutorial';
 import Window_TutorialEntry from './Window_TutorialEntry';
 
@@ -11,7 +10,7 @@ import Window_TutorialEntry from './Window_TutorialEntry';
 
 function Scene_Tutorials() {
     this.initialize.apply(this, arguments);
-}
+};
 
 export default Scene_Tutorials.prototype = Object.create(Scene_Base.prototype);
 Scene_Tutorials.prototype.constructor = Scene_Tutorials;
