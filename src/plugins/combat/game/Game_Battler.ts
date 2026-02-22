@@ -215,7 +215,6 @@ Game_Battler.prototype.makeMoves = function(displayTiles = true) {
         }
     }
     if (displayTiles) {
-        console.log("makeMoves - makeRange");
         this.makeRange();
     }
     // TODO should never happen
@@ -343,4 +342,9 @@ Game_Battler.prototype.onClear = function() {
         this.event().setTransparent(true);
         this.event().setThrough(true);
     }
+};
+
+Game_Battler.prototype.isAdjacentTo = function(target: { x: number, y: number }) {
+    return (Math.abs(this.x - target.x) === 1 && this.y === target.y)
+        || (Math.abs(this.y - target.y) === 1 && this.x === target.x);
 };

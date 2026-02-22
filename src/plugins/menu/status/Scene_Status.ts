@@ -173,7 +173,6 @@ Scene_Status.prototype.createCompsWindow = function() {
     });
     this._competencesWindow.setHandler('show_details', () => {
         const selectedComp = this._competencesWindow.competence();
-        console.log(selectedComp);
         if (selectedComp) {
             this._competenceDetailsWindow.setCompetence(selectedComp[1]);
         }

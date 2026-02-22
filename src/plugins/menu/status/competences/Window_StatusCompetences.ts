@@ -114,12 +114,6 @@ Window_StatusCompetences.prototype.competenceFromIndex = function(index: number)
         ? TEW.DATABASE.COMPS.BASE_ARRAY[index]
         : this._advancedCompsList[index - TEW.DATABASE.COMPS.BASE_ARRAY.length];
     const level = this._actor.compPlus(comp[0]);
-
-        console.log([comp[0], {
-        ...comp[1],
-        level,
-        value: level + this._actor.paramByName(comp[1].stat)
-    }]);
     return [comp[0], {
         ...comp[1],
         level,

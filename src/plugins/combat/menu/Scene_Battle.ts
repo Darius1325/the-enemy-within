@@ -64,7 +64,6 @@ Scene_Battle.prototype.createBackground = function() {
 };
 
 Scene_Battle.prototype.changeBackground = function(commandLevel = 0) {
-    console.log("background:" + commandLevel);
     this.removeChildAt(this.getChildIndex(this._background));
     this._background = new Sprite(ImageManager.loadSystem(
         commandLevel === 0 ? 'bg_battle' : ('bg_battle_command' + commandLevel)

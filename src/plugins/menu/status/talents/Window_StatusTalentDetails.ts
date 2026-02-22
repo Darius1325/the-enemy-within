@@ -50,9 +50,7 @@ Window_StatusTalentDetails.prototype.empty = function() {
  * Draws the description of the selected talent.
  */
 Window_StatusTalentDetails.prototype.drawDetails = function(talent: [string, Talent]) {
-    console.log("Drawing talent details:", talent);
     this.setText(talent[1].description);
-    console.log("talent description:", talent[1].description);
     this.drawAllItems();
 
     // this.drawWrappedTextManually(

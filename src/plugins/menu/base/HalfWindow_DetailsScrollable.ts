@@ -97,7 +97,6 @@ HalfWindow_DetailsScrollable.prototype.itemHeight = function(): number {
 
 
 HalfWindow_DetailsScrollable.prototype.drawItem = function(index: number) {
-    console.log("Drawing line:", this._lines[index], "at index:", index);
     const normalizedIndex = index - this.topIndex();
     const y = normalizedIndex * this.itemHeight();
 

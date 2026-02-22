@@ -11,9 +11,10 @@ import TEW from "../../_types/tew";
 // The game object class for a battle action.
 
 TEW.MEMORY.gameActionInit = Game_Action.prototype.initialize;
-Game_Action.prototype.initialize = function(subject, forcing) {
+Game_Action.prototype.initialize = function(subject, forcing, modifiers = {}) {
     TEW.MEMORY.gameActionInit.call(this, subject, forcing);
     this._moveRoute = 0;
+    this._modifiers = modifiers;
 };
 
 Game_Action.prototype.combatOpponentsUnit = function(battler) {
@@ -195,10 +196,11 @@ Game_Action.prototype.setSubject = function(subject) {
     }
 };
 
+Game_Action.prototype.attackRollModifier = function() {
+    return this._modifiers.attackRoll || 0;
+};
+
 Game_Action.prototype.apply = function(target) {
-    console.log("Game_Action.prototype.apply");
-    console.log("target, ", target);
-    console.log("this.subject(), ", this.subject());
     var result = target.result();
     this.subject().clearResult();
     result.clear();
@@ -238,7 +240,7 @@ Game_Action.prototype.apply = function(target) {
     
     // Roll dice
     const combatResult = TEW.DICE.combatOpposedSkillTest(
-        attackerCombatSkill.value + attackerWeaponEffects.attackMod,
+        attackerCombatSkill.value + attackerWeaponEffects.attackMod + this.attackRollModifier(),
         defenderCombatSkill.value + defenderWeaponEffects.defenceMod,
         true,
         false // GIGA TODO
@@ -282,13 +284,6 @@ Game_Action.prototype.apply = function(target) {
     const damage = combatResult.slAttacker - combatResult.slDefender
         + attackerWeapon.damage + (attackerWeapon.strBonus ? attacker.paramBonus(Stat.STRG) : 0)
         - target.paramBonus(Stat.TOUG);
-    console.log(
-        combatResult,
-        attackerWeapon.damage,
-        attackerWeapon.strBonus,
-        attacker.paramBonus(Stat.STRG),
-        target.paramBonus(Stat.TOUG)
-    );
 
     // TODO Lookup crit table (help me)
 

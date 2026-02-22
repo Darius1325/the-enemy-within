@@ -134,7 +134,6 @@ Game_Map.prototype.makeRange = function(distance: number, event: Game_CharacterB
 
 // Nota bene: "roundXWithDirection" and "roundYWithDirection" is the worst naming I've seen since Ta Mère SCRL
 Game_Map.prototype.exploreRange = function(distance: number, event: Game_CharacterBase, through: boolean) {
-    console.log("making range");
     if (through === undefined) {
         through = false;
     }
@@ -177,7 +176,6 @@ Game_Map.prototype.exploreRange = function(distance: number, event: Game_Charact
  *  - end on the same corner of the target's tile
  */
 Game_Map.prototype.chargeRange = function(distance: number, event: Game_CharacterBase, through: boolean) {
-    console.log("making charge range");
     if (through === undefined) {
         through = false;
     }

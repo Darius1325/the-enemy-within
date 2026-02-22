@@ -13,12 +13,15 @@ Game_BattlerBase.TPARAM = {
     'move': 0,
 };
 
+Game_BattlerBase.prototype.baseMove = function() {
+    return (Number(this.tparam('move')) || TEW.COMBAT.SYSTEM.mvp) * BattleManager.moveMultiplier;
+};
+
 Game_BattlerBase.prototype.move = function() {
-    let totalMove = (Number(this.tparam('move')) || TEW.COMBAT.SYSTEM.mvp) * BattleManager.moveMultiplier;
+    let totalMove = this.baseMove();
     if (!$gameMap._flexibleMovement) { // Charge command selected
-        totalMove += Math.floor(this.comp('ATHLETICS') / 10) + 2; // Easy athletism test max possible roll
+        totalMove += Math.floor(this.comp('ATHLETICS') / 10) + 2; // Easy athletics test max possible roll
     }
-    console.log("Game_BattlerBase.prototype.move : ", totalMove);
     return totalMove;
 };
 
@@ -74,9 +77,5 @@ Game_BattlerBase.prototype.waitSkillId = function() {
 };
 
 Game_BattlerBase.prototype.isDead = function() {
-    console.log('Character: ', this);
-    console.log('HP: ', this.hp);
-    console.log('Appeared? ', this.isAppeared());
-    console.log('Dead? ', this.isDeathStateAffected());
     return this.isAppeared() && this.isDeathStateAffected();
 };

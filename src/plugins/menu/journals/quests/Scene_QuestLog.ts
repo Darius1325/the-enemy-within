@@ -60,7 +60,6 @@ Scene_QuestLog.prototype.createQuestList = function() {
     this._windowQuestList.setHandler('cancel', this.popScene.bind(this));
     this._windowQuestList.setHandler('show_quest_details', () => {
         const details = this._windowQuestList.selectedQuestDetails();
-        console.log(details);
         this._windowQuestDetails._title = details.title;
         this._windowQuestDetails._paragraphs = details.paragraphs;
         this._windowQuestDetails.refresh();

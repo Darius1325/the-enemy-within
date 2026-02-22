@@ -216,6 +216,17 @@ const TEW: {
          */
         rollInitiative?: (actor: Game_Actor) => number;
 
+        skillTest?: (
+            actor: Game_Actor,
+            compId: string,
+            modifier?: number,
+            hidden?: boolean
+        ) => {
+            sl: number,
+            success: boolean,
+            critical: boolean
+        };
+
         combatOpposedSkillTest?: (
             compValueAttacker: number,
             compValueDefender: number,

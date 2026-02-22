@@ -22,12 +22,10 @@ Window_TacticsCommand.prototype.initialize = function() {
 };
 
 Window_TacticsCommand.prototype.activate = function() {
-    console.log('main window activation');
     Window_ActorCommand.prototype.activate.call(this);
 }
 
 Window_TacticsCommand.prototype.deactivate = function() {
-    console.log('main window deactivation');
     Window_ActorCommand.prototype.deactivate.call(this);
 }
 

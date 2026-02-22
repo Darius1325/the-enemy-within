@@ -1,5 +1,6 @@
 // $PluginCompiler TEW_Combat.js
 
+import TEW from "../../_types/tew";
 import Game_Battler from "./Game_Battler";
 import Game_Actor from "./Game_Actor";
 import { $gameSelfSwitches } from "../../../rmmv/variables";
@@ -422,10 +423,8 @@ BattleManager.startNewTurn = function() {
 }
 
 BattleManager.updateExplore = function() {
-    console.log("updateExplore");
     this.refreshSubject();
     if ($gameSelector.isMoving()) {
-        console.log("updateExplore - refreshMoveTiles");
         this.refreshMoveTiles();
     }
     var actor = $gameSelector.selectActor();
@@ -435,11 +434,9 @@ BattleManager.updateExplore = function() {
 };
 
 BattleManager.refreshMoveTiles = function() {
-    console.log("refreshMoveTiles");
     var select = $gameSelector.select();
     if (select) {
         $gameMap.setMoveColor();
-        console.log("refreshMoveTiles - makeMoves");
         select.makeMoves();
     } else {
         $gameMap.clearTiles();
@@ -479,18 +476,23 @@ BattleManager.updateChargeTarget = function() {
     const startY = this._subject.y;
     const targetX = $gameSelector.x;
     const targetY = $gameSelector.y;
-    this.refreshEnemyWindow($gameSelector.select());
+    this.refreshEnemyWindow($gameSelector.select()); // TODO change enemy window
     const action = new Game_Action(this._subject);
     action.setAttack();
     if ($gameSelector.selectTarget(action) >= 0) { // -1 if invalid target
         SoundManager.playOk();
         BattleManager.moveCount -= 1;
         BattleManager.actionCount -= 1;
-        // TODO limit path to actual movement range
-        // TODO select target using $gameTroopTs instead of $gameTroop
-        this._subject.moveAlongPredefinedPath(
-            $gameMap._straightPaths[`${startX},${startY}`][`${targetX},${targetY}`]
-        );
+
+        // TODO constant
+        // TODO handle crit fail?
+        const chargeTestResult = TEW.DICE.skillTest(this._subject, 'ATHLETICS', 20, !this._subject.isActor());
+        const maxMove = this._subject.baseMove() + chargeTestResult.sl;
+
+        const path = $gameMap._straightPaths[`${startX},${startY}`][`${targetX},${targetY}`]
+                .slice(0, maxMove);
+
+        this._subject.moveAlongPredefinedPath(path);
         $gameMap._flexibleMovement = true; // Go back to free movement range for next action
         this._battlePhase = BattlePhase.ProcessCharge;
         $gameMap.clearTiles();
@@ -502,7 +504,6 @@ BattleManager.updateChargeTarget = function() {
 };
 
 BattleManager.previousSelect = function() {
-    console.log("previousSelect");
     this._battlePhase = BattlePhase.InputCommand;
     // this._subject = null; // TODO wtf
     $gameSelector.updateSelect();
@@ -679,11 +680,15 @@ BattleManager.updateMove = function(forceAttackAfterMove = false) {
         if (!action || !action.isMove()){
             if (forceAttackAfterMove) {
                 // TODO better handling with processAction ?
-                const action = new Game_Action(this._subject);
+                // TODO constant
+                const action = new Game_Action(this._subject, false, { attackRoll: 10 });
                 action.setAttack();
                 const target = $gameSelector.select();
-                // TODO only if melee weapon + adjacent to target
-                action.apply(target);
+
+                // TODO melee weapon or hit unarmed
+                if (this._subject.isAdjacentTo($gameSelector)) {
+                    action.apply(target);
+                }
                 this.endAction();
             } else if (this.canInput() && this._subject.canInput() && this._subject.isActor()) {
                 this._battlePhase = BattlePhase.InputCommand;
@@ -962,7 +967,6 @@ BattleManager.processDefeat = function() {
 };
 
 BattleManager.endBattle = function(result) {
-    console.log("end battle");
     this.closeCommand();
     this._phase = Phase.BattleEnd;
     $gameMap.clearTiles();
@@ -1057,7 +1061,6 @@ BattleManager.gainDropItems = function() {
 
 BattleManager.updateBattleEnd = function() {
     if (!this._escaped && $gameParty.isAllDead() || TEW.COMBAT.SYSTEM.isDefeated) {
-        console.log("END OF BATTLE : YOU LOSE !");
         if (this._canLose) {
             $gameParty.reviveBattleMembers();
             SceneManager.pop();
@@ -1065,7 +1068,6 @@ BattleManager.updateBattleEnd = function() {
             SceneManager.goto(Scene_Gameover);
         }
     } else {
-        console.log("END OF BATTLE : YOU WIN !");
         SceneManager.pop();
     }
     this._phase = null;

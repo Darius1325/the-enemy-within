@@ -242,7 +242,6 @@ Scene_QuestLog.prototype.createQuestList = function () {
     this._windowQuestList.setHandler('cancel', this.popScene.bind(this));
     this._windowQuestList.setHandler('show_quest_details', () => {
         const details = this._windowQuestList.selectedQuestDetails();
-        console.log(details);
         this._windowQuestDetails._title = details.title;
         this._windowQuestDetails._paragraphs = details.paragraphs;
         this._windowQuestDetails.refresh();
@@ -651,7 +650,6 @@ HalfWindow_DetailsScrollable.prototype.itemHeight = function () {
     return this.contents.fontSize * 1.2;
 };
 HalfWindow_DetailsScrollable.prototype.drawItem = function (index) {
-    console.log("Drawing line:", this._lines[index], "at index:", index);
     const normalizedIndex = index - this.topIndex();
     const y = normalizedIndex * this.itemHeight();
     this.drawText(this._lines[index], 0, y, this.contentsWidth(), 'left');
@@ -2222,7 +2220,6 @@ Window_StatusCompetenceDetails.prototype.initialize = function () {
     this.refresh();
 };
 Window_StatusCompetenceDetails.prototype.setCompetence = function (comp) {
-    console.log(this._comp, comp);
     if (this._comp !== comp) {
         this._comp = comp;
         this.refresh();
@@ -2231,7 +2228,6 @@ Window_StatusCompetenceDetails.prototype.setCompetence = function (comp) {
 Window_StatusCompetenceDetails.prototype.refresh = function () {
     this.contents.clear();
     if (this._comp) {
-        console.log("window competence details drawing");
         this.drawDetails(this._comp);
     }
 };
@@ -2333,7 +2329,6 @@ Window_StatusCompetences.prototype.competenceFromIndex = function (index) {
         ? TEW.DATABASE.COMPS.BASE_ARRAY[index]
         : this._advancedCompsList[index - TEW.DATABASE.COMPS.BASE_ARRAY.length];
     const level = this._actor.compPlus(comp[0]);
-    console.log([comp[0], Object.assign(Object.assign({}, comp[1]), { level, value: level + this._actor.paramByName(comp[1].stat) })]);
     return [comp[0], Object.assign(Object.assign({}, comp[1]), { level, value: level + this._actor.paramByName(comp[1].stat) })];
 };
 Window_StatusCompetences.prototype.competence = function () {
@@ -2491,7 +2486,6 @@ Scene_Status.prototype.createCompsWindow = function () {
     });
     this._competencesWindow.setHandler('show_details', () => {
         const selectedComp = this._competencesWindow.competence();
-        console.log(selectedComp);
         if (selectedComp) {
             this._competenceDetailsWindow.setCompetence(selectedComp[1]);
         }
@@ -2820,9 +2814,7 @@ Window_StatusTalentDetails.prototype.empty = function () {
  * Draws the description of the selected talent.
  */
 Window_StatusTalentDetails.prototype.drawDetails = function (talent) {
-    console.log("Drawing talent details:", talent);
     this.setText(talent[1].description);
-    console.log("talent description:", talent[1].description);
     this.drawAllItems();
     // this.drawWrappedTextManually(
     //     talent[1].description,

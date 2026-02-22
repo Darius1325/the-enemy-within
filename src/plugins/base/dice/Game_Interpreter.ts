@@ -27,6 +27,32 @@ TEW.DICE.rollInitiative = function(actor: Game_Actor) {
     return TEW.DICE.roll(10) + TEW.DICE.bonus(actor.paramByName("INIT"));
 };
 
+TEW.DICE.skillTest = function(actor: Game_Actor, compId: string, modifier = 0, hidden = false) {
+    const compValue = actor.comp(compId) + modifier;
+
+    const roll = hidden ? TEW.DICE.roll() : TEW.DICE.displayDiceRoll();
+    let success = compValue >= roll;
+
+    let sl = Math.floor(compValue / 10) - Math.floor(roll / 10);
+
+    // Special rules : 5 or below is always a success, 96 or above is always a failure
+    if (roll <= 5) {
+        success = true;
+        sl = sl > 0 ? sl : 0;
+    } else if (roll >= 96) {
+        success = false;
+        sl = sl < 0 ? sl : 0;
+    }
+    const critical = roll % 11 === 0 || roll === 100;
+    console.log(`Skill test roll: ${roll} (SL: ${sl}, Success: ${success}, Critical: ${critical})`);
+
+    return {
+        sl,
+        success,
+        critical
+    }
+};
+
 Game_Interpreter.prototype.partySkillTest = function(compId: string, modifier: number, hidden = false) {
     const actorSkillBaseValues = [];
     // Select the best character for the job
@@ -98,11 +124,12 @@ Game_Interpreter.prototype.opposedSkillTest = function(compIdPlayer: string, mod
     let criticalNPC = rollNPC % 11 === 0 || rollNPC === 100;
 
     let success: boolean;
+    // GIGA TODO nothing is right
     if (successRollPlayer && criticalPlayer) {
         success = true;
     } else if (successRollNpc && criticalNPC) {
         success = false;
-    } else if (slPlayer > slNPC) {
+    } else if (successRollPlayer && slPlayer > slNPC) {
         success = true;
     } else if (slNPC > slPlayer) {
         success = false;
@@ -110,6 +137,9 @@ Game_Interpreter.prototype.opposedSkillTest = function(compIdPlayer: string, mod
         success = (maxPartySkill >= skillValueNPC);
     }
 
+    console.log(`Player roll: ${rollPlayer} (SL: ${slPlayer}, Critical: ${criticalPlayer})`);
+    console.log(`NPC roll: ${rollNPC} (SL: ${slNPC}, Critical: ${criticalNPC})`);
+    console.log(`Opposed test result: ${success ? "Player wins" : "NPC wins"}`);
     return {
         sl: slPlayer - slNPC,
         success,
@@ -168,6 +198,9 @@ TEW.DICE.combatOpposedSkillTest = function(
         success = (compValueAttacker >= compValueDefender);
     }
 
+    console.log(`Attacker roll: ${rollAttacker} (SL: ${slAttacker}, Critical: ${criticalAttacker})`);
+    console.log(`Defender roll: ${rollDefender} (SL: ${slDefender}, Critical: ${criticalDefender})`);
+    console.log(`Combat result: ${success ? "Attacker wins" : "Defender wins"}`);
     return {
         rollAttacker,
         rollDefender,

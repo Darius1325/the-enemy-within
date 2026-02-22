@@ -931,10 +931,8 @@ BattleManager.startNewTurn = function () {
     this._battlePhase = BattlePhase.Start;
 };
 BattleManager.updateExplore = function () {
-    console.log("updateExplore");
     this.refreshSubject();
     if ($gameSelector.isMoving()) {
-        console.log("updateExplore - refreshMoveTiles");
         this.refreshMoveTiles();
     }
     var actor = $gameSelector.selectActor();
@@ -943,11 +941,9 @@ BattleManager.updateExplore = function () {
     }
 };
 BattleManager.refreshMoveTiles = function () {
-    console.log("refreshMoveTiles");
     var select = $gameSelector.select();
     if (select) {
         $gameMap.setMoveColor();
-        console.log("refreshMoveTiles - makeMoves");
         select.makeMoves();
     }
     else {
@@ -985,16 +981,20 @@ BattleManager.updateChargeTarget = function () {
     const startY = this._subject.y;
     const targetX = $gameSelector.x;
     const targetY = $gameSelector.y;
-    this.refreshEnemyWindow($gameSelector.select());
+    this.refreshEnemyWindow($gameSelector.select()); // TODO change enemy window
     const action = new Game_Action(this._subject);
     action.setAttack();
     if ($gameSelector.selectTarget(action) >= 0) { // -1 if invalid target
         SoundManager.playOk();
         BattleManager.moveCount -= 1;
         BattleManager.actionCount -= 1;
-        // TODO limit path to actual movement range
-        // TODO select target using $gameTroopTs instead of $gameTroop
-        this._subject.moveAlongPredefinedPath($gameMap._straightPaths[`${startX},${startY}`][`${targetX},${targetY}`]);
+        // TODO constant
+        // TODO handle crit fail?
+        const chargeTestResult = TEW.DICE.skillTest(this._subject, 'ATHLETICS', 20, !this._subject.isActor());
+        const maxMove = this._subject.baseMove() + chargeTestResult.sl;
+        const path = $gameMap._straightPaths[`${startX},${startY}`][`${targetX},${targetY}`]
+            .slice(0, maxMove);
+        this._subject.moveAlongPredefinedPath(path);
         $gameMap._flexibleMovement = true; // Go back to free movement range for next action
         this._battlePhase = BattlePhase.ProcessCharge;
         $gameMap.clearTiles();
@@ -1005,7 +1005,6 @@ BattleManager.updateChargeTarget = function () {
     }
 };
 BattleManager.previousSelect = function () {
-    console.log("previousSelect");
     this._battlePhase = BattlePhase.InputCommand;
     // this._subject = null; // TODO wtf
     $gameSelector.updateSelect();
@@ -1169,11 +1168,14 @@ BattleManager.updateMove = function (forceAttackAfterMove = false) {
         if (!action || !action.isMove()) {
             if (forceAttackAfterMove) {
                 // TODO better handling with processAction ?
-                const action = new Game_Action(this._subject);
+                // TODO constant
+                const action = new Game_Action(this._subject, false, { attackRoll: 10 });
                 action.setAttack();
                 const target = $gameSelector.select();
-                // TODO only if melee weapon + adjacent to target
-                action.apply(target);
+                // TODO melee weapon or hit unarmed
+                if (this._subject.isAdjacentTo($gameSelector)) {
+                    action.apply(target);
+                }
                 this.endAction();
             }
             else if (this.canInput() && this._subject.canInput() && this._subject.isActor()) {
@@ -1435,7 +1437,6 @@ BattleManager.processDefeat = function () {
     this.endBattle(2);
 };
 BattleManager.endBattle = function (result) {
-    console.log("end battle");
     this.closeCommand();
     this._phase = Phase.BattleEnd;
     $gameMap.clearTiles();
@@ -1517,7 +1518,6 @@ BattleManager.gainDropItems = function () {
 };
 BattleManager.updateBattleEnd = function () {
     if (!this._escaped && $gameParty.isAllDead() || TEW.COMBAT.SYSTEM.isDefeated) {
-        console.log("END OF BATTLE : YOU LOSE !");
         if (this._canLose) {
             $gameParty.reviveBattleMembers();
             SceneManager.pop();
@@ -1527,7 +1527,6 @@ BattleManager.updateBattleEnd = function () {
         }
     }
     else {
-        console.log("END OF BATTLE : YOU WIN !");
         SceneManager.pop();
     }
     this._phase = null;
@@ -1544,7 +1543,6 @@ BattleManager.terminate = function () {
     $gamePlayer.refresh();
     $gamePartyTs.onBattleEnd();
     $gameTroopTs.onBattleEnd();
-    $gamePlayer.center($gamePlayer.x, $gamePlayer.y);
 };
 BattleManager.clear = function () {
     $gameSwitches.setValue(TEW.COMBAT.SYSTEM.battleStartId, false);
@@ -1573,9 +1571,10 @@ DataManager.createGameObjects = function () {
 //
 // The game object class for a battle action.
 TEW.MEMORY.gameActionInit = Game_Action.prototype.initialize;
-Game_Action.prototype.initialize = function (subject, forcing) {
+Game_Action.prototype.initialize = function (subject, forcing, modifiers = {}) {
     TEW.MEMORY.gameActionInit.call(this, subject, forcing);
     this._moveRoute = 0;
+    this._modifiers = modifiers;
 };
 Game_Action.prototype.combatOpponentsUnit = function (battler) {
     var units = battler.opponentsUnitTS().aliveMembers();
@@ -1737,10 +1736,10 @@ Game_Action.prototype.setSubject = function (subject) {
         }
     }
 };
+Game_Action.prototype.attackRollModifier = function () {
+    return this._modifiers.attackRoll || 0;
+};
 Game_Action.prototype.apply = function (target) {
-    console.log("Game_Action.prototype.apply");
-    console.log("target, ", target);
-    console.log("this.subject(), ", this.subject());
     var result = target.result();
     this.subject().clearResult();
     result.clear();
@@ -1765,7 +1764,7 @@ Game_Action.prototype.apply = function (target) {
     // TODO Check sizes
     // TODO Check outnumberment
     // Roll dice
-    const combatResult = TEW.DICE.combatOpposedSkillTest(attackerCombatSkill.value + attackerWeaponEffects.attackMod, defenderCombatSkill.value + defenderWeaponEffects.defenceMod, true, false // GIGA TODO
+    const combatResult = TEW.DICE.combatOpposedSkillTest(attackerCombatSkill.value + attackerWeaponEffects.attackMod + this.attackRollModifier(), defenderCombatSkill.value + defenderWeaponEffects.defenceMod, true, false // GIGA TODO
     );
     // Special weapon quality checks
     // Impale
@@ -1800,7 +1799,6 @@ Game_Action.prototype.apply = function (target) {
     const damage = combatResult.slAttacker - combatResult.slDefender
         + attackerWeapon.damage + (attackerWeapon.strBonus ? attacker.paramBonus("STRG" /* Stat.STRG */) : 0)
         - target.paramBonus("TOUG" /* Stat.TOUG */);
-    console.log(combatResult, attackerWeapon.damage, attackerWeapon.strBonus, attacker.paramBonus("STRG" /* Stat.STRG */), target.paramBonus("TOUG" /* Stat.TOUG */));
     // TODO Lookup crit table (help me)
     if (result.isHit) {
         if (this.item().damage.type > 0) {
@@ -2181,7 +2179,6 @@ Game_Battler.prototype.makeMoves = function (displayTiles = true) {
         }
     }
     if (displayTiles) {
-        console.log("makeMoves - makeRange");
         this.makeRange();
     }
     // TODO should never happen
@@ -2296,6 +2293,10 @@ Game_Battler.prototype.onClear = function () {
         this.event().setThrough(true);
     }
 };
+Game_Battler.prototype.isAdjacentTo = function (target) {
+    return (Math.abs(this.x - target.x) === 1 && this.y === target.y)
+        || (Math.abs(this.y - target.y) === 1 && this.x === target.x);
+};
 
 // #endregion =========================== Game_Battler ============================== //
 // ============================== //
@@ -2308,12 +2309,14 @@ Game_BattlerBase.TRAIT_TPARAM = 71;
 Game_BattlerBase.TPARAM = {
     'move': 0,
 };
+Game_BattlerBase.prototype.baseMove = function () {
+    return (Number(this.tparam('move')) || TEW.COMBAT.SYSTEM.mvp) * BattleManager.moveMultiplier;
+};
 Game_BattlerBase.prototype.move = function () {
-    let totalMove = (Number(this.tparam('move')) || TEW.COMBAT.SYSTEM.mvp) * BattleManager.moveMultiplier;
+    let totalMove = this.baseMove();
     if (!$gameMap._flexibleMovement) { // Charge command selected
-        totalMove += Math.floor(this.comp('ATHLETICS') / 10) + 2; // Easy athletism test max possible roll
+        totalMove += Math.floor(this.comp('ATHLETICS') / 10) + 2; // Easy athletics test max possible roll
     }
-    console.log("Game_BattlerBase.prototype.move : ", totalMove);
     return totalMove;
 };
 Game_BattlerBase.prototype.tparamCode = function (tparam) {
@@ -2362,10 +2365,6 @@ Game_BattlerBase.prototype.waitSkillId = function () {
     return TEW.COMBAT.SYSTEM.waitSkillId;
 };
 Game_BattlerBase.prototype.isDead = function () {
-    console.log('Character: ', this);
-    console.log('HP: ', this.hp);
-    console.log('Appeared? ', this.isAppeared());
-    console.log('Dead? ', this.isDeathStateAffected());
     return this.isAppeared() && this.isDeathStateAffected();
 };
 
@@ -2697,7 +2696,6 @@ Game_Map.prototype.makeRange = function (distance, event, through) {
 };
 // Nota bene: "roundXWithDirection" and "roundYWithDirection" is the worst naming I've seen since Ta Mère SCRL
 Game_Map.prototype.exploreRange = function (distance, event, through) {
-    console.log("making range");
     if (through === undefined) {
         through = false;
     }
@@ -2737,7 +2735,6 @@ Game_Map.prototype.exploreRange = function (distance, event, through) {
  *  - end on the same corner of the target's tile
  */
 Game_Map.prototype.chargeRange = function (distance, event, through) {
-    console.log("making charge range");
     if (through === undefined) {
         through = false;
     }
@@ -4313,7 +4310,6 @@ Scene_Battle.prototype.createBackground = function () {
     this.addChildAt(this._background, this.getChildIndex(this._windowLayer));
 };
 Scene_Battle.prototype.changeBackground = function (commandLevel = 0) {
-    console.log("background:" + commandLevel);
     this.removeChildAt(this.getChildIndex(this._background));
     this._background = new Sprite(ImageManager.loadSystem(commandLevel === 0 ? 'bg_battle' : ('bg_battle_command' + commandLevel)));
     this.addChildAt(this._background, this.getChildIndex(this._windowLayer));
@@ -5223,11 +5219,9 @@ Window_TacticsCommand.prototype.initialize = function () {
     this._actor = null;
 };
 Window_TacticsCommand.prototype.activate = function () {
-    console.log('main window activation');
     Window_ActorCommand.prototype.activate.call(this);
 };
 Window_TacticsCommand.prototype.deactivate = function () {
-    console.log('main window deactivation');
     Window_ActorCommand.prototype.deactivate.call(this);
 };
 Window_TacticsCommand.prototype.setup = function (actor) {

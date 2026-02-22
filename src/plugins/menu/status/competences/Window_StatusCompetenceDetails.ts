@@ -19,7 +19,6 @@ Window_StatusCompetenceDetails.prototype.initialize = function() {
 };
 
 Window_StatusCompetenceDetails.prototype.setCompetence = function(comp: Competence & { level: number }) {
-    console.log(this._comp, comp);
     if (this._comp !== comp) {
         this._comp = comp;
         this.refresh();
@@ -29,7 +28,6 @@ Window_StatusCompetenceDetails.prototype.setCompetence = function(comp: Competen
 Window_StatusCompetenceDetails.prototype.refresh = function() {
     this.contents.clear();
     if (this._comp) {
-        console.log("window competence details drawing");
         this.drawDetails(this._comp);
     }
 };
