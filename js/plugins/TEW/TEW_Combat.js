@@ -746,7 +746,6 @@ BattleManager.makeEscapeRatio = function () {
     this._escapeRatio = 0.5 * $gameParty.agility() / $gameTroop.agility();
 };
 BattleManager.update = function () {
-    // console.log("BattleManager.update + phase :", this._phase);
     if (!this.isBusy() && !this.updateEvent()) {
         switch (this._phase) {
             case Phase.Start:
@@ -811,14 +810,15 @@ BattleManager.isBusy = function () {
         this._logWindow.isBusy() || $gameSelector.isBusy());
 };
 BattleManager.updateEvent = function () {
-    $gameSwitches.update();
-    $gameVariables.update();
-    if (this.isActionForced()) {
-        this.processForcedAction();
-        return true;
-    }
-    else {
-        return this.updateEventMain();
+    switch (this._phase) {
+        case Phase.Start:
+        case Phase.Battlers:
+            $gameSwitches.update();
+            $gameVariables.update();
+            return this.updateEventMain();
+        case Phase.BattleEnd:
+        default:
+            return false;
     }
 };
 BattleManager.isActionForced = function () {
@@ -1435,6 +1435,7 @@ BattleManager.processDefeat = function () {
     this.endBattle(2);
 };
 BattleManager.endBattle = function (result) {
+    console.log("end battle");
     this.closeCommand();
     this._phase = Phase.BattleEnd;
     $gameMap.clearTiles();
@@ -1543,6 +1544,7 @@ BattleManager.terminate = function () {
     $gamePlayer.refresh();
     $gamePartyTs.onBattleEnd();
     $gameTroopTs.onBattleEnd();
+    $gamePlayer.center($gamePlayer.x, $gamePlayer.y);
 };
 BattleManager.clear = function () {
     $gameSwitches.setValue(TEW.COMBAT.SYSTEM.battleStartId, false);
@@ -1985,6 +1987,16 @@ Game_Actor.prototype.onActionEnd = function () {
     Game_Battler.prototype.onActionEnd.call(this);
     this.event().setStepAnime(true);
 };
+// TODO this is RMMV base implem, we need to change KO/death handling
+Game_Actor.prototype.refresh = function () {
+    Game_BattlerBase.prototype.refresh.call(this);
+    if (this.hp === 0) {
+        this.addState(this.deathStateId());
+    }
+    else {
+        this.removeState(this.deathStateId());
+    }
+};
 
 // #endregion =========================== Game_Actor ============================== //
 // ============================== //
@@ -2349,6 +2361,13 @@ Game_BattlerBase.prototype.isOccasionOk = function (item) {
 Game_BattlerBase.prototype.waitSkillId = function () {
     return TEW.COMBAT.SYSTEM.waitSkillId;
 };
+Game_BattlerBase.prototype.isDead = function () {
+    console.log('Character: ', this);
+    console.log('HP: ', this.hp);
+    console.log('Appeared? ', this.isAppeared());
+    console.log('Dead? ', this.isDeathStateAffected());
+    return this.isAppeared() && this.isDeathStateAffected();
+};
 
 // #endregion =========================== Game_BattlerBase ============================== //
 // ============================== //
@@ -2488,10 +2507,9 @@ Game_Enemy.prototype.getAI = function () {
     const aiId = this.tparam('AI') || 'DEFAULT';
     return TEW.DATABASE.NPCS.AI[aiId];
 };
-// TODO this is RMMV base implem, we need to change KO/death handling
-Game_Battler.prototype.refresh = function () {
+Game_Enemy.prototype.refresh = function () {
     Game_BattlerBase.prototype.refresh.call(this);
-    if (this.hp === 0) {
+    if (this.hp <= 0) {
         this.addState(this.deathStateId());
     }
     else {

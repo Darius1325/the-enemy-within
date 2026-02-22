@@ -34,7 +34,7 @@ TEW.DATABASE.NPCS.SET = {
             WILL: 29, 
             FELW: 52
         },
-        wounds: 13,
+        wounds: 2, // 13
         move: 4,
         status: Status.SILVER_2,
         comps: {

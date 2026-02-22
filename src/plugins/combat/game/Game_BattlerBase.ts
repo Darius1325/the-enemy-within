@@ -72,3 +72,11 @@ Game_BattlerBase.prototype.isOccasionOk = function(item) {
 Game_BattlerBase.prototype.waitSkillId = function() {
     return TEW.COMBAT.SYSTEM.waitSkillId;
 };
+
+Game_BattlerBase.prototype.isDead = function() {
+    console.log('Character: ', this);
+    console.log('HP: ', this.hp);
+    console.log('Appeared? ', this.isAppeared());
+    console.log('Dead? ', this.isDeathStateAffected());
+    return this.isAppeared() && this.isDeathStateAffected();
+};

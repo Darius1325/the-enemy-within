@@ -177,3 +177,13 @@ Game_Actor.prototype.onActionEnd = function() {
     Game_Battler.prototype.onActionEnd.call(this);
     this.event().setStepAnime(true);
 };
+
+// TODO this is RMMV base implem, we need to change KO/death handling
+Game_Actor.prototype.refresh = function() {
+    Game_BattlerBase.prototype.refresh.call(this);
+    if (this.hp === 0) {
+        this.addState(this.deathStateId());
+    } else {
+        this.removeState(this.deathStateId());
+    }
+};

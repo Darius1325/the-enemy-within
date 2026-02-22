@@ -119,10 +119,9 @@ Game_Enemy.prototype.getAI = function() {
     return TEW.DATABASE.NPCS.AI[aiId];
 }
 
-// TODO this is RMMV base implem, we need to change KO/death handling
-Game_Battler.prototype.refresh = function() {
+Game_Enemy.prototype.refresh = function() {
     Game_BattlerBase.prototype.refresh.call(this);
-    if (this.hp === 0) {
+    if (this.hp <= 0) {
         this.addState(this.deathStateId());
     } else {
         this.removeState(this.deathStateId());

@@ -147,7 +147,7 @@ TEW.DICE.combatOpposedSkillTest = function(
         successRollDefender = true;
         slDefender = slDefender > 0 ? slDefender : 0;
     } else if (rollDefender >= 96) {
-        successRollDefender = true;
+        successRollDefender = false;
         slDefender = slDefender < 0 ? slDefender : 0;
     }
 
@@ -155,11 +155,12 @@ TEW.DICE.combatOpposedSkillTest = function(
     let criticalDefender = rollDefender % 11 === 0 || rollDefender === 100;
 
     let success: boolean;
+    // GIGA TODO nothing is right
     if (successRollAttacker && criticalAttacker) {
         success = true;
     } else if (successRollDefender && criticalDefender) {
         success = false;
-    } else if (slAttacker > slDefender) {
+    } else if (successRollAttacker && slAttacker > slDefender) {
         success = true;
     } else if (slDefender > slAttacker) {
         success = false;

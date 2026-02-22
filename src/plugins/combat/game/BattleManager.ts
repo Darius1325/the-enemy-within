@@ -205,7 +205,6 @@ BattleManager.makeEscapeRatio = function() {
 };
 
 BattleManager.update = function() {
-    // console.log("BattleManager.update + phase :", this._phase);
     if (!this.isBusy() && !this.updateEvent()) {
         switch (this._phase) {
             case Phase.Start:
@@ -274,13 +273,15 @@ BattleManager.isBusy = function() {
 };
 
 BattleManager.updateEvent = function() {
-    $gameSwitches.update();
-    $gameVariables.update();
-    if (this.isActionForced()) {
-        this.processForcedAction();
-        return true;
-    } else {
-        return this.updateEventMain();
+    switch (this._phase) {
+        case Phase.Start:
+        case Phase.Battlers:
+            $gameSwitches.update();
+            $gameVariables.update();
+            return this.updateEventMain();
+        case Phase.BattleEnd:
+        default:
+            return false;
     }
 };
 
@@ -961,6 +962,7 @@ BattleManager.processDefeat = function() {
 };
 
 BattleManager.endBattle = function(result) {
+    console.log("end battle");
     this.closeCommand();
     this._phase = Phase.BattleEnd;
     $gameMap.clearTiles();
