@@ -478,18 +478,31 @@ Game_Actor.prototype.initTEW = function (actorId) {
 // Initialization function for Cecile
 Game_Actor.prototype.initCecile = function () {
     // Set base parameters for Cecile
+    // this._paramBase = [
+    //     0, // MHP (13)
+    //     37, // WEAS
+    //     28, // BALS
+    //     35, // STRG
+    //     37, // TOUG
+    //     27, // INIT
+    //     22, // AGIL
+    //     33, // DEXT
+    //     29, // INTL
+    //     40, // WILL
+    //     28  // FELW
+    // ];
     this._paramBase = [
         0, // MHP (13)
-        37, // WEAS
-        28, // BALS
-        35, // STRG
-        37, // TOUG
-        27, // INIT
-        22, // AGIL
-        33, // DEXT
-        29, // INTL
-        40, // WILL
-        28 // FELW
+        110, // WEAS
+        110, // BALS
+        110, // STRG
+        110, // TOUG
+        130, // INIT
+        110, // AGIL
+        110, // DEXT
+        110, // INTL
+        110, // WILL
+        110 // FELW
     ];
     this._paramBase[0] = this.calculateMHP();
     // Fate / Resilience
@@ -545,7 +558,7 @@ Game_Actor.prototype.initCheplu = function () {
         37, // BALS
         28, // STRG
         31, // TOUG
-        36, // INIT
+        450, // INIT // 36
         32, // AGIL
         43, // DEXT
         41, // INTL

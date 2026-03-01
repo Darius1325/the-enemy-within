@@ -472,6 +472,9 @@ BattleManager.updateSelect = function() {
 };
 
 BattleManager.updateChargeTarget = function() {
+    // console.log("Game troop: ", $gameTroop);
+    // console.log("Game troop overload: ", $gameTroopTs);
+
     const startX = this._subject.x;
     const startY = this._subject.y;
     const targetX = $gameSelector.x;

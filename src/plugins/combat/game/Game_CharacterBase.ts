@@ -17,11 +17,11 @@ Game_CharacterBase.prototype.isActor = function() {
 
 TEW.MEMORY.gameCharacterBaseIsCollidedWithEvents = Game_CharacterBase.prototype.isCollidedWithEvents;
 Game_CharacterBase.prototype.isCollidedWithEvents = function(x, y) {
-    // for an actor to pass through an actor
+    // actors cannot pass through other actors (this is real life)
     if (this.isActor()) {
         var events = $gameMap.eventsXyNt(x, y);
         return events.some(function(event) {
-            return event.isNormalPriority() && !event.isActor();
+            return event.isNormalPriority();
         });
     } else {
         return TEW.MEMORY.gameCharacterBaseIsCollidedWithEvents.call(this, x, y);

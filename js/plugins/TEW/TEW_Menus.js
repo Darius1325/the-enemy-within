@@ -9,11 +9,11 @@ TEW.MENU = TEW.MENU || {};
 // #endregion =========================== Scene_Equip ============================== //
 // ============================== //
 // #region ============================== ImageManager ============================== //
-ImageManager.reserveTutorial = function (filename, reservationId) {
-    return this.reserveBitmap('img/tutorials/', filename, 0, true, reservationId);
+ImageManager.reserveImage = function (folder, filename, reservationId) {
+    return this.reserveBitmap('img/' + folder + '/', filename, 0, true, reservationId);
 };
-ImageManager.loadTutorial = function (filename) {
-    return this.loadBitmap('img/tutorials/', filename, 0, true);
+ImageManager.loadImage = function (folder, filename) {
+    return this.loadBitmap('img/' + folder + '/', filename, 0, true);
 };
 // #endregion =========================== ImageManager ============================== //
 // ============================== //
@@ -133,6 +133,63 @@ Object.defineProperties(TextManager, {
     inventoryTransferTo5: TextManager.getter('command', 91),
 });
 // #endregion =========================== properties ============================== //
+// ============================== //
+// #region ============================== Scene_Characters ============================== //
+function Scene_Characters() {
+    this.initialize.apply(this, arguments);
+}
+;
+Scene_Characters.prototype = Object.create(Scene_Base.prototype);
+Scene_Characters.prototype.constructor = Scene_Characters;
+Scene_Characters.prototype.initialize = function () {
+    Scene_Base.prototype.initialize.call(this);
+    this.createWindowLayer();
+    this.fetchEntries();
+};
+Scene_Characters.prototype.fetchEntries = function () {
+    this._entries = TEW.DATABASE.CHARACTER_DESCRIPTIONS;
+};
+Scene_Characters.prototype.create = function () {
+    Scene_Base.prototype.create.call(this);
+    this.addFullscreenBackground();
+    this.createEntryWindow();
+    this.createContentsTable();
+};
+Scene_Characters.prototype.addFullscreenBackground = function () {
+    this._background = new Sprite(ImageManager.loadSystem('bg_characters'));
+    this.addChildAt(this._background, this.getChildIndex(this._windowLayer));
+};
+Scene_Characters.prototype.createEntryWindow = function () {
+    this._windowEntryDetails = new Window_CharacterEntry();
+    this._windowEntryDetails._cancelHandler = () => {
+        this._windowEntryDetails.hide();
+        this._windowEntryDetails.deactivate();
+        this._windowContentsTable.show();
+        this._windowContentsTable.activate();
+    };
+    this.addWindow(this._windowEntryDetails);
+};
+Scene_Characters.prototype.createContentsTable = function () {
+    this._windowContentsTable = new Window_JournalContentsTable(this._entries);
+    this._windowContentsTable.setHandler('cancel', this.popScene.bind(this));
+    this._windowContentsTable.setHandler('ok', () => {
+        const selectedEntry = this._entries[this._windowContentsTable.index()];
+        if (this._windowEntryDetails._id !== selectedEntry.id) {
+            this._windowEntryDetails.reset(selectedEntry);
+        }
+        this._windowContentsTable.deactivate();
+        this._windowContentsTable.hide();
+        this._windowEntryDetails.show();
+        this._windowEntryDetails.activate();
+        this._windowEntryDetails.refresh();
+    });
+    this.addWindow(this._windowContentsTable);
+    this._windowContentsTable.show();
+    this._windowContentsTable.activate();
+    this._windowContentsTable.refresh();
+    this._windowContentsTable.select(0);
+};
+// #endregion =========================== Scene_Characters ============================== //
 // ============================== //
 // #region ============================== Scene_Glossary ============================== //
 function Scene_Glossary() {
@@ -285,6 +342,7 @@ Scene_Journals.prototype.openJournal = function () {
         case "journal_documents":
             break;
         case "journal_characters":
+            SceneManager.push(Scene_Characters);
             break;
         case "journal_glossary":
             SceneManager.push(Scene_Glossary);
@@ -942,6 +1000,124 @@ Window_JournalPage.prototype.maxItems = function () {
     return this._items.length;
 };
 // #endregion =========================== Window_JournalPage ============================== //
+// ============================== //
+// #region ============================== Window_JournalPrettyEntry ============================== //
+function Window_JournalPrettyEntry() {
+    this.initialize.apply(this, arguments);
+}
+;
+Window_JournalPrettyEntry.prototype = Object.create(Window_JournalEntry.prototype);
+Window_JournalPrettyEntry.prototype.constructor = Window_JournalPrettyEntry;
+Window_JournalPrettyEntry.prototype.initialize = function () {
+    Window_JournalEntry.prototype.initialize.call(this);
+};
+// TODO preload all images at once if laggy
+Window_JournalPrettyEntry.prototype.drawDetails = function () {
+    // Title
+    if (this._leftPageIndex === 0) {
+        this.drawUnderlinedText(this._title, 0, 0, 510, "center");
+    }
+    // Pre-load all bitmaps
+    const images = this._paragraphs
+        .map((p) => p.image)
+        .filter((image) => image !== undefined);
+    for (let image of images) {
+        this.reserveImage(image);
+    }
+    const readyCheck = resolve => {
+        if (ImageManager.isReady())
+            resolve();
+        else
+            setTimeout(() => readyCheck(resolve), 100);
+    };
+    new Promise(readyCheck).then(() => {
+        // Format content or read from memory
+        if (!this._formattedContent) {
+            this._formattedContent = {
+                pages: [],
+                images: []
+            };
+            const lineHeight = this.contents.fontSize * 1.2;
+            // In case of a page with text + image + text, we need to fuse both text parts into a single formatted page
+            let currentPage = 0;
+            let fuseWithPreviousPage = false;
+            let nextBlockStartY = 80;
+            let text = "";
+            for (let i = 0; i < this._paragraphs.length; i++) {
+                const paragraph = this._paragraphs[i];
+                if (paragraph.content) {
+                    text += paragraph.content + "\n \n ";
+                }
+                // Cut a text block into pages, because we have an image to place or this is the last bit of content
+                if (paragraph.image || i === this._paragraphs.length - 1) {
+                    if (text.length) {
+                        const block = this.cutTextIntoPages(text, nextBlockStartY, currentPage % 2 * 590, (currentPage + 1) % 2 * 590, 510); // TODO constants ?
+                        // Page cut in two by image: we need to fuse both parts
+                        if (fuseWithPreviousPage) {
+                            fuseWithPreviousPage = false;
+                            const currentPageBottomPart = block.shift();
+                            if (this._formattedContent.pages[currentPage]) {
+                                this._formattedContent.pages[currentPage].lines =
+                                    this._formattedContent.pages[currentPage].lines.concat(currentPageBottomPart === null || currentPageBottomPart === void 0 ? void 0 : currentPageBottomPart.lines);
+                            }
+                            else {
+                                this._formattedContent.pages.push(currentPageBottomPart);
+                            }
+                        }
+                        this._formattedContent.pages = this._formattedContent.pages.concat(block);
+                        // Find the Y offset of the last line to display the image under. Only one image per page in case of text.
+                        const lastPage = block[block.length - 1];
+                        nextBlockStartY = lastPage.lines[lastPage.lines.length - 1].y;
+                        currentPage += block.length - 1;
+                        text = "";
+                    }
+                    if (paragraph.image) {
+                        const previousPage = currentPage;
+                        const bitmap = this.loadImage(paragraph.image);
+                        // Next page if image is too tall to fit under the text
+                        if (nextBlockStartY + bitmap.rect.height > this.contentsHeight()) {
+                            nextBlockStartY = 0;
+                            currentPage += 1;
+                        }
+                        this._formattedContent.images.push({
+                            page: currentPage,
+                            y: nextBlockStartY,
+                            name: paragraph.image
+                        });
+                        nextBlockStartY += bitmap.rect.height + lineHeight;
+                        // Next page if we can't display text under the image
+                        if (nextBlockStartY + lineHeight > this.contentsHeight()) {
+                            nextBlockStartY = 0;
+                            currentPage += 1;
+                        }
+                        if (previousPage === currentPage) {
+                            fuseWithPreviousPage = true;
+                        }
+                    }
+                }
+            }
+        }
+        // Render formatted content
+        const displayedPages = [this._formattedContent.pages[this._leftPageIndex]];
+        if (this._formattedContent.pages.length >= this._leftPageIndex + 2) {
+            displayedPages.push(this._formattedContent.pages[this._leftPageIndex + 1]);
+        }
+        for (let page of displayedPages) {
+            for (let line of page.lines) {
+                this.drawText(line.text, page.x, line.y, 510, 'left');
+            }
+        }
+        const displayedImages = this._formattedContent.images.filter(image => image.page === this._leftPageIndex || image.page === this._leftPageIndex + 1);
+        for (let image of displayedImages) {
+            const bitmap = this.loadImage(image.name);
+            this.contents.blt(bitmap, 0, 0, bitmap.rect.width, bitmap.rect.height, image.page % 2 * 590, image.y);
+        }
+    });
+};
+Window_JournalPrettyEntry.prototype.close = function () {
+    Window_JournalEntry.prototype.close.call(this);
+};
+// #endregion =========================== Window_JournalPrettyEntry ============================== //
 // ============================== //
 // #region ============================== Window_InventoryAmmo ============================== //
 // //-----------------------------------------------------------------------------
@@ -1667,6 +1843,30 @@ Window_InventoryHelp.prototype.refresh = function () {
 };
 // #endregion =========================== Window_InventoryHelp ============================== //
 // ============================== //
+// #region ============================== Window_CharacterEntry ============================== //
+function Window_CharacterEntry() {
+    this.initialize.apply(this, arguments);
+}
+;
+Window_CharacterEntry.prototype = Object.create(Window_JournalPrettyEntry.prototype);
+Window_CharacterEntry.prototype.constructor = Window_CharacterEntry;
+Window_CharacterEntry.prototype.initialize = function () {
+    Window_JournalPrettyEntry.prototype.initialize.call(this);
+};
+Window_CharacterEntry.prototype.reset = function (entry) {
+    this._id = entry.id;
+    this._title = entry.title;
+    this._paragraphs = entry.paragraphs;
+    this._formattedContent = undefined;
+};
+Window_CharacterEntry.prototype.reserveImage = function (image) {
+    return ImageManager.reserveImage('mugs', image, image);
+};
+Window_CharacterEntry.prototype.loadImage = function (image) {
+    return ImageManager.reserveImage('mugs', image);
+};
+// #endregion =========================== Window_CharacterEntry ============================== //
+// ============================== //
 // #region ============================== Window_GlossaryEntry ============================== //
 function Window_GlossaryEntry() {
     this.initialize.apply(this, arguments);
@@ -1797,10 +1997,10 @@ function Window_TutorialEntry() {
     this.initialize.apply(this, arguments);
 }
 ;
-Window_TutorialEntry.prototype = Object.create(Window_JournalEntry.prototype);
+Window_TutorialEntry.prototype = Object.create(Window_JournalPrettyEntry.prototype);
 Window_TutorialEntry.prototype.constructor = Window_TutorialEntry;
 Window_TutorialEntry.prototype.initialize = function () {
-    Window_JournalEntry.prototype.initialize.call(this);
+    Window_JournalPrettyEntry.prototype.initialize.call(this);
 };
 Window_TutorialEntry.prototype.reset = function (entry) {
     this._id = entry.id;
@@ -1808,106 +2008,11 @@ Window_TutorialEntry.prototype.reset = function (entry) {
     this._paragraphs = entry.paragraphs;
     this._formattedContent = undefined;
 };
-// TODO preload all images at once if laggy
-Window_TutorialEntry.prototype.drawDetails = function () {
-    // Title
-    if (this._leftPageIndex === 0) {
-        this.drawUnderlinedText(this._title, 0, 0, 510, "center");
-    }
-    // Pre-load all bitmaps
-    const images = this._paragraphs
-        .map((p) => p.image)
-        .filter((image) => image !== undefined);
-    for (let image of images) {
-        ImageManager.reserveTutorial(image, image);
-    }
-    const readyCheck = resolve => {
-        if (ImageManager.isReady())
-            resolve();
-        else
-            setTimeout(() => readyCheck(resolve), 100);
-    };
-    new Promise(readyCheck).then(() => {
-        // Format content or read from memory
-        if (!this._formattedContent) {
-            this._formattedContent = {
-                pages: [],
-                images: []
-            };
-            const lineHeight = this.contents.fontSize * 1.2;
-            // In case of a page with text + image + text, we need to fuse both text parts into a single formatted page
-            let currentPage = 0;
-            let fuseWithPreviousPage = false;
-            let nextBlockStartY = 80;
-            let text = "";
-            for (let i = 0; i < this._paragraphs.length; i++) {
-                const paragraph = this._paragraphs[i];
-                if (paragraph.content) {
-                    text += paragraph.content + "\n \n ";
-                }
-                // Cut a text block into pages, because we have an image to place or this is the last bit of content
-                if (paragraph.image || i === this._paragraphs.length - 1) {
-                    if (text.length) {
-                        const block = this.cutTextIntoPages(text, nextBlockStartY, currentPage % 2 * 590, (currentPage + 1) % 2 * 590, 510); // TODO constants ?
-                        // Page cut in two by image: we need to fuse both parts
-                        if (fuseWithPreviousPage) {
-                            fuseWithPreviousPage = false;
-                            const currentPageBottomPart = block.shift();
-                            this._formattedContent.pages[currentPage].lines =
-                                this._formattedContent.pages[currentPage].lines.concat(currentPageBottomPart === null || currentPageBottomPart === void 0 ? void 0 : currentPageBottomPart.lines);
-                        }
-                        this._formattedContent.pages = this._formattedContent.pages.concat(block);
-                        // Find the Y offset of the last line to display the image under. Only one image per page in case of text.
-                        const lastPage = block[block.length - 1];
-                        nextBlockStartY = lastPage.lines[lastPage.lines.length - 1].y;
-                        currentPage += block.length - 1;
-                        text = "";
-                    }
-                    if (paragraph.image) {
-                        const previousPage = currentPage;
-                        const bitmap = ImageManager.loadTutorial(paragraph.image);
-                        // Next page if image is too tall to fit under the text
-                        if (nextBlockStartY + bitmap.rect.height > this.contentsHeight()) {
-                            nextBlockStartY = 0;
-                            currentPage += 1;
-                        }
-                        this._formattedContent.images.push({
-                            page: currentPage,
-                            y: nextBlockStartY,
-                            name: paragraph.image
-                        });
-                        nextBlockStartY += bitmap.rect.height + lineHeight;
-                        // Next page if we can't display text under the image
-                        if (nextBlockStartY + lineHeight > this.contentsHeight()) {
-                            nextBlockStartY = 0;
-                            currentPage += 1;
-                        }
-                        if (previousPage === currentPage) {
-                            fuseWithPreviousPage = true;
-                        }
-                    }
-                }
-            }
-        }
-        // Render formatted content
-        const displayedPages = [this._formattedContent.pages[this._leftPageIndex]];
-        if (this._formattedContent.pages.length >= this._leftPageIndex + 2) {
-            displayedPages.push(this._formattedContent.pages[this._leftPageIndex + 1]);
-        }
-        for (let page of displayedPages) {
-            for (let line of page.lines) {
-                this.drawText(line.text, page.x, line.y, 510, 'left');
-            }
-        }
-        const displayedImages = this._formattedContent.images.filter(image => image.page === this._leftPageIndex || image.page === this._leftPageIndex + 1);
-        for (let image of displayedImages) {
-            const bitmap = ImageManager.loadTutorial(image.name);
-            this.contents.blt(bitmap, 0, 0, bitmap.rect.width, bitmap.rect.height, image.page % 2 * 590, image.y);
-        }
-    });
+Window_TutorialEntry.prototype.reserveImage = function (image) {
+    return ImageManager.reserveImage('tutorials', image, image);
 };
-Window_TutorialEntry.prototype.close = function () {
-    Window_JournalEntry.prototype.close.call(this);
+Window_TutorialEntry.prototype.loadImage = function (image) {
+    return ImageManager.reserveImage('tutorials', image);
 };
 // #endregion =========================== Window_TutorialEntry ============================== //
 // ============================== //

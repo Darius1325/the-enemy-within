@@ -26,6 +26,7 @@ import { BattlerAI } from "./battlerAI";
 import { Quest } from "./quest";
 import { Glossary } from "./glossary";
 import { Tutorial } from "./tutorial";
+import { CharacterDescription } from "./characterDescription";
 
 /** Storage object for all TEW plugins */
 const TEW: {
@@ -132,6 +133,9 @@ const TEW: {
 
         /** Tutorial entries, displayed in tutorials and controlled by an id list: */
         TUTORIALS?: Tutorial[];
+
+        /** Character entries, displayed in tutorials and controlled by an id list: */
+        CHARACTER_DESCRIPTIONS?: CharacterDescription[];
     };
 
     /** Constants used in menu plugins for readability */

@@ -1,6 +1,7 @@
 // $PluginCompiler TEW_Menus.js 2
 
 import Sprite_Selector from "../../combat/sprite/Sprite_Selector";
+import Scene_Characters from "./characters/Scene_Characters";
 import Scene_Glossary from "./glossary/Scene_Glossary";
 import Scene_QuestLog from "./quests/Scene_QuestLog";
 import Scene_Tutorials from "./tutorials/Scene_Tutorials";
@@ -44,6 +45,7 @@ Scene_Journals.prototype.openJournal = function() {
         case "journal_documents":
             break;
         case "journal_characters":
+            SceneManager.push(Scene_Characters);
             break;
         case "journal_glossary":
             SceneManager.push(Scene_Glossary);

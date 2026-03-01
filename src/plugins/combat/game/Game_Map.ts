@@ -175,131 +175,161 @@ Game_Map.prototype.exploreRange = function(distance: number, event: Game_Charact
  *  - start from adjacent corners of the subject's tile
  *  - end on the same corner of the target's tile
  */
-Game_Map.prototype.chargeRange = function(distance: number, event: Game_CharacterBase, through: boolean) {
-    if (through === undefined) {
-        through = false;
-    }
-
-    const startX = event.x;
-    const startY = event.y;
-    const startKey = `${startX},${startY}`;
+Game_Map.prototype.chargeRange = function(distance: number, event: Game_CharacterBase, through: boolean = false) {
+    const start = { x: event.x, y: event.y };
+    const startKey = `${start.x},${start.y}`;
     this._straightPaths[startKey] = this._straightPaths[startKey] || {};
 
-    const enemiesInRange: Game_Enemy[] = $gameTroopTs.members(); // TODO exclude dead + adapt for enemy side
-    const targettableEnemies: Point[] = [];
+    const enemies: Game_Enemy[] = $gameTroopTs.members();
 
-    for (const enemy of enemiesInRange) {
+    for (const enemy of enemies) {
+        const enemyPos: Point = { x: enemy._tx, y: enemy._ty };
 
-        const enemyX = enemy._tx;
-        const enemyY = enemy._ty;
-        const enemyKey = `${enemyX},${enemyY}`;
-        const enemyPos: Point = { x: enemyX, y: enemyY };
+        if (!this.isInChargeRange(start, enemyPos, distance)) continue;
 
-        // GIGA TODO reset memory when anything moves
-        if (this._straightPaths[startKey][enemyKey]) {
-            targettableEnemies.push(enemyPos);
-            this.addTile(this.tile(enemyX, enemyY));
-            return this._straightPaths[startKey][enemyKey];
-        }
+        const enemyKey = `${enemyPos.x},${enemyPos.y}`;
 
-        const dx = enemyX - startX;
-        const dy = enemyY - startY;
-        const manhattanDistance = Math.floor(dx) + Math.floor(dy);
-
-        if (manhattanDistance < TEW.COMBAT.SYSTEM.chargeMinimumRange || manhattanDistance > distance) {
+        const cached = this._straightPaths[startKey][enemyKey];
+        if (cached) {
+            this.addTile(this.tile(enemyPos.x, enemyPos.y));
             continue;
         }
 
-        // If subject and target are on the same row or column, all rays would traverse the same tiles
-        // we can skip ray tracing and check for obstacles along the row/column
-        if (dx == 0) {
-            const lowestY = Math.min(startY, enemyY);
-            const highestY = Math.max(startY, enemyY);
-            const path = [];
-            for (let i = lowestY; i < highestY; i++) {
-                path.push({ x: startX, y: i });
-            }
-            if (this.isPathClear({ x: startX, y: startY }, path, event)
-                && this.isMapPassableWithoutEventCheck(path.last(), enemyPos)
-            ) {
-                targettableEnemies.push(enemyPos);
-                this.addTile(this.tile(enemyX, enemyY));
-                // Remove start position for move processing
-                // FIXME possible optimization by never including start tile ?
-                path.shift();
-                this._straightPaths[startKey][enemyKey] = path;
-            }
-        } else if (dy == 0) {
-            const lowestX = Math.min(startX, enemyX);
-            const highestX = Math.max(startX, enemyX);
-            const path = [];
-            for (let i = lowestX; i < highestX; i++) {
-                path.push({ x: i, y: startY });
-            }
-            if (this.isPathClear({ x: startX, y: startY }, path, event)
-                && this.isMapPassableWithoutEventCheck(path.last(), enemyPos)
-            ) {
-                targettableEnemies.push(enemyPos);
-                this.addTile(this.tile(enemyX, enemyY));
-                // Remove start position for move processing
-                path.shift();
-                this._straightPaths[startKey][enemyKey] = path;
-            }
-        } else {
-            const startCorners: Point[] = this.computeTileCorners(startX, startY);
-            const targetCorners: Point[] = this.computeTileCorners(enemyX, enemyY);
+        const path = this.computeChargePath(start, enemyPos, event);
+        if (!path) continue;
 
-            // Exclude the corner(s) of the target furthest away from the subject, because ray-tracing these would be redundant
-            const usefulCorners: Point[] = this.computeUsefulCorners(dx, dy, targetCorners);
+        this.storePath(startKey, enemyKey, path);
+        this.addTile(this.tile(enemyPos.x, enemyPos.y));
+    }
+};
 
-            // Skip checking some tiles adjacent to the subject/target.
-            // Because tile corners are also tile coordinates, we must exclude the start and end of some rays
-            const excludedCorners: Point[] = this.computeExcludedCornersForRayTracing(dx, dy, startCorners, targetCorners);
+/**
+ * Store the computed path between two points in the cache, for later retrieval. Also adds the target tile to the map's tiles for move processing.
+ */
+Game_Map.prototype.storePath = function(startKey: string, enemyKey: string, path) {
+    this._straightPaths[startKey][enemyKey] = path;
+};
 
-            const rays: {
-                start: Point,
-                target: Point,
-                path: Point[]
-            }[] = [];
-            for (const start of startCorners) {
-                for (const target of usefulCorners) {
-                    let supercover: { tilesCrossed: Point[], path: Point[] } = this.amanatidesWooSupercover(start, target);
-                    const trimmedCover = supercover.tilesCrossed.filter(point => excludedCorners.every(({x, y}) => x !== point.x || y !== point.y));
-                    if (this.isPathClear(start, trimmedCover, event)) {
-                        if (this.isMapPassableWithoutEventCheck(trimmedCover.last(), enemyPos)) {
-                            rays.push({
-                                start,
-                                target,
-                                path: supercover.path.filter(point => excludedCorners.every(({x, y}) => x !== point.x || y !== point.y))
-                            });
-                        }
-                    }
-                }
-            }
+/**
+ * Check if the target is in charge range of the subject, i.e. if it's within the maximum charge distance and outside of the minimum one.
+ */
+Game_Map.prototype.isInChargeRange = function(start: Point, target: Point, maxDist: number) {
+    const dx = Math.abs(target.x - start.x);
+    const dy = Math.abs(target.y - start.y);
+    const manhattan = dx + dy;
 
-            // Yes I wrote a fucking label in TS code, and yes I'm still better than RMMV devs
-            targetValidityCheck:
-            for (const target of usefulCorners) { // same target corner
-                const usefulRays = rays.filter(ray => this.samePoint(ray.target, target));
-                if (usefulRays.length > 1) {
-                    for (const ray1 of usefulRays) {
-                        for (const ray2 of usefulRays) {
-                            if ((ray1.start.x == ray2.start.x) != (ray1.start.y == ray2.start.y)) { // adjacent subject corners
-                                targettableEnemies.push(enemyPos);
-                                this.addTile(this.tile(target.x, target.y));
-                                // Remove start position for move processing
-                                ray1.path.shift();
-                                this._straightPaths[startKey][enemyKey] = ray1.path;
-                                break targetValidityCheck;
-                            }
-                        }
-                    }
+    return (
+        manhattan >= TEW.COMBAT.SYSTEM.chargeMinimumRange &&
+        manhattan <= maxDist
+    );
+};
+
+/**
+ * Compute the path of a charge from start to target
+ */
+Game_Map.prototype.computeChargePath = function(start: Point, target: Point, event: Game_CharacterBase) {
+    const dx = target.x - start.x;
+    const dy = target.y - start.y;
+
+    if (dx === 0 || dy === 0) {
+        return this.computeStraightLinePath(start, target, event);
+    }
+
+    return this.computeRayTracedPath(start, target, event, dx, dy);
+};
+
+/**
+ * Compute the straight line path between start and target, if it exists and is clear of obstacles.
+ */
+Game_Map.prototype.computeStraightLinePath = function(start: Point, target: Point, event: Game_CharacterBase) {
+    const path = [];
+
+    if (start.x === target.x) {
+        const [low, high] = [start.y, target.y].sort((a, b) => a - b);
+        for (let y = low; y < high; y++) {
+            path.push({ x: start.x, y });
+        }
+    } else {
+        const [low, high] = [start.x, target.x].sort((a, b) => a - b);
+        for (let x = low; x < high; x++) {
+            path.push({ x, y: start.y });
+        }
+    }
+
+    if (!this.isPathClear(start, path, event)) return null;
+    if (!this.isMapPassableWithoutEventCheck(path.last(), target)) return null;
+
+    path.shift(); // remove start tile
+    return path;
+};
+
+/**
+ * Compute the path of a charge from start to target by ray-tracing rays from the corners of the subject's tile to the corners of the target's tile, and checking for the existence of two rays that are clear of obstacles, start from adjacent corners of the subject's tile, and end on the same corner of the target's tile.
+ */
+Game_Map.prototype.computeRayTracedPath = function(start: Point, target: Point, event: Game_CharacterBase, dx: number, dy: number) {
+    const startCorners = this.computeTileCorners(start.x, start.y);
+    const targetCorners = this.computeTileCorners(target.x, target.y);
+
+    const usefulTargetCorners = this.computeUsefulCorners(dx, dy, targetCorners);
+    const excluded = this.computeExcludedCornersForRayTracing(dx, dy, startCorners, targetCorners);
+
+    const rays = this.computeAllRays(startCorners, usefulTargetCorners, excluded, event, target);
+
+    return this.selectValidRay(rays, usefulTargetCorners, target);
+};
+
+/**
+ * Compute the rays from the corners of the subject's tile to the useful corners of the target's tile, excluding some corners as explained in "computeExcludedCornersForRayTracing", and return their paths and supercovers.
+ */
+Game_Map.prototype.computeAllRays = function(startCorners: Point[], usefulCorners: Point[], excluded: Point[], event: Game_CharacterBase, target: Point) {
+    const rays = [];
+
+    for (const s of startCorners) {
+        for (const t of usefulCorners) {
+            const cover = this.amanatidesWooSupercover(s, t);
+            const trimmed = cover.tilesCrossed.filter((p: Point) => !excluded.some(e => e.x === p.x && e.y === p.y));
+
+            if (!this.isPathClear(s, trimmed, event)) continue;
+            if (!this.isMapPassableWithoutEventCheck(trimmed.last(), target)) continue;
+            rays.push({
+                start: s,
+                target: t,
+                path: cover.path.filter((p: Point) => !excluded.some(e => e.x === p.x && e.y === p.y))
+            });
+        }
+    }
+
+    return rays;
+};
+
+/**
+ * Select a valid ray among the computed rays, i.e. a ray that is clear of obstacles, starts from a corner adjacent to the start corner of another ray, and ends on the same target corner as another ray with an adjacent start corner. Return the path of the selected ray, or null if no valid ray exists.
+ */
+Game_Map.prototype.selectValidRay = function(rays: { start: Point, target: Point, path: Point[] }[], usefulCorners: Point[]) {
+    for (const corner of usefulCorners) {
+        const sameTarget = rays.filter(r => this.samePoint(r.target, corner));
+        if (sameTarget.length < 2) continue;
+
+        for (const r1 of sameTarget) {
+            for (const r2 of sameTarget) {
+                const adjacent =
+                    (r1.start.x === r2.start.x) !==
+                    (r1.start.y === r2.start.y);
+                if (adjacent) {
+                    const path = [...r1.path];
+                    path.shift();
+                    return path;
                 }
             }
         }
     }
+
+    return null;
 };
 
+/**
+ * Compute the coordinates of the corners of a tile, starting from the upper left corner and going clockwise
+ */
 Game_Map.prototype.computeTileCorners = function(x: number, y: number){
     return [
         {x: x,     y: y    }, // UP LEFT
@@ -358,22 +388,24 @@ Game_Map.prototype.amanatidesWooSupercover = function (start: Point, end: Point)
     
     // Skip in case of horizontal or vertical ray
     if (start.x === end.x) {
-        const lowestY = Math.min(start.y, end.y);
-        const highestY = Math.max(start.y, end.y);
-        for (let y = lowestY; y < highestY; y++) {
+        const step = Math.sign(end.y - start.y);
+        let y = start.y;
+        do {
             tilesCrossed.push({ x: start.x, y });
-        }
+            y += step;
+        } while (y !== end.y + step);
         return {
             tilesCrossed,
             path: tilesCrossed
         };
     }
     if (start.y === end.y) {
-        const lowestX = Math.min(start.x, end.x);
-        const highestX = Math.max(start.x, end.x);
-        for (let x = lowestX; x < highestX; x++) {
+        const step = Math.sign(end.x - start.x);
+        let x = start.x;
+        do {
             tilesCrossed.push({ x, y: start.y });
-        }
+            x += step;
+        } while (x !== end.x + step);
         return {
             tilesCrossed,
             path: tilesCrossed
