@@ -1,49 +1,6 @@
 [
-    null,
-    {
-        "id": 1,
-        "battlerName": "Actor4_1",
-        "characterIndex": 0,
-        "characterName": "Actor4",
-        "classId": 1,
-        "equips": [
-            0,
-            0,
-            0,
-            0,
-            0
-        ],
-        "faceIndex": 0,
-        "faceName": "Actor4",
-        "traits": [],
-        "initialLevel": 1,
-        "maxLevel": 99,
-        "name": "C\u00e9cile",
-        "nickname": "",
-        "note": "",
-        "profile": ""
-    },
-    {
-        "id": 2,
-        "battlerName": "Actor4_2",
-        "characterIndex": 1,
-        "characterName": "Actor4",
-        "classId": 1,
-        "equips": [
-            0,
-            0,
-            0,
-            0,
-            0
-        ],
-        "faceIndex": 1,
-        "faceName": "Actor4",
-        "traits": [],
-        "initialLevel": 1,
-        "maxLevel": 99,
-        "name": "Cheplu",
-        "nickname": "",
-        "note": "",
-        "profile": ""
-    }
+null,
+{"id":1,"battlerName":"Actor4_1","characterIndex":0,"characterName":"Actor4","classId":1,"equips":[0,0,0,0,0],"faceIndex":0,"faceName":"Actor4","traits":[],"initialLevel":1,"maxLevel":99,"name":"Cécile","nickname":"","note":"","profile":""},
+{"id":2,"battlerName":"Actor4_2","characterIndex":1,"characterName":"Actor4","classId":1,"equips":[0,0,0,0,0],"faceIndex":1,"faceName":"Actor4","traits":[],"initialLevel":1,"maxLevel":99,"name":"Cheplu","nickname":"","note":"","profile":""},
+{"id":3,"battlerName":"Actor4_3","characterIndex":2,"characterName":"Actor4","classId":1,"equips":[0,0,0,0,0],"faceIndex":2,"faceName":"Actor4","traits":[],"initialLevel":1,"maxLevel":99,"name":"Ciara","nickname":"","note":"","profile":""}
 ]

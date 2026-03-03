@@ -240,6 +240,10 @@ Game_Actor.prototype.initCiara = function() {
     this.addSpell("DART");
     this.addSpell("DRAIN");
 
+    // TODO debug
+    this.addSpell("WARD");
+    this.addSpell("BLAST");
+
     // items
     this.addItem('CLOTHING', 1);
     this.addItem('WRITING_KIT', 1);

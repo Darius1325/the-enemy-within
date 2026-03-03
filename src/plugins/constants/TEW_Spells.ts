@@ -386,7 +386,7 @@ TEW.DATABASE.SPELLS.SET = {
         desc: "You cause a small dart of magical energy to fly from your fingers. This is a magic missile with a Damage of +0."
     },
     DRAIN: {
-        name: "Dart",
+        name: "Drain",
         type: SpellType.SPELL,
         domain: SpellDomain.PETTY,
         cn: 0,
