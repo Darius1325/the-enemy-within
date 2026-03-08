@@ -141,11 +141,11 @@ TEW.DICE.displayDiceRoll = function (range = 100) {
     SceneManager._scene.addWindow(windowDice);
     return result;
 };
-TEW.DICE.rollInitiative = function (actor) {
-    return TEW.DICE.roll(10) + TEW.DICE.bonus(actor.paramByName("INIT"));
+TEW.DICE.rollInitiative = function (battler) {
+    return TEW.DICE.roll(10) + TEW.DICE.bonus(battler.paramByName("INIT"));
 };
-TEW.DICE.skillTest = function (actor, compId, modifier = 0, hidden = false) {
-    const compValue = actor.comp(compId) + modifier;
+TEW.DICE.skillTest = function (battler, compId, modifier = 0, hidden = false) {
+    const compValue = battler.comp(compId) + modifier;
     const roll = hidden ? TEW.DICE.roll() : TEW.DICE.displayDiceRoll();
     let success = compValue >= roll;
     let sl = Math.floor(compValue / 10) - Math.floor(roll / 10);
@@ -192,6 +192,23 @@ Game_Interpreter.prototype.partySkillTest = function (compId, modifier, hidden =
         success,
         critical: roll % 11 === 0 || roll === 100,
     };
+};
+Game_Interpreter.prototype.rollWindsOfMagic = function () {
+    const roll = TEW.DICE.roll(10);
+    let womModifier = 0;
+    if (roll === 1) {
+        womModifier = -30;
+    }
+    else if (roll < 4) {
+        womModifier = -10;
+    }
+    else if (roll === 10) {
+        womModifier = 30;
+    }
+    else if (roll > 7) {
+        womModifier = 10;
+    }
+    $gameVariables.setValue(15, womModifier);
 };
 // Opposed skill tests
 Game_Interpreter.prototype.opposedSkillTest = function (compIdPlayer, modifierPlayer, skillValueNPC) {
@@ -281,18 +298,11 @@ TEW.DICE.combatOpposedSkillTest = function (compValueAttacker, compValueDefender
     let criticalAttacker = rollAttacker % 11 === 0 || rollAttacker === 100;
     let criticalDefender = rollDefender % 11 === 0 || rollDefender === 100;
     let success;
-    // GIGA TODO nothing is right
-    if (successRollAttacker && criticalAttacker) {
-        success = true;
-    }
-    else if (successRollDefender && criticalDefender) {
+    if (!successRollAttacker) {
         success = false;
     }
-    else if (successRollAttacker && slAttacker > slDefender) {
-        success = true;
-    }
-    else if (slDefender > slAttacker) {
-        success = false;
+    else if (slAttacker != slDefender) {
+        success = slAttacker > slDefender;
     }
     else {
         success = (compValueAttacker >= compValueDefender);
@@ -469,6 +479,9 @@ Game_Actor.prototype.initTEW = function (actorId) {
         case 2: // Cheplu
             this.initCheplu();
             break;
+        case 3: // Ciara
+            this.initCiara();
+            break;
         default:
             break;
     }
@@ -615,7 +628,7 @@ Game_Actor.prototype.initCiara = function () {
         33, // BALS
         33, // STRG
         40, // TOUG
-        34, // INIT
+        500, // INIT // 34
         39, // AGIL
         34, // DEXT
         42, // INTL
@@ -653,6 +666,9 @@ Game_Actor.prototype.initCiara = function () {
     this.addSpell("PURIFY_WATER");
     this.addSpell("DART");
     this.addSpell("DRAIN");
+    // TODO debug
+    this.addSpell("WARD");
+    this.addSpell("BLAST");
     // items
     this.addItem('CLOTHING', 1);
     this.addItem('WRITING_KIT', 1);
@@ -829,11 +845,23 @@ Game_BattlerBase.prototype.comp = function (compId) {
     const associatedStat = TEW.DATABASE.COMPS.SET[compId].stat;
     return this.compPlus(compId) + this.paramByName(associatedStat);
 };
+Game_BattlerBase.prototype.anyCompOfCategory = function (compCategory) {
+    const comps = TEW.DATABASE.COMPS.IDS
+        .filter(compId => compId.startsWith(compCategory))
+        .filter(compId => this.hasComp(compId));
+    if (comps.length > 0) {
+        return comps[0];
+    }
+    return null;
+};
 Game_BattlerBase.prototype.hasComp = function (compId) {
     if (TEW.DATABASE.COMPS.SET[compId].isBase) {
         return true;
     }
     return this._competences[TEW.DATABASE.COMPS.IDS.indexOf(compId)] !== -1;
+};
+Game_BattlerBase.prototype.hasAnyCompOfCategory = function (compCategory) {
+    return this.anyCompOfCategory(compCategory) !== null;
 };
 Game_BattlerBase.prototype.addComp = function (compId, value) {
     this._competences[TEW.DATABASE.COMPS.IDS.indexOf(compId)] += value;

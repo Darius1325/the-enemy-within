@@ -199,7 +199,7 @@ TEW.DATABASE.ITEMS.SET = {
         enc: 1,
         availability: Availability.RARE,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_RARE,
-        description: "These costumes are inexpensive, comfortable, and relatively plain. A wizard wearing practical robes may even go unrecognised in many situations. Gives +1 SL to any Channeling test."
+        description: "These costumes are inexpensive, comfortable, and relatively plain. A wizard wearing practical robes may even go unrecognised in many situations. Gives +1 SL to any Channelling test."
     },
     ROBES_STANDARD: {
         name: "Standard Robes",
@@ -211,7 +211,7 @@ TEW.DATABASE.ITEMS.SET = {
         enc: 2,
         availability: Availability.EXOTIC,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_EXOTIC,
-        description: "These costumes are complex and typically include heavy coats or cloaks and distinctive headwear. Gives +2 SL to any Channeling test."
+        description: "These costumes are complex and typically include heavy coats or cloaks and distinctive headwear. Gives +2 SL to any Channelling test."
     },
     ROBES_ELABORATE: {
         name: "Elaborate Robes",
@@ -223,7 +223,7 @@ TEW.DATABASE.ITEMS.SET = {
         enc: 4,
         availability: Availability.EXOTIC,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_EXOTIC,
-        description: "These costumes are heavy and impractical, often incorporating bulky accessories and reams of cloth woven from magically infused thread. Anyone wearing these robes will be instantly recognised as a wizard. Gives +3 SL to any Channeling test."
+        description: "These costumes are heavy and impractical, often incorporating bulky accessories and reams of cloth woven from magically infused thread. Anyone wearing these robes will be instantly recognised as a wizard. Gives +3 SL to any Channelling test."
     },
     SCEPTRE: {
         name: "Sceptre",

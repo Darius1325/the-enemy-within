@@ -31,6 +31,9 @@ Game_Actor.prototype.initTEW = function(actorId : number) {
         case 2: // Cheplu
             this.initCheplu();
             break;
+        case 3: // Ciara
+            this.initCiara();
+            break;
         default:
             break;
     }
@@ -197,7 +200,7 @@ Game_Actor.prototype.initCiara = function() {
         33, // BALS
         33, // STRG
         40, // TOUG
-        34, // INIT
+        500, // INIT // 34
         39, // AGIL
         34, // DEXT
         42, // INTL

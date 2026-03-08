@@ -533,6 +533,9 @@ BattleManager.updateTarget = function() {
     if (index >= 0) {
         action.setTarget(index);
         this.setupAction();
+    } else if ($gameSelector.isOk()) {
+        // TODO hit the void
+        this.endAction();
     }
     if ($gameSelector.isCancelled()) {
         SoundManager.playCancel();
@@ -896,14 +899,14 @@ BattleManager.setupCombat = function(action) {
 };
 
 BattleManager.refreshRedCells = function(action) {
-
-BattleManager.setEventCallback = function(callback) {
-    this._eventCallback = callback;
-};
     $gameMap.clearTiles();
     BattleManager.setupCombat(action);
     $gameMap.setActionColor(action);
     action.showRange();
+};
+
+BattleManager.setEventCallback = function(callback) {
+    this._eventCallback = callback;
 };
 
 BattleManager.turnTowardCharacter = function(character) {

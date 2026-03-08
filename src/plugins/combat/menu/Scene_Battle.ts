@@ -212,6 +212,8 @@ Scene_Battle.prototype.createMoveCommandWindow = function() {
 Scene_Battle.prototype.createActionCommandWindow = function() {
     this._actionCommandWindow = new Window_TacticsActionCommand();
     this._actionCommandWindow.setHandler('attack', this.commandAttack.bind(this));
+    this._actionCommandWindow.setHandler('spell', this.commandSpell.bind(this));
+    this._actionCommandWindow.setHandler('channelling', this.commandChannelling.bind(this));
     this._actionCommandWindow.setHandler('cancel', () => {
         $gameMap.clearTiles();
         this._tacticsCommandWindow.activate();
@@ -634,6 +636,19 @@ Scene_Battle.prototype.commandAttack = function() {
     // BattleManager.setupCombat(action); // WTF are you doing step bro ?
     BattleManager.refreshRedCells(action);
     this.onSelectAction();
+};
+
+Scene_Battle.prototype.commandSpell = function() {
+    // OSKUR TODO
+};
+
+Scene_Battle.prototype.commandChannelling = function() {
+    this.changeBackground();
+    this._actionCommandWindow.close();
+    this._tacticsCommandWindow.close();
+    // TODO animation + sound
+    BattleManager.actor().doChannelling();
+    BattleManager.endAction();
 };
 
 Scene_Battle.prototype.onPersonalOk = function() {

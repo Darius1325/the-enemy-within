@@ -35,7 +35,7 @@ Game_Action.prototype.searchBattlers = function(battler, units) {
     var battlers = [];
     var item = this.item();
     if (this.isAttackRange(battler)) {
-        item = battler.weapons()[0] || battler.weapons()[1];
+        item = TEW.COMBAT.getWeaponFromId(battler.equippedWeapon().id);
     }
     this.updateRange(item, battler.tx, battler.ty);
     for (var i = 0; i < this._range.length; i++) {
@@ -52,29 +52,21 @@ Game_Action.prototype.searchBattlers = function(battler, units) {
 };
 
 Game_Action.prototype.isAttackRange = function (subject) {
-    return subject.isActor() && this.isAttack() && !subject.hasNoWeapons();
+    return subject.isActor() && this.isAttack();
 };
 
 Game_Action.prototype.updateRange = function(item, x, y) {
-    var data = this.extractRangeData(item);
-    // range: 10 -> range: 0 10
-    if (data[1] === undefined) {
-        data[1] = data[0];
-        data[0] = 0;
-    }
-    // range:
-    if (data[2] === undefined) {
-        data[2] = 'diamond';
-    }
-    this._range = this.createRange(parseInt(data[0]), parseInt(data[1]), x, y, data[2]);
+    const range = this.extractRangeData(item);
+    console.log(range);
+    // TODO better algorithm for obstacles
+    this._range = this.createRange(0, range, x, y, range === 1 ? 'diamond' : 'euclidean');
     if (this.isForUser()) {
         this._range = [[x, y]];
     }
 };
 
 Game_Action.prototype.extractRangeData = function (object) {
-    var data = object.meta['Range'] || TEW.COMBAT.SYSTEM.actionRange;
-    return data.trim().split(' ');
+    return object.range || TEW.COMBAT.SYSTEM.actionRange;
 };
 
 Game_Action.prototype.createRange = function(d1, d2, x, y, shape) {
@@ -88,11 +80,8 @@ Game_Action.prototype.createRange = function(d1, d2, x, y, shape) {
                             range.push([i, j]);
                         }
                         break;
-                    case 'rectangle':
-                        range.push([i, j]);
-                        break;
-                    case 'line':
-                        if (i === x || j === y) {
+                    case 'euclidean':
+                        if ((i - x) * (i - x) + (j - y) * (j - y) <= d2 * d2) {
                             range.push([i, j]);
                         }
                         break;

@@ -2,7 +2,7 @@
 
 import TEW from "../../_types/tew";
 import Window_Dice from "./Window_Dice";
-import {Game_Actor} from "../stats/Game_Actor";
+import { Game_BattlerBase } from "../stats/Game_BattlerBase";
 
 // $StartCompilation
 
@@ -23,12 +23,12 @@ TEW.DICE.displayDiceRoll = function(range = 100) {
     return result;
 };
 
-TEW.DICE.rollInitiative = function(actor: Game_Actor) {
-    return TEW.DICE.roll(10) + TEW.DICE.bonus(actor.paramByName("INIT"));
+TEW.DICE.rollInitiative = function(battler: Game_BattlerBase) {
+    return TEW.DICE.roll(10) + TEW.DICE.bonus(battler.paramByName("INIT"));
 };
 
-TEW.DICE.skillTest = function(actor: Game_Actor, compId: string, modifier = 0, hidden = false) {
-    const compValue = actor.comp(compId) + modifier;
+TEW.DICE.skillTest = function(battler: Game_BattlerBase, compId: string, modifier = 0, hidden = false) {
+    const compValue = battler.comp(compId) + modifier;
 
     const roll = hidden ? TEW.DICE.roll() : TEW.DICE.displayDiceRoll();
     let success = compValue >= roll;
@@ -82,6 +82,21 @@ Game_Interpreter.prototype.partySkillTest = function(compId: string, modifier: n
         success,
         critical: roll % 11 === 0 || roll === 100,
     };
+};
+
+Game_Interpreter.prototype.rollWindsOfMagic = function() {
+    const roll = TEW.DICE.roll(10);
+    let womModifier = 0;
+    if (roll === 1) {
+        womModifier = -30;
+    } else if (roll < 4) {
+        womModifier = -10;
+    } else if (roll === 10) {
+        womModifier = 30;
+    } else if (roll > 7) {
+        womModifier = 10;
+    }
+    $gameVariables.setValue(15, womModifier);
 };
 
 // Opposed skill tests
@@ -185,15 +200,10 @@ TEW.DICE.combatOpposedSkillTest = function(
     let criticalDefender = rollDefender % 11 === 0 || rollDefender === 100;
 
     let success: boolean;
-    // GIGA TODO nothing is right
-    if (successRollAttacker && criticalAttacker) {
-        success = true;
-    } else if (successRollDefender && criticalDefender) {
+    if (!successRollAttacker) {
         success = false;
-    } else if (successRollAttacker && slAttacker > slDefender) {
-        success = true;
-    } else if (slDefender > slAttacker) {
-        success = false;
+    } else if (slAttacker != slDefender) {
+        success = slAttacker > slDefender;
     } else {
         success = (compValueAttacker >= compValueDefender);
     }

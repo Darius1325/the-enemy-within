@@ -187,3 +187,8 @@ Game_Actor.prototype.refresh = function() {
         this.removeState(this.deathStateId());
     }
 };
+
+// unused RMMV base function
+Game_Actor.prototype.hasNoWeapons = function() {
+    return false;
+};

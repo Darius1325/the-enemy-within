@@ -134,122 +134,6 @@ Object.defineProperties(TextManager, {
 });
 // #endregion =========================== properties ============================== //
 // ============================== //
-// #region ============================== Scene_Characters ============================== //
-function Scene_Characters() {
-    this.initialize.apply(this, arguments);
-}
-;
-Scene_Characters.prototype = Object.create(Scene_Base.prototype);
-Scene_Characters.prototype.constructor = Scene_Characters;
-Scene_Characters.prototype.initialize = function () {
-    Scene_Base.prototype.initialize.call(this);
-    this.createWindowLayer();
-    this.fetchEntries();
-};
-Scene_Characters.prototype.fetchEntries = function () {
-    this._entries = TEW.DATABASE.CHARACTER_DESCRIPTIONS;
-};
-Scene_Characters.prototype.create = function () {
-    Scene_Base.prototype.create.call(this);
-    this.addFullscreenBackground();
-    this.createEntryWindow();
-    this.createContentsTable();
-};
-Scene_Characters.prototype.addFullscreenBackground = function () {
-    this._background = new Sprite(ImageManager.loadSystem('bg_characters'));
-    this.addChildAt(this._background, this.getChildIndex(this._windowLayer));
-};
-Scene_Characters.prototype.createEntryWindow = function () {
-    this._windowEntryDetails = new Window_CharacterEntry();
-    this._windowEntryDetails._cancelHandler = () => {
-        this._windowEntryDetails.hide();
-        this._windowEntryDetails.deactivate();
-        this._windowContentsTable.show();
-        this._windowContentsTable.activate();
-    };
-    this.addWindow(this._windowEntryDetails);
-};
-Scene_Characters.prototype.createContentsTable = function () {
-    this._windowContentsTable = new Window_JournalContentsTable(this._entries);
-    this._windowContentsTable.setHandler('cancel', this.popScene.bind(this));
-    this._windowContentsTable.setHandler('ok', () => {
-        const selectedEntry = this._entries[this._windowContentsTable.index()];
-        if (this._windowEntryDetails._id !== selectedEntry.id) {
-            this._windowEntryDetails.reset(selectedEntry);
-        }
-        this._windowContentsTable.deactivate();
-        this._windowContentsTable.hide();
-        this._windowEntryDetails.show();
-        this._windowEntryDetails.activate();
-        this._windowEntryDetails.refresh();
-    });
-    this.addWindow(this._windowContentsTable);
-    this._windowContentsTable.show();
-    this._windowContentsTable.activate();
-    this._windowContentsTable.refresh();
-    this._windowContentsTable.select(0);
-};
-// #endregion =========================== Scene_Characters ============================== //
-// ============================== //
-// #region ============================== Scene_Glossary ============================== //
-function Scene_Glossary() {
-    this.initialize.apply(this, arguments);
-}
-Scene_Glossary.prototype = Object.create(Scene_Base.prototype);
-Scene_Glossary.prototype.constructor = Scene_Glossary;
-Scene_Glossary.prototype.initialize = function () {
-    Scene_Base.prototype.initialize.call(this);
-    this.createWindowLayer();
-    this.fetchEntries();
-};
-Scene_Glossary.prototype.fetchEntries = function () {
-    const unlockedEntryIds = $gameGlossary.unlockedEntries();
-    this._entries = unlockedEntryIds
-        .map(id => TEW.DATABASE.GLOSSARY[id])
-        .sort((a, b) => a.title.localeCompare(b.title));
-};
-Scene_Glossary.prototype.create = function () {
-    Scene_Base.prototype.create.call(this);
-    this.addFullscreenBackground();
-    this.createEntryWindow();
-    this.createContentsTable();
-};
-Scene_Glossary.prototype.addFullscreenBackground = function () {
-    this._background = new Sprite(ImageManager.loadSystem('bg_glossary'));
-    this.addChildAt(this._background, this.getChildIndex(this._windowLayer));
-};
-Scene_Glossary.prototype.createEntryWindow = function () {
-    this._windowEntryDetails = new Window_GlossaryEntry();
-    this._windowEntryDetails._cancelHandler = () => {
-        this._windowEntryDetails.hide();
-        this._windowEntryDetails.deactivate();
-        this._windowContentsTable.show();
-        this._windowContentsTable.activate();
-    };
-    this.addWindow(this._windowEntryDetails);
-};
-Scene_Glossary.prototype.createContentsTable = function () {
-    this._windowContentsTable = new Window_JournalContentsTable(this._entries);
-    this._windowContentsTable.setHandler('cancel', this.popScene.bind(this));
-    this._windowContentsTable.setHandler('ok', () => {
-        const selectedEntry = this._entries[this._windowContentsTable.index()];
-        if (this._windowEntryDetails._id !== selectedEntry.id) {
-            this._windowEntryDetails.reset(selectedEntry);
-        }
-        this._windowContentsTable.deactivate();
-        this._windowContentsTable.hide();
-        this._windowEntryDetails.show();
-        this._windowEntryDetails.activate();
-        this._windowEntryDetails.refresh();
-    });
-    this.addWindow(this._windowContentsTable);
-    this._windowContentsTable.show();
-    this._windowContentsTable.activate();
-    this._windowContentsTable.refresh();
-    this._windowContentsTable.select(0);
-};
-// #endregion =========================== Scene_Glossary ============================== //
-// ============================== //
 // #region ============================== Scene_QuestLog ============================== //
 function Scene_QuestLog() {
     this.initialize.apply(this, arguments);
@@ -310,6 +194,62 @@ Scene_QuestLog.prototype.createQuestList = function () {
 };
 // #endregion =========================== Scene_QuestLog ============================== //
 // ============================== //
+// #region ============================== Scene_Journal ============================== //
+function Scene_Journal() {
+    this.initialize.apply(this, arguments);
+}
+;
+Scene_Journal.prototype = Object.create(Scene_Base.prototype);
+Scene_Journal.prototype.constructor = Scene_Journal;
+Scene_Journal.prototype.initialize = function () {
+    Scene_Base.prototype.initialize.call(this);
+    this.createWindowLayer();
+    this.fetchEntries();
+};
+Scene_Journal.prototype.create = function () {
+    Scene_Base.prototype.create.call(this);
+    this.addFullscreenBackground();
+    this.createEntryWindow();
+    this.createContentsTable();
+    this.setupEntryWindow();
+};
+Scene_Journal.prototype.addFullscreenBackground = function () {
+    this._background = new Sprite(ImageManager.loadSystem(this.backgroundImageName()));
+    this.addChildAt(this._background, this.getChildIndex(this._windowLayer));
+};
+Scene_Journal.prototype.setupEntryWindow = function () {
+    this._windowEntryDetails._cancelHandler = () => {
+        this._windowEntryDetails.hide();
+        this._windowEntryDetails.deactivate();
+        this._windowContentsTable.show();
+        this._windowContentsTable.activate();
+    };
+    this._windowEntryDetails.hide();
+    this._windowEntryDetails.deactivate();
+    this.addWindow(this._windowEntryDetails);
+};
+Scene_Journal.prototype.createContentsTable = function () {
+    this._windowContentsTable = new Window_JournalContentsTable(this._entries);
+    this._windowContentsTable.setHandler('cancel', this.popScene.bind(this));
+    this._windowContentsTable.setHandler('ok', () => {
+        const selectedEntry = this._entries[this._windowContentsTable.index()];
+        if (this._windowEntryDetails._id !== selectedEntry.id) {
+            this._windowEntryDetails.reset(selectedEntry);
+        }
+        this._windowContentsTable.deactivate();
+        this._windowContentsTable.hide();
+        this._windowEntryDetails.show();
+        this._windowEntryDetails.activate();
+        this._windowEntryDetails.refresh();
+    });
+    this.addWindow(this._windowContentsTable);
+    this._windowContentsTable.show();
+    this._windowContentsTable.activate();
+    this._windowContentsTable.refresh();
+    this._windowContentsTable.select(0);
+};
+// #endregion =========================== Scene_Journal ============================== //
+// ============================== //
 // #region ============================== Scene_Journals ============================== //
 function Scene_Journals() {
     this.initialize.apply(this, arguments);
@@ -340,6 +280,7 @@ Scene_Journals.prototype.openJournal = function () {
             SceneManager.push(Scene_QuestLog);
             break;
         case "journal_documents":
+            SceneManager.push(Scene_Documents);
             break;
         case "journal_characters":
             SceneManager.push(Scene_Characters);
@@ -353,63 +294,6 @@ Scene_Journals.prototype.openJournal = function () {
     }
 };
 // #endregion =========================== Scene_Journals ============================== //
-// ============================== //
-// #region ============================== Scene_Tutorials ============================== //
-function Scene_Tutorials() {
-    this.initialize.apply(this, arguments);
-}
-;
-Scene_Tutorials.prototype = Object.create(Scene_Base.prototype);
-Scene_Tutorials.prototype.constructor = Scene_Tutorials;
-Scene_Tutorials.prototype.initialize = function () {
-    Scene_Base.prototype.initialize.call(this);
-    this.createWindowLayer();
-    this.fetchEntries();
-};
-Scene_Tutorials.prototype.fetchEntries = function () {
-    this._entries = TEW.DATABASE.TUTORIALS.sort((a, b) => a.title.localeCompare(b.title));
-};
-Scene_Tutorials.prototype.create = function () {
-    Scene_Base.prototype.create.call(this);
-    this.addFullscreenBackground();
-    this.createEntryWindow();
-    this.createContentsTable();
-};
-Scene_Tutorials.prototype.addFullscreenBackground = function () {
-    this._background = new Sprite(ImageManager.loadSystem('bg_tutorials'));
-    this.addChildAt(this._background, this.getChildIndex(this._windowLayer));
-};
-Scene_Tutorials.prototype.createEntryWindow = function () {
-    this._windowEntryDetails = new Window_TutorialEntry();
-    this._windowEntryDetails._cancelHandler = () => {
-        this._windowEntryDetails.hide();
-        this._windowEntryDetails.deactivate();
-        this._windowContentsTable.show();
-        this._windowContentsTable.activate();
-    };
-    this.addWindow(this._windowEntryDetails);
-};
-Scene_Tutorials.prototype.createContentsTable = function () {
-    this._windowContentsTable = new Window_JournalContentsTable(this._entries);
-    this._windowContentsTable.setHandler('cancel', this.popScene.bind(this));
-    this._windowContentsTable.setHandler('ok', () => {
-        const selectedEntry = this._entries[this._windowContentsTable.index()];
-        if (this._windowEntryDetails._id !== selectedEntry.id) {
-            this._windowEntryDetails.reset(selectedEntry);
-        }
-        this._windowContentsTable.deactivate();
-        this._windowContentsTable.hide();
-        this._windowEntryDetails.show();
-        this._windowEntryDetails.activate();
-        this._windowEntryDetails.refresh();
-    });
-    this.addWindow(this._windowContentsTable);
-    this._windowContentsTable.show();
-    this._windowContentsTable.activate();
-    this._windowContentsTable.refresh();
-    this._windowContentsTable.select(0);
-};
-// #endregion =========================== Scene_Tutorials ============================== //
 // ============================== //
 // #region ============================== Scene_Menu ============================== //
 // ----------------------
@@ -524,6 +408,92 @@ Scene_Menu.prototype.onFormationCancel = function () {
     }
 };
 // #endregion =========================== Scene_Menu ============================== //
+// ============================== //
+// #region ============================== Scene_Characters ============================== //
+function Scene_Characters() {
+    this.initialize.apply(this, arguments);
+}
+;
+Scene_Characters.prototype = Object.create(Scene_Journal.prototype);
+Scene_Characters.prototype.constructor = Scene_Characters;
+Scene_Characters.prototype.initialize = function () {
+    Scene_Journal.prototype.initialize.call(this);
+};
+Scene_Characters.prototype.fetchEntries = function () {
+    this._entries = TEW.DATABASE.CHARACTER_DESCRIPTIONS;
+};
+Scene_Characters.prototype.backgroundImageName = function () {
+    return 'bg_characters';
+};
+Scene_Characters.prototype.createEntryWindow = function () {
+    this._windowEntryDetails = new Window_CharacterEntry();
+};
+// #endregion =========================== Scene_Characters ============================== //
+// ============================== //
+// #region ============================== Scene_Documents ============================== //
+function Scene_Documents() {
+    this.initialize.apply(this, arguments);
+}
+;
+Scene_Documents.prototype = Object.create(Scene_Journal.prototype);
+Scene_Documents.prototype.constructor = Scene_Documents;
+Scene_Documents.prototype.initialize = function () {
+    Scene_Journal.prototype.initialize.call(this);
+};
+Scene_Documents.prototype.fetchEntries = function () {
+    this._entries = TEW.DATABASE.JOURNAL_DOCUMENTS;
+};
+Scene_Documents.prototype.backgroundImageName = function () {
+    return 'bg_documents';
+};
+Scene_Documents.prototype.createEntryWindow = function () {
+    this._windowEntryDetails = new Window_Document();
+};
+// #endregion =========================== Scene_Documents ============================== //
+// ============================== //
+// #region ============================== Scene_Glossary ============================== //
+function Scene_Glossary() {
+    this.initialize.apply(this, arguments);
+}
+Scene_Glossary.prototype = Object.create(Scene_Journal.prototype);
+Scene_Glossary.prototype.constructor = Scene_Glossary;
+Scene_Glossary.prototype.initialize = function () {
+    Scene_Journal.prototype.initialize.call(this);
+};
+Scene_Glossary.prototype.fetchEntries = function () {
+    const unlockedEntryIds = $gameGlossary.unlockedEntries();
+    this._entries = unlockedEntryIds
+        .map(id => TEW.DATABASE.GLOSSARY[id])
+        .sort((a, b) => a.title.localeCompare(b.title));
+};
+Scene_Glossary.prototype.backgroundImageName = function () {
+    return 'bg_glossary';
+};
+Scene_Glossary.prototype.createEntryWindow = function () {
+    this._windowEntryDetails = new Window_GlossaryEntry();
+};
+// #endregion =========================== Scene_Glossary ============================== //
+// ============================== //
+// #region ============================== Scene_Tutorials ============================== //
+function Scene_Tutorials() {
+    this.initialize.apply(this, arguments);
+}
+;
+Scene_Tutorials.prototype = Object.create(Scene_Journal.prototype);
+Scene_Tutorials.prototype.constructor = Scene_Tutorials;
+Scene_Tutorials.prototype.initialize = function () {
+    Scene_Journal.prototype.initialize.call(this);
+};
+Scene_Tutorials.prototype.fetchEntries = function () {
+    this._entries = TEW.DATABASE.TUTORIALS.sort((a, b) => a.title.localeCompare(b.title));
+};
+Scene_Tutorials.prototype.backgroundImageName = function () {
+    return 'bg_tutorials';
+};
+Scene_Tutorials.prototype.createEntryWindow = function () {
+    this._windowEntryDetails = new Window_TutorialEntry();
+};
+// #endregion =========================== Scene_Tutorials ============================== //
 // ============================== //
 // #region ============================== HalfWindow_Details ============================== //
 //-----------------------------------------------------------------------------
@@ -1867,6 +1837,83 @@ Window_CharacterEntry.prototype.loadImage = function (image) {
 };
 // #endregion =========================== Window_CharacterEntry ============================== //
 // ============================== //
+// #region ============================== Window_Document ============================== //
+function Window_Document() {
+    this.initialize.apply(this, arguments);
+}
+;
+Window_Document.prototype = Object.create(Window_JournalEntry.prototype);
+Window_Document.prototype.constructor = Window_Document;
+Window_Document.prototype.initialize = function () {
+    Window_JournalEntry.prototype.initialize.call(this);
+    this._pageIndex = 0;
+    this._drawn = false;
+};
+Window_Document.prototype.reset = function (entry) {
+    this._id = entry.id;
+    this._title = entry.title;
+    this._image = entry.image;
+    this._paragraphs = entry.paragraphs;
+    this._formattedContent = undefined;
+};
+Window_Document.prototype.drawDetails = function () {
+    // Title
+    if (this._pageIndex === 0) {
+        this.drawUnderlinedText(this._title, 0, 0, 510, "center");
+    }
+    // Format content or read from memory
+    if (!this._formattedContent) {
+        const text = this._paragraphs.map((p) => p.content).join('\n \n ');
+        this._formattedContent = this.cutTextIntoPages(text, 80, 0, 590, 510); // TODO constants ?
+    }
+    const page = this._formattedContent[this._pageIndex];
+    for (let line of page.lines) {
+        this.drawText(line.text, 0, line.y, 510, 'left');
+    }
+    if (!this._drawn) {
+        this.reserveImage(this._image);
+        const readyCheck = resolve => {
+            if (ImageManager.isReady())
+                resolve();
+            else
+                setTimeout(() => readyCheck(resolve), 100);
+        };
+        new Promise(readyCheck).then(() => {
+            const bitmap = this.loadImage(this._image);
+            this.contents.blt(bitmap, 0, 0, bitmap.rect.width, bitmap.rect.height, 590, 0);
+            this._drawn = true;
+        });
+    }
+};
+Window_Document.prototype.update = function () {
+    Window_Base.prototype.update.call(this);
+    if (this.active) {
+        if (Input.isRepeated('cancel') && this._cancelHandler) {
+            SoundManager.playCancel();
+            this._drawn = false;
+            this._cancelHandler();
+            Input.update();
+        }
+        else if (Input.isRepeated('right') && this._formattedContent.length > this._pageIndex + 1) {
+            this._pageIndex++;
+            this.refresh();
+            Input.update();
+        }
+        else if (Input.isRepeated('left') && this._pageIndex >= 1) {
+            this._pageIndex--;
+            this.refresh();
+            Input.update();
+        }
+    }
+};
+Window_Document.prototype.reserveImage = function (image) {
+    return ImageManager.reserveImage('documents', image, image);
+};
+Window_Document.prototype.loadImage = function (image) {
+    return ImageManager.reserveImage('documents', image);
+};
+// #endregion =========================== Window_Document ============================== //
+// ============================== //
 // #region ============================== Window_GlossaryEntry ============================== //
 function Window_GlossaryEntry() {
     this.initialize.apply(this, arguments);
@@ -2036,18 +2083,19 @@ Window_JournalContentsTable.prototype.refresh = function () {
 Window_JournalContentsTable.prototype.drawItem = function (index) {
     const normalizedIndex = index - this.topIndex();
     const x = normalizedIndex % 2 === 0 ? 0 : 620;
-    const y = normalizedIndex * TEW.MENU.LINE_HEIGHT;
+    const y = Math.floor(normalizedIndex / 2) * TEW.MENU.LINE_HEIGHT;
     const entry = this._entries[index];
     this.drawText(entry.title, x, y, TEW.MENU.JOURNALS_PAGE_CONTENT_AREA.w, 'left');
 };
 Window_JournalContentsTable.prototype.maxCols = () => 2;
 Window_JournalContentsTable.prototype.maxItems = function () {
-    return this._entries.length;
+    var _a;
+    return ((_a = this._entries) === null || _a === void 0 ? void 0 : _a.length) || 0;
 };
 Window_JournalContentsTable.prototype.itemRect = function (index) {
     const normalizedIndex = index - this.topIndex();
     const x = normalizedIndex % 2 === 0 ? 0 : 620;
-    const y = normalizedIndex * TEW.MENU.LINE_HEIGHT;
+    const y = Math.floor(normalizedIndex / 2) * TEW.MENU.LINE_HEIGHT;
     return new Rectangle(x, y, 510, TEW.MENU.LINE_HEIGHT);
 };
 // #endregion =========================== Window_JournalContentsTable ============================== //

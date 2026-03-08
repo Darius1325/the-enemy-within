@@ -191,6 +191,7 @@ Game_Map.prototype.chargeRange = function(distance: number, event: Game_Characte
 
         const cached = this._straightPaths[startKey][enemyKey];
         if (cached) {
+            this.addAllTiles(cached);
             this.addTile(this.tile(enemyPos.x, enemyPos.y));
             continue;
         }
@@ -199,6 +200,7 @@ Game_Map.prototype.chargeRange = function(distance: number, event: Game_Characte
         if (!path) continue;
 
         this.storePath(startKey, enemyKey, path);
+        this.addAllTiles(path);
         this.addTile(this.tile(enemyPos.x, enemyPos.y));
     }
 };
@@ -208,6 +210,15 @@ Game_Map.prototype.chargeRange = function(distance: number, event: Game_Characte
  */
 Game_Map.prototype.storePath = function(startKey: string, enemyKey: string, path) {
     this._straightPaths[startKey][enemyKey] = path;
+};
+
+/**
+ * Add all tiles of a path to highlight on the map
+ */
+Game_Map.prototype.addAllTiles = function(path: Point[]) {
+    for (let tile of path) {
+        this.addTile(this.tile(tile.x, tile.y));
+    }
 };
 
 /**

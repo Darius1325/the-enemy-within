@@ -1,5 +1,6 @@
 // $PluginCompiler TEW_Combat.js
 
+import TEW from "../../_types/tew";
 import { Point } from "../../_types/point";
 import Game_BattlerBase from "./Game_BattlerBase";
 
@@ -48,6 +49,7 @@ Game_Battler.prototype.initMembers = function() {
     this._canAction = true;
     this._active = false;
     this._requestImage = false;
+    this._channellingLevel = 0;
 };
 
 Game_Battler.prototype.setupEvent = function(eventId) {
@@ -124,6 +126,44 @@ Game_Battler.prototype.isMoving = function() {
 
 Game_Battler.prototype.turnTowardCharacter = function(character) {
     this.event().turnTowardCharacter(character)
+};
+
+Game_Battler.prototype.doChannelling = function() {
+    const channellingCompId = this.anyCompOfCategory('CHANNELLING');
+    const womModifier = $gameVariables.value(15);
+    const testResult = TEW.DICE.skillTest(this, channellingCompId, womModifier);
+    const previousChannellingLevel = this._channellingLevel;
+
+    if (testResult.success) {
+        if (testResult.critical) {
+            this._channellingLevel += testResult.sl + this.paramBonus('WILL');
+
+            if (!this.hasTalent('AETHYRIC_ATTUNEMENT')) {
+                // minor magical crit
+            }
+        } else {
+            if (testResult.sl === 0) {
+                this._channellingLevel += 1;
+            }
+            else {
+                this._channellingLevel += testResult.sl;
+            }
+        }
+        $gameMessage.add("You gained " + String(this._channellingLevel - previousChannellingLevel) + " channelling levels.");
+    } else {
+        if (testResult.critical) {
+            this._channellingLevel = 0;
+            if (this._channellingLevel > this.paramBonus('WILL')) {
+                // major magical crit
+            } else {
+                // minor magical crit
+            }
+        } else {
+            this._channellingLevel += testResult.sl;
+            this._channellingLevel = Math.max(this._channellingLevel, 0);
+        }
+        $gameMessage.add("You lost " + String(previousChannellingLevel - this._channellingLevel) + " channelling levels.");
+    }
 };
 
 Game_Battler.prototype.isItemRangeValid = function(item) {

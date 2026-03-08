@@ -27,6 +27,7 @@ import { Quest } from "./quest";
 import { Glossary } from "./glossary";
 import { Tutorial } from "./tutorial";
 import { CharacterDescription } from "./characterDescription";
+import { JournalDocument } from "./journalDocument";
 
 /** Storage object for all TEW plugins */
 const TEW: {
@@ -134,8 +135,11 @@ const TEW: {
         /** Tutorial entries, displayed in tutorials and controlled by an id list: */
         TUTORIALS?: Tutorial[];
 
-        /** Character entries, displayed in tutorials and controlled by an id list: */
+        /** Character entries, displayed in character notes and controlled by an id list: */
         CHARACTER_DESCRIPTIONS?: CharacterDescription[];
+
+        /** Documents, displayed in gathered evidence and controlled by an id list: */
+        JOURNAL_DOCUMENTS?: JournalDocument[];
     };
 
     /** Constants used in menu plugins for readability */
@@ -186,6 +190,7 @@ const TEW: {
     DICE?: {
         /** Set of points to draw a 10-sided die */
         DIE_10_POINTS?: [number, number][];
+
         /**
          * Compute a stat bonus
          * @param value character's stat value
@@ -215,13 +220,13 @@ const TEW: {
         /**
          * Roll a 10-sided die and add the result to the actor's initiative bonus.
          * Used to determine turn order
-         * @param actor the battler to roll initiative for
+         * @param battler the battler to roll initiative for
          * @returns void
          */
-        rollInitiative?: (actor: Game_Actor) => number;
+        rollInitiative?: (battler: Game_BattlerBase) => number;
 
         skillTest?: (
-            actor: Game_Actor,
+            battler: Game_BattlerBase,
             compId: string,
             modifier?: number,
             hidden?: boolean

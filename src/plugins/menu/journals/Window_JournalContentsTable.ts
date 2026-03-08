@@ -32,7 +32,7 @@ Window_JournalContentsTable.prototype.refresh = function() {
 Window_JournalContentsTable.prototype.drawItem = function(index: number) {
     const normalizedIndex = index - this.topIndex();
     const x = normalizedIndex % 2 === 0 ? 0 : 620;
-    const y = normalizedIndex * TEW.MENU.LINE_HEIGHT;
+    const y = Math.floor(normalizedIndex / 2) * TEW.MENU.LINE_HEIGHT;
     const entry = this._entries[index];
     this.drawText(entry.title, x, y, TEW.MENU.JOURNALS_PAGE_CONTENT_AREA.w, 'left');
 };
@@ -40,12 +40,12 @@ Window_JournalContentsTable.prototype.drawItem = function(index: number) {
 Window_JournalContentsTable.prototype.maxCols = () => 2;
 
 Window_JournalContentsTable.prototype.maxItems = function() {
-    return this._entries.length;
+    return this._entries?.length || 0;
 };
 
 Window_JournalContentsTable.prototype.itemRect = function(index: number) {
     const normalizedIndex = index - this.topIndex();
     const x = normalizedIndex % 2 === 0 ? 0 : 620;
-    const y = normalizedIndex * TEW.MENU.LINE_HEIGHT;
+    const y = Math.floor(normalizedIndex / 2) * TEW.MENU.LINE_HEIGHT;
     return new Rectangle(x, y, 510, TEW.MENU.LINE_HEIGHT);
 };

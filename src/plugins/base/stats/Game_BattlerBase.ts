@@ -48,7 +48,9 @@ export interface Game_BattlerBase {
 
     compPlus: (compId: string) => number;
     comp: (compId: string) => number;
+    anyCompOfCategory: (compCategory: string) => string | null;
     hasComp: (compId: string) => boolean;
+    hasAnyCompOfCategory: (compCategory: string) => boolean;
     addComp: (compId: string, value: number) => void;
 
     talent: (talentId: string) => number;
@@ -212,11 +214,25 @@ Game_BattlerBase.prototype.comp = function(compId: string) {
     return this.compPlus(compId) + this.paramByName(associatedStat);
 };
 
+Game_BattlerBase.prototype.anyCompOfCategory = function(compCategory: string) {
+    const comps = TEW.DATABASE.COMPS.IDS
+        .filter(compId => compId.startsWith(compCategory))
+        .filter(compId => this.hasComp(compId));
+    if (comps.length > 0) {
+        return comps[0];
+    }
+    return null;
+};
+
 Game_BattlerBase.prototype.hasComp = function(compId: string) {
     if (TEW.DATABASE.COMPS.SET[compId].isBase) {
         return true;
     }
     return this._competences[TEW.DATABASE.COMPS.IDS.indexOf(compId)] !== -1;
+};
+
+Game_BattlerBase.prototype.hasAnyCompOfCategory = function(compCategory: string) {
+    return this.anyCompOfCategory(compCategory) !== null;
 };
 
 Game_BattlerBase.prototype.addComp = function(compId: string, value: number) {

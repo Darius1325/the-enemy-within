@@ -31,12 +31,10 @@ Window_TacticsActionCommand.prototype.setActor = function(actor) {
 
 Window_TacticsActionCommand.prototype.makeCommandList = function() {
     if (this._actor) {
-        this.addAttackCommand();
+        this.addCommand(TEW.COMBAT.SYSTEM.actionAttack, 'attack', BattleManager.canAct());
+        this.addCommand(TEW.COMBAT.SYSTEM.actionSpell, 'spell', BattleManager.canAct());
+        this.addCommand(TEW.COMBAT.SYSTEM.actionChannelling, 'channelling', BattleManager.canAct());
     }
-};
-
-Window_TacticsActionCommand.prototype.addAttackCommand = function() {
-    this.addCommand(TEW.COMBAT.SYSTEM.actionAttack, 'attack', BattleManager.canAct());
 };
 
 Window_TacticsActionCommand.prototype.select = function(index: number) {

@@ -316,7 +316,7 @@ Game_Selector.prototype.checkDestination = function(subject) {
 
 Game_Selector.prototype.selectTarget = function(action) {
     const selectedBattler = this.select();
-    if ($gameSelector.isOk()) {
+    if (this.isOk()) {
         if ($gameMap.isOnTiles(this.x, this.y) && action.isTargetValid(selectedBattler)) {
             SoundManager.playOk();
             return selectedBattler.index();

@@ -315,7 +315,7 @@ TEW.COMBAT = TEW.COMBAT || {};
  *     https://forums.rpgmakerweb.com/index.php?threads/tactics-system-1-0.117600/
  */
 TEW.COMBAT.SYSTEM = TEW.COMBAT.SYSTEM || {};
-TEW.COMBAT.SYSTEM.actionRange = '1'; // TODO should be a number ?
+TEW.COMBAT.SYSTEM.actionRange = 1;
 TEW.COMBAT.SYSTEM.mvp = 4; // TODO should be removed eventually
 TEW.COMBAT.SYSTEM.chargeMinimumRange = 4;
 TEW.COMBAT.SYSTEM.durationStartSprite = 1; // TODO should be removed eventually
@@ -349,6 +349,8 @@ TEW.COMBAT.SYSTEM.moveCharge = 'Charge';
 TEW.COMBAT.SYSTEM.moveSwitchWeapon = 'Switch weapons';
 TEW.COMBAT.SYSTEM.action = 'Action';
 TEW.COMBAT.SYSTEM.actionAttack = 'Attack';
+TEW.COMBAT.SYSTEM.actionSpell = 'Spell';
+TEW.COMBAT.SYSTEM.actionChannelling = 'Channelling';
 TEW.COMBAT.SYSTEM.advantage = 'Advantages';
 TEW.COMBAT.SYSTEM.wait = 'Wait';
 TEW.COMBAT.SYSTEM.waitSkillId = 7;
@@ -1032,6 +1034,10 @@ BattleManager.updateTarget = function () {
         action.setTarget(index);
         this.setupAction();
     }
+    else if ($gameSelector.isOk()) {
+        // TODO hit the void
+        this.endAction();
+    }
     if ($gameSelector.isCancelled()) {
         SoundManager.playCancel();
         this.previousTarget();
@@ -1370,13 +1376,13 @@ BattleManager.setupCombat = function (action) {
     gameOpponents.setupTactics(action.combatOpponentsUnit(this._subject));
 };
 BattleManager.refreshRedCells = function (action) {
-    BattleManager.setEventCallback = function (callback) {
-        this._eventCallback = callback;
-    };
     $gameMap.clearTiles();
     BattleManager.setupCombat(action);
     $gameMap.setActionColor(action);
     action.showRange();
+};
+BattleManager.setEventCallback = function (callback) {
+    this._eventCallback = callback;
 };
 BattleManager.turnTowardCharacter = function (character) {
     this._subject.turnTowardCharacter(character);
@@ -1594,7 +1600,7 @@ Game_Action.prototype.searchBattlers = function (battler, units) {
     var battlers = [];
     var item = this.item();
     if (this.isAttackRange(battler)) {
-        item = battler.weapons()[0] || battler.weapons()[1];
+        item = TEW.COMBAT.getWeaponFromId(battler.equippedWeapon().id);
     }
     this.updateRange(item, battler.tx, battler.ty);
     for (var i = 0; i < this._range.length; i++) {
@@ -1610,27 +1616,19 @@ Game_Action.prototype.searchBattlers = function (battler, units) {
     return battlers;
 };
 Game_Action.prototype.isAttackRange = function (subject) {
-    return subject.isActor() && this.isAttack() && !subject.hasNoWeapons();
+    return subject.isActor() && this.isAttack();
 };
 Game_Action.prototype.updateRange = function (item, x, y) {
-    var data = this.extractRangeData(item);
-    // range: 10 -> range: 0 10
-    if (data[1] === undefined) {
-        data[1] = data[0];
-        data[0] = 0;
-    }
-    // range:
-    if (data[2] === undefined) {
-        data[2] = 'diamond';
-    }
-    this._range = this.createRange(parseInt(data[0]), parseInt(data[1]), x, y, data[2]);
+    const range = this.extractRangeData(item);
+    console.log(range);
+    // TODO better algorithm for obstacles
+    this._range = this.createRange(0, range, x, y, range === 1 ? 'diamond' : 'euclidean');
     if (this.isForUser()) {
         this._range = [[x, y]];
     }
 };
 Game_Action.prototype.extractRangeData = function (object) {
-    var data = object.meta['Range'] || TEW.COMBAT.SYSTEM.actionRange;
-    return data.trim().split(' ');
+    return object.range || TEW.COMBAT.SYSTEM.actionRange;
 };
 Game_Action.prototype.createRange = function (d1, d2, x, y, shape) {
     var range = [];
@@ -1643,11 +1641,8 @@ Game_Action.prototype.createRange = function (d1, d2, x, y, shape) {
                             range.push([i, j]);
                         }
                         break;
-                    case 'rectangle':
-                        range.push([i, j]);
-                        break;
-                    case 'line':
-                        if (i === x || j === y) {
+                    case 'euclidean':
+                        if ((i - x) * (i - x) + (j - y) * (j - y) <= d2 * d2) {
                             range.push([i, j]);
                         }
                         break;
@@ -1997,6 +1992,10 @@ Game_Actor.prototype.refresh = function () {
         this.removeState(this.deathStateId());
     }
 };
+// unused RMMV base function
+Game_Actor.prototype.hasNoWeapons = function () {
+    return false;
+};
 
 // #endregion =========================== Game_Actor ============================== //
 // ============================== //
@@ -2031,6 +2030,7 @@ Game_Battler.prototype.initMembers = function () {
     this._canAction = true;
     this._active = false;
     this._requestImage = false;
+    this._channellingLevel = 0;
 };
 Game_Battler.prototype.setupEvent = function (eventId) {
     this._eventId = eventId;
@@ -2093,6 +2093,45 @@ Game_Battler.prototype.isMoving = function () {
 };
 Game_Battler.prototype.turnTowardCharacter = function (character) {
     this.event().turnTowardCharacter(character);
+};
+Game_Battler.prototype.doChannelling = function () {
+    const channellingCompId = this.anyCompOfCategory('CHANNELLING');
+    const womModifier = $gameVariables.value(15);
+    const testResult = TEW.DICE.skillTest(this, channellingCompId, womModifier);
+    const previousChannellingLevel = this._channellingLevel;
+    if (testResult.success) {
+        if (testResult.critical) {
+            this._channellingLevel += testResult.sl + this.paramBonus('WILL');
+            if (!this.hasTalent('AETHYRIC_ATTUNEMENT')) {
+                // minor magical crit
+            }
+        }
+        else {
+            if (testResult.sl === 0) {
+                this._channellingLevel += 1;
+            }
+            else {
+                this._channellingLevel += testResult.sl;
+            }
+        }
+        $gameMessage.add("You gained " + String(this._channellingLevel - previousChannellingLevel) + " channelling levels.");
+    }
+    else {
+        if (testResult.critical) {
+            this._channellingLevel = 0;
+            if (this._channellingLevel > this.paramBonus('WILL')) {
+                // major magical crit
+            }
+            else {
+                // minor magical crit
+            }
+        }
+        else {
+            this._channellingLevel += testResult.sl;
+            this._channellingLevel = Math.max(this._channellingLevel, 0);
+        }
+        $gameMessage.add("You lost " + String(previousChannellingLevel - this._channellingLevel) + " channelling levels.");
+    }
 };
 Game_Battler.prototype.isItemRangeValid = function (item) {
     if (!item) {
@@ -2299,7 +2338,6 @@ Game_Battler.prototype.isAdjacentTo = function (target) {
     return (Math.abs(this.x - target.x) === 1 && this.y === target.y)
         || (Math.abs(this.y - target.y) === 1 && this.x === target.x);
 };
-
 // #endregion =========================== Game_Battler ============================== //
 // ============================== //
 // #region ============================== Game_BattlerBase ============================== //
@@ -2748,6 +2786,7 @@ Game_Map.prototype.chargeRange = function (distance, event, through = false) {
         const enemyKey = `${enemyPos.x},${enemyPos.y}`;
         const cached = this._straightPaths[startKey][enemyKey];
         if (cached) {
+            this.addAllTiles(cached);
             this.addTile(this.tile(enemyPos.x, enemyPos.y));
             continue;
         }
@@ -2755,6 +2794,7 @@ Game_Map.prototype.chargeRange = function (distance, event, through = false) {
         if (!path)
             continue;
         this.storePath(startKey, enemyKey, path);
+        this.addAllTiles(path);
         this.addTile(this.tile(enemyPos.x, enemyPos.y));
     }
 };
@@ -2763,6 +2803,14 @@ Game_Map.prototype.chargeRange = function (distance, event, through = false) {
  */
 Game_Map.prototype.storePath = function (startKey, enemyKey, path) {
     this._straightPaths[startKey][enemyKey] = path;
+};
+/**
+ * Add all tiles of a path to highlight on the map
+ */
+Game_Map.prototype.addAllTiles = function (path) {
+    for (let tile of path) {
+        this.addTile(this.tile(tile.x, tile.y));
+    }
 };
 /**
  * Check if the target is in charge range of the subject, i.e. if it's within the maximum charge distance and outside of the minimum one.
@@ -3524,7 +3572,7 @@ Game_Selector.prototype.checkDestination = function (subject) {
 };
 Game_Selector.prototype.selectTarget = function (action) {
     const selectedBattler = this.select();
-    if ($gameSelector.isOk()) {
+    if (this.isOk()) {
         if ($gameMap.isOnTiles(this.x, this.y) && action.isTargetValid(selectedBattler)) {
             SoundManager.playOk();
             return selectedBattler.index();
@@ -4064,11 +4112,10 @@ Window_TacticsActionCommand.prototype.setActor = function (actor) {
 };
 Window_TacticsActionCommand.prototype.makeCommandList = function () {
     if (this._actor) {
-        this.addAttackCommand();
+        this.addCommand(TEW.COMBAT.SYSTEM.actionAttack, 'attack', BattleManager.canAct());
+        this.addCommand(TEW.COMBAT.SYSTEM.actionSpell, 'spell', BattleManager.canAct());
+        this.addCommand(TEW.COMBAT.SYSTEM.actionChannelling, 'channelling', BattleManager.canAct());
     }
-};
-Window_TacticsActionCommand.prototype.addAttackCommand = function () {
-    this.addCommand(TEW.COMBAT.SYSTEM.actionAttack, 'attack', BattleManager.canAct());
 };
 Window_TacticsActionCommand.prototype.select = function (index) {
     Window_ActorCommand.prototype.select.call(this, index);
@@ -4467,6 +4514,8 @@ Scene_Battle.prototype.createMoveCommandWindow = function () {
 Scene_Battle.prototype.createActionCommandWindow = function () {
     this._actionCommandWindow = new Window_TacticsActionCommand();
     this._actionCommandWindow.setHandler('attack', this.commandAttack.bind(this));
+    this._actionCommandWindow.setHandler('spell', this.commandSpell.bind(this));
+    this._actionCommandWindow.setHandler('channelling', this.commandChannelling.bind(this));
     this._actionCommandWindow.setHandler('cancel', () => {
         $gameMap.clearTiles();
         this._tacticsCommandWindow.activate();
@@ -4851,6 +4900,17 @@ Scene_Battle.prototype.commandAttack = function () {
     // BattleManager.setupCombat(action); // WTF are you doing step bro ?
     BattleManager.refreshRedCells(action);
     this.onSelectAction();
+};
+Scene_Battle.prototype.commandSpell = function () {
+    // OSKUR TODO
+};
+Scene_Battle.prototype.commandChannelling = function () {
+    this.changeBackground();
+    this._actionCommandWindow.close();
+    this._tacticsCommandWindow.close();
+    // TODO animation + sound
+    BattleManager.actor().doChannelling();
+    BattleManager.endAction();
 };
 Scene_Battle.prototype.onPersonalOk = function () {
     $gameSelector.setTransparent(false);
