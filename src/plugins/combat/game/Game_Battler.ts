@@ -388,3 +388,7 @@ Game_Battler.prototype.isAdjacentTo = function(target: { x: number, y: number })
     return (Math.abs(this.x - target.x) === 1 && this.y === target.y)
         || (Math.abs(this.y - target.y) === 1 && this.x === target.x);
 };
+
+Game_Battler.prototype.getTurnOrderSpriteName = function() {
+    return this._turnOrderSpriteName || 'default';
+};

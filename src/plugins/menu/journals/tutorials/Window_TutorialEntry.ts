@@ -9,11 +9,14 @@ function Window_TutorialEntry() {
     this.initialize.apply(this, arguments);
 };
 
+Window_TutorialEntry.IMAGE_CACHE_RID = 'Window_TutorialEntry_RID';
+
 export default Window_TutorialEntry.prototype = Object.create(Window_JournalPrettyEntry.prototype);
 Window_TutorialEntry.prototype.constructor = Window_TutorialEntry;
 
 Window_TutorialEntry.prototype.initialize = function() {
     Window_JournalPrettyEntry.prototype.initialize.call(this);
+    this._cachedImages = {};
 };
 
 Window_TutorialEntry.prototype.reset = function(entry: Tutorial) {
@@ -24,9 +27,14 @@ Window_TutorialEntry.prototype.reset = function(entry: Tutorial) {
 };
 
 Window_TutorialEntry.prototype.reserveImage = function(image: string) {
-    return ImageManager.reserveImage('tutorials', image, image);
+    return ImageManager.reserveImage('tutorials', image, Window_TutorialEntry.IMAGE_CACHE_RID);
 };
 
 Window_TutorialEntry.prototype.loadImage = function(image: string) {
     return ImageManager.reserveImage('tutorials', image);
+};
+
+Window_TutorialEntry.prototype.close = function() {
+    ImageManager.releaseReservation(Window_TutorialEntry.IMAGE_CACHE_RID);
+    Window_JournalPrettyEntry.prototype.close.call(this);
 };

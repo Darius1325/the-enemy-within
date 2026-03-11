@@ -15,6 +15,7 @@ import Window_TacticsWeaponDetails from "./weapons/Window_TacticsWeaponDetails";
 import Window_TacticsWeaponCommand from "./weapons/Window_TacticsWeaponCommand";
 import { WeaponGroup, WeaponQuality } from "../../_types/enum";
 import { Sprite } from "../../../rmmv/core/Sprite";
+import Window_TurnOrder from "./Window_TurnOrder";
 
 // $StartCompilation
 
@@ -89,6 +90,8 @@ Scene_Battle.prototype.createAllWindows = function() {
     this.createWeaponCommandWindow();
     this.createWeaponListWindow();
     this.createWeaponDetailsWindow();
+
+    this.createTurnOrderWindow();
 };
 
 Scene_Battle.prototype.createLogWindow = function() {
@@ -264,6 +267,13 @@ Scene_Battle.prototype.createWeaponDetailsWindow = function() {
     });
     this._weaponDetailsWindow.hide();
     this.addWindow(this._weaponDetailsWindow);
+};
+
+Scene_Battle.prototype.createTurnOrderWindow = function() {
+    this._turnOrderWindow = new Window_TurnOrder();
+    this._turnOrderWindow.deactivate();
+    this._turnOrderWindow.show();
+    this.addWindow(this._turnOrderWindow);
 };
 
 Scene_Battle.prototype.activateCommandWindowWeapon = function() {

@@ -360,7 +360,7 @@ TEW.COMBAT.SYSTEM.playerPhaseId = 2; // TODO should be removed eventually
 TEW.COMBAT.SYSTEM.phaseVarId = 1;
 TEW.COMBAT.SYSTEM.battlePhaseVarId = 3;
 TEW.COMBAT.SYSTEM.playerPhaseVarId = 2;
-TEW.COMBAT.SYSTEM.turnCountVarId = 4;
+TEW.COMBAT.SYSTEM.turnCountVarId = 4; // TODO useless, remove the whole mechanic
 const StatArray = ['MHP', 'WEAS', 'BALS', 'STRG', 'TOUG', 'INIT', 'AGIL', 'DEXT', 'INTL', 'FELW', 'WILL'];
 // #endregion =========================== import ============================== //
 // ============================== //
@@ -904,16 +904,24 @@ BattleManager.makeTurnOrder = function () {
         .map((actor, index) => ({
         battlerIndex: index,
         isActor: true,
-        initiative: TEW.DICE.rollInitiative(actor)
+        initiative: TEW.DICE.rollInitiative(actor),
+        turnOrderSpriteName: actor.getTurnOrderSpriteName()
     }));
     const enemyInitRolls = $gameTroopTs.members()
         .map((enemy, index) => ({
         battlerIndex: index,
         isActor: false,
-        initiative: TEW.DICE.rollInitiative(enemy)
+        initiative: TEW.DICE.rollInitiative(enemy),
+        turnOrderSpriteName: enemy.getTurnOrderSpriteName()
     }));
     this._turnOrder = playerInitRolls.concat(enemyInitRolls)
         .sort((a, b) => b.initiative - a.initiative);
+};
+BattleManager.turnIndex = function () {
+    if (!this._turnOrder || !this._currentTurnOrder) {
+        return -1;
+    }
+    return Math.max(this._turnOrder.length - this._currentTurnOrder.length - 1, 0);
 };
 BattleManager.updateStartPhase = function () {
     $gameTroop.increaseTurn(); // useless ?
@@ -1125,6 +1133,9 @@ BattleManager.updateStart = function () {
             else {
                 this.updateStartEnemy();
             }
+        }
+        else { // remove battler from turn order
+            this._turnOrder.splice(this.turnIndex(), 1);
         }
     }
 };
@@ -1982,6 +1993,9 @@ Game_Actor.prototype.onActionEnd = function () {
     Game_Battler.prototype.onActionEnd.call(this);
     this.event().setStepAnime(true);
 };
+Game_Actor.prototype.getTurnOrderSpriteName = function () {
+    return this.name();
+};
 // TODO this is RMMV base implem, we need to change KO/death handling
 Game_Actor.prototype.refresh = function () {
     Game_BattlerBase.prototype.refresh.call(this);
@@ -2337,6 +2351,9 @@ Game_Battler.prototype.onClear = function () {
 Game_Battler.prototype.isAdjacentTo = function (target) {
     return (Math.abs(this.x - target.x) === 1 && this.y === target.y)
         || (Math.abs(this.y - target.y) === 1 && this.x === target.x);
+};
+Game_Battler.prototype.getTurnOrderSpriteName = function () {
+    return this._turnOrderSpriteName || 'default';
 };
 // #endregion =========================== Game_Battler ============================== //
 // ============================== //
@@ -4405,6 +4422,7 @@ Scene_Battle.prototype.createAllWindows = function () {
     this.createWeaponCommandWindow();
     this.createWeaponListWindow();
     this.createWeaponDetailsWindow();
+    this.createTurnOrderWindow();
 };
 Scene_Battle.prototype.createLogWindow = function () {
     this._logWindow = new Window_BattleLog();
@@ -4561,6 +4579,12 @@ Scene_Battle.prototype.createWeaponDetailsWindow = function () {
     });
     this._weaponDetailsWindow.hide();
     this.addWindow(this._weaponDetailsWindow);
+};
+Scene_Battle.prototype.createTurnOrderWindow = function () {
+    this._turnOrderWindow = new Window_TurnOrder();
+    this._turnOrderWindow.deactivate();
+    this._turnOrderWindow.show();
+    this.addWindow(this._turnOrderWindow);
 };
 Scene_Battle.prototype.activateCommandWindowWeapon = function () {
     if (this._weaponsWindow.isOpenAndActive() && this._weaponsWindow.index() >= 0) {
@@ -5660,6 +5684,76 @@ Window_TacticsStatus.prototype.drawEnemySimpleStatus = function (enemy, x, y, wi
 };
 // #endregion =========================== Window_TacticsStatus ============================== //
 // ============================== //
+// #region ============================== Window_TurnOrder ============================== //
+function Window_TurnOrder() {
+    this.initialize.apply(this, arguments);
+}
+Window_TurnOrder.SOURCE_DIR = 'sv_turn_order';
+Window_TurnOrder.IMAGE_CACHE_RID = 'Window_TurnOrder_RID';
+Window_TurnOrder.prototype = Object.create(Window_Base.prototype);
+Window_TurnOrder.prototype.constructor = Window_TurnOrder;
+Window_TurnOrder.prototype.initialize = function () {
+    Window_Base.prototype.initialize.call(this, 0, 0, Graphics.boxWidth, 80); // TODO constant
+    this._orderedImageNames = [];
+    this._turnIndex = -1;
+};
+Window_TurnOrder.prototype.setTurnOrder = function () {
+    if (BattleManager._turnOrder && BattleManager._turnOrder.length !== this._orderedImageNames.length) {
+        this._orderedImageNames = BattleManager._turnOrder.map(battler => battler.turnOrderSpriteName);
+        console.log("turn order registered sprites: ", this._orderedImageNames);
+        for (let image of this._orderedImageNames) {
+            this.reserveImage(image);
+        }
+    }
+};
+Window_TurnOrder.prototype.refresh = function () {
+    this.contents.clear();
+    this.setTurnOrder();
+    if (this._orderedImageNames.length > 0) {
+        const readyCheck = resolve => {
+            if (ImageManager.isReady())
+                resolve();
+            else
+                setTimeout(() => readyCheck(resolve), 100);
+        };
+        new Promise(readyCheck).then(() => {
+            for (let iterator = 0; iterator < 11; iterator++) {
+                const index = (iterator + this._turnIndex) % this._orderedImageNames.length;
+                const bitmap = this.loadImage(this._orderedImageNames[index]);
+                // 100px sprites + 18px separators: 1280 = 11 * 100 + 10 * 18
+                // Add an offset to center the sprite in a 100px slot
+                const xOffset = iterator * 118 + Math.floor((100 - bitmap.rect.width) / 2);
+                this.contents.blt(bitmap, 0, 0, bitmap.rect.width, bitmap.rect.height, xOffset, 0);
+            }
+        });
+    }
+};
+Window_TurnOrder.prototype.update = function () {
+    Window_Base.prototype.update.call(this);
+    const turnIndex = BattleManager.turnIndex();
+    if (this._turnIndex !== turnIndex) {
+        this._turnIndex = turnIndex;
+        this.refresh();
+    }
+};
+Window_TurnOrder.prototype.reserveImage = function (image) {
+    return ImageManager.reserveImage(Window_TurnOrder.SOURCE_DIR, image, Window_TurnOrder.IMAGE_CACHE_RID);
+};
+Window_TurnOrder.prototype.loadImage = function (image) {
+    return ImageManager.loadImage(Window_TurnOrder.SOURCE_DIR, image);
+};
+Window_TurnOrder.prototype.close = function () {
+    ImageManager.releaseReservation(Window_TurnOrder.IMAGE_CACHE_RID);
+    Window_Base.prototype.close.call(this);
+};
+Window_TurnOrder.prototype.horizontalBorderPadding = function () {
+    return 0;
+};
+Window_TurnOrder.prototype.verticalBorderPadding = function () {
+    return 0;
+};
+// #endregion =========================== Window_TurnOrder ============================== //
+// ============================== //
 // #region ============================== Bitmap ============================== //
 //-----------------------------------------------------------------------------
 /**
@@ -6287,6 +6381,15 @@ Window_TacticsMoveCommand.prototype.windowWidth = function () {
 };
 Window_TacticsMoveCommand.prototype.windowHeight = function () {
     return 240; // 4 * line height + 2 * text padding + 2 * bg padding
+};
+Window_TurnOrder.prototype.windowWidth = function () {
+    return Graphics.boxWidth;
+};
+Window_TurnOrder.prototype.windowHeight = function () {
+    return 80;
+};
+Window_TurnOrder.prototype.backgroundImageName = function () {
+    return "bg_turnOrder";
 };
 // #endregion =========================== backgrounds ============================== //
 // ============================== //

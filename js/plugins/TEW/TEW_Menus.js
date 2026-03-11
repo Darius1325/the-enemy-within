@@ -1818,6 +1818,7 @@ function Window_CharacterEntry() {
     this.initialize.apply(this, arguments);
 }
 ;
+Window_CharacterEntry.IMAGE_CACHE_RID = 'Window_CharacterEntry_RID';
 Window_CharacterEntry.prototype = Object.create(Window_JournalPrettyEntry.prototype);
 Window_CharacterEntry.prototype.constructor = Window_CharacterEntry;
 Window_CharacterEntry.prototype.initialize = function () {
@@ -1830,10 +1831,14 @@ Window_CharacterEntry.prototype.reset = function (entry) {
     this._formattedContent = undefined;
 };
 Window_CharacterEntry.prototype.reserveImage = function (image) {
-    return ImageManager.reserveImage('mugs', image, image);
+    return ImageManager.reserveImage('mugs', image, Window_CharacterEntry.IMAGE_CACHE_RID);
 };
 Window_CharacterEntry.prototype.loadImage = function (image) {
     return ImageManager.reserveImage('mugs', image);
+};
+Window_CharacterEntry.prototype.close = function () {
+    ImageManager.releaseReservation(Window_CharacterEntry.IMAGE_CACHE_RID);
+    Window_JournalPrettyEntry.prototype.close.call(this);
 };
 // #endregion =========================== Window_CharacterEntry ============================== //
 // ============================== //
@@ -1842,12 +1847,12 @@ function Window_Document() {
     this.initialize.apply(this, arguments);
 }
 ;
+Window_Document.IMAGE_CACHE_RID = 'Window_Document_RID';
 Window_Document.prototype = Object.create(Window_JournalEntry.prototype);
 Window_Document.prototype.constructor = Window_Document;
 Window_Document.prototype.initialize = function () {
     Window_JournalEntry.prototype.initialize.call(this);
     this._pageIndex = 0;
-    this._drawn = false;
 };
 Window_Document.prototype.reset = function (entry) {
     this._id = entry.id;
@@ -1870,27 +1875,23 @@ Window_Document.prototype.drawDetails = function () {
     for (let line of page.lines) {
         this.drawText(line.text, 0, line.y, 510, 'left');
     }
-    if (!this._drawn) {
-        this.reserveImage(this._image);
-        const readyCheck = resolve => {
-            if (ImageManager.isReady())
-                resolve();
-            else
-                setTimeout(() => readyCheck(resolve), 100);
-        };
-        new Promise(readyCheck).then(() => {
-            const bitmap = this.loadImage(this._image);
-            this.contents.blt(bitmap, 0, 0, bitmap.rect.width, bitmap.rect.height, 590, 0);
-            this._drawn = true;
-        });
-    }
+    this.reserveImage(this._image);
+    const readyCheck = resolve => {
+        if (ImageManager.isReady())
+            resolve();
+        else
+            setTimeout(() => readyCheck(resolve), 100);
+    };
+    new Promise(readyCheck).then(() => {
+        const bitmap = this.loadImage(this._image);
+        this.contents.blt(bitmap, 0, 0, bitmap.rect.width, bitmap.rect.height, 590, 0);
+    });
 };
 Window_Document.prototype.update = function () {
     Window_Base.prototype.update.call(this);
     if (this.active) {
         if (Input.isRepeated('cancel') && this._cancelHandler) {
             SoundManager.playCancel();
-            this._drawn = false;
             this._cancelHandler();
             Input.update();
         }
@@ -1907,10 +1908,14 @@ Window_Document.prototype.update = function () {
     }
 };
 Window_Document.prototype.reserveImage = function (image) {
-    return ImageManager.reserveImage('documents', image, image);
+    return ImageManager.reserveImage('documents', image, Window_Document.IMAGE_CACHE_RID);
 };
 Window_Document.prototype.loadImage = function (image) {
     return ImageManager.reserveImage('documents', image);
+};
+Window_Document.prototype.close = function () {
+    ImageManager.releaseReservation(Window_Document.IMAGE_CACHE_RID);
+    Window_JournalEntry.prototype.close.call(this);
 };
 // #endregion =========================== Window_Document ============================== //
 // ============================== //
@@ -2044,10 +2049,12 @@ function Window_TutorialEntry() {
     this.initialize.apply(this, arguments);
 }
 ;
+Window_TutorialEntry.IMAGE_CACHE_RID = 'Window_TutorialEntry_RID';
 Window_TutorialEntry.prototype = Object.create(Window_JournalPrettyEntry.prototype);
 Window_TutorialEntry.prototype.constructor = Window_TutorialEntry;
 Window_TutorialEntry.prototype.initialize = function () {
     Window_JournalPrettyEntry.prototype.initialize.call(this);
+    this._cachedImages = {};
 };
 Window_TutorialEntry.prototype.reset = function (entry) {
     this._id = entry.id;
@@ -2056,10 +2063,14 @@ Window_TutorialEntry.prototype.reset = function (entry) {
     this._formattedContent = undefined;
 };
 Window_TutorialEntry.prototype.reserveImage = function (image) {
-    return ImageManager.reserveImage('tutorials', image, image);
+    return ImageManager.reserveImage('tutorials', image, Window_TutorialEntry.IMAGE_CACHE_RID);
 };
 Window_TutorialEntry.prototype.loadImage = function (image) {
     return ImageManager.reserveImage('tutorials', image);
+};
+Window_TutorialEntry.prototype.close = function () {
+    ImageManager.releaseReservation(Window_TutorialEntry.IMAGE_CACHE_RID);
+    Window_JournalPrettyEntry.prototype.close.call(this);
 };
 // #endregion =========================== Window_TutorialEntry ============================== //
 // ============================== //

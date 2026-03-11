@@ -374,6 +374,6 @@ TEW.COMBAT.SYSTEM.playerPhaseId = 2; // TODO should be removed eventually
 TEW.COMBAT.SYSTEM.phaseVarId = 1;
 TEW.COMBAT.SYSTEM.battlePhaseVarId = 3;
 TEW.COMBAT.SYSTEM.playerPhaseVarId = 2;
-TEW.COMBAT.SYSTEM.turnCountVarId = 4;
+TEW.COMBAT.SYSTEM.turnCountVarId = 4; // TODO useless, remove the whole mechanic
 
 export const StatArray: StatName[] = ['MHP', 'WEAS', 'BALS', 'STRG', 'TOUG', 'INIT', 'AGIL', 'DEXT', 'INTL', 'FELW', 'WILL'];

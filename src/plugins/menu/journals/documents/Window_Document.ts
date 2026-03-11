@@ -10,6 +10,8 @@ function Window_Document() {
     this.initialize.apply(this, arguments);
 };
 
+Window_Document.IMAGE_CACHE_RID = 'Window_Document_RID';
+
 export default Window_Document.prototype = Object.create(Window_JournalEntry.prototype);
 Window_Document.prototype.constructor = Window_Document;
 
@@ -57,7 +59,6 @@ Window_Document.prototype.drawDetails = function() {
             bitmap.rect.width, bitmap.rect.height,
             590, 0
         );
-        this._drawn = true;
     });
 };
 
@@ -81,9 +82,14 @@ Window_Document.prototype.update = function() {
 };
 
 Window_Document.prototype.reserveImage = function(image: string) {
-    return ImageManager.reserveImage('documents', image, image);
+    return ImageManager.reserveImage('documents', image, Window_Document.IMAGE_CACHE_RID);
 };
 
 Window_Document.prototype.loadImage = function(image: string) {
     return ImageManager.reserveImage('documents', image);
+};
+
+Window_Document.prototype.close = function() {
+    ImageManager.releaseReservation(Window_Document.IMAGE_CACHE_RID);
+    Window_JournalEntry.prototype.close.call(this);
 };

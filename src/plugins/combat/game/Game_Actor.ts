@@ -178,6 +178,10 @@ Game_Actor.prototype.onActionEnd = function() {
     this.event().setStepAnime(true);
 };
 
+Game_Actor.prototype.getTurnOrderSpriteName = function() {
+    return this.name();
+};
+
 // TODO this is RMMV base implem, we need to change KO/death handling
 Game_Actor.prototype.refresh = function() {
     Game_BattlerBase.prototype.refresh.call(this);

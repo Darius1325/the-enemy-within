@@ -385,19 +385,28 @@ BattleManager.makeTurnOrder = function() {
         .map((actor, index) => ({
             battlerIndex: index,
             isActor: true,
-            initiative: TEW.DICE.rollInitiative(actor)
+            initiative: TEW.DICE.rollInitiative(actor),
+            turnOrderSpriteName: actor.getTurnOrderSpriteName()
         }));
     const enemyInitRolls = $gameTroopTs.members()
         .map((enemy, index) => ({
             battlerIndex: index,
             isActor: false,
-            initiative: TEW.DICE.rollInitiative(enemy)
+            initiative: TEW.DICE.rollInitiative(enemy),
+            turnOrderSpriteName: enemy.getTurnOrderSpriteName()
         }));
     this._turnOrder = playerInitRolls.concat(enemyInitRolls)
         .sort((a: { initiative: number }, b: { initiative: number }) =>
                 b.initiative - a.initiative
         );
 };
+
+BattleManager.turnIndex = function() {
+    if (!this._turnOrder || !this._currentTurnOrder) {
+        return -1;
+    }
+    return Math.max(this._turnOrder.length - this._currentTurnOrder.length - 1, 0);
+}
 
 BattleManager.updateStartPhase = function() {
     $gameTroop.increaseTurn(); // useless ?
@@ -630,6 +639,8 @@ BattleManager.updateStart = function() {
             } else {
                 this.updateStartEnemy();
             }
+        } else { // remove battler from turn order
+            this._turnOrder.splice(this.turnIndex(), 1);
         }
     }
 };
