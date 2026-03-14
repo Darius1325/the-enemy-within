@@ -3,6 +3,8 @@
 
 import Window_TacticsActionCommand from "./action/Window_TacticsActionCommand";
 import Window_TacticsMoveCommand from "./move/Window_TacticsMoveCommand";
+import Window_TacticsSpellDetails from "./spell/Window_TacticsSpellDetails";
+import Window_TacticsSpellList from "./spell/Window_TacticsSpellList";
 import Window_TacticsCommand from "./Window_TacticsCommand";
 import Window_TurnOrder from "./Window_TurnOrder";
 
@@ -37,4 +39,11 @@ Window_TurnOrder.prototype.windowHeight = function() {
 };
 Window_TurnOrder.prototype.backgroundImageName = function() {
     return "bg_turnOrder";
+};
+
+Window_TacticsSpellList.prototype.windowHeight = function() {
+    return 240; // 4 * line height + 2 * text padding + 2 * bg padding
+};
+Window_TacticsSpellDetails.prototype.windowHeight = function() {
+    return 240; // 4 * line height + 2 * text padding + 2 * bg padding
 };

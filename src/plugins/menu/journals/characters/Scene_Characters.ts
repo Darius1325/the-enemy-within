@@ -18,7 +18,8 @@ Scene_Characters.prototype.initialize = function() {
 };
 
 Scene_Characters.prototype.fetchEntries = function() {
-    this._entries = TEW.DATABASE.CHARACTER_DESCRIPTIONS;
+    this._entries = TEW.DATABASE.CHARACTER_DESCRIPTIONS
+        .filter(char => $gameSwitches.value(char.id));
 };
 
 Scene_Characters.prototype.backgroundImageName = function() {

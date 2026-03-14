@@ -7,7 +7,7 @@ import TEW from "../_types/tew";
 // #region ====== DOCUMENTS === //
 TEW.DATABASE.JOURNAL_DOCUMENTS = [
     {
-        id: 0,
+        id: 110,
         title: "Wanted! Bold Adventurers!",
         image: "wanted_bold_adventurers",
         paragraphs: [

@@ -16,6 +16,8 @@ import Window_TacticsWeaponCommand from "./weapons/Window_TacticsWeaponCommand";
 import { WeaponGroup, WeaponQuality } from "../../_types/enum";
 import { Sprite } from "../../../rmmv/core/Sprite";
 import Window_TurnOrder from "./Window_TurnOrder";
+import Window_TacticsSpellList from "./spell/Window_TacticsSpellList";
+import Window_TacticsSpellDetails from "./spell/Window_TacticsSpellDetails";
 
 // $StartCompilation
 
@@ -69,6 +71,7 @@ Scene_Battle.prototype.changeBackground = function(commandLevel = 0) {
     this._background = new Sprite(ImageManager.loadSystem(
         commandLevel === 0 ? 'bg_battle' : ('bg_battle_command' + commandLevel)
     ));
+    console.log(commandLevel === 0 ? 'bg_battle' : ('bg_battle_command' + commandLevel));
     this.addChildAt(this._background, this.getChildIndex(this._windowLayer));
 };
 
@@ -90,6 +93,9 @@ Scene_Battle.prototype.createAllWindows = function() {
     this.createWeaponCommandWindow();
     this.createWeaponListWindow();
     this.createWeaponDetailsWindow();
+
+    this.createSpellListWindow();
+    this.createSpellDetailsWindow();
 
     this.createTurnOrderWindow();
 };
@@ -269,6 +275,31 @@ Scene_Battle.prototype.createWeaponDetailsWindow = function() {
     this.addWindow(this._weaponDetailsWindow);
 };
 
+Scene_Battle.prototype.createSpellListWindow = function() {
+    this._windowSpellList = new Window_TacticsSpellList();
+    this._windowSpellList.setHandler('cancel', () => {
+        this._actionCommandWindow.activate();
+        this._windowSpellList.close();
+        this._winddowSpellDetails.close();
+        this._actionCommandWindow.refresh();
+        this._actionCommandWindow.select(1);
+    });
+    this._windowSpellList.setHandler('ok', () => {
+        // TODO launch spell targetting
+    });
+    this._windowSpellList.hide();
+    this.addWindow(this._windowSpellList);
+};
+
+Scene_Battle.prototype.createSpellDetailsWindow = function() {
+    this._windowSpellDetails = new Window_TacticsSpellDetails();
+    this._windowSpellList.setHandler('show_spell_details', () => {
+        this.showSpellDetails();
+    });
+    this._windowSpellDetails.hide();
+    this.addWindow(this._windowSpellDetails);
+};
+
 Scene_Battle.prototype.createTurnOrderWindow = function() {
     this._turnOrderWindow = new Window_TurnOrder();
     this._turnOrderWindow.deactivate();
@@ -295,6 +326,10 @@ Scene_Battle.prototype.showWeaponDetails = function() {
         this._weaponDetailsWindow.clear();
         this._weaponsCommandWindow.clear();
     }
+};
+
+Scene_Battle.prototype.showSpellDetails = function() {
+    // TODO
 };
 
 Scene_Battle.prototype.equipWeapon = function() {
@@ -487,7 +522,8 @@ Scene_Battle.prototype.isAnyInputWindowActive = function() {
         this._moveCommandWindow.active ||
         this._actionCommandWindow.active ||
         this._weaponsWindow.active ||
-        this._weaponsCommandWindow.active
+        this._weaponsCommandWindow.active ||
+        this._windowSpellList.active
     );
 };
 
@@ -649,7 +685,20 @@ Scene_Battle.prototype.commandAttack = function() {
 };
 
 Scene_Battle.prototype.commandSpell = function() {
-    // OSKUR TODO
+    this.changeBackground('Spell');
+
+    this._windowSpellList.setActor(BattleManager.actor());
+    this._windowSpellList.syncActor();
+
+    this._actionCommandWindow.deactivate();
+
+    this._windowSpellList.open();
+    this._windowSpellList.activate();
+    this._windowSpellList.show();
+
+    this._windowSpellDetails.open();
+    this._windowSpellDetails.activate();
+    this._windowSpellDetails.show();
 };
 
 Scene_Battle.prototype.commandChannelling = function() {

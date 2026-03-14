@@ -1,6 +1,6 @@
 // $PluginCompiler TEW_Base.js
 
-import {BodyLocation, Stat, StatName, WeaponGroup} from "../../_types/enum";
+import {BodyLocation, StatName, WeaponGroup} from "../../_types/enum";
 import TEW from "../../_types/tew";
 import {Armor} from "../../_types/armor";
 
@@ -19,13 +19,7 @@ export interface Game_BattlerBase {
     _spells: string[];
     _talents: Record<string, number>;
     _items: Record<string, number>;
-    _weapons: {
-        id: string,
-        isInMainHand: boolean,
-        isInSecondHand: boolean,
-        ammo: number,
-        ammoType: string
-    }[];
+    _weapons: ActorWeapon[];
     _armors: string[];
     _equippedArmors: string[];
     _ammo: Record<string, number>;

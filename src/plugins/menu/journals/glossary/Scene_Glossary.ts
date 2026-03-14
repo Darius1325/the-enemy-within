@@ -18,9 +18,8 @@ Scene_Glossary.prototype.initialize = function() {
 };
 
 Scene_Glossary.prototype.fetchEntries = function() {
-    const unlockedEntryIds: number[] = $gameGlossary.unlockedEntries();
-    this._entries = unlockedEntryIds
-        .map(id => TEW.DATABASE.GLOSSARY[id])
+    this._entries = TEW.DATABASE.GLOSSARY
+        .filter(entry => $gameSwitches.value(entry))
         .sort((a, b) => a.title.localeCompare(b.title));
 };
 

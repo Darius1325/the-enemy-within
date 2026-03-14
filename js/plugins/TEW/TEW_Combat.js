@@ -4404,6 +4404,7 @@ Scene_Battle.prototype.createBackground = function () {
 Scene_Battle.prototype.changeBackground = function (commandLevel = 0) {
     this.removeChildAt(this.getChildIndex(this._background));
     this._background = new Sprite(ImageManager.loadSystem(commandLevel === 0 ? 'bg_battle' : ('bg_battle_command' + commandLevel)));
+    console.log(commandLevel === 0 ? 'bg_battle' : ('bg_battle_command' + commandLevel));
     this.addChildAt(this._background, this.getChildIndex(this._windowLayer));
 };
 Scene_Battle.prototype.createAllWindows = function () {
@@ -4422,6 +4423,8 @@ Scene_Battle.prototype.createAllWindows = function () {
     this.createWeaponCommandWindow();
     this.createWeaponListWindow();
     this.createWeaponDetailsWindow();
+    this.createSpellListWindow();
+    this.createSpellDetailsWindow();
     this.createTurnOrderWindow();
 };
 Scene_Battle.prototype.createLogWindow = function () {
@@ -4580,6 +4583,29 @@ Scene_Battle.prototype.createWeaponDetailsWindow = function () {
     this._weaponDetailsWindow.hide();
     this.addWindow(this._weaponDetailsWindow);
 };
+Scene_Battle.prototype.createSpellListWindow = function () {
+    this._windowSpellList = new Window_TacticsSpellList();
+    this._windowSpellList.setHandler('cancel', () => {
+        this._actionCommandWindow.activate();
+        this._windowSpellList.close();
+        this._winddowSpellDetails.close();
+        this._actionCommandWindow.refresh();
+        this._actionCommandWindow.select(1);
+    });
+    this._windowSpellList.setHandler('ok', () => {
+        // TODO launch spell targetting
+    });
+    this._windowSpellList.hide();
+    this.addWindow(this._windowSpellList);
+};
+Scene_Battle.prototype.createSpellDetailsWindow = function () {
+    this._windowSpellDetails = new Window_TacticsSpellDetails();
+    this._windowSpellList.setHandler('show_spell_details', () => {
+        this.showSpellDetails();
+    });
+    this._windowSpellDetails.hide();
+    this.addWindow(this._windowSpellDetails);
+};
 Scene_Battle.prototype.createTurnOrderWindow = function () {
     this._turnOrderWindow = new Window_TurnOrder();
     this._turnOrderWindow.deactivate();
@@ -4605,6 +4631,9 @@ Scene_Battle.prototype.showWeaponDetails = function () {
         this._weaponDetailsWindow.clear();
         this._weaponsCommandWindow.clear();
     }
+};
+Scene_Battle.prototype.showSpellDetails = function () {
+    // TODO
 };
 Scene_Battle.prototype.equipWeapon = function () {
     const weapon = this._weaponsWindow.item();
@@ -4775,7 +4804,8 @@ Scene_Battle.prototype.isAnyInputWindowActive = function () {
         this._moveCommandWindow.active ||
         this._actionCommandWindow.active ||
         this._weaponsWindow.active ||
-        this._weaponsCommandWindow.active);
+        this._weaponsCommandWindow.active ||
+        this._windowSpellList.active);
 };
 Scene_Battle.prototype.startActorCommandSelection = function () {
     this._actorWindow.show();
@@ -4926,7 +4956,16 @@ Scene_Battle.prototype.commandAttack = function () {
     this.onSelectAction();
 };
 Scene_Battle.prototype.commandSpell = function () {
-    // OSKUR TODO
+    this.changeBackground('Spell');
+    this._windowSpellList.setActor(BattleManager.actor());
+    this._windowSpellList.syncActor();
+    this._actionCommandWindow.deactivate();
+    this._windowSpellList.open();
+    this._windowSpellList.activate();
+    this._windowSpellList.show();
+    this._windowSpellDetails.open();
+    this._windowSpellDetails.activate();
+    this._windowSpellDetails.show();
 };
 Scene_Battle.prototype.commandChannelling = function () {
     this.changeBackground();
@@ -5065,6 +5104,94 @@ SceneManager.isCurrentScene = function (sceneClass) {
     return this._scene && this._scene.constructor === sceneClass;
 };
 // #endregion =========================== SceneManager ============================== //
+// ============================== //
+// #region ============================== Window_TacticsSpellDetails ============================== //
+function Window_TacticsSpellDetails() {
+    this.initialize.apply(this, arguments);
+}
+Window_TacticsSpellDetails.prototype = Object.create(Window_Base.prototype);
+Window_TacticsSpellDetails.prototype.constructor = Window_TacticsSpellDetails;
+Window_TacticsSpellDetails.prototype.initialize = function () {
+    Window_Base.prototype.initialize.call(this, 1040, Graphics.boxHeight - this.windowHeight());
+    this._spell = null;
+};
+Window_TacticsSpellDetails.prototype.refresh = function () {
+    this.contents.clear();
+    if (this._spell) {
+        this.drawDetails(this._spell);
+    }
+};
+Window_TacticsSpellDetails.prototype.empty = function () {
+    this._spell = null;
+};
+Window_TacticsSpellDetails.prototype.drawDetails = function (spell) {
+};
+// #endregion =========================== Window_TacticsSpellDetails ============================== //
+// ============================== //
+// #region ============================== Window_TacticsSpellList ============================== //
+// ----------------------
+function Window_TacticsSpellList() {
+    this.initialize.apply(this, arguments);
+}
+Window_TacticsSpellList.prototype = Object.create(Window_Selectable.prototype);
+Window_TacticsSpellList.prototype.constructor = Window_TacticsSpellList;
+Window_TacticsSpellList.prototype.initialize = function () {
+    Window_Selectable.prototype.initialize.call(this, 440, Graphics.boxHeight - this.windowHeight());
+};
+Window_TacticsSpellList.prototype.setActor = function (actor) {
+    if (this._actor !== actor) {
+        this._actor = actor;
+        this.syncActor();
+    }
+};
+Window_TacticsSpellList.prototype.syncActor = function () {
+    this._maxItems = this._actor._spells.length;
+    this.refresh();
+};
+Window_TacticsSpellList.prototype.drawAllItems = function () {
+    var topIndex = this.topIndex();
+    for (var i = 0; i < this.maxPageItems(); i++) {
+        var index = topIndex + i;
+        if (index < this.maxItems()) {
+            this.drawItem(index);
+        }
+    }
+};
+Window_TacticsSpellList.prototype.drawItem = function (index) {
+    const normalizedIndex = index - this.topIndex();
+    const x = 0;
+    const y = Math.floor(normalizedIndex / this.maxCols()) * TEW.MENU.LINE_HEIGHT;
+    const spell = this.spellFromIndex(index);
+    this.drawText(spell.name, x, y, this.contentsWidth());
+};
+Window_TacticsSpellList.prototype.spellFromIndex = function (index) {
+    return this._actor._spells[index];
+};
+Window_TacticsSpellList.prototype.item = function () {
+    return this.spellFromIndex(this.index());
+};
+Window_TacticsSpellList.prototype.select = function (index) {
+    this._index = index;
+    if (this._index >= 0) {
+        this.callHandler("show_spell_details");
+    }
+    this._stayCount = 0;
+    this.ensureCursorVisible();
+    this.updateCursor();
+    this.callUpdateHelp();
+};
+Window_TacticsSpellList.prototype.processOk = function () {
+    if (this.isCurrentItemEnabled()) {
+        this.playOkSound();
+        this.updateInputData();
+        this.callOkHandler();
+    }
+    else {
+        this.playBuzzerSound();
+    }
+};
+Window_TacticsSpellList.prototype.maxCols = () => 3;
+// #endregion =========================== Window_TacticsSpellList ============================== //
 // ============================== //
 // #region ============================== Window_TacticsWeaponCommand ============================== //
 //-----------------------------------------------------------------------------
@@ -6390,6 +6517,12 @@ Window_TurnOrder.prototype.windowHeight = function () {
 };
 Window_TurnOrder.prototype.backgroundImageName = function () {
     return "bg_turnOrder";
+};
+Window_TacticsSpellList.prototype.windowHeight = function () {
+    return 240; // 4 * line height + 2 * text padding + 2 * bg padding
+};
+Window_TacticsSpellDetails.prototype.windowHeight = function () {
+    return 240; // 4 * line height + 2 * text padding + 2 * bg padding
 };
 // #endregion =========================== backgrounds ============================== //
 // ============================== //

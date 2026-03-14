@@ -426,7 +426,7 @@ TEW.DATABASE.ARMORS.ARRAY = TEW.DATABASE.ARMORS.IDS.map((key) => [key, TEW.DATAB
 // #region ====== CHARACTERS === //
 TEW.DATABASE.CHARACTER_DESCRIPTIONS = [
     {
-        id: 0,
+        id: 101,
         title: "Gustav Fondleburger",
         paragraphs: [
             {
@@ -444,7 +444,7 @@ TEW.DATABASE.CHARACTER_DESCRIPTIONS = [
         ]
     },
     {
-        id: 1,
+        id: 102,
         title: "Herpin Stiggerwurt",
         paragraphs: [
             {
@@ -459,7 +459,7 @@ TEW.DATABASE.CHARACTER_DESCRIPTIONS = [
         ]
     },
     {
-        id: 2,
+        id: 103,
         title: "Gunnar and Hultz",
         paragraphs: [
             {
@@ -471,7 +471,7 @@ TEW.DATABASE.CHARACTER_DESCRIPTIONS = [
         ]
     },
     {
-        id: 3,
+        id: 104,
         title: "Lady Isolde von Strudeldorf",
         paragraphs: [
             {
@@ -486,7 +486,7 @@ TEW.DATABASE.CHARACTER_DESCRIPTIONS = [
         ]
     },
     {
-        id: 4,
+        id: 105,
         title: "Janna Elleiner",
         paragraphs: [
             {
@@ -501,7 +501,7 @@ TEW.DATABASE.CHARACTER_DESCRIPTIONS = [
         ]
     },
     {
-        id: 5,
+        id: 106,
         title: "Marie Schutz",
         paragraphs: [
             {
@@ -516,7 +516,7 @@ TEW.DATABASE.CHARACTER_DESCRIPTIONS = [
         ]
     },
     {
-        id: 6,
+        id: 107,
         title: "Ernst Heidlemann",
         paragraphs: [
             {
@@ -528,7 +528,7 @@ TEW.DATABASE.CHARACTER_DESCRIPTIONS = [
         ]
     },
     {
-        id: 7,
+        id: 108,
         title: "Phillipe Descartes",
         paragraphs: [
             {
@@ -3284,7 +3284,7 @@ TEW.DATABASE.ITEMS.ARRAY = Object.keys(TEW.DATABASE.ITEMS.SET).map(item => [item
 // #region ====== DOCUMENTS === //
 TEW.DATABASE.JOURNAL_DOCUMENTS = [
     {
-        id: 0,
+        id: 110,
         title: "Wanted! Bold Adventurers!",
         image: "wanted_bold_adventurers",
         paragraphs: [

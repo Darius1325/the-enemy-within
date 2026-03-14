@@ -24,7 +24,7 @@ Window_JournalContentsTable.prototype.initialize = function(entries) {
 
 Window_JournalContentsTable.prototype.refresh = function() {
     this.contents.clear();
-    if (this._entries) {
+    if (this._entries && this._entries.length > 0) {
         this.drawAllItems();
     }
 };

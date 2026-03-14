@@ -420,7 +420,8 @@ Scene_Characters.prototype.initialize = function () {
     Scene_Journal.prototype.initialize.call(this);
 };
 Scene_Characters.prototype.fetchEntries = function () {
-    this._entries = TEW.DATABASE.CHARACTER_DESCRIPTIONS;
+    this._entries = TEW.DATABASE.CHARACTER_DESCRIPTIONS
+        .filter(char => $gameSwitches.value(char.id));
 };
 Scene_Characters.prototype.backgroundImageName = function () {
     return 'bg_characters';
@@ -441,7 +442,8 @@ Scene_Documents.prototype.initialize = function () {
     Scene_Journal.prototype.initialize.call(this);
 };
 Scene_Documents.prototype.fetchEntries = function () {
-    this._entries = TEW.DATABASE.JOURNAL_DOCUMENTS;
+    this._entries = TEW.DATABASE.JOURNAL_DOCUMENTS
+        .filter(doc => $gameSwitches.value(doc.id));
 };
 Scene_Documents.prototype.backgroundImageName = function () {
     return 'bg_documents';
@@ -461,9 +463,8 @@ Scene_Glossary.prototype.initialize = function () {
     Scene_Journal.prototype.initialize.call(this);
 };
 Scene_Glossary.prototype.fetchEntries = function () {
-    const unlockedEntryIds = $gameGlossary.unlockedEntries();
-    this._entries = unlockedEntryIds
-        .map(id => TEW.DATABASE.GLOSSARY[id])
+    this._entries = TEW.DATABASE.GLOSSARY
+        .filter(entry => $gameSwitches.value(entry))
         .sort((a, b) => a.title.localeCompare(b.title));
 };
 Scene_Glossary.prototype.backgroundImageName = function () {
@@ -2087,7 +2088,7 @@ Window_JournalContentsTable.prototype.initialize = function (entries) {
 };
 Window_JournalContentsTable.prototype.refresh = function () {
     this.contents.clear();
-    if (this._entries) {
+    if (this._entries && this._entries.length > 0) {
         this.drawAllItems();
     }
 };

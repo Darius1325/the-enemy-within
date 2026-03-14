@@ -45,7 +45,6 @@ declare global {
     var $gameTroop: any;
     var $gameVariables: any;
     var $gameMessage: any;
-    var $gameGlossary: any;
     var Input: any;
     var TouchInput: any;
     var TextManager: any;

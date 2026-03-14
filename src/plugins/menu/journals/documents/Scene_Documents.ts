@@ -18,7 +18,8 @@ Scene_Documents.prototype.initialize = function() {
 };
 
 Scene_Documents.prototype.fetchEntries = function() {
-    this._entries = TEW.DATABASE.JOURNAL_DOCUMENTS;
+    this._entries = TEW.DATABASE.JOURNAL_DOCUMENTS
+        .filter(doc => $gameSwitches.value(doc.id));
 };
 
 Scene_Documents.prototype.backgroundImageName = function() {
