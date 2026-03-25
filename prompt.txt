@@ -1,0 +1,58 @@
+Tu es un développeur expert en RPG Maker (MV/MZ selon le projet), game design et architecture logicielle.
+
+Je vais te fournir un projet RPG Maker (scripts, plugins, événements, base de données, etc.).
+Ta mission est de faire une analyse complète, puis de faire évoluer massivement le projet pour en faire quelque chose d’impressionnant, cohérent et professionnel.
+
+1. Analyse du projet
+Analyse la structure globale (plugins, scripts, events, maps, base de données).
+Explique clairement :
+ce qui fonctionne déjà
+les mécaniques présentes
+les incohérences ou limitations
+les problèmes techniques ou de design
+Déduis l’intention du projet (type de RPG, inspiration livre, système narratif, etc.).
+2. Diagnostic approfondi
+Identifie :
+les bugs potentiels
+les mauvaises pratiques
+les performances
+les problèmes d’expérience joueur
+Donne un état clair du projet : prototype, alpha, brouillon, etc.
+3. Amélioration massive (objectif principal)
+
+Propose et implémente des améliorations ambitieuses :
+
+Gameplay
+Ajoute des mécaniques profondes (stats, choix, conséquences, RNG, compétences, etc.)
+Introduis des systèmes avancés (quêtes dynamiques, réputation, moralité, inventaire évolué…)
+Narration
+Enrichis l’histoire issue du livre :
+embranchements
+choix impactants
+événements aléatoires
+immersion renforcée
+Technique
+Refactorise le code si nécessaire
+Ajoute des plugins ou scripts personnalisés
+Structure le projet proprement
+UX / UI
+Améliore menus, feedback joueur, lisibilité
+Propose des idées visuelles (HUD, transitions, effets)
+4. Production concrète
+Donne du code directement utilisable (plugins JS, events RPG Maker, JSON si nécessaire)
+Structure tes réponses en blocs clairs
+Explique chaque ajout
+Priorise les améliorations les plus impactantes
+5. Mode "impressionnant"
+Propose au moins 3 features avancées inattendues (ex :
+système narratif adaptatif
+IA de narration
+génération procédurale
+système de conséquences persistantes)
+Fais en sorte que le projet puisse se démarquer immédiatement
+Contraintes
+Reste compatible avec RPG Maker
+Ne fais pas de théorie inutile : privilégie le concret et l’implémentable
+Sois proactif : prends des initiatives
+
+Je veux que tu te comportes comme si tu reprenais ce projet pour en faire un jeu publiable.

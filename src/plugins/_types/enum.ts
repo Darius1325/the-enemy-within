@@ -241,3 +241,39 @@ export const enum Direction {
     RIGHT = 6,
     UP = 8,
 }
+
+// ---------------------------------------------------------------------------
+// Conditions (WFRP4e p.167)
+// ---------------------------------------------------------------------------
+
+export const enum ConditionId {
+    ABLAZE     = "ABLAZE",
+    BLEEDING   = "BLEEDING",
+    BROKEN     = "BROKEN",
+    ENTANGLED  = "ENTANGLED",
+    FATIGUED   = "FATIGUED",
+    POISONED   = "POISONED",
+    PRONE      = "PRONE",
+    STUNNED    = "STUNNED",
+    SURPRISED  = "SURPRISED",
+    UNCONSCIOUS = "UNCONSCIOUS"
+}
+
+// ---------------------------------------------------------------------------
+// Fear / Terror / Frenzy (WFRP4e p.190)
+// ---------------------------------------------------------------------------
+
+export const enum PsychologyType {
+    FEAR    = "FEAR",
+    TERROR  = "TERROR",
+    FRENZY  = "FRENZY"
+}
+
+// ---------------------------------------------------------------------------
+// Corruption type (WFRP4e p.180)
+// ---------------------------------------------------------------------------
+
+export const enum CorruptionType {
+    PHYSICAL = "PHYSICAL",
+    MENTAL   = "MENTAL"
+}

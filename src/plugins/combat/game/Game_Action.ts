@@ -57,7 +57,6 @@ Game_Action.prototype.isAttackRange = function (subject) {
 
 Game_Action.prototype.updateRange = function(item, x, y) {
     const range = this.extractRangeData(item);
-    console.log(range);
     // TODO better algorithm for obstacles
     this._range = this.createRange(0, range, x, y, range === 1 ? 'diamond' : 'euclidean');
     if (this.isForUser()) {
