@@ -1,0 +1,272 @@
+================================================================================
+THE ENEMY WITHIN — CHANGELOG
+Session du 25/03/2026
+Auteurs : Ersokili, 7evy, Sebibebi67 + Claude (claude-sonnet-4-6)
+================================================================================
+
+--------------------------------------------------------------------------------
+1. CORRECTIONS DE BUGS CRITIQUES
+--------------------------------------------------------------------------------
+
+[BUG] TEW.DICE.roll(range) — off-by-one
+  Fichier : src/plugins/base/dice/Game_Interpreter.ts
+  Problème : Math.floor(Math.random() * (range - 1)) + 1
+             → un d10 ne pouvait jamais sortir 10, un d100 jamais 100.
+  Fix      : Math.floor(Math.random() * range) + 1
+
+[BUG] opposedSkillTest — fumble NPC traité comme succès
+  Fichier : src/plugins/base/dice/Game_Interpreter.ts (ligne ~133)
+  Problème : successRollNpc = true quand rollNPC >= 96
+             → un fumble ennemi était considéré comme une réussite.
+  Fix      : successRollNpc = false
+
+[BUG] Logique du test opposé entièrement incorrecte (commentaire "GIGA TODO")
+  Fichier : src/plugins/base/dice/Game_Interpreter.ts
+  Problème : La résolution du vainqueur ne suivait pas les règles WFRP4e.
+  Fix      : Réécrit selon WFRP4e p.152 :
+             - Critique du joueur > tout (sauf critique NPC)
+             - Critique NPC > tout (sauf critique joueur)
+             - SL le plus élevé gagne
+             - Égalité → le défenseur (NPC) l'emporte
+
+[BUG] console.log de debug en production
+  Fichiers : src/plugins/base/dice/Game_Interpreter.ts
+             src/plugins/combat/game/Game_Action.ts
+  Fix      : Suppression de tous les console.log de combat
+
+
+--------------------------------------------------------------------------------
+2. NOUVEAU SYSTÈME — CONDITIONS (WFRP4e p.167)
+--------------------------------------------------------------------------------
+
+Fichiers créés :
+  src/plugins/_types/condition.ts
+  src/plugins/constants/TEW_Conditions.ts
+  src/plugins/combat/game/TEW_ConditionsSystem.ts
+
+10 conditions implémentées avec piles (stacks) :
+  ABLAZE, BLEEDING, BROKEN, ENTANGLED, FATIGUED,
+  POISONED, PRONE, STUNNED, SURPRISED, UNCONSCIOUS
+
+Chaque condition a :
+  - Un nombre de piles (certaines stackables à l'infini)
+  - Des effets par pile (dégâts/tour, blocage d'action, blocage de mouvement, fuite)
+  - Un retrait automatique optionnel au début du tour (ex: SURPRISED)
+
+API sur tout battler :
+  battler.addCondition("BLEEDING", 2)
+  battler.hasCondition("STUNNED")
+  battler.conditionStacks("FATIGUED")
+  battler.removeCondition("BROKEN", 1)
+  battler.applyConditionsTurnStart()     → applique dégâts/tour, retire les temporaires
+  battler.conditionTestModifier()         → somme des malus de test actifs
+  battler.isBlockedByCondition()
+  battler.isMovementBlockedByCondition()
+  battler.mustFleeDueToCondition()
+
+
+--------------------------------------------------------------------------------
+3. NOUVEAU SYSTÈME — BLESSURES CRITIQUES (WFRP4e p.159-163)
+--------------------------------------------------------------------------------
+
+Fichiers créés :
+  src/plugins/_types/criticalInjury.ts
+  src/plugins/constants/TEW_CriticalInjuries.ts
+  src/plugins/combat/game/TEW_CriticalInjuriesSystem.ts
+
+Tables complètes par localisation (40 entrées au total) :
+  TÊTE  : 10 entrées (Dazed → Skull Caved In)
+  TORSE : 9 entrées  (Winded → Mortal Wound)
+  BRAS  : 7 entrées  (Bruised Arm → Arm Severed)
+  JAMBES: 7 entrées  (Bruised Leg → Leg Severed)
+
+Mécanique :
+  - Déclenchée quand les dégâts réduisent la cible à 0 Wounds
+  - Jet = d100 + excès de dégâts
+  - Localisation = chiffre des unités du jet d'attaque (règle WFRP4e officielle)
+    1-2 → Tête | 3-4 → Bras | 5-9 → Torse | 0 → Jambes
+  - Chaque blessure applique des conditions, réduit des stats, peut être fatale
+
+API :
+  TEW.COMBAT.resolveCriticalInjury(target, attackRoll, excessDamage)
+  TEW.COMBAT.healCriticalInjury(target, injuryId)
+  battler.criticalInjuries()
+  battler.criticalInjuryTestModifier()
+
+
+--------------------------------------------------------------------------------
+4. NOUVEAU SYSTÈME — CORRUPTION & MUTATIONS (WFRP4e p.180-185)
+--------------------------------------------------------------------------------
+
+Fichiers créés :
+  src/plugins/_types/corruption.ts
+  src/plugins/constants/TEW_Corruption.ts
+  src/plugins/combat/game/TEW_CorruptionSystem.ts
+
+Deux types de corruption :
+  - Physique → risque de Mutations (10 entrées : Warped Limb, Extra Eye, Horns...)
+  - Mentale  → risque de Désordres (10 entrées : Paranoia, Phobia, Voices...)
+
+Mécanique :
+  - Seuil = bonus TOUG + bonus VOL
+  - Dépassement → test d'Endurance Difficile
+  - Échec → tirage aléatoire sur la table correspondante
+  - Mutations/Désordres modifient les stats de façon permanente
+  - Certains donnent des avantages (Iron Skin, Beast Eyes...)
+
+API sur les acteurs :
+  actor.gainPhysicalCorruption(2, "WARPSTONE")
+  actor.gainMentalCorruption(1, "FORBIDDEN_TOME")
+  actor.corruptionThreshold()
+  actor.mutations()           → string[] des mutations actives
+  actor.disorders()           → string[] des désordres actifs
+  actor.corruptionStatModifier("FELW")
+  actor.healPhysicalCorruption(1)
+  actor.removeMutation("MUTATION_SCALY_SKIN")
+
+
+--------------------------------------------------------------------------------
+5. NOUVEAU SYSTÈME — PSYCHOLOGIE : PEUR, TERREUR, FRÉNÉSIE (WFRP4e p.190)
+--------------------------------------------------------------------------------
+
+Fichier créé :
+  src/plugins/combat/game/TEW_PsychologySystem.ts
+
+PEUR :
+  - Test de Cool (= WILL)
+  - Échec → condition BROKEN × rating Fear
+  - Succès → immunité à cette source pour tout l'affrontement
+
+TERREUR :
+  - Test de Cool avec malus −rating × 10
+  - Échec → BROKEN + tirage d'un Désordre mental
+  - Succès → immunité + 1 point de Corruption Mentale (même les braves sont marqués)
+
+FRÉNÉSIE :
+  - Immunité à Peur et Terreur
+  - +1 SL sur toutes les attaques
+  - Se termine quand plus d'ennemi en vue → gain de FATIGUED 1
+  - Nettoyage automatique en fin de combat (hook sur BattleManager.endBattle)
+
+API :
+  battler.resolveFearTest(2, "BEASTMAN_CHIEFTAIN")
+  battler.resolveTerrorTest(3, "CHAOS_SPAWN")
+  battler.enterFrenzy()
+  battler.exitFrenzy()
+  battler.isInFrenzy()
+
+
+--------------------------------------------------------------------------------
+6. INTRO COACH AND HORSES — COMPLÉTÉE DE BOUT EN BOUT
+--------------------------------------------------------------------------------
+
+A. Mini-jeu Red Empress
+   Fichiers créés :
+     src/plugins/menu/redEmpress/Scene_RedEmpress.ts
+     src/plugins/menu/redEmpress/Window_RedEmpress.ts
+
+   Jeu de cartes complet (best of 3 rounds) :
+     - Cartes 1-10 + Impératrice Rouge (11), dessinées en canvas
+     - IA de Phillipe : tire jusqu'à 16+
+     - Tour 3 : Phillipe triche automatiquement s'il est en train de perdre
+       → remplace une carte par une Impératrice Rouge
+     - Test de Perception + Gambling pour détecter la triche
+     - 4 outcomes → stockés en $gameVariables[57] → branchent la quête "The Gambler"
+       1 = Victoire propre      (joueur reçoit 24 shillings)
+       2 = Défaite              (Phillipe emporte la mise)
+       3 = Triche détectée      (Phillipe fuit, quête "Cheater!")
+       4 = Triche non détectée  (Phillipe gagne discrètement)
+     - Lancé via Plugin Command : StartRedEmpress
+
+B. Patch Map001 (Salle principale)
+   Script : scripts/patch_intro_maps.py
+
+   Events ajoutés :
+     EV012 Lady Isolde von Strudeldorf — dialogue complet (3 options), unlock fiche
+     EV013 Janna Elleiner              — servante discrète, intimidée par sa maîtresse
+     EV014 Marie Schutz                — garde du corps froide, bloque l'approche
+     EV015 Wanted Poster               — lit le document 110, active quête 53
+     EV016 Stairs Up                   — monte au 1er étage (Map003)
+
+   Events corrigés :
+     EV006 Hultz    — dialogue complet (était vide)
+     EV007 Gunnar   — haggle remplacé :
+                       test de Charm réel via Common Event 5
+                       succès = 24 shillings | échec = 36 shillings
+     EV005 Phillipe — page 3 remplace "Game here" par StartRedEmpress +
+                       4 branches narratives selon le résultat
+
+C. Patch Map003 (1er étage, était entièrement vide)
+   Events créés :
+     EV001 Stairs Down  — retour en bas
+     EV002 Bed          — séquence sommeil complète :
+                           fondu noir → nuit → matin, avance V52
+     EV003 Night Event  — événement autorun pendant la nuit :
+                           test de Perception caché
+                           succès → aperçu d'Ernst qui se déplace furtivement
+                           (graine narrative pour la suite de la campagne)
+
+D. Patch Map004 (Extérieur)
+   Events créés :
+     EV009 Departure Coach — départ en diligence le matin (conditionnel V52=4)
+                              dialogue Gunnar sobre, complète la quête principale (V52=1000)
+
+E. System.json
+   Switch [200] "Night event trigger" enregistré
+
+
+--------------------------------------------------------------------------------
+7. MISES À JOUR DES TYPES ET ENUMS
+--------------------------------------------------------------------------------
+
+src/plugins/_types/enum.ts :
+  + enum ConditionId   (10 valeurs)
+  + enum PsychologyType (FEAR, TERROR, FRENZY)
+  + enum CorruptionType (PHYSICAL, MENTAL)
+
+src/plugins/_types/tew.ts :
+  + import Condition, CriticalInjury, CorruptionEntry
+  + TEW.DATABASE.CONDITIONS
+  + TEW.DATABASE.CRITICAL_INJURIES
+  + TEW.DATABASE.CORRUPTION
+  + TEW.COMBAT.getHitLocationFromRoll
+  + TEW.COMBAT.lookupCriticalInjury
+  + TEW.COMBAT.resolveCriticalInjury
+  + TEW.COMBAT.healCriticalInjury
+
+
+--------------------------------------------------------------------------------
+FLUX COMPLET DE L'INTRO (jouable de bout en bout)
+--------------------------------------------------------------------------------
+
+  [Map004 Extérieur]
+      → Arrivée à cheval / à pied
+      → Coach d'une autre compagnie (test Perception → rottenness révélée)
+
+  [Map001 Salle principale]
+      → EV003 Gustav : accueil, boissons
+      → EV015 Wanted Poster : quête "Wanted Bold Adventurers" (V53)
+      → EV007 Gunnar + EV006 Hultz : discussion, achat billet (36s) ou haggle (Charm test → 24s)
+      → EV008 Ernst Heidlemann : apprenti mystérieux
+      → EV012 Lady Isolde : noblesse froide
+      → EV013 Janna : servante discrète
+      → EV014 Marie : garde menaçante
+      → EV005 Phillipe : présentation → mini-jeu Red Empress (4 outcomes)
+      → EV009 Herpin : bar (achat items)
+      → EV016 Escalier → Map003
+
+  [Map003 1er étage]
+      → EV001 Retour en bas possible
+      → EV002 Lit : sommeil → fondu noir
+      → EV003 Nuit [autorun] : test Perception → Ernst aperçu (graine narrative)
+      → Matin : fondu retour, quête avancée
+
+  [Map004 Extérieur — Matin]
+      → EV009 Départ en diligence : dialogue Gunnar sobre, embarquement
+      → Quête principale V52 = 1000 (COMPLETE)
+      → Fondu vers la route de Altdorf (suite à implémenter)
+
+
+================================================================================
+FIN DU CHANGELOG
+================================================================================

@@ -13,7 +13,7 @@ TEW.DICE.bonus = function(value: number) {
 };
 
 TEW.DICE.roll = function(range = 100) {
-    return Math.floor(Math.random() * (range - 1)) + 1;
+    return Math.floor(Math.random() * range) + 1;
 };
 
 TEW.DICE.displayDiceRoll = function(range = 100) {
@@ -44,8 +44,6 @@ TEW.DICE.skillTest = function(battler: Game_BattlerBase, compId: string, modifie
         sl = sl < 0 ? sl : 0;
     }
     const critical = roll % 11 === 0 || roll === 100;
-    console.log(`Skill test roll: ${roll} (SL: ${sl}, Success: ${success}, Critical: ${critical})`);
-
     return {
         sl,
         success,
@@ -131,7 +129,7 @@ Game_Interpreter.prototype.opposedSkillTest = function(compIdPlayer: string, mod
         successRollNpc = true;
         slNPC = slNPC > 0 ? slNPC : 0;
     } else if (rollNPC >= 96) {
-        successRollNpc = true;
+        successRollNpc = false;
         slNPC = slNPC < 0 ? slNPC : 0;
     }
 
@@ -139,22 +137,20 @@ Game_Interpreter.prototype.opposedSkillTest = function(compIdPlayer: string, mod
     let criticalNPC = rollNPC % 11 === 0 || rollNPC === 100;
 
     let success: boolean;
-    // GIGA TODO nothing is right
-    if (successRollPlayer && criticalPlayer) {
+    // WFRP4e p.152 : le vainqueur est celui dont le SL est le plus élevé.
+    // Critique du joueur bat tout. Critique NPC bat tout (sauf critique joueur).
+    // En cas d'égalité de SL, le défenseur (NPC) l'emporte.
+    if (criticalPlayer && !criticalNPC) {
         success = true;
-    } else if (successRollNpc && criticalNPC) {
+    } else if (criticalNPC && !criticalPlayer) {
         success = false;
-    } else if (successRollPlayer && slPlayer > slNPC) {
+    } else if (slPlayer > slNPC) {
         success = true;
-    } else if (slNPC > slPlayer) {
-        success = false;
     } else {
-        success = (maxPartySkill >= skillValueNPC);
+        // égalité ou NPC supérieur : le défenseur l'emporte
+        success = false;
     }
 
-    console.log(`Player roll: ${rollPlayer} (SL: ${slPlayer}, Critical: ${criticalPlayer})`);
-    console.log(`NPC roll: ${rollNPC} (SL: ${slNPC}, Critical: ${criticalNPC})`);
-    console.log(`Opposed test result: ${success ? "Player wins" : "NPC wins"}`);
     return {
         sl: slPlayer - slNPC,
         success,
@@ -208,9 +204,6 @@ TEW.DICE.combatOpposedSkillTest = function(
         success = (compValueAttacker >= compValueDefender);
     }
 
-    console.log(`Attacker roll: ${rollAttacker} (SL: ${slAttacker}, Critical: ${criticalAttacker})`);
-    console.log(`Defender roll: ${rollDefender} (SL: ${slDefender}, Critical: ${criticalDefender})`);
-    console.log(`Combat result: ${success ? "Attacker wins" : "Defender wins"}`);
     return {
         rollAttacker,
         rollDefender,

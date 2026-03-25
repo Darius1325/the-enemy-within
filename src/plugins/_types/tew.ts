@@ -18,7 +18,7 @@ import { Talent } from "./talent";
 import { MeleeWeapon } from "./meleeWeapon";
 import { RangedWeapon } from "./rangedWeapon";
 import { Ammunition } from "./ammunition";
-import { ArmorGroup, WeaponGroup, WeaponQuality } from "./enum";
+import { ArmorGroup, WeaponGroup, WeaponQuality, BodyLocation } from "./enum";
 import {Game_Actor} from "../base/stats/Game_Actor";
 import {Game_BattlerBase} from "../base/stats/Game_BattlerBase";
 import { Troop } from "./troop";
@@ -28,6 +28,9 @@ import { Glossary } from "./glossary";
 import { Tutorial } from "./tutorial";
 import { CharacterDescription } from "./characterDescription";
 import { JournalDocument } from "./journalDocument";
+import { Condition } from "./condition";
+import { CriticalInjury } from "./criticalInjury";
+import { CorruptionEntry } from "./corruption";
 
 /** Storage object for all TEW plugins */
 const TEW: {
@@ -140,6 +143,27 @@ const TEW: {
 
         /** Documents, displayed in gathered evidence and controlled by an id list: */
         JOURNAL_DOCUMENTS?: JournalDocument[];
+
+        /**
+         * WFRP4e Conditions (Ablaze, Bleeding, Broken, Entangled, Fatigued, Poisoned, Prone, Stunned, Surprised, Unconscious).
+         * Keyed by condition ID (all-caps string).
+         */
+        CONDITIONS?: Record<string, Condition>;
+
+        /**
+         * Critical Injury table entries, one per hit location.
+         * Resolved by TEW.COMBAT.resolveCriticalInjury().
+         */
+        CRITICAL_INJURIES?: CriticalInjury[];
+
+        /**
+         * Corruption & Mutation system tables.
+         */
+        CORRUPTION?: {
+            MUTATIONS?: CorruptionEntry[];
+            DISORDERS?: CorruptionEntry[];
+            SOURCES?: Record<string, string>;
+        };
     };
 
     /** Constants used in menu plugins for readability */
@@ -465,6 +489,33 @@ const TEW: {
          * @returns A weapon object
          */
         getWeaponFromId?: (weaponId: string) => MeleeWeapon | RangedWeapon;
+
+        /**
+         * Derive hit location from the units digit of the attacker's d100 roll.
+         * WFRP4e p.159: 1-2 → HEAD | 3-4 → ARMS | 5-9 → BODY | 0 → LEGS
+         */
+        getHitLocationFromRoll?: (attackRoll: number) => BodyLocation;
+
+        /**
+         * Find the matching CriticalInjury entry from the database.
+         * @param location  Hit location (BodyLocation enum)
+         * @param critRoll  d100 + excess damage
+         */
+        lookupCriticalInjury?: (location: BodyLocation, critRoll: number) => CriticalInjury | null;
+
+        /**
+         * Resolve a critical hit on a target battler.
+         * Applies conditions, stat penalties and marks the injury on the battler.
+         * @param target        The battler receiving the injury
+         * @param attackRoll    The attacker's original d100 roll (used for hit location)
+         * @param excessDamage  Damage dealt beyond 0 Wounds
+         */
+        resolveCriticalInjury?: (target: Game_BattlerBase, attackRoll: number, excessDamage: number) => CriticalInjury | null;
+
+        /**
+         * Remove a critical injury from a battler after successful treatment.
+         */
+        healCriticalInjury?: (target: Game_BattlerBase, injuryId: string) => void;
     };
 
     /** RMMV base functions stored for overriding */
