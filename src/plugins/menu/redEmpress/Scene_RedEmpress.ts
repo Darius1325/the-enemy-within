@@ -1,4 +1,4 @@
-// $PluginCompiler TEW_Menu.js
+// $PluginCompiler TEW_Menus.js
 
 // ----------------------
 // File: Scene_RedEmpress.ts
