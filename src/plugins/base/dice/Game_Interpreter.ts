@@ -132,7 +132,7 @@ Game_Interpreter.prototype.opposedSkillTest = function(compIdPlayer: string, mod
         successRollNpc = true;
         slNPC = slNPC > 0 ? slNPC : 0;
     } else if (rollNPC >= 96) {
-        successRollNpc = true;
+        successRollNpc = false;
         slNPC = slNPC < 0 ? slNPC : 0;
     }
 
