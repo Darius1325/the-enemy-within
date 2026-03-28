@@ -13,7 +13,7 @@ TEW.DICE.bonus = function(value: number) {
 };
 
 TEW.DICE.roll = function(range = 100) {
-    return Math.floor(Math.random() * (range - 1)) + 1;
+    return Math.floor(Math.random() * range) + 1;
 };
 
 TEW.DICE.displayDiceRoll = function(range = 100) {
