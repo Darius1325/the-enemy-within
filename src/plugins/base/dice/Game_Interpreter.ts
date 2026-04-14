@@ -3,6 +3,7 @@
 import TEW from "../../_types/tew";
 import Window_Dice from "./Window_Dice";
 import { Game_BattlerBase } from "../stats/Game_BattlerBase";
+import TEW from "../../_types/tew";
 
 // $StartCompilation
 
@@ -13,7 +14,7 @@ TEW.DICE.bonus = function(value: number) {
 };
 
 TEW.DICE.roll = function(range = 100) {
-    return Math.floor(Math.random() * (range - 1)) + 1;
+    return Math.floor(Math.random() * range) + 1;
 };
 
 TEW.DICE.displayDiceRoll = function(range = 100) {
@@ -131,7 +132,7 @@ Game_Interpreter.prototype.opposedSkillTest = function(compIdPlayer: string, mod
         successRollNpc = true;
         slNPC = slNPC > 0 ? slNPC : 0;
     } else if (rollNPC >= 96) {
-        successRollNpc = true;
+        successRollNpc = false;
         slNPC = slNPC < 0 ? slNPC : 0;
     }
 
@@ -139,15 +140,16 @@ Game_Interpreter.prototype.opposedSkillTest = function(compIdPlayer: string, mod
     let criticalNPC = rollNPC % 11 === 0 || rollNPC === 100;
 
     let success: boolean;
-    // GIGA TODO nothing is right
-    if (successRollPlayer && criticalPlayer) {
+
+    // if Player succeed && it's SL is greater than the NPC SL, player wins
+    if (slPlayer > slNPC && successRollPlayer) {
         success = true;
-    } else if (successRollNpc && criticalNPC) {
-        success = false;
-    } else if (successRollPlayer && slPlayer > slNPC) {
-        success = true;
-    } else if (slNPC > slPlayer) {
-        success = false;
+
+    // else if SL Player is less than SL NPC or if player misses, player fails
+    } else if (slPlayer < slNPC || !successRollPlayer) {
+        success = false;        
+
+    // else draw
     } else {
         success = (maxPartySkill >= skillValueNPC);
     }
