@@ -1,7 +1,9 @@
 // $PluginCompiler TEW_Combat.js
 
-import { Stat } from "../../_types/enum";
+import { SpellRange, SpellTarget, SpellTargetRadius, Stat } from "../../_types/enum";
 import TEW from "../../_types/tew";
+import { Game_BattlerBase } from "../../base/stats/Game_BattlerBase";
+import Game_Battler from "./Game_Battler";
 
 // $StartCompilation
 
@@ -15,6 +17,7 @@ Game_Action.prototype.initialize = function(subject, forcing, modifiers = {}) {
     TEW.MEMORY.gameActionInit.call(this, subject, forcing);
     this._moveRoute = 0;
     this._modifiers = modifiers;
+    this._aoeRange = [];
 };
 
 Game_Action.prototype.combatOpponentsUnit = function(battler) {
@@ -33,11 +36,14 @@ Game_Action.prototype.combatFriendsUnit = function(battler) {
 
 Game_Action.prototype.searchBattlers = function(battler, units) {
     var battlers = [];
-    var item = this.item();
-    if (this.isAttackRange(battler)) {
+    var item;
+    if (this.isAttackRange(battler)) { // TODO fuse this with base flow ?
         item = TEW.COMBAT.getWeaponFromId(battler.equippedWeapon().id);
+    } else {
+        item = this.item();
     }
-    this.updateRange(item, battler.tx, battler.ty);
+    this.updateRange(item, battler);
+    this.updateAoeRange(item, battler);
     for (var i = 0; i < this._range.length; i++) {
         var redCell = this._range[i];
         var x = redCell[0];
@@ -55,18 +61,61 @@ Game_Action.prototype.isAttackRange = function (subject) {
     return subject.isActor() && this.isAttack();
 };
 
-Game_Action.prototype.updateRange = function(item, x, y) {
-    const range = this.extractRangeData(item);
+Game_Action.prototype.updateRange = function(item, battler: Game_Battler) {
+    const range = this.extractRangeData(item, battler);
     console.log(range);
     // TODO better algorithm for obstacles
-    this._range = this.createRange(0, range, x, y, range === 1 ? 'diamond' : 'euclidean');
-    if (this.isForUser()) {
-        this._range = [[x, y]];
+    if (range === 0 || this.isForUser()) {
+        this._range = [[battler.tx, battler.ty]];
+    } else {
+        this._range = this.createRange(0, range, battler.tx, battler.ty, range === 1 ? 'diamond' : 'euclidean');
     }
 };
 
-Game_Action.prototype.extractRangeData = function (object) {
-    return object.range || TEW.COMBAT.SYSTEM.actionRange;
+Game_Action.prototype.extractRangeData = function(object, battler: Game_BattlerBase) {
+    const range = object.range;
+    if (range) {
+        if (typeof range === 'number') {
+            return range;
+        } else { // Spell range
+            const rangeType: SpellRange = range.type;
+            switch (rangeType) {
+                case SpellRange.SELF: return 0;
+                case SpellRange.TOUCH: return 1;
+                case SpellRange.WILL: return battler.paramByName(Stat.WILL);
+                case SpellRange.ONE: return 0; // TODO WTF
+            }
+        }
+    }
+    // Default case, should never happen
+    return TEW.COMBAT.SYSTEM.actionRange;
+};
+
+Game_Action.prototype.updateAoeRange = function(item, battler: Game_Battler) {
+    const aoe = this.extractAoeData(item, battler);
+    console.log(aoe);
+    if (aoe !== 0) {
+        this._aoeRange = this.createRange(0, aoe, $gameSelector._x, $gameSelector._y, aoe === 1 ? 'diamond' : 'euclidean');
+        this._aoeRange.push([$gameSelector._x, $gameSelector._y]);
+    } else {
+        this._aoeRange = [];
+    }
+};
+
+// TODO
+Game_Action.prototype.extractAoeData = function(object, battler: Game_BattlerBase) {
+    const target = object.target;
+    if (target) {
+        const targetType: SpellTarget = target.type;
+        if (targetType === SpellTarget.AOE) {
+            const targetRadius: SpellTargetRadius = target.distance;
+            if (targetRadius === SpellTargetRadius.WILL_BONUS) {
+                return battler.paramBonus(Stat.WILL);
+            }
+        }
+    }
+    // Default case
+    return 0;
 };
 
 Game_Action.prototype.createRange = function(d1, d2, x, y, shape) {
@@ -98,14 +147,29 @@ Game_Action.prototype.range = function() {
 
 Game_Action.prototype.showRange = function() {
     this._range.forEach(function(pos) {
-        var tile = $gameMap.tile(pos[0], pos[1]);
+        var tile = $gameMap.tile(pos[0], pos[1]); // Convert from [x, y] to (x + y * width)
         $gameMap.addTile(tile);
+    }, this)
+};
+
+Game_Action.prototype.showAreaOfEffect = function() {
+    this._aoeRange.forEach(function(pos) {
+        var tile = $gameMap.tile(pos[0], pos[1]); // Convert from [x, y] to (x + y * width)
+        $gameMap.addAoeTile(tile);
     }, this)
 };
 
 Game_Action.prototype.color = function() {
     return this.isForFriend() ? TEW.COMBAT.SYSTEM.allyScopeColor : TEW.COMBAT.SYSTEM.enemyScopeColor;
-}
+};
+
+Game_Action.prototype.setSpell = function(spellId: string) {
+    this._item.setObject(TEW.DATABASE.SPELLS.ARRAY.find(entry => entry[0] === spellId));
+};
+
+Game_Action.prototype.isSpell = function() {
+    return this._item.isSpell();
+};
 
 Game_Action.prototype.testDamageMinMaxValue = function(target, minMax) {
     var item = this.item();

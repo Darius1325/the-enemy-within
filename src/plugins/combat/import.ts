@@ -335,6 +335,7 @@ TEW.COMBAT.SYSTEM.selectorSpeed = 1;
 TEW.COMBAT.SYSTEM.allyScopeColor = '#008000';
 TEW.COMBAT.SYSTEM.enemyScopeColor = '#B22222';
 TEW.COMBAT.SYSTEM.moveScopeColor = '#0066CC';
+TEW.COMBAT.SYSTEM.aoeHighlightColor = '#ffb300';
 
 TEW.COMBAT.SYSTEM.autoTurnEnd = true; // TODO should be removed eventually
 TEW.COMBAT.SYSTEM.clearAll = true; // TODO should be removed eventually

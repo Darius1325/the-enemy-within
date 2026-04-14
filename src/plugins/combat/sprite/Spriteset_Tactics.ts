@@ -1,5 +1,6 @@
 // $PluginCompiler TEW_Combat.js
 
+import TEW from "../../_types/tew";
 import Sprite_BattlerTs from "./Sprite_BattlerTs";
 import Sprite_Grid from "./Sprite_Grid";
 import Sprite_Selector from "./Sprite_Selector";
@@ -62,11 +63,19 @@ Spriteset_Tactics.prototype.updateRangeTiles = function() {
     var height = $gameMap.height();
     this._rangeTilesSprite.bitmap.clearRect(0, 0, width * 48, height * 48);
     this._rangeTilesSprite.color = $gameMap.color();
-    this._rangeTiles.forEach(function(tile) {
+    this._rangeTiles.forEach(function(tile: number) {
         var x = $gameMap.positionTileX(tile) * 48;
         var y = $gameMap.positionTileY(tile) * 48;
-        var color = this._rangeTilesSprite.color;
-        this._rangeTilesSprite.bitmap.fillRect(x + 2, y + 2, 44, 44, color);
+        this._rangeTilesSprite.bitmap.fillRect(x + 2, y + 2, 44, 44, this._rangeTilesSprite.color);
+    }, this);
+};
+
+Spriteset_Tactics.prototype.updateAoeTiles = function() {
+    this._aoeTiles = $gameMap.aoeTiles();
+    this._aoeTiles.forEach(function(tile: number) {
+        var x = $gameMap.positionTileX(tile) * 48;
+        var y = $gameMap.positionTileY(tile) * 48;
+        this._rangeTilesSprite.bitmap.fillRect(x + 2, y + 2, 44, 44, TEW.COMBAT.SYSTEM.aoeHighlightColor);
     }, this);
 };
 
@@ -77,7 +86,10 @@ Spriteset_Tactics.prototype.updateTiles = function() {
     if (this._tilesSprite.opacity <= 160) {
         this.sign = 1;
     }
-    if (this._rangeTiles !== $gameMap.tiles()) {
+    if (this._aoeTiles !== $gameMap.aoeTiles()) {
+        this.updateRangeTiles(); // Erase previous AOE highlight and redraw
+        this.updateAoeTiles();
+    } else if (this._rangeTiles !== $gameMap.tiles()) {
         this.updateRangeTiles();
     }
     this._tilesSprite.opacity = this._tilesSprite.opacity + 3 * this.sign;

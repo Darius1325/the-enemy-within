@@ -47,3 +47,9 @@ Window_TacticsSpellList.prototype.windowHeight = function() {
 Window_TacticsSpellDetails.prototype.windowHeight = function() {
     return 240; // 4 * line height + 2 * text padding + 2 * bg padding
 };
+Window_TacticsSpellList.prototype.windowWidth = function() {
+    return 540; // 4 * line height + 2 * text padding + 2 * bg padding
+};
+Window_TacticsSpellDetails.prototype.windowWidth = function() {
+    return 340; // 4 * line height + 2 * text padding + 2 * bg padding
+};

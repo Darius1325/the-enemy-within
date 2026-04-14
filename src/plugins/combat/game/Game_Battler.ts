@@ -8,6 +8,9 @@ export default interface Game_Battler extends Game_BattlerBase {
     x: number;
     y: number;
 
+    tx: number;
+    ty: number;
+
     isAlive: () => boolean;
     isActor: () => boolean;
     isEnemy: () => boolean;

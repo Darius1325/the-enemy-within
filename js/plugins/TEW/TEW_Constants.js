@@ -3983,6 +3983,9 @@ TEW.DATABASE.SPELLS.SET = {
         type: 0 /* SpellType.SPELL */,
         domain: "Petty" /* SpellDomain.PETTY */,
         cn: 0,
+        range: {
+            type: "Self" /* SpellRange.SELF */
+        },
         target: {
             type: "Self" /* SpellTarget.SELF */
         },
@@ -4012,6 +4015,9 @@ TEW.DATABASE.SPELLS.SET = {
         type: 0 /* SpellType.SPELL */,
         domain: "Petty" /* SpellDomain.PETTY */,
         cn: 0,
+        range: {
+            type: "Self" /* SpellRange.SELF */
+        },
         target: {
             type: "Self" /* SpellTarget.SELF */
         },
@@ -4091,6 +4097,9 @@ TEW.DATABASE.SPELLS.SET = {
         type: 0 /* SpellType.SPELL */,
         domain: "Petty" /* SpellDomain.PETTY */,
         cn: 0,
+        range: {
+            type: "Self" /* SpellRange.SELF */
+        },
         target: {
             type: "Self" /* SpellTarget.SELF */
         },
@@ -4105,6 +4114,9 @@ TEW.DATABASE.SPELLS.SET = {
         type: 0 /* SpellType.SPELL */,
         domain: "Petty" /* SpellDomain.PETTY */,
         cn: 0,
+        range: {
+            type: "Self" /* SpellRange.SELF */
+        },
         target: {
             type: "Self" /* SpellTarget.SELF */
         },

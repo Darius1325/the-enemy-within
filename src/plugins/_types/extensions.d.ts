@@ -28,6 +28,9 @@ declare global {
     var $dataSystem: any;
     var $dataAnimations: any;
     var $dataSkills: any;
+    var $dataItems: any;
+    var $dataWeapons: any;
+    var $dataArmors: any;
     var $dataMap: any;
     var $gameActors: any;
     var $gamePartyTs: any;
@@ -100,6 +103,7 @@ declare global {
     var Game_Troop: any;
     var Game_Party: any;
     var Game_Unit: any;
+    var Game_Item: any;
     var Sprite_Base: any;
     var Sprite_Character: any;
     var Sprite_Damage: any;

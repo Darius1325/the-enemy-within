@@ -534,10 +534,11 @@ BattleManager.processTarget = function() {
 };
 
 BattleManager.updateTarget = function() {
+    var action = this.inputtingAction();
     if ($gameSelector.isMoving()) {
         this.refreshTarget();
+        this.refreshAoeCells(action);
     }
-    var action = this.inputtingAction();
     var index = $gameSelector.selectTarget(action);
     if (index >= 0) {
         action.setTarget(index);
@@ -599,6 +600,7 @@ BattleManager.refreshTarget = function() {
     }
 };
 
+// TODO
 BattleManager.refreshInfo = function() {
     var select = $gameSelector.select();
     this.refreshEnemyWindow(select);
@@ -911,9 +913,19 @@ BattleManager.setupCombat = function(action) {
 
 BattleManager.refreshRedCells = function(action) {
     $gameMap.clearTiles();
+    $gameMap.clearAoeTiles();
     BattleManager.setupCombat(action);
     $gameMap.setActionColor(action);
     action.showRange();
+    action.showAreaOfEffect();
+};
+
+BattleManager.refreshAoeCells = function(action) {
+    if (action._aoeRange?.length > 0) { // If this action targets an AOE
+        $gameMap.clearAoeTiles();
+        action.updateAoeRange(action.item(), this._subject);
+        action.showAreaOfEffect();
+    }
 };
 
 BattleManager.setEventCallback = function(callback) {

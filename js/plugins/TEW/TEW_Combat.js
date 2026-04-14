@@ -325,6 +325,7 @@ TEW.COMBAT.SYSTEM.selectorSpeed = 1;
 TEW.COMBAT.SYSTEM.allyScopeColor = '#008000';
 TEW.COMBAT.SYSTEM.enemyScopeColor = '#B22222';
 TEW.COMBAT.SYSTEM.moveScopeColor = '#0066CC';
+TEW.COMBAT.SYSTEM.aoeHighlightColor = '#ffb300';
 TEW.COMBAT.SYSTEM.autoTurnEnd = true; // TODO should be removed eventually
 TEW.COMBAT.SYSTEM.clearAll = true; // TODO should be removed eventually
 TEW.COMBAT.SYSTEM.fadeOutEnd = true;
@@ -1033,10 +1034,11 @@ BattleManager.processTarget = function () {
     $gameSelector.updateSelect();
 };
 BattleManager.updateTarget = function () {
+    var action = this.inputtingAction();
     if ($gameSelector.isMoving()) {
         this.refreshTarget();
+        this.refreshAoeCells(action);
     }
-    var action = this.inputtingAction();
     var index = $gameSelector.selectTarget(action);
     if (index >= 0) {
         action.setTarget(index);
@@ -1388,9 +1390,19 @@ BattleManager.setupCombat = function (action) {
 };
 BattleManager.refreshRedCells = function (action) {
     $gameMap.clearTiles();
+    $gameMap.clearAoeTiles();
     BattleManager.setupCombat(action);
     $gameMap.setActionColor(action);
     action.showRange();
+    action.showAreaOfEffect();
+};
+BattleManager.refreshAoeCells = function (action) {
+    var _a;
+    if (((_a = action._aoeRange) === null || _a === void 0 ? void 0 : _a.length) > 0) { // If this action targets an AOE
+        $gameMap.clearAoeTiles();
+        action.updateAoeRange(action.item(), this._subject);
+        action.showAreaOfEffect();
+    }
 };
 BattleManager.setEventCallback = function (callback) {
     this._eventCallback = callback;
@@ -1594,6 +1606,7 @@ Game_Action.prototype.initialize = function (subject, forcing, modifiers = {}) {
     TEW.MEMORY.gameActionInit.call(this, subject, forcing);
     this._moveRoute = 0;
     this._modifiers = modifiers;
+    this._aoeRange = [];
 };
 Game_Action.prototype.combatOpponentsUnit = function (battler) {
     var units = battler.opponentsUnitTS().aliveMembers();
@@ -1609,11 +1622,15 @@ Game_Action.prototype.combatFriendsUnit = function (battler) {
 };
 Game_Action.prototype.searchBattlers = function (battler, units) {
     var battlers = [];
-    var item = this.item();
-    if (this.isAttackRange(battler)) {
+    var item;
+    if (this.isAttackRange(battler)) { // TODO fuse this with base flow ?
         item = TEW.COMBAT.getWeaponFromId(battler.equippedWeapon().id);
     }
-    this.updateRange(item, battler.tx, battler.ty);
+    else {
+        item = this.item();
+    }
+    this.updateRange(item, battler);
+    this.updateAoeRange(item, battler);
     for (var i = 0; i < this._range.length; i++) {
         var redCell = this._range[i];
         var x = redCell[0];
@@ -1629,17 +1646,61 @@ Game_Action.prototype.searchBattlers = function (battler, units) {
 Game_Action.prototype.isAttackRange = function (subject) {
     return subject.isActor() && this.isAttack();
 };
-Game_Action.prototype.updateRange = function (item, x, y) {
-    const range = this.extractRangeData(item);
+Game_Action.prototype.updateRange = function (item, battler) {
+    const range = this.extractRangeData(item, battler);
     console.log(range);
     // TODO better algorithm for obstacles
-    this._range = this.createRange(0, range, x, y, range === 1 ? 'diamond' : 'euclidean');
-    if (this.isForUser()) {
-        this._range = [[x, y]];
+    if (range === 0 || this.isForUser()) {
+        this._range = [[battler.tx, battler.ty]];
+    }
+    else {
+        this._range = this.createRange(0, range, battler.tx, battler.ty, range === 1 ? 'diamond' : 'euclidean');
     }
 };
-Game_Action.prototype.extractRangeData = function (object) {
-    return object.range || TEW.COMBAT.SYSTEM.actionRange;
+Game_Action.prototype.extractRangeData = function (object, battler) {
+    const range = object.range;
+    if (range) {
+        if (typeof range === 'number') {
+            return range;
+        }
+        else { // Spell range
+            const rangeType = range.type;
+            switch (rangeType) {
+                case "Self" /* SpellRange.SELF */: return 0;
+                case "Touch" /* SpellRange.TOUCH */: return 1;
+                case "Willpower" /* SpellRange.WILL */: return battler.paramByName("WILL" /* Stat.WILL */);
+                case "One" /* SpellRange.ONE */: return 0; // TODO WTF
+            }
+        }
+    }
+    // Default case, should never happen
+    return TEW.COMBAT.SYSTEM.actionRange;
+};
+Game_Action.prototype.updateAoeRange = function (item, battler) {
+    const aoe = this.extractAoeData(item, battler);
+    console.log(aoe);
+    if (aoe !== 0) {
+        this._aoeRange = this.createRange(0, aoe, $gameSelector._x, $gameSelector._y, aoe === 1 ? 'diamond' : 'euclidean');
+        this._aoeRange.push([$gameSelector._x, $gameSelector._y]);
+    }
+    else {
+        this._aoeRange = [];
+    }
+};
+// TODO
+Game_Action.prototype.extractAoeData = function (object, battler) {
+    const target = object.target;
+    if (target) {
+        const targetType = target.type;
+        if (targetType === "AoE" /* SpellTarget.AOE */) {
+            const targetRadius = target.distance;
+            if (targetRadius === "Willpower Bonus" /* SpellTargetRadius.WILL_BONUS */) {
+                return battler.paramBonus("WILL" /* Stat.WILL */);
+            }
+        }
+    }
+    // Default case
+    return 0;
 };
 Game_Action.prototype.createRange = function (d1, d2, x, y, shape) {
     var range = [];
@@ -1668,12 +1729,24 @@ Game_Action.prototype.range = function () {
 };
 Game_Action.prototype.showRange = function () {
     this._range.forEach(function (pos) {
-        var tile = $gameMap.tile(pos[0], pos[1]);
+        var tile = $gameMap.tile(pos[0], pos[1]); // Convert from [x, y] to (x + y * width)
         $gameMap.addTile(tile);
+    }, this);
+};
+Game_Action.prototype.showAreaOfEffect = function () {
+    this._aoeRange.forEach(function (pos) {
+        var tile = $gameMap.tile(pos[0], pos[1]); // Convert from [x, y] to (x + y * width)
+        $gameMap.addAoeTile(tile);
     }, this);
 };
 Game_Action.prototype.color = function () {
     return this.isForFriend() ? TEW.COMBAT.SYSTEM.allyScopeColor : TEW.COMBAT.SYSTEM.enemyScopeColor;
+};
+Game_Action.prototype.setSpell = function (spellId) {
+    this._item.setObject(TEW.DATABASE.SPELLS.ARRAY.find(entry => entry[0] === spellId));
+};
+Game_Action.prototype.isSpell = function () {
+    return this._item.isSpell();
 };
 Game_Action.prototype.testDamageMinMaxValue = function (target, minMax) {
     var item = this.item();
@@ -1852,6 +1925,7 @@ TEW.MEMORY.gameActorInitMembers = Game_Actor.prototype.initMembers;
 Game_Actor.prototype.initMembers = function () {
     TEW.MEMORY.gameActorInitMembers.call(this);
     this._actionsButton = [];
+    this._lastSpell = new Game_Item();
 };
 Game_Actor.prototype.currentData = function () {
     return Game_Battler.prototype.currentData.call(this).concat(this.currentClass());
@@ -1954,6 +2028,9 @@ Game_Actor.prototype.isBattleMember = function () {
     else {
         return TEW.MEMORY.gameActorIsBattleMember.call(this);
     }
+};
+Game_Actor.prototype.setLastSpell = function (spellId) {
+    this._lastSpell.setObject(spellId);
 };
 Game_Actor.prototype.makeMoves = function (displayTiles = true) {
     Game_Battler.prototype.makeMoves.call(this, displayTiles);
@@ -2642,6 +2719,42 @@ Game_Event.prototype.name = function () {
 };
 // #endregion =========================== Game_Event ============================== //
 // ============================== //
+// #region ============================== Game_Item ============================== //
+Game_Item.prototype.isSpell = function () {
+    return this._dataClass === 'spell';
+};
+Game_Item.prototype.object = function () {
+    if (this.isSkill()) {
+        return $dataSkills[this._itemId];
+    }
+    else if (this.isItem()) {
+        return $dataItems[this._itemId];
+    }
+    else if (this.isWeapon()) {
+        return $dataWeapons[this._itemId];
+    }
+    else if (this.isArmor()) {
+        return $dataArmors[this._itemId];
+    }
+    else if (this.isSpell()) {
+        return TEW.DATABASE.SPELLS.SET[this._itemId];
+    }
+    else {
+        return null;
+    }
+};
+TEW.MEMORY.gameItemSetObject = Game_Item.prototype.setObject;
+Game_Item.prototype.setObject = function (item) {
+    if (TEW.DATABASE.SPELLS.IDS.includes(item[0])) {
+        this._dataClass = 'spell';
+        this._itemId = item[0];
+    }
+    else {
+        TEW.MEMORY.gameItemSetObject.call(this, item);
+    }
+};
+// #endregion =========================== Game_Item ============================== //
+// ============================== //
 // #region ============================== Game_Map ============================== //
 //-----------------------------------------------------------------------------
 // Game_Map
@@ -2652,6 +2765,7 @@ TEW.MEMORY.gameMapInit = Game_Map.prototype.initialize;
 Game_Map.prototype.initialize = function () {
     TEW.MEMORY.gameMapInit.call(this);
     this._tiles = [];
+    this._aoeTiles = []; // to highlight AOE targetting for spells & items
     this._color = '';
     this._destinationX = null;
     this._destinationY = null;
@@ -2662,6 +2776,9 @@ Game_Map.prototype.initialize = function () {
 };
 Game_Map.prototype.addTile = function (tile) {
     this._tiles.push(tile);
+};
+Game_Map.prototype.addAoeTile = function (tile) {
+    this._aoeTiles.push(tile);
 };
 Game_Map.prototype.positionTileX = function (tile) {
     return tile % $dataMap.width;
@@ -2678,8 +2795,14 @@ Game_Map.prototype.tile = function (x, y) {
 Game_Map.prototype.tiles = function () {
     return this._tiles;
 };
+Game_Map.prototype.aoeTiles = function () {
+    return this._aoeTiles;
+};
 Game_Map.prototype.clearTiles = function () {
     this._tiles = [];
+};
+Game_Map.prototype.clearAoeTiles = function () {
+    this._aoeTiles = [];
 };
 Game_Map.prototype.isOnTiles = function (x, y) {
     return this._tiles.contains(this.tile(x, y));
@@ -4404,7 +4527,6 @@ Scene_Battle.prototype.createBackground = function () {
 Scene_Battle.prototype.changeBackground = function (commandLevel = 0) {
     this.removeChildAt(this.getChildIndex(this._background));
     this._background = new Sprite(ImageManager.loadSystem(commandLevel === 0 ? 'bg_battle' : ('bg_battle_command' + commandLevel)));
-    console.log(commandLevel === 0 ? 'bg_battle' : ('bg_battle_command' + commandLevel));
     this.addChildAt(this._background, this.getChildIndex(this._windowLayer));
 };
 Scene_Battle.prototype.createAllWindows = function () {
@@ -4588,12 +4710,13 @@ Scene_Battle.prototype.createSpellListWindow = function () {
     this._windowSpellList.setHandler('cancel', () => {
         this._actionCommandWindow.activate();
         this._windowSpellList.close();
-        this._winddowSpellDetails.close();
+        this._windowSpellDetails.close();
         this._actionCommandWindow.refresh();
         this._actionCommandWindow.select(1);
     });
     this._windowSpellList.setHandler('ok', () => {
-        // TODO launch spell targetting
+        this._windowSpellList.deactivate();
+        this.onSpellOk();
     });
     this._windowSpellList.hide();
     this.addWindow(this._windowSpellList);
@@ -4633,7 +4756,8 @@ Scene_Battle.prototype.showWeaponDetails = function () {
     }
 };
 Scene_Battle.prototype.showSpellDetails = function () {
-    // TODO
+    this._windowSpellDetails._spell = this._windowSpellList.item();
+    this._windowSpellDetails.refresh();
 };
 Scene_Battle.prototype.equipWeapon = function () {
     const weapon = this._weaponsWindow.item();
@@ -4958,7 +5082,6 @@ Scene_Battle.prototype.commandAttack = function () {
 Scene_Battle.prototype.commandSpell = function () {
     this.changeBackground('Spell');
     this._windowSpellList.setActor(BattleManager.actor());
-    this._windowSpellList.syncActor();
     this._actionCommandWindow.deactivate();
     this._windowSpellList.open();
     this._windowSpellList.activate();
@@ -5015,6 +5138,14 @@ Scene_Battle.prototype.onSkillCancel = function () {
     this._skillWindow.hide();
     this._tacticsCommandWindow.activate();
 };
+Scene_Battle.prototype.onSpellOk = function () {
+    var spellId = this._windowSpellList.item();
+    var action = BattleManager.inputtingAction();
+    action.setSpell(spellId);
+    BattleManager.actor().setLastSpell(spellId);
+    BattleManager.refreshRedCells(action);
+    this.onSelectAction();
+};
 Scene_Battle.prototype.onItemOk = function () {
     this._actorWindow.show();
     var item = this._itemWindow.item();
@@ -5033,6 +5164,8 @@ Scene_Battle.prototype.onSelectAction = function () {
     this.changeBackground();
     this._skillWindow.hide();
     this._itemWindow.hide();
+    this._windowSpellList.close();
+    this._windowSpellDetails.close();
     this._actionCommandWindow.close();
     this._tacticsCommandWindow.close();
     BattleManager.processTarget();
@@ -5136,7 +5269,7 @@ function Window_TacticsSpellList() {
 Window_TacticsSpellList.prototype = Object.create(Window_Selectable.prototype);
 Window_TacticsSpellList.prototype.constructor = Window_TacticsSpellList;
 Window_TacticsSpellList.prototype.initialize = function () {
-    Window_Selectable.prototype.initialize.call(this, 440, Graphics.boxHeight - this.windowHeight());
+    Window_Selectable.prototype.initialize.call(this, 440, Graphics.boxHeight - this.windowHeight(), this.windowWidth(), this.windowHeight());
 };
 Window_TacticsSpellList.prototype.setActor = function (actor) {
     if (this._actor !== actor) {
@@ -5145,11 +5278,13 @@ Window_TacticsSpellList.prototype.setActor = function (actor) {
     }
 };
 Window_TacticsSpellList.prototype.syncActor = function () {
+    console.log(this._actor._spells);
     this._maxItems = this._actor._spells.length;
     this.refresh();
 };
 Window_TacticsSpellList.prototype.drawAllItems = function () {
     var topIndex = this.topIndex();
+    console.log(this.maxPageItems());
     for (var i = 0; i < this.maxPageItems(); i++) {
         var index = topIndex + i;
         if (index < this.maxItems()) {
@@ -5159,9 +5294,9 @@ Window_TacticsSpellList.prototype.drawAllItems = function () {
 };
 Window_TacticsSpellList.prototype.drawItem = function (index) {
     const normalizedIndex = index - this.topIndex();
-    const x = 0;
+    const x = 160 * (normalizedIndex % this.maxCols()); // TODO constant
     const y = Math.floor(normalizedIndex / this.maxCols()) * TEW.MENU.LINE_HEIGHT;
-    const spell = this.spellFromIndex(index);
+    const spell = TEW.DATABASE.SPELLS.SET[this.spellFromIndex(index)];
     this.drawText(spell.name, x, y, this.contentsWidth());
 };
 Window_TacticsSpellList.prototype.spellFromIndex = function (index) {
@@ -5189,6 +5324,9 @@ Window_TacticsSpellList.prototype.processOk = function () {
     else {
         this.playBuzzerSound();
     }
+};
+Window_TacticsSpellList.prototype.maxItems = function () {
+    return this._maxItems;
 };
 Window_TacticsSpellList.prototype.maxCols = () => 3;
 // #endregion =========================== Window_TacticsSpellList ============================== //
@@ -6392,8 +6530,15 @@ Spriteset_Tactics.prototype.updateRangeTiles = function () {
     this._rangeTiles.forEach(function (tile) {
         var x = $gameMap.positionTileX(tile) * 48;
         var y = $gameMap.positionTileY(tile) * 48;
-        var color = this._rangeTilesSprite.color;
-        this._rangeTilesSprite.bitmap.fillRect(x + 2, y + 2, 44, 44, color);
+        this._rangeTilesSprite.bitmap.fillRect(x + 2, y + 2, 44, 44, this._rangeTilesSprite.color);
+    }, this);
+};
+Spriteset_Tactics.prototype.updateAoeTiles = function () {
+    this._aoeTiles = $gameMap.aoeTiles();
+    this._aoeTiles.forEach(function (tile) {
+        var x = $gameMap.positionTileX(tile) * 48;
+        var y = $gameMap.positionTileY(tile) * 48;
+        this._rangeTilesSprite.bitmap.fillRect(x + 2, y + 2, 44, 44, TEW.COMBAT.SYSTEM.aoeHighlightColor);
     }, this);
 };
 Spriteset_Tactics.prototype.updateTiles = function () {
@@ -6403,7 +6548,11 @@ Spriteset_Tactics.prototype.updateTiles = function () {
     if (this._tilesSprite.opacity <= 160) {
         this.sign = 1;
     }
-    if (this._rangeTiles !== $gameMap.tiles()) {
+    if (this._aoeTiles !== $gameMap.aoeTiles()) {
+        this.updateRangeTiles(); // Erase previous AOE highlight and redraw
+        this.updateAoeTiles();
+    }
+    else if (this._rangeTiles !== $gameMap.tiles()) {
         this.updateRangeTiles();
     }
     this._tilesSprite.opacity = this._tilesSprite.opacity + 3 * this.sign;
@@ -6523,6 +6672,12 @@ Window_TacticsSpellList.prototype.windowHeight = function () {
 };
 Window_TacticsSpellDetails.prototype.windowHeight = function () {
     return 240; // 4 * line height + 2 * text padding + 2 * bg padding
+};
+Window_TacticsSpellList.prototype.windowWidth = function () {
+    return 540; // 4 * line height + 2 * text padding + 2 * bg padding
+};
+Window_TacticsSpellDetails.prototype.windowWidth = function () {
+    return 340; // 4 * line height + 2 * text padding + 2 * bg padding
 };
 // #endregion =========================== backgrounds ============================== //
 // ============================== //

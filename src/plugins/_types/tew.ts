@@ -283,6 +283,9 @@ const TEW: {
             /** Color for highlighting possible movement */
             moveScopeColor?: string;
 
+            /** Color for highlighting AOE attacks/items */
+            aoeHighlightColor?: string;
+
             /** Whether to end turn automatically after all characters acted */
             autoTurnEnd?: boolean;
 

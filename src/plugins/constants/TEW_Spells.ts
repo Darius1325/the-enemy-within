@@ -331,6 +331,9 @@ TEW.DATABASE.SPELLS.SET = {
         type: SpellType.SPELL,
         domain: SpellDomain.PETTY,
         cn: 0,
+        range: {
+            type: SpellRange.SELF
+        },
         target: {
             type: SpellTarget.SELF
         },
@@ -360,6 +363,9 @@ TEW.DATABASE.SPELLS.SET = {
         type: SpellType.SPELL,
         domain: SpellDomain.PETTY,
         cn: 0,
+        range: {
+            type: SpellRange.SELF
+        },
         target: {
             type: SpellTarget.SELF
         },
@@ -439,6 +445,9 @@ TEW.DATABASE.SPELLS.SET = {
         type: SpellType.SPELL,
         domain: SpellDomain.PETTY,
         cn: 0,
+        range: {
+            type: SpellRange.SELF
+        },
         target: {
             type: SpellTarget.SELF
         },
@@ -453,6 +462,9 @@ TEW.DATABASE.SPELLS.SET = {
         type: SpellType.SPELL,
         domain: SpellDomain.PETTY,
         cn: 0,
+        range: {
+            type: SpellRange.SELF
+        },
         target: {
             type: SpellTarget.SELF
         },

@@ -1,5 +1,6 @@
 // $PluginCompiler TEW_Combat.js
 
+import TEW from "../../../_types/tew";
 import { Spell } from "../../../_types/spell";
 import Game_Actor from "../../game/Game_Actor";
 
@@ -15,7 +16,10 @@ export default Window_TacticsSpellList.prototype = Object.create(Window_Selectab
 Window_TacticsSpellList.prototype.constructor = Window_TacticsSpellList;
 
 Window_TacticsSpellList.prototype.initialize = function() {
-    Window_Selectable.prototype.initialize.call(this, 440, Graphics.boxHeight - this.windowHeight());
+    Window_Selectable.prototype.initialize.call(this,
+        440, Graphics.boxHeight - this.windowHeight(),
+        this.windowWidth(), this.windowHeight()
+    );
 };
 
 Window_TacticsSpellList.prototype.setActor = function(actor: Game_Actor) {
@@ -26,12 +30,14 @@ Window_TacticsSpellList.prototype.setActor = function(actor: Game_Actor) {
 };
 
 Window_TacticsSpellList.prototype.syncActor = function() {
+    console.log(this._actor._spells);
     this._maxItems = this._actor._spells.length;
     this.refresh();
 }
 
 Window_TacticsSpellList.prototype.drawAllItems = function() {
     var topIndex = this.topIndex();
+    console.log(this.maxPageItems());
     for (var i = 0; i < this.maxPageItems(); i++) {
         var index = topIndex + i;
         if (index < this.maxItems()) {
@@ -42,10 +48,10 @@ Window_TacticsSpellList.prototype.drawAllItems = function() {
 
 Window_TacticsSpellList.prototype.drawItem = function(index: number) {
     const normalizedIndex = index - this.topIndex();
-    const x = 0;
+    const x = 160 * (normalizedIndex % this.maxCols()); // TODO constant
     const y = Math.floor(normalizedIndex / this.maxCols()) * TEW.MENU.LINE_HEIGHT;
 
-    const spell: Spell = this.spellFromIndex(index);
+    const spell: Spell = TEW.DATABASE.SPELLS.SET[this.spellFromIndex(index)];
     this.drawText(spell.name, x, y, this.contentsWidth());
 };
 
@@ -76,6 +82,10 @@ Window_TacticsSpellList.prototype.processOk = function() {
     } else {
         this.playBuzzerSound();
     }
+};
+
+Window_TacticsSpellList.prototype.maxItems = function() {
+    return this._maxItems;
 };
 
 Window_TacticsSpellList.prototype.maxCols = () => 3;

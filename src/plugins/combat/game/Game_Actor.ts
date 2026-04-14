@@ -17,6 +17,7 @@ TEW.MEMORY.gameActorInitMembers = Game_Actor.prototype.initMembers;
 Game_Actor.prototype.initMembers = function() {
     TEW.MEMORY.gameActorInitMembers.call(this);
     this._actionsButton = [];
+    this._lastSpell = new Game_Item();
 };
 
 Game_Actor.prototype.currentData = function() {
@@ -134,6 +135,10 @@ Game_Actor.prototype.isBattleMember = function() {
     } else {
         return TEW.MEMORY.gameActorIsBattleMember.call(this);
     }
+};
+
+Game_Actor.prototype.setLastSpell = function(spellId: string) {
+    this._lastSpell.setObject(spellId);
 };
 
 Game_Actor.prototype.makeMoves = function(displayTiles = true) {

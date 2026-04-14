@@ -71,7 +71,6 @@ Scene_Battle.prototype.changeBackground = function(commandLevel = 0) {
     this._background = new Sprite(ImageManager.loadSystem(
         commandLevel === 0 ? 'bg_battle' : ('bg_battle_command' + commandLevel)
     ));
-    console.log(commandLevel === 0 ? 'bg_battle' : ('bg_battle_command' + commandLevel));
     this.addChildAt(this._background, this.getChildIndex(this._windowLayer));
 };
 
@@ -280,12 +279,13 @@ Scene_Battle.prototype.createSpellListWindow = function() {
     this._windowSpellList.setHandler('cancel', () => {
         this._actionCommandWindow.activate();
         this._windowSpellList.close();
-        this._winddowSpellDetails.close();
+        this._windowSpellDetails.close();
         this._actionCommandWindow.refresh();
         this._actionCommandWindow.select(1);
     });
     this._windowSpellList.setHandler('ok', () => {
-        // TODO launch spell targetting
+        this._windowSpellList.deactivate();
+        this.onSpellOk();
     });
     this._windowSpellList.hide();
     this.addWindow(this._windowSpellList);
@@ -329,7 +329,8 @@ Scene_Battle.prototype.showWeaponDetails = function() {
 };
 
 Scene_Battle.prototype.showSpellDetails = function() {
-    // TODO
+    this._windowSpellDetails._spell = this._windowSpellList.item();
+    this._windowSpellDetails.refresh();
 };
 
 Scene_Battle.prototype.equipWeapon = function() {
@@ -688,7 +689,6 @@ Scene_Battle.prototype.commandSpell = function() {
     this.changeBackground('Spell');
 
     this._windowSpellList.setActor(BattleManager.actor());
-    this._windowSpellList.syncActor();
 
     this._actionCommandWindow.deactivate();
 
@@ -756,6 +756,15 @@ Scene_Battle.prototype.onSkillCancel = function() {
     this._tacticsCommandWindow.activate();
 };
 
+Scene_Battle.prototype.onSpellOk = function() {
+    var spellId: string = this._windowSpellList.item();
+    var action = BattleManager.inputtingAction();
+    action.setSpell(spellId);
+    BattleManager.actor().setLastSpell(spellId);
+    BattleManager.refreshRedCells(action);
+    this.onSelectAction();
+};
+
 Scene_Battle.prototype.onItemOk = function() {
     this._actorWindow.show();
     var item = this._itemWindow.item();
@@ -776,6 +785,8 @@ Scene_Battle.prototype.onSelectAction = function() {
     this.changeBackground();
     this._skillWindow.hide();
     this._itemWindow.hide();
+    this._windowSpellList.close();
+    this._windowSpellDetails.close();
     this._actionCommandWindow.close();
     this._tacticsCommandWindow.close();
     BattleManager.processTarget();

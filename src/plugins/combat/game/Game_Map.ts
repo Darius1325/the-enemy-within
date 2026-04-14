@@ -17,6 +17,7 @@ TEW.MEMORY.gameMapInit = Game_Map.prototype.initialize;
 Game_Map.prototype.initialize = function() {
     TEW.MEMORY.gameMapInit.call(this);
     this._tiles = [];
+    this._aoeTiles = []; // to highlight AOE targetting for spells & items
     this._color = '';
     this._destinationX = null;
     this._destinationY = null;
@@ -28,6 +29,10 @@ Game_Map.prototype.initialize = function() {
 
 Game_Map.prototype.addTile = function(tile) {
     this._tiles.push(tile);
+};
+
+Game_Map.prototype.addAoeTile = function(tile) {
+    this._aoeTiles.push(tile);
 };
 
 Game_Map.prototype.positionTileX = function(tile) {
@@ -50,8 +55,16 @@ Game_Map.prototype.tiles = function() {
     return this._tiles;
 };
 
+Game_Map.prototype.aoeTiles = function() {
+    return this._aoeTiles;
+};
+
 Game_Map.prototype.clearTiles = function() {
     this._tiles = [];
+};
+
+Game_Map.prototype.clearAoeTiles = function() {
+    this._aoeTiles = [];
 };
 
 Game_Map.prototype.isOnTiles = function(x, y) {
