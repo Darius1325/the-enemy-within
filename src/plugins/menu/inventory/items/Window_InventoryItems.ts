@@ -26,6 +26,10 @@ export interface IWindow_InventoryItems extends IHalfWindow_List {
 //
 // General item list window
 
+Window_InventoryItems.RIGHT_COLUMN_WIDTH = 80;
+Window_InventoryItems.LEFT_COLUMN_WIDTH = 500;
+Window_InventoryItems.RIGHT_COLUMN_POSITION = 500;
+
 function Window_InventoryItems() {
     this.initialize.apply(this, arguments);
 }
@@ -65,18 +69,18 @@ Window_InventoryItems.prototype.drawAllItems = function() {
 // Drawing one item
 Window_InventoryItems.prototype.drawItem = function(index: number) {
     const normalizedIndex = index - this.topIndex();
-    const x = this._leftPadding; // padding
-    const y = normalizedIndex  * TEW.MENU.LINE_HEIGHT;
+    const x = 0;
+    const y = normalizedIndex * TEW.MENU.LINE_HEIGHT;
 
     const itemOrAmmo: [string, Item | Ammunition] = this.itemOrAmmoFromIndex(index);
     this.changeTextColor(this.systemColor());
     this.drawIcon(itemOrAmmo[1].groupIcon, x, y)
-    this.drawText(itemOrAmmo[1].name, x + 32 + this._iconPadding, y, this._rightColumnPosition);
+    this.drawText(itemOrAmmo[1].name, x + 32 + this._iconPadding, y, Window_InventoryItems.LEFT_COLUMN_WIDTH);
     this.resetTextColor();
     if (index < this._ammo.length) {
-        this.drawText(this._actor.ammo(itemOrAmmo[0]), this._rightColumnPosition, y, this._rightColumnWidth, 'right');
+        this.drawText(this._actor.ammo(itemOrAmmo[0]), Window_InventoryItems.RIGHT_COLUMN_POSITION, y, Window_InventoryItems.RIGHT_COLUMN_WIDTH, 'right');
     } else {
-        this.drawText(this._actor.item(itemOrAmmo[0]), this._rightColumnPosition, y, this._rightColumnWidth, 'right');
+        this.drawText(this._actor.item(itemOrAmmo[0]), Window_InventoryItems.RIGHT_COLUMN_POSITION, y, Window_InventoryItems.RIGHT_COLUMN_WIDTH, 'right');
     }
 };
 

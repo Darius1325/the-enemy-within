@@ -20,7 +20,6 @@ Window_TutorialEntry.prototype.initialize = function() {
 };
 
 Window_TutorialEntry.prototype.reset = function(entry: Tutorial) {
-    this._id = entry.id;
     this._title = entry.title;
     this._paragraphs = entry.paragraphs;
     this._formattedContent = undefined;

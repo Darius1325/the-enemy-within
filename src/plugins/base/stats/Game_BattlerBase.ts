@@ -1,6 +1,6 @@
 // $PluginCompiler TEW_Base.js
 
-import {ArmorGroup, ArmorQuality, BodyLocation, ConditionId, ConditionRemoval, Stat, StatName, WeaponGroup} from "../../_types/enum";
+import {AmmunitionGroup, ArmorGroup, BodyLocation, ConditionId, ConditionRemoval, Stat, StatName, WeaponGroup} from "../../_types/enum";
 import TEW from "../../_types/tew";
 import {Armor} from "../../_types/armor";
 
@@ -10,7 +10,7 @@ export type ActorWeapon = {
     isInSecondHand: boolean;
     isReloadable: boolean;
     ammo: number;
-    ammoType: string;
+    ammoType: AmmunitionGroup;
 };
 
 export interface Game_BattlerBase {
@@ -43,6 +43,7 @@ export interface Game_BattlerBase {
 
     compPlus: (compId: string) => number;
     comp: (compId: string) => number;
+    compWithModifiers: (compId: string) => number;
     anyCompOfCategory: (compCategory: string) => string | null;
     hasComp: (compId: string) => boolean;
     hasAnyCompOfCategory: (compCategory: string) => boolean;
@@ -88,9 +89,12 @@ export interface Game_BattlerBase {
     sortArmors: () => void;
     sortEquippedArmors: () => void;
 
-    ammoType: (ammoId: string) => number;
+    ammo: (ammoId: string) => number;
+    ammoFromGroup: (ammoGroup: AmmunitionGroup) => number;
     hasAmmo: (ammoId: string) => boolean;
     addAmmo: (ammoId: string, quantity?: number) => void;
+    removeAmmo: (ammoId: string, quantity?: number) => void;
+    firstAmmoFromGroup: (ammoGroup: AmmunitionGroup) => string;
 
     conditionStacks: (conditionId: ConditionId) => number;
     hasCondition: (conditionId: ConditionId) => boolean;
@@ -223,6 +227,21 @@ Game_BattlerBase.prototype.comp = function(compId: string) {
     return this.compPlus(compId) + this.paramByName(associatedStat);
 };
 
+Game_BattlerBase.prototype.compWithModifiers = function(compId: string) {
+    let conditionId: string;
+    let compFinal: number;
+    const associatedStat = TEW.DATABASE.COMPS.SET[compId].stat;
+    compFinal = this.compPlus(compId) + this.paramByName(associatedStat);
+    for (conditionId in this._conditions) {
+        const condition = TEW.DATABASE.CONDITIONS[conditionId];
+        if (!condition) continue;
+        if (condition.testModifier && (condition.testModifier.comps === undefined || condition.testModifier.comps.includes(conditionId))) {
+            compFinal += condition.testModifier.mod;
+        }
+    }
+    return compFinal;
+};
+
 Game_BattlerBase.prototype.anyCompOfCategory = function(compCategory: string) {
     const comps = TEW.DATABASE.COMPS.IDS
         .filter(compId => compId.startsWith(compCategory))
@@ -339,7 +358,7 @@ Game_BattlerBase.prototype.transferWeapon = function(weapon: ActorWeapon) {
 Game_BattlerBase.prototype.removeWeapon = function(index: number) {
     const removed = this._weapons.splice(index, 1);
     this.sortWeapons();
-    return removed;
+    return removed[0];
 }
 
 Game_BattlerBase.prototype.sortWeapons = function() {
@@ -494,12 +513,19 @@ Game_BattlerBase.prototype.ammo = function(ammoId: string) {
     return this._ammo[ammoId] || 0;
 };
 
-Game_BattlerBase.prototype.ammoType = function(ammoId : string) {
-    return this._ammo[ammoId] || 0;
+Game_BattlerBase.prototype.ammoFromGroup = function(ammoGroup: AmmunitionGroup) {
+    let total = 0;
+    for (let ammoId in this._ammo) {
+        const ammo = TEW.DATABASE.WEAPONS.AMMO_SET[ammoId];
+        if (ammo.group === ammoGroup) {
+            total +=  this.ammo(ammoId);
+        }
+    }
+    return total;
 };
 
 Game_BattlerBase.prototype.addAmmo = function(ammoId : string, quantity = 1) {
-    this._ammo[ammoId] = this.ammoType(ammoId) + quantity;
+    this._ammo[ammoId] = this.ammo(ammoId) + quantity;
 };
 
 Game_BattlerBase.prototype.removeAmmo = function(ammoId: string, quantity = 1) {
@@ -512,6 +538,21 @@ Game_BattlerBase.prototype.removeAmmo = function(ammoId: string, quantity = 1) {
 
 Game_BattlerBase.prototype.hasAmmo = function(ammoId : string) {
     return this._ammo[ammoId] > 0;
+};
+
+Game_BattlerBase.prototype.firstAmmoFromGroup = function(ammoGroup: AmmunitionGroup) {
+    let found = undefined;
+    let iterator = 0;
+    const ammoTypes = Object.keys(this._ammo);
+    while (!found) {
+        const ammoId = ammoTypes[iterator];
+        const ammo = TEW.DATABASE.WEAPONS.AMMO_SET[ammoId];
+        if (ammo.group === ammoGroup) {
+            found = ammoId;
+        }
+        iterator++;
+    }
+    return found;
 };
 
 

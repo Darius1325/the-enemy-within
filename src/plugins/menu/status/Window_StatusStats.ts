@@ -1,5 +1,6 @@
 // $PluginCompiler TEW_Menus.js
 
+import { Sprite } from "../../../rmmv/core/Sprite";
 import TEW from "../../_types/tew";
 
 // $StartCompilation
@@ -18,6 +19,15 @@ Window_StatusStats.prototype.constructor = Window_StatusStats;
 
 Window_StatusStats.prototype.initialize = function() {
     Window_Status.prototype.initialize.call(this);
+};
+
+Window_StatusStats.prototype.setActor = function(actor: any) {
+    if (this._actor !== actor) {
+        this._actor = actor;
+        this._bgSprite = new Sprite(ImageManager.loadSystem("bg_menuStats_" + actor.name()));
+        this.addChildAt(this._bgSprite, 0);
+        this.refresh();
+    }
 };
 
 Window_StatusStats.prototype.drawAllItems = function() {

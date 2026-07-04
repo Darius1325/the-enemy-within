@@ -1,6 +1,6 @@
-// $PluginCompiler TEW_Menus.js 101
+// $PluginCompiler TEW_Menus.js 11
 
-import { Window_NumberInput } from '../../../rmmv/windows/Window_NumberInput';
+import Window_InventoryTransferCommand from './Window_InventoryTransferCommand';
 
 // $StartCompilation
 
@@ -13,33 +13,33 @@ function Window_InventoryTransferSpinner() {
     this.initialize.apply(this, arguments);
 }
 
-export default Window_InventoryTransferSpinner.prototype = Object.create(Window_NumberInput.prototype);
+export default Window_InventoryTransferSpinner.prototype = Object.create(Window_Selectable.prototype);
 Window_InventoryTransferSpinner.prototype.constructor = Window_InventoryTransferSpinner;
 
+Window_InventoryTransferSpinner.LEFT_X = Window_InventoryTransferCommand.LEFT_X + 380;
+Window_InventoryTransferSpinner.TOP_Y = Window_InventoryTransferCommand.TOP_Y;
+
 Window_InventoryTransferSpinner.prototype.initialize = function() {
-    const width = 100;
-    const height = 80;
     Window_Selectable.prototype.initialize.call(this,
-        Graphics.boxWidth - width,
-        Graphics.boxHeight - this.fittingHeight(5) - height,
-        width, height
+        Window_InventoryTransferSpinner.LEFT_X,
+        Window_InventoryTransferSpinner.TOP_Y,
+        this.windowWidth(), this.windowHeight()
     );
     this._number = 1;
     this._max = 1;
     this._maxDigits = 2;
     this.openness = 0;
-    this.createButtons();
     this.deactivate();
 };
 
 Window_InventoryTransferSpinner.prototype.setMax = function(max: number) {
     this._max = max;
-}
+};
 
 Window_InventoryTransferSpinner.prototype.start = function() {
     this._number = 1;
-    this.placeButtons();
-    this.updateButtonsVisiblity();
+    // this.placeButtons();
+    // this.updateButtonsVisiblity();
     this.createContents();
     this.refresh();
     this.open();
@@ -48,8 +48,11 @@ Window_InventoryTransferSpinner.prototype.start = function() {
     this.select(0);
 };
 
-Window_NumberInput.prototype.buttonY = function() {
-    return this.height + 8;
+Window_InventoryTransferSpinner.prototype.drawAllItems = function() {
+    this.resetTextColor();
+    const signWidth = this.textWidth('\u00d7 ');
+    this.drawText('\u00d7 ', 0, 0, signWidth, 'left');
+    this.drawText(this._number, signWidth, 0, this.textWidth('00'), 'right');
 };
 
 Window_InventoryTransferSpinner.prototype.update = function() {
@@ -133,24 +136,6 @@ Window_InventoryTransferSpinner.prototype.processOk = function() {
 //         x += button.width + spacing;
 //     }
 // };
-
-// Window_InventoryTransferSpinner.prototype.drawMultiplicationSign = function() {
-//     var sign = '\u00d7';
-//     var width = this.textWidth(sign);
-//     var x = this.cursorX() - width * 2;
-//     var y = this.itemY();
-//     this.resetTextColor();
-//     this.drawText(sign, x, y, width);
-// };
-
-// Window_InventoryTransferSpinner.prototype.drawNumber = function() {
-//     var x = this.cursorX();
-//     var y = this.itemY();
-//     var width = this.cursorWidth() - this.textPadding();
-//     this.resetTextColor();
-//     this.drawText(this._number, x, y, width, 'right');
-// };
-
 // Window_InventoryTransferSpinner.prototype.itemY = function() {
 //     return Math.round(this.contentsHeight() / 2 - this.lineHeight() * 1.5);
 // };

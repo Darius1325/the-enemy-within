@@ -480,19 +480,82 @@ function Scene_Tutorials() {
     this.initialize.apply(this, arguments);
 }
 ;
-Scene_Tutorials.prototype = Object.create(Scene_Journal.prototype);
+Scene_Tutorials.prototype = Object.create(Scene_Base.prototype);
 Scene_Tutorials.prototype.constructor = Scene_Tutorials;
 Scene_Tutorials.prototype.initialize = function () {
-    Scene_Journal.prototype.initialize.call(this);
+    Scene_Base.prototype.initialize.call(this);
+    this.createWindowLayer();
 };
-Scene_Tutorials.prototype.fetchEntries = function () {
-    this._entries = TEW.DATABASE.TUTORIALS.sort((a, b) => a.title.localeCompare(b.title));
+Scene_Tutorials.prototype.create = function () {
+    Scene_Base.prototype.create.call(this);
+    this.addFullscreenBackground();
+    this.createEntryWindow();
+    this.createTutorialList();
+    this.createTutorialCategoryList();
+    this.setupEntryWindow();
+    this.setupTutorialList();
+    this.setupTutorialCategoryList();
 };
-Scene_Tutorials.prototype.backgroundImageName = function () {
-    return 'bg_tutorials';
+Scene_Tutorials.prototype.addFullscreenBackground = function () {
+    this._background = new Sprite(ImageManager.loadSystem('bg_tutorials'));
+    this.addChildAt(this._background, this.getChildIndex(this._windowLayer));
 };
 Scene_Tutorials.prototype.createEntryWindow = function () {
-    this._windowEntryDetails = new Window_TutorialEntry();
+    this._windowEntry = new Window_TutorialEntry();
+};
+Scene_Tutorials.prototype.setupEntryWindow = function () {
+    this._windowEntry._cancelHandler = () => {
+        this._windowEntry.hide();
+        this._windowEntry.deactivate();
+        this._windowTutorialCategoryList.show();
+        this._windowTutorialList.show();
+        this._windowTutorialList.activate();
+    };
+    this._windowEntry.hide();
+    this._windowEntry.deactivate();
+    this.addWindow(this._windowEntry);
+};
+Scene_Tutorials.prototype.createTutorialCategoryList = function () {
+    this._windowTutorialCategoryList = new Window_TutorialCategoryList();
+};
+Scene_Tutorials.prototype.setupTutorialCategoryList = function () {
+    this._windowTutorialCategoryList.setHandler('cancel', this.popScene.bind(this));
+    this._windowTutorialCategoryList.setHandler('show_category_tutorials', () => {
+        const categoryIndex = this._windowTutorialCategoryList._index;
+        this._windowTutorialList._items = TEW.DATABASE.TUTORIALS[categoryIndex].subTutorials;
+        this._windowTutorialList.refresh();
+    });
+    this._windowTutorialCategoryList.setHandler('select_category', () => {
+        this._windowTutorialCategoryList.deactivate();
+        this._windowTutorialList.activate();
+        this._windowTutorialList.select(0);
+    });
+    this.addWindow(this._windowTutorialCategoryList);
+    this._windowTutorialCategoryList.show();
+    this._windowTutorialCategoryList.activate();
+    this._windowTutorialCategoryList.select(0);
+};
+Scene_Tutorials.prototype.createTutorialList = function () {
+    this._windowTutorialList = new Window_TutorialList(this._quests);
+};
+Scene_Tutorials.prototype.setupTutorialList = function () {
+    this._windowTutorialList.setHandler('cancel', () => {
+        this._windowTutorialList.deselect();
+        this._windowTutorialList.deactivate();
+        this._windowTutorialCategoryList.activate();
+    });
+    this._windowTutorialList.setHandler('show_tutorial_entry', () => {
+        const tutorialEntry = this._windowTutorialList.selectedEntry();
+        this._windowEntry.reset(tutorialEntry);
+        this._windowTutorialCategoryList.hide();
+        this._windowTutorialList.deactivate();
+        this._windowTutorialList.hide();
+        this._windowEntry.show();
+        this._windowEntry.activate();
+        this._windowEntry.refresh();
+    });
+    this.addWindow(this._windowTutorialList);
+    this._windowTutorialList.show();
 };
 // #endregion =========================== Scene_Tutorials ============================== //
 // ============================== //
@@ -766,22 +829,16 @@ Window_InventoryTransferCommand.ITEM = 'item';
 Window_InventoryTransferCommand.WEAPON = 'weapon';
 Window_InventoryTransferCommand.ARMOR = 'armor';
 Window_InventoryTransferCommand.AMMO = 'ammo';
+Window_InventoryTransferCommand.LEFT_X = 300;
+Window_InventoryTransferCommand.TOP_Y = 500;
 // Initializing the command window
 Window_InventoryTransferCommand.prototype.initialize = function () {
-    this._windowWidth = Graphics.boxWidth / 4;
-    this._windowHeight = this.fittingHeight(5); // actor count - 1
     this.type = 'item';
     this.item = '';
     this.targetActor = undefined;
     this._addAction = Game_Actor.prototype.addItem;
     this._removeAction = Game_Actor.prototype.removeItem;
-    Window_Command.prototype.initialize.call(this, this._windowWidth * 3, Graphics.boxHeight - this._windowHeight);
-};
-Window_InventoryTransferCommand.prototype.windowWidth = function () {
-    return this._windowWidth;
-};
-Window_InventoryTransferCommand.prototype.windowHeight = function () {
-    return this._windowHeight;
+    Window_Command.prototype.initialize.call(this, Window_InventoryTransferCommand.LEFT_X, Window_InventoryTransferCommand.TOP_Y);
 };
 Window_InventoryTransferCommand.prototype.setActor = function (actor) {
     if (this._actor !== actor) {
@@ -968,9 +1025,193 @@ Window_JournalPage.prototype.initialize = function (isLeftPage = true) {
     Window_Selectable.prototype.initialize.call(this, isLeftPage ? TEW.MENU.JOURNALS_LEFT_PAGE_X_OFFSET : TEW.MENU.JOURNALS_RIGHT_PAGE_X_OFFSET, dimensions.y, dimensions.w, dimensions.h);
 };
 Window_JournalPage.prototype.maxItems = function () {
-    return this._items.length;
+    var _a;
+    return ((_a = this._items) === null || _a === void 0 ? void 0 : _a.length) || 0;
 };
 // #endregion =========================== Window_JournalPage ============================== //
+// ============================== //
+// #region ============================== Window_InventoryTransferSpinner ============================== //
+//-----------------------------------------------------------------------------
+// Window_InventoryTransferSpinner
+//
+// Spinner to choose how many items to transfer
+function Window_InventoryTransferSpinner() {
+    this.initialize.apply(this, arguments);
+}
+Window_InventoryTransferSpinner.prototype = Object.create(Window_Selectable.prototype);
+Window_InventoryTransferSpinner.prototype.constructor = Window_InventoryTransferSpinner;
+Window_InventoryTransferSpinner.LEFT_X = Window_InventoryTransferCommand.LEFT_X + 380;
+Window_InventoryTransferSpinner.TOP_Y = Window_InventoryTransferCommand.TOP_Y;
+Window_InventoryTransferSpinner.prototype.initialize = function () {
+    Window_Selectable.prototype.initialize.call(this, Window_InventoryTransferSpinner.LEFT_X, Window_InventoryTransferSpinner.TOP_Y, this.windowWidth(), this.windowHeight());
+    this._number = 1;
+    this._max = 1;
+    this._maxDigits = 2;
+    this.openness = 0;
+    this.deactivate();
+};
+Window_InventoryTransferSpinner.prototype.setMax = function (max) {
+    this._max = max;
+};
+Window_InventoryTransferSpinner.prototype.start = function () {
+    this._number = 1;
+    // this.placeButtons();
+    // this.updateButtonsVisiblity();
+    this.createContents();
+    this.refresh();
+    this.open();
+    this.activate();
+    this.show();
+    this.select(0);
+};
+Window_InventoryTransferSpinner.prototype.drawAllItems = function () {
+    this.resetTextColor();
+    const signWidth = this.textWidth('× ');
+    this.drawText('× ', 0, 0, signWidth, 'left');
+    this.drawText(this._number, signWidth, 0, this.textWidth('00'), 'right');
+};
+Window_InventoryTransferSpinner.prototype.update = function () {
+    Window_Selectable.prototype.update.call(this);
+    this.processNumberChange();
+};
+Window_InventoryTransferSpinner.prototype.isCancelEnabled = function () {
+    return true;
+};
+Window_InventoryTransferSpinner.prototype.processOk = function () {
+    SoundManager.playOk();
+    this.updateInputData();
+    this.callOkHandler();
+    this.deactivate();
+    this.hide();
+};
+// Window_InventoryTransferSpinner.prototype = Object.create(Window_Selectable.prototype);
+// Window_InventoryTransferSpinner.prototype.constructor = Window_InventoryTransferSpinner;
+// // Initializing the command window
+// Window_InventoryTransferSpinner.prototype.initialize = function() {
+//     this._windowWidth = Graphics.boxWidth / 4;
+//     this._windowHeight = this.fittingHeight(3);
+//     this.type = 'item';
+//     this._number = 1;
+//     Window_Selectable.prototype.initialize.call(
+//         this,
+//         this._windowWidth * 3,
+//         Graphics.boxHeight - this._windowHeight);
+//     this.createButtons();
+// };
+// Window_InventoryTransferSpinner.prototype.activate = function() {
+//     Window_Selectable.prototype.activate.call(this);
+//     this._number = 1;
+// };
+// Window_InventoryTransferSpinner.prototype.deactivate = function() {
+//     Window_Selectable.prototype.deactivate.call(this);
+//     this._number = 1;
+// };
+// Window_InventoryTransferSpinner.prototype.createButtons = function() {
+//     var bitmap = ImageManager.loadSystem('ButtonSet');
+//     var buttonWidth = 48;
+//     var buttonHeight = 48;
+//     this._buttons = [];
+//     for (var i = 0; i < 5; i++) {
+//         var button = new Sprite_Button();
+//         var x = buttonWidth * i;
+//         var w = buttonWidth * (i === 4 ? 2 : 1);
+//         button.bitmap = bitmap;
+//         button.setColdFrame(x, 0, w, buttonHeight);
+//         button.setHotFrame(x, buttonHeight, w, buttonHeight);
+//         button.visible = false;
+//         this._buttons.push(button);
+//         this.addChild(button);
+//     }
+//     this._buttons[0].setClickHandler(this.onButtonDown2.bind(this));
+//     this._buttons[1].setClickHandler(this.onButtonDown.bind(this));
+//     this._buttons[2].setClickHandler(this.onButtonUp.bind(this));
+//     this._buttons[3].setClickHandler(this.onButtonUp2.bind(this));
+//     this._buttons[4].setClickHandler(this.onButtonOk.bind(this));
+// };
+// Window_InventoryTransferSpinner.prototype.placeButtons = function() {
+//     var numButtons = this._buttons.length;
+//     var spacing = 16;
+//     var totalWidth = -spacing;
+//     for (var i = 0; i < numButtons; i++) {
+//         totalWidth += this._buttons[i].width + spacing;
+//     }
+//     var x = (this.width - totalWidth) / 2;
+//     for (var j = 0; j < numButtons; j++) {
+//         var button = this._buttons[j];
+//         button.x = x;
+//         button.y = this.buttonY();
+//         x += button.width + spacing;
+//     }
+// };
+// Window_InventoryTransferSpinner.prototype.itemY = function() {
+//     return Math.round(this.contentsHeight() / 2 - this.lineHeight() * 1.5);
+// };
+// Window_InventoryTransferSpinner.prototype.buttonY = function() {
+//     return Math.round(this.lineHeight() * 2.5);
+// };
+// Window_InventoryTransferSpinner.prototype.cursorWidth = function() {
+//     var digitWidth = this.textWidth('0');
+//     return this.maxDigits() * digitWidth + this.textPadding() * 2;
+// };
+// Window_InventoryTransferSpinner.prototype.cursorX = function() {
+//     return this.contentsWidth() - this.cursorWidth() - this.textPadding();
+// };
+// Window_InventoryTransferSpinner.prototype.maxDigits = function() {
+//     return 2;
+// };
+// Window_InventoryTransferSpinner.prototype.update = function() {
+//     Window_Selectable.prototype.update.call(this);
+//     this.processNumberChange();
+// };
+// Window_InventoryTransferSpinner.prototype.isOkTriggered = function() {
+//     return Input.isTriggered('ok');
+// };
+// Window_InventoryTransferSpinner.prototype.playOkSound = function() {
+// };
+Window_InventoryTransferSpinner.prototype.processNumberChange = function () {
+    if (this.isOpenAndActive()) {
+        if (Input.isRepeated('up')) {
+            this.changeNumber(1);
+        }
+        if (Input.isRepeated('down')) {
+            this.changeNumber(-1);
+        }
+        if (Input.isRepeated('right')) {
+            this.changeNumber(10);
+        }
+        if (Input.isRepeated('left')) {
+            this.changeNumber(-10);
+        }
+    }
+};
+Window_InventoryTransferSpinner.prototype.changeNumber = function (amount) {
+    const lastNumber = this._number;
+    this._number = (this._number + amount).clamp(1, this._max);
+    if (this._number !== lastNumber) {
+        SoundManager.playCursor();
+        this.refresh();
+    }
+};
+// Window_InventoryTransferSpinner.prototype.updateCursor = function() {
+//     this.setCursorRect(this.cursorX(), this.itemY(),
+//                        this.cursorWidth(), this.lineHeight());
+// };
+Window_InventoryTransferSpinner.prototype.onButtonUp = function () {
+    this.changeNumber(1);
+};
+Window_InventoryTransferSpinner.prototype.onButtonUp2 = function () {
+    this.changeNumber(10);
+};
+Window_InventoryTransferSpinner.prototype.onButtonDown = function () {
+    this.changeNumber(-1);
+};
+Window_InventoryTransferSpinner.prototype.onButtonDown2 = function () {
+    this.changeNumber(-10);
+};
+// Window_InventoryTransferSpinner.prototype.onButtonOk = function() {
+//     this.processOk();
+// };
+// #endregion =========================== Window_InventoryTransferSpinner ============================== //
 // ============================== //
 // #region ============================== Window_JournalPrettyEntry ============================== //
 function Window_JournalPrettyEntry() {
@@ -1089,31 +1330,6 @@ Window_JournalPrettyEntry.prototype.close = function () {
     Window_JournalEntry.prototype.close.call(this);
 };
 // #endregion =========================== Window_JournalPrettyEntry ============================== //
-// ============================== //
-// #region ============================== Window_InventoryAmmo ============================== //
-// //-----------------------------------------------------------------------------
-// // Window_InventoryInfo
-// //
-// // TODO
-// function Window_InventoryAmmo() {
-//     this.initialize.apply(this, arguments);
-// }
-// Window_InventoryAmmo.prototype = Object.create(HalfWindow_List.prototype);
-// Window_InventoryAmmo.prototype.constructor = Window_InventoryAmmo;
-// Window_InventoryAmmo.prototype.initialize = function() {
-//     HalfWindow_List.prototype.initialize.call(this);
-//     this._helpWindow = null;
-//     // this.setHandler('ok', this.showHelpWindow.bind(this));
-// };
-// Window_InventoryAmmo.prototype.setActor = function(actor: any) {
-//     if (this._actor !== actor) {
-//         this._actor = actor;
-//         // this._advancedCompsList = TEW.ADVANCED_COMPS.filter(comp => actor.hasComp(comp[0])); // TODO
-//         // this._maxItems = TEW.BASE_COMPS.length + this._advancedCompsList.length;
-//         this.refresh();
-//     }
-// };
-// #endregion =========================== Window_InventoryAmmo ============================== //
 // ============================== //
 // #region ============================== Window_InventoryArmorCommand ============================== //
 //-----------------------------------------------------------------------------
@@ -1306,19 +1522,72 @@ Window_InventoryArmors.prototype.processOk = function () {
 function Window_InventoryInfo() {
     this.initialize.apply(this, arguments);
 }
-Window_InventoryInfo.prototype = Object.create(HalfWindow_List.prototype);
+Window_InventoryInfo.prototype = Object.create(Window_Base.prototype);
 Window_InventoryInfo.prototype.constructor = Window_InventoryInfo;
 Window_InventoryInfo.prototype.initialize = function () {
-    HalfWindow_List.prototype.initialize.call(this);
-    this._helpWindow = null;
-    // this.setHandler('ok', this.showHelpWindow.bind(this));
+    Window_Base.prototype.initialize.call(this, 0, TEW.MENU.INVENTORY_WINDOW_TOPBAR_HEIGHT, this.windowWidth(), this.windowHeight());
+    this._iconPadding = 5;
 };
 Window_InventoryInfo.prototype.setActor = function (actor) {
     if (this._actor !== actor) {
         this._actor = actor;
-        // this._advancedCompsList = TEW.ADVANCED_COMPS.filter(comp => actor.hasComp(comp[0])); // TODO
-        // this._maxItems = TEW.BASE_COMPS.length + this._advancedCompsList.length;
+        this._bgSprite = new Sprite(ImageManager.loadSystem("bg_menuStats_" + actor.name()));
+        this.addChildAt(this._bgSprite, 0);
         this.refresh();
+    }
+};
+Window_InventoryInfo.prototype.refresh = function () {
+    if (this.contents) {
+        this.contents.clear();
+        if (this._actor) {
+            this.drawAllItems();
+        }
+    }
+};
+Window_InventoryInfo.prototype.drawAllItems = function () {
+    this.drawWeapons();
+    this.drawArmors();
+};
+Window_InventoryInfo.prototype.drawWeapons = function () {
+    const mainHand = this._actor.mainHand();
+    const secondHand = this._actor.secondHand();
+    if (mainHand) {
+        const mainHandInfo = TEW.DATABASE.WEAPONS.ARRAY.find(w => w[0] === mainHand.id);
+        const isRanged = Object.keys(TEW.DATABASE.WEAPONS.RANGED_SET).includes(mainHand.id);
+        this.drawWeapon(mainHandInfo[1], isRanged, 60); // TODO y
+    }
+    if (secondHand) {
+        const secondHandInfo = TEW.DATABASE.WEAPONS.ARRAY.find(w => w[0] === secondHand.id);
+        const isRanged = Object.keys(TEW.DATABASE.WEAPONS.RANGED_SET).includes(secondHand.id);
+        this.drawWeapon(secondHandInfo[1], isRanged, 96); // TODO y
+    }
+};
+Window_InventoryInfo.prototype.drawWeapon = function (weapon, isRanged, y) {
+    this.changeTextColor(this.systemColor());
+    this.drawIcon(weapon.icon, 30, y); // TODO x
+    this.drawText(weapon.name, 30 + 32 + this._iconPadding, y, this.contentsWidth()); // TODO width
+    this.resetTextColor();
+    const damageExcludingSL = weapon.damage + (weapon.strBonus ? this._actor.paramBonus("STRG" /* Stat.STRG */) : 0); // TODO weapon qualities ?
+    this.drawText("Damage: " + damageExcludingSL, 220, y, this.contentsWidth()); // TODO y & width
+    if (isRanged) {
+        const ammoInInventory = this._actor.ammoFromGroup(weapon.ammunition[0]);
+        this.drawText("Available ammo: " + ammoInInventory, 380, y, this.contentsWidth()); // TODO ammo name ?
+    }
+};
+Window_InventoryInfo.prototype.drawArmors = function () {
+    const equippedArmors = this._actor._equippedArmors;
+    for (let i = 0; i < equippedArmors.length; i++) {
+        this.drawArmor(equippedArmors[i], 170 + (i * TEW.MENU.LINE_HEIGHT)); // TODO height
+    }
+};
+Window_InventoryInfo.prototype.drawArmor = function (armorId, y) {
+    const armorDetails = TEW.DATABASE.ARMORS.ARRAY.find(a => a[0] === armorId);
+    const x = 30; // TODO x
+    if (armorDetails) {
+        this.changeTextColor(this.systemColor());
+        this.drawIcon(armorDetails[1].icon, x, y);
+        this.drawText(armorDetails[1].name, x + 32 + this._iconPadding, y, this.contentsWidth() - (x + 32 + this._iconPadding));
+        this.resetTextColor();
     }
 };
 // #endregion =========================== Window_InventoryInfo ============================== //
@@ -1416,6 +1685,9 @@ Window_InventoryItemDetails.prototype.drawAmmoDetails = function (ammo) {
 // Window_InventoryItems
 //
 // General item list window
+Window_InventoryItems.RIGHT_COLUMN_WIDTH = 80;
+Window_InventoryItems.LEFT_COLUMN_WIDTH = 500;
+Window_InventoryItems.RIGHT_COLUMN_POSITION = 500;
 function Window_InventoryItems() {
     this.initialize.apply(this, arguments);
 }
@@ -1449,18 +1721,18 @@ Window_InventoryItems.prototype.drawAllItems = function () {
 // Drawing one item
 Window_InventoryItems.prototype.drawItem = function (index) {
     const normalizedIndex = index - this.topIndex();
-    const x = this._leftPadding; // padding
+    const x = 0;
     const y = normalizedIndex * TEW.MENU.LINE_HEIGHT;
     const itemOrAmmo = this.itemOrAmmoFromIndex(index);
     this.changeTextColor(this.systemColor());
     this.drawIcon(itemOrAmmo[1].groupIcon, x, y);
-    this.drawText(itemOrAmmo[1].name, x + 32 + this._iconPadding, y, this._rightColumnPosition);
+    this.drawText(itemOrAmmo[1].name, x + 32 + this._iconPadding, y, Window_InventoryItems.LEFT_COLUMN_WIDTH);
     this.resetTextColor();
     if (index < this._ammo.length) {
-        this.drawText(this._actor.ammo(itemOrAmmo[0]), this._rightColumnPosition, y, this._rightColumnWidth, 'right');
+        this.drawText(this._actor.ammo(itemOrAmmo[0]), Window_InventoryItems.RIGHT_COLUMN_POSITION, y, Window_InventoryItems.RIGHT_COLUMN_WIDTH, 'right');
     }
     else {
-        this.drawText(this._actor.item(itemOrAmmo[0]), this._rightColumnPosition, y, this._rightColumnWidth, 'right');
+        this.drawText(this._actor.item(itemOrAmmo[0]), Window_InventoryItems.RIGHT_COLUMN_POSITION, y, Window_InventoryItems.RIGHT_COLUMN_WIDTH, 'right');
     }
 };
 // Getting an item from its index
@@ -1581,11 +1853,16 @@ Window_InventoryWeaponDetails.prototype.drawDetails = function (weapon) {
     // Availability Icon
     this.drawIcon(weapon.availabilityIcon, this.contentsWidth() - 32, 0);
     // Table
-    this.drawTable2Columns(0, 80, this.contentsWidth(), 2, [
+    const table = [
         // ["Owned :", "x" + item[1].quantity],
         ["Group :", weapon.groupLabel],
         ["Enc. :", weapon.enc]
-    ]);
+    ];
+    const hasAmmo = weapon.ammo > 0;
+    if (hasAmmo) {
+        table.push(["Ammo :", weapon.ammoType + " (" + weapon.ammo + ")"]);
+    }
+    this.drawTable2Columns(0, 80, this.contentsWidth(), hasAmmo ? 3 : 2, table);
     this.drawLine(200);
     // Description
     this.drawWrappedTextManually(weapon.description, 0, 220, 160 // 440 (Height) - 60 (2 * Padding) - 220 (Starting Y)
@@ -2045,6 +2322,43 @@ Window_QuestList.prototype.processOk = function () {
 };
 // #endregion =========================== Window_QuestList ============================== //
 // ============================== //
+// #region ============================== Window_TutorialCategoryList ============================== //
+function Window_TutorialCategoryList() {
+    this.initialize.apply(this, arguments);
+}
+Window_TutorialCategoryList.prototype = Object.create(Window_JournalPage.prototype);
+Window_TutorialCategoryList.prototype.constructor = Window_TutorialCategoryList;
+Window_TutorialCategoryList.prototype.initialize = function () {
+    Window_JournalPage.prototype.initialize.call(this, true);
+    this.refresh();
+};
+Window_TutorialCategoryList.prototype.drawItem = function (index) {
+    const normalizedIndex = index - this.topIndex();
+    const y = normalizedIndex * TEW.MENU.LINE_HEIGHT;
+    this.drawText(TEW.DATABASE.TUTORIALS[index].category, 0, y, this._width, 'left');
+};
+// Selecting an item
+Window_TutorialCategoryList.prototype.select = function (index) {
+    if (this._index !== index) {
+        this._index = index;
+        if (this._index >= 0) {
+            this.callHandler("show_category_tutorials");
+        }
+        this._stayCount = 0;
+        this.ensureCursorVisible();
+        this.updateCursor();
+    }
+};
+Window_TutorialCategoryList.prototype.maxItems = () => TEW.DATABASE.TUTORIALS.length;
+Window_TutorialCategoryList.prototype.isOkEnabled = () => true;
+// handling process OK
+Window_TutorialCategoryList.prototype.processOk = function () {
+    this.playOkSound(); // TODO other sound ?
+    this.updateInputData();
+    this.callHandler("select_category");
+};
+// #endregion =========================== Window_TutorialCategoryList ============================== //
+// ============================== //
 // #region ============================== Window_TutorialEntry ============================== //
 function Window_TutorialEntry() {
     this.initialize.apply(this, arguments);
@@ -2058,7 +2372,6 @@ Window_TutorialEntry.prototype.initialize = function () {
     this._cachedImages = {};
 };
 Window_TutorialEntry.prototype.reset = function (entry) {
-    this._id = entry.id;
     this._title = entry.title;
     this._paragraphs = entry.paragraphs;
     this._formattedContent = undefined;
@@ -2074,6 +2387,34 @@ Window_TutorialEntry.prototype.close = function () {
     Window_JournalPrettyEntry.prototype.close.call(this);
 };
 // #endregion =========================== Window_TutorialEntry ============================== //
+// ============================== //
+// #region ============================== Window_TutorialList ============================== //
+function Window_TutorialList() {
+    this.initialize.apply(this, arguments);
+}
+Window_TutorialList.prototype = Object.create(Window_JournalPage.prototype);
+Window_TutorialList.prototype.constructor = Window_TutorialList;
+Window_TutorialList.prototype.initialize = function () {
+    Window_JournalPage.prototype.initialize.call(this, false);
+    this._items = [];
+    this.refresh();
+};
+Window_TutorialList.prototype.drawItem = function (index) {
+    const normalizedIndex = index - this.topIndex();
+    const y = normalizedIndex * TEW.MENU.LINE_HEIGHT;
+    this.drawText(this._items[index].title, 0, y, this._width, 'left');
+};
+Window_TutorialList.prototype.selectedEntry = function () {
+    return this._items[this.index()];
+};
+Window_TutorialList.prototype.isOkEnabled = () => true;
+// handling process OK
+Window_TutorialList.prototype.processOk = function () {
+    this.playOkSound(); // TODO other sound ?
+    this.updateInputData();
+    this.callHandler("show_tutorial_entry");
+};
+// #endregion =========================== Window_TutorialList ============================== //
 // ============================== //
 // #region ============================== Window_JournalContentsTable ============================== //
 function Window_JournalContentsTable() {
@@ -3193,6 +3534,14 @@ Window_StatusStats.prototype.constructor = Window_StatusStats;
 Window_StatusStats.prototype.initialize = function () {
     Window_Status.prototype.initialize.call(this);
 };
+Window_StatusStats.prototype.setActor = function (actor) {
+    if (this._actor !== actor) {
+        this._actor = actor;
+        this._bgSprite = new Sprite(ImageManager.loadSystem("bg_menuStats_" + actor.name()));
+        this.addChildAt(this._bgSprite, 0);
+        this.refresh();
+    }
+};
 Window_StatusStats.prototype.drawAllItems = function () {
     this.drawCharacterInfo(1);
     this.drawHorzLine(TEW.MENU.LINE_HEIGHT * 7);
@@ -3311,8 +3660,7 @@ Window_Base.prototype.initialize = function (x, y, width, height) {
     TEW.MEMORY.windowBaseInitialize.call(this, x, y, width, height);
     const bg = this.backgroundImageName();
     if (bg) {
-        this._bgSprite = new Sprite();
-        this._bgSprite.bitmap = ImageManager.loadSystem(bg);
+        this._bgSprite = new Sprite(ImageManager.loadSystem(bg));
         this.addChildAt(this._bgSprite, 0);
     }
 };
@@ -3546,6 +3894,12 @@ HalfWindow_List.prototype.windowHeight = function () {
 HalfWindow_List.prototype.backgroundImageName = function () {
     return "bg_menuHalfWindowList";
 };
+Window_StatusStats.prototype.windowWidth = function () {
+    return Graphics.boxWidth;
+};
+Window_StatusStats.prototype.windowHeight = function () {
+    return Graphics.boxHeight - TEW.MENU.STATUS_WINDOW_TOPBAR_HEIGHT;
+};
 Window_StatusTalents.prototype.backgroundImageName = function () {
     return "bg_menuHalfWindowFullHeight";
 };
@@ -3575,6 +3929,30 @@ HalfWindow_DetailsCommand.prototype.windowWidth = function () {
 };
 HalfWindow_DetailsCommand.prototype.windowHeight = function () {
     return 168; // line height * 3 + bg padding
+};
+Window_InventoryInfo.prototype.windowWidth = function () {
+    return Graphics.boxWidth;
+};
+Window_InventoryInfo.prototype.windowHeight = function () {
+    return Graphics.boxHeight - TEW.MENU.INVENTORY_WINDOW_TOPBAR_HEIGHT;
+};
+Window_InventoryTransferCommand.prototype.backgroundImageName = function () {
+    return "bg_inventoryTransferCommand";
+};
+Window_InventoryTransferCommand.prototype.windowWidth = function () {
+    return 380;
+};
+Window_InventoryTransferCommand.prototype.windowHeight = function () {
+    return 168; // line height * 3 + bg padding
+};
+Window_InventoryTransferSpinner.prototype.backgroundImageName = function () {
+    return "bg_numberSpinner";
+};
+Window_InventoryTransferSpinner.prototype.windowWidth = function () {
+    return 160;
+};
+Window_InventoryTransferSpinner.prototype.windowHeight = function () {
+    return 96; // line height + bg padding
 };
 // #endregion =========================== backgrounds ============================== //
 // ============================== //
@@ -3788,228 +4166,6 @@ Scene_Equip.prototype.doTransfer = function () {
     this._currentMainWindow.syncActor();
     this._transferSpinnerWindow.callHandler('cancel');
 };
-// #endregion =========================== Scene_Equip ============================== //
-// ============================== //
-// #region ============================== Window_InventoryTransferSpinner ============================== //
-//-----------------------------------------------------------------------------
-// Window_InventoryTransferSpinner
-//
-// Spinner to choose how many items to transfer
-function Window_InventoryTransferSpinner() {
-    this.initialize.apply(this, arguments);
-}
-Window_InventoryTransferSpinner.prototype = Object.create(Window_NumberInput.prototype);
-Window_InventoryTransferSpinner.prototype.constructor = Window_InventoryTransferSpinner;
-Window_InventoryTransferSpinner.prototype.initialize = function () {
-    const width = 100;
-    const height = 80;
-    Window_Selectable.prototype.initialize.call(this, Graphics.boxWidth - width, Graphics.boxHeight - this.fittingHeight(5) - height, width, height);
-    this._number = 1;
-    this._max = 1;
-    this._maxDigits = 2;
-    this.openness = 0;
-    this.createButtons();
-    this.deactivate();
-};
-Window_InventoryTransferSpinner.prototype.setMax = function (max) {
-    this._max = max;
-};
-Window_InventoryTransferSpinner.prototype.start = function () {
-    this._number = 1;
-    this.placeButtons();
-    this.updateButtonsVisiblity();
-    this.createContents();
-    this.refresh();
-    this.open();
-    this.activate();
-    this.show();
-    this.select(0);
-};
-Window_NumberInput.prototype.buttonY = function () {
-    return this.height + 8;
-};
-Window_InventoryTransferSpinner.prototype.update = function () {
-    Window_Selectable.prototype.update.call(this);
-    this.processNumberChange();
-};
-Window_InventoryTransferSpinner.prototype.isCancelEnabled = function () {
-    return true;
-};
-Window_InventoryTransferSpinner.prototype.processOk = function () {
-    SoundManager.playOk();
-    this.updateInputData();
-    this.callOkHandler();
-    this.deactivate();
-    this.hide();
-};
-// Window_InventoryTransferSpinner.prototype = Object.create(Window_Selectable.prototype);
-// Window_InventoryTransferSpinner.prototype.constructor = Window_InventoryTransferSpinner;
-// // Initializing the command window
-// Window_InventoryTransferSpinner.prototype.initialize = function() {
-//     this._windowWidth = Graphics.boxWidth / 4;
-//     this._windowHeight = this.fittingHeight(3);
-//     this.type = 'item';
-//     this._number = 1;
-//     Window_Selectable.prototype.initialize.call(
-//         this,
-//         this._windowWidth * 3,
-//         Graphics.boxHeight - this._windowHeight);
-//     this.createButtons();
-// };
-// Window_InventoryTransferSpinner.prototype.activate = function() {
-//     Window_Selectable.prototype.activate.call(this);
-//     this._number = 1;
-// };
-// Window_InventoryTransferSpinner.prototype.deactivate = function() {
-//     Window_Selectable.prototype.deactivate.call(this);
-//     this._number = 1;
-// };
-// Window_InventoryTransferSpinner.prototype.createButtons = function() {
-//     var bitmap = ImageManager.loadSystem('ButtonSet');
-//     var buttonWidth = 48;
-//     var buttonHeight = 48;
-//     this._buttons = [];
-//     for (var i = 0; i < 5; i++) {
-//         var button = new Sprite_Button();
-//         var x = buttonWidth * i;
-//         var w = buttonWidth * (i === 4 ? 2 : 1);
-//         button.bitmap = bitmap;
-//         button.setColdFrame(x, 0, w, buttonHeight);
-//         button.setHotFrame(x, buttonHeight, w, buttonHeight);
-//         button.visible = false;
-//         this._buttons.push(button);
-//         this.addChild(button);
-//     }
-//     this._buttons[0].setClickHandler(this.onButtonDown2.bind(this));
-//     this._buttons[1].setClickHandler(this.onButtonDown.bind(this));
-//     this._buttons[2].setClickHandler(this.onButtonUp.bind(this));
-//     this._buttons[3].setClickHandler(this.onButtonUp2.bind(this));
-//     this._buttons[4].setClickHandler(this.onButtonOk.bind(this));
-// };
-// Window_InventoryTransferSpinner.prototype.placeButtons = function() {
-//     var numButtons = this._buttons.length;
-//     var spacing = 16;
-//     var totalWidth = -spacing;
-//     for (var i = 0; i < numButtons; i++) {
-//         totalWidth += this._buttons[i].width + spacing;
-//     }
-//     var x = (this.width - totalWidth) / 2;
-//     for (var j = 0; j < numButtons; j++) {
-//         var button = this._buttons[j];
-//         button.x = x;
-//         button.y = this.buttonY();
-//         x += button.width + spacing;
-//     }
-// };
-// Window_InventoryTransferSpinner.prototype.drawMultiplicationSign = function() {
-//     var sign = '×';
-//     var width = this.textWidth(sign);
-//     var x = this.cursorX() - width * 2;
-//     var y = this.itemY();
-//     this.resetTextColor();
-//     this.drawText(sign, x, y, width);
-// };
-// Window_InventoryTransferSpinner.prototype.drawNumber = function() {
-//     var x = this.cursorX();
-//     var y = this.itemY();
-//     var width = this.cursorWidth() - this.textPadding();
-//     this.resetTextColor();
-//     this.drawText(this._number, x, y, width, 'right');
-// };
-// Window_InventoryTransferSpinner.prototype.itemY = function() {
-//     return Math.round(this.contentsHeight() / 2 - this.lineHeight() * 1.5);
-// };
-// Window_InventoryTransferSpinner.prototype.buttonY = function() {
-//     return Math.round(this.lineHeight() * 2.5);
-// };
-// Window_InventoryTransferSpinner.prototype.cursorWidth = function() {
-//     var digitWidth = this.textWidth('0');
-//     return this.maxDigits() * digitWidth + this.textPadding() * 2;
-// };
-// Window_InventoryTransferSpinner.prototype.cursorX = function() {
-//     return this.contentsWidth() - this.cursorWidth() - this.textPadding();
-// };
-// Window_InventoryTransferSpinner.prototype.maxDigits = function() {
-//     return 2;
-// };
-// Window_InventoryTransferSpinner.prototype.update = function() {
-//     Window_Selectable.prototype.update.call(this);
-//     this.processNumberChange();
-// };
-// Window_InventoryTransferSpinner.prototype.isOkTriggered = function() {
-//     return Input.isTriggered('ok');
-// };
-// Window_InventoryTransferSpinner.prototype.playOkSound = function() {
-// };
-Window_InventoryTransferSpinner.prototype.processNumberChange = function () {
-    if (this.isOpenAndActive()) {
-        if (Input.isRepeated('up')) {
-            this.changeNumber(1);
-        }
-        if (Input.isRepeated('down')) {
-            this.changeNumber(-1);
-        }
-        if (Input.isRepeated('right')) {
-            this.changeNumber(10);
-        }
-        if (Input.isRepeated('left')) {
-            this.changeNumber(-10);
-        }
-    }
-};
-Window_InventoryTransferSpinner.prototype.changeNumber = function (amount) {
-    const lastNumber = this._number;
-    this._number = (this._number + amount).clamp(1, this._max);
-    if (this._number !== lastNumber) {
-        SoundManager.playCursor();
-        this.refresh();
-    }
-};
-// Window_InventoryTransferSpinner.prototype.updateCursor = function() {
-//     this.setCursorRect(this.cursorX(), this.itemY(),
-//                        this.cursorWidth(), this.lineHeight());
-// };
-Window_InventoryTransferSpinner.prototype.onButtonUp = function () {
-    this.changeNumber(1);
-};
-Window_InventoryTransferSpinner.prototype.onButtonUp2 = function () {
-    this.changeNumber(10);
-};
-Window_InventoryTransferSpinner.prototype.onButtonDown = function () {
-    this.changeNumber(-1);
-};
-Window_InventoryTransferSpinner.prototype.onButtonDown2 = function () {
-    this.changeNumber(-10);
-};
-// Window_InventoryTransferSpinner.prototype.onButtonOk = function() {
-//     this.processOk();
-// };
-// #endregion =========================== Window_InventoryTransferSpinner ============================== //
-// ============================== //
-// #region ============================== Scene_Equip ============================== //
-// // ----------------------
-// Scene_Equip.prototype.createAmmoWindow = function() {
-//     this._ammoWindow = new Window_InventoryAmmo();
-//     this._ammoWindow.setHandler('cancel', () => {
-//         this._commandWindow.activate();
-//         this._ammoWindow.deselect();
-//     });
-//     this._ammoWindow.hide();
-//     this.addWindow(this._ammoWindow);
-// };
-// Scene_Equip.prototype.activateInventoryAmmo = function(index = 0) {
-//     const nbAmmo = this._ammoWindow._ammo.length; // TODO
-//     if (nbAmmo > 0){
-//         index = Math.min(index, nbAmmo - 1);
-//         this.hideAllWindows();
-//         this._currentMainWindow = this._ammoWindow;
-//         this._ammoWindow.show();
-//         this._commandWindow.deactivate();
-//         this._ammoWindow.activate();
-//         this._ammoWindow.select(index);
-//         this._ammoWindow.refresh();
-//     }
-// };
 // #endregion =========================== Scene_Equip ============================== //
 // ============================== //
 // #region ============================== Scene_Equip ============================== //
@@ -4380,7 +4536,58 @@ Scene_Equip.prototype.transferWeapon = function () {
     this._transferCommandWindow.select(0);
 };
 Scene_Equip.prototype.reloadWeapon = function () {
-    console.log("Reload weapon : ", this._weaponsWindow.index());
+    const weaponData = this._weaponsWindow.item();
+    console.log("Reload attempt");
+    if (weaponData.isReloadable) {
+        let actorWeaponAccessor;
+        if (weaponData.isInSecondHand) {
+            actorWeaponAccessor = this._actor.secondHand();
+        }
+        else {
+            if (!weaponData.isInMainHand) {
+                this._actor.unequipMainHand();
+                this._actor.equipMainHand(weaponData.equipIndex);
+            }
+            actorWeaponAccessor = this._actor.mainHand();
+        }
+        // TODO skill test only in combat
+        let maxReload = 1;
+        if (weaponData.qualities.includes(35 /* WeaponQuality.REPEATER */)) {
+            maxReload = 2;
+            // } else if (weapon.qualities.includes(WeaponQuality.REPEATER_2)) {
+            //     reloadAmount = 3;
+        }
+        else if (weaponData.qualities.includes(37 /* WeaponQuality.REPEATER_4 */)) {
+            maxReload = 5;
+        }
+        if (weaponData.ammo > 0 && weaponData.ammo < maxReload && weaponData.ammoType) { // Reload with same ammo type or fail
+            const availableAmmo = this._actor.ammo(weaponData.ammoType);
+            if (availableAmmo > 0) {
+                const reloadedAmount = Math.min(availableAmmo, maxReload - weaponData.ammo);
+                this._actor.removeAmmo(weaponData.ammoType, reloadedAmount);
+                actorWeaponAccessor.ammo = weaponData.ammo + reloadedAmount;
+            }
+            else {
+                // TODO failure message/sound effect
+            }
+        }
+        else if (weaponData.ammo === 0) { // TODO take the first valid ammunition type from inventory for now
+            const validAmmo = weaponData.ammunition;
+            for (let ammoGroup of validAmmo) {
+                const firstAvailableAmmoType = this._actor.firstAmmoFromGroup(ammoGroup);
+                const availableAmmo = this._actor.ammo(firstAvailableAmmoType);
+                if (availableAmmo > 0) {
+                    const reloadedAmount = Math.min(availableAmmo, maxReload);
+                    this._actor.removeAmmo(firstAvailableAmmoType, reloadedAmount);
+                    actorWeaponAccessor.ammo = reloadedAmount;
+                    actorWeaponAccessor.ammoType = firstAvailableAmmoType;
+                    console.log("Reloaded: ", this._actor.mainHand());
+                    break; // TODO success message/sound effect
+                }
+            }
+        }
+        this._weaponsWindow.syncActor();
+    }
     this._weaponsCommandWindow.callHandler('cancel');
 };
 // #endregion =========================== Scene_Equip ============================== //

@@ -1,5 +1,6 @@
 // $PluginCompiler TEW_Base.js
 
+import { ConditionId } from "../../_types/enum";
 import { Game_BattlerBase } from "./Game_BattlerBase";
 export interface Game_Actor extends Game_BattlerBase {
     param: (paramId: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10) => number;
@@ -44,32 +45,32 @@ Game_Actor.prototype.initTEW = function(actorId : number) {
 // Initialization function for Cecile
 Game_Actor.prototype.initCecile = function() {
     // Set base parameters for Cecile
-    // this._paramBase = [
-    //     0, // MHP (13)
-    //     37, // WEAS
-    //     28, // BALS
-    //     35, // STRG
-    //     37, // TOUG
-    //     27, // INIT
-    //     22, // AGIL
-    //     33, // DEXT
-    //     29, // INTL
-    //     40, // WILL
-    //     28  // FELW
-    // ];
     this._paramBase = [
         0, // MHP (13)
-        110, // WEAS
-        110, // BALS
-        110, // STRG
-        110, // TOUG
-        130, // INIT
-        110, // AGIL
-        110, // DEXT
-        110, // INTL
-        110, // WILL
-        110  // FELW
+        37, // WEAS
+        28, // BALS
+        35, // STRG
+        37, // TOUG
+        27, // INIT
+        22, // AGIL
+        33, // DEXT
+        29, // INTL
+        40, // WILL
+        28  // FELW
     ];
+    // this._paramBase = [
+    //     0, // MHP (13)
+    //     110, // WEAS
+    //     110, // BALS
+    //     110, // STRG
+    //     110, // TOUG
+    //     130, // INIT
+    //     110, // AGIL
+    //     110, // DEXT
+    //     110, // INTL
+    //     110, // WILL
+    //     110  // FELW
+    // ];
     this._paramBase[0] = this.calculateMHP();
 
     // Fate / Resilience
@@ -118,12 +119,17 @@ Game_Actor.prototype.initCecile = function() {
     this.addWeapon("DAGGER");
     this.addWeapon("RAPIER");
     this.addWeapon("SLING");
+    this.addWeapon("SHIELD");
+    this.addWeapon("CROSSBOW");
     this.equipMainHand(0);
 
     // armors
+    this.addArmor("LEATHER_JACK");
+    this.addArmor("LEATHER_LEGGINGS");
 
     // ammo
     this.addAmmo("PEBBLE", 20);
+    this.addAmmo('BOLT', 20);
 
     // conditions
     this.addCondition("ABLAZE", 3);
@@ -138,7 +144,7 @@ Game_Actor.prototype.initCheplu = function() {
         37, // BALS
         28, // STRG
         31, // TOUG
-        450, // INIT // 36
+        36, // INIT // 36
         32, // AGIL
         43, // DEXT
         41, // INTL
@@ -193,6 +199,9 @@ Game_Actor.prototype.initCheplu = function() {
     // armors
 
     // ammo
+
+    // conditions
+    this.addCondition(ConditionId.FATIGUED);
 }
 
 // Initialization function for Ciara
@@ -204,7 +213,7 @@ Game_Actor.prototype.initCiara = function() {
         33, // BALS
         33, // STRG
         40, // TOUG
-        500, // INIT // 34
+        34, // INIT // 34
         39, // AGIL
         34, // DEXT
         42, // INTL

@@ -91,7 +91,8 @@ export const enum WeaponGroup {
     THROWING,
     EXPLOSIVES,
     BLACKPOWDER,
-    ENGINEERING
+    ENGINEERING,
+    AMMUNITION
 }
 
 export const enum WeaponGroupLabel {
@@ -110,7 +111,24 @@ export const enum WeaponGroupLabel {
     THROWING = "Throwing",
     EXPLOSIVES = "Explosives",
     BLACKPOWDER = "Blackpowder",
-    ENGINEERING = "Engineering"
+    ENGINEERING = "Engineering",
+    AMMUNITION = "Ammunition"
+}
+
+export const enum AmmunitionGroup {
+    ARROW,
+    BOLT,
+    STONE,
+    BOMB,
+    LIGHT_BLACKPOWDER
+}
+
+export const enum AmmunitionGroupLabel {
+    ARROW = "Arrow",
+    BOLT = "Bolt",
+    STONE = "Stone",
+    BOMB = "Bomb",
+    LIGHT_BLACKPOWDER = "Light Blackpowder"
 }
 
 export const enum WeaponQuality {

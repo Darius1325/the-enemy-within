@@ -1,6 +1,6 @@
 // $PluginCompiler TEW_Menus.js
 
-import { Tutorial } from "../../../_types/tutorial";
+import { CharacterDescription } from "../../../_types/characterDescription";
 import Window_JournalPrettyEntry from "../Window_JournalPrettyEntry";
 
 // $StartCompilation
@@ -18,7 +18,7 @@ Window_CharacterEntry.prototype.initialize = function() {
     Window_JournalPrettyEntry.prototype.initialize.call(this);
 };
 
-Window_CharacterEntry.prototype.reset = function(entry: Tutorial) {
+Window_CharacterEntry.prototype.reset = function(entry: CharacterDescription) {
     this._id = entry.id;
     this._title = entry.title;
     this._paragraphs = entry.paragraphs;

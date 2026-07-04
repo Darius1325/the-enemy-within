@@ -17,6 +17,8 @@ import Window_InventoryWeaponDetails from "./Window_InventoryWeaponDetails";
 import {WeaponGroup, WeaponQuality} from "../../../_types/enum";
 import Window_InventoryTransferCommand from "../Window_InventoryTransferCommand";
 import Window_InventoryWeaponCommand from "./Window_InventoryWeaponCommand";
+import { RangedWeapon } from "../../../_types/rangedWeapon";
+import { ActorWeapon } from "../../../base/stats/Game_BattlerBase";
 
 // ----------------------
 // $StartCompilation
@@ -146,6 +148,58 @@ Scene_Equip.prototype.transferWeapon = function() {
 }
 
 Scene_Equip.prototype.reloadWeapon = function() {
-    console.log("Reload weapon : ", this._weaponsWindow.index());
+    const weaponData: RangedWeapon & ActorWeapon & { equipIndex: number } = this._weaponsWindow.item();
+
+    console.log("Reload attempt");
+    if (weaponData.isReloadable) {
+        let actorWeaponAccessor: ActorWeapon;
+        if (weaponData.isInSecondHand) {
+            actorWeaponAccessor = this._actor.secondHand();
+        } else {
+            if (!weaponData.isInMainHand) {
+                this._actor.unequipMainHand();
+                this._actor.equipMainHand(weaponData.equipIndex);
+            }
+            actorWeaponAccessor = this._actor.mainHand();
+        }
+
+        // TODO skill test only in combat
+        let maxReload = 1;
+        if (weaponData.qualities.includes(WeaponQuality.REPEATER)) {
+            maxReload = 2;
+        // } else if (weapon.qualities.includes(WeaponQuality.REPEATER_2)) {
+        //     reloadAmount = 3;
+        } else if (weaponData.qualities.includes(WeaponQuality.REPEATER_4)) {
+            maxReload = 5;
+        }
+
+        if (weaponData.ammo > 0 && weaponData.ammo < maxReload && weaponData.ammoType) { // Reload with same ammo type or fail
+
+            const availableAmmo = this._actor.ammo(weaponData.ammoType);
+            if (availableAmmo > 0) {
+                const reloadedAmount = Math.min(availableAmmo, maxReload - weaponData.ammo);
+                this._actor.removeAmmo(weaponData.ammoType, reloadedAmount);
+                actorWeaponAccessor.ammo = weaponData.ammo + reloadedAmount;
+            } else {
+                // TODO failure message/sound effect
+            }
+        } else if (weaponData.ammo === 0) { // TODO take the first valid ammunition type from inventory for now
+
+            const validAmmo = weaponData.ammunition;
+            for (let ammoGroup of validAmmo) {
+                const firstAvailableAmmoType = this._actor.firstAmmoFromGroup(ammoGroup);
+                const availableAmmo = this._actor.ammo(firstAvailableAmmoType);
+                if (availableAmmo > 0) {
+                    const reloadedAmount = Math.min(availableAmmo, maxReload);
+                    this._actor.removeAmmo(firstAvailableAmmoType, reloadedAmount);
+                    actorWeaponAccessor.ammo = reloadedAmount;
+                    actorWeaponAccessor.ammoType = firstAvailableAmmoType;
+                    console.log("Reloaded: ", this._actor.mainHand());
+                    break; // TODO success message/sound effect
+                }
+            }
+        }
+        this._weaponsWindow.syncActor();
+    }
     this._weaponsCommandWindow.callHandler('cancel');
 }

@@ -10,8 +10,7 @@ Window_Base.prototype.initialize = function(x, y, width, height) {
     TEW.MEMORY.windowBaseInitialize.call(this, x, y, width, height);
     const bg = this.backgroundImageName();
     if (bg) {
-        this._bgSprite = new Sprite();
-        this._bgSprite.bitmap = ImageManager.loadSystem(bg);
+        this._bgSprite = new Sprite(ImageManager.loadSystem(bg));
         this.addChildAt(this._bgSprite, 0);
     }
 };

@@ -55,11 +55,16 @@ Window_InventoryWeaponDetails.prototype.drawDetails = function (weapon: LoadedWe
     this.drawIcon(weapon.availabilityIcon, this.contentsWidth() - 32, 0)
 
     // Table
-    this.drawTable2Columns(0, 80, this.contentsWidth(), 2, [
+    const table = [
         // ["Owned :", "x" + item[1].quantity],
         ["Group :", weapon.groupLabel],
         ["Enc. :", weapon.enc]
-    ]);
+    ];
+    const hasAmmo = weapon.ammo > 0;
+    if (hasAmmo) {
+        table.push(["Ammo :", weapon.ammoType + " (" + weapon.ammo + ")"]);
+    }
+    this.drawTable2Columns(0, 80, this.contentsWidth(), hasAmmo ? 3 : 2, table);
 
     this.drawLine(200);
 

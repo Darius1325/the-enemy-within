@@ -4,8 +4,6 @@ import TEW from "../../_types/tew";
 import { Game_Actor } from "../../base/stats/Game_Actor";
 import { ActorWeapon } from "../../base/stats/Game_BattlerBase";
 
-type Removable = number | string;
-
 // $StartCompilation
 
 //-----------------------------------------------------------------------------
@@ -25,27 +23,19 @@ Window_InventoryTransferCommand.WEAPON = 'weapon';
 Window_InventoryTransferCommand.ARMOR = 'armor';
 Window_InventoryTransferCommand.AMMO = 'ammo';
 
+Window_InventoryTransferCommand.LEFT_X = 300;
+Window_InventoryTransferCommand.TOP_Y = 500;
+
 // Initializing the command window
 Window_InventoryTransferCommand.prototype.initialize = function() {
-    this._windowWidth = Graphics.boxWidth / 4;
-    this._windowHeight = this.fittingHeight(5); // actor count - 1
     this.type = 'item';
     this.item = '';
     this.targetActor = undefined;
     this._addAction = Game_Actor.prototype.addItem;
     this._removeAction = Game_Actor.prototype.removeItem;
-    Window_Command.prototype.initialize.call(
-        this,
-        this._windowWidth * 3,
-        Graphics.boxHeight - this._windowHeight);
-};
-
-Window_InventoryTransferCommand.prototype.windowWidth = function() {
-    return this._windowWidth;
-};
-
-Window_InventoryTransferCommand.prototype.windowHeight = function() {
-    return this._windowHeight;
+    Window_Command.prototype.initialize.call(this,
+        Window_InventoryTransferCommand.LEFT_X,
+        Window_InventoryTransferCommand.TOP_Y);
 };
 
 Window_InventoryTransferCommand.prototype.setActor = function(actor: Game_Actor) {

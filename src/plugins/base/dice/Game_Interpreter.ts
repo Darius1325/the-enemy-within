@@ -28,7 +28,7 @@ TEW.DICE.rollInitiative = function(battler: Game_BattlerBase) {
 };
 
 TEW.DICE.skillTest = function(battler: Game_BattlerBase, compId: string, modifier = 0, hidden = false) {
-    const compValue = battler.comp(compId) + modifier;
+    const compValue = battler.compWithModifiers(compId) + modifier;
 
     const roll = hidden ? TEW.DICE.roll() : TEW.DICE.displayDiceRoll();
     let success = compValue >= roll;
@@ -58,10 +58,11 @@ Game_Interpreter.prototype.partySkillTest = function(compId: string, modifier: n
     // Select the best character for the job
     for (let i = 1; i < $gameActors._data.length; i++) {
         if ($gameActors._data[i]) {
-            actorSkillBaseValues.push($gameActors._data[i].comp(compId));
+            actorSkillBaseValues.push($gameActors._data[i].compWithModifiers(compId));
         }
     }
     const maxPartySkill = Math.max(...actorSkillBaseValues) + modifier;
+    console.log("Max party stat used for test: ", maxPartySkill)
 
     const roll = hidden ? TEW.DICE.roll() : TEW.DICE.displayDiceRoll();
     let success = maxPartySkill >= roll;
@@ -156,7 +157,7 @@ Game_Interpreter.prototype.opposedSkillTest = function(compIdPlayer: string, mod
     const actorSkillBaseValues = [];
     for (let i = 1; i < $gameActors._data.length; i++) {
         if ($gameActors._data[i]) {
-            actorSkillBaseValues.push($gameActors._data[i].comp(compIdPlayer));
+            actorSkillBaseValues.push($gameActors._data[i].compWithModifiers(compIdPlayer));
         }
     }
     const maxPartySkill = Math.max(...actorSkillBaseValues);

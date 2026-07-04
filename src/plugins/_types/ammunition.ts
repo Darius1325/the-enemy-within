@@ -9,7 +9,7 @@
 // Imports
 // ----------------------
 
-import { Availability, WeaponGroup, WeaponGroupLabel, WeaponQuality } from "./enum";
+import { AmmunitionGroup, AmmunitionGroupLabel, Availability, WeaponGroup, WeaponGroupLabel, WeaponQuality } from "./enum";
 
 /**
  * Ammunition object type
@@ -22,22 +22,22 @@ export type Ammunition = {
     name: string,
     /**
      * Ammunition icon
-     * @see {@link ../constants/icons.ts}
-     * @example TEW.DATABASE.ICONS.SET.WEAPON_BOW
+     * @see {@link ../constants/TEW_Icons.ts}
+     * @example TEW.DATABASE.ICONS.SET.AMMO_ARROW
      */
     groupIcon: number,
     /**
      * Ammunition group
-     * @see {@link ../types/enum.ts#WeaponGroup}
-     * @example BOW
+     * @see {@link ../types/enum.ts#AmmunitionGroup}
+     * @example ARROW
      */
-    group: WeaponGroup,
+    group: AmmunitionGroup,
     /**
      * Ammunition group label
-     * @see {@link ../types/enum.ts#WeaponGroupLabel}
-     * @example "BOW"
+     * @see {@link ../types/enum.ts#AmmunitionGroupLabel}
+     * @example "ARROW"
      */
-    groupLabel: WeaponGroupLabel,
+    groupLabel: AmmunitionGroupLabel,
     /**
      * Ammount of ammunition sold
      * @example 12

@@ -19,13 +19,12 @@ import { MeleeWeapon } from "./meleeWeapon";
 import { RangedWeapon } from "./rangedWeapon";
 import { Ammunition } from "./ammunition";
 import { ArmorGroup, WeaponGroup, WeaponQuality } from "./enum";
-import {Game_Actor} from "../base/stats/Game_Actor";
 import {Game_BattlerBase} from "../base/stats/Game_BattlerBase";
 import { Troop } from "./troop";
 import { BattlerAI } from "./battlerAI";
 import { Quest } from "./quest";
 import { Glossary } from "./glossary";
-import { Tutorial } from "./tutorial";
+import { TutorialCategory } from "./tutorial";
 import { CharacterDescription } from "./characterDescription";
 import { JournalDocument } from "./journalDocument";
 import { Critical } from "./critical";
@@ -150,7 +149,7 @@ const TEW: {
         GLOSSARY?: Glossary[];
 
         /** Tutorial entries, displayed in tutorials and controlled by an id list: */
-        TUTORIALS?: Tutorial[];
+        TUTORIALS?: TutorialCategory[];
 
         /** Character entries, displayed in character notes and controlled by an id list: */
         CHARACTER_DESCRIPTIONS?: CharacterDescription[];

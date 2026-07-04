@@ -22,5 +22,5 @@ Window_JournalPage.prototype.initialize = function(isLeftPage = true) {
 };
 
 Window_JournalPage.prototype.maxItems = function() {
-    return this._items.length;
+    return this._items?.length || 0;
 };

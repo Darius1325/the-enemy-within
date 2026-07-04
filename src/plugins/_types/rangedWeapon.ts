@@ -9,7 +9,7 @@
 // Imports
 // ----------------------
 
-import { WeaponGroup, WeaponGroupLabel, WeaponQuality, Availability } from "./enum";
+import { WeaponGroup, WeaponGroupLabel, WeaponQuality, Availability, AmmunitionGroup } from "./enum";
 
 /**
  * Armor object type
@@ -88,4 +88,8 @@ export type RangedWeapon = {
      * Ranged weapon description
      */
     description: string;
+    /**
+     * Accepted ammunition
+     */
+    ammunition: AmmunitionGroup[];
 };

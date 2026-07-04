@@ -5,8 +5,12 @@ import HalfWindow_Details from "./base/HalfWindow_Details";
 import HalfWindow_DetailsCommand from "./base/HalfWindow_DetailsCommand";
 import HalfWindow_List from "./base/HalfWindow_List";
 import Window_InventoryCommand from "./inventory/Window_InventoryCommand";
+import Window_InventoryTransferCommand from "./inventory/Window_InventoryTransferCommand";
+import Window_InventoryTransferSpinner from "./inventory/Window_InventoryTransferSpinner";
+import Window_InventoryInfo from "./inventory/info/Window_InventoryInfo";
 import Window_Journals from "./journals/Window_Journals";
 import Window_StatusCommand from "./status/Window_StatusCommand";
+import Window_StatusStats from "./status/Window_StatusStats";
 import Window_StatusTalentDetails from "./status/talents/Window_StatusTalentDetails";
 import Window_StatusTalents from "./status/talents/Window_StatusTalents";
 
@@ -56,6 +60,13 @@ HalfWindow_List.prototype.backgroundImageName = function() {
     return "bg_menuHalfWindowList";
 };
 
+Window_StatusStats.prototype.windowWidth = function() {
+    return Graphics.boxWidth;
+};
+Window_StatusStats.prototype.windowHeight = function() {
+    return Graphics.boxHeight - TEW.MENU.STATUS_WINDOW_TOPBAR_HEIGHT;
+};
+
 Window_StatusTalents.prototype.backgroundImageName = function() {
     return "bg_menuHalfWindowFullHeight";
 };
@@ -90,4 +101,31 @@ HalfWindow_DetailsCommand.prototype.windowWidth = function() {
 };
 HalfWindow_DetailsCommand.prototype.windowHeight = function() {
     return 168; // line height * 3 + bg padding
+};
+
+Window_InventoryInfo.prototype.windowWidth = function() {
+    return Graphics.boxWidth;
+};
+Window_InventoryInfo.prototype.windowHeight = function() {
+    return Graphics.boxHeight - TEW.MENU.INVENTORY_WINDOW_TOPBAR_HEIGHT;
+};
+
+Window_InventoryTransferCommand.prototype.backgroundImageName = function() {
+    return "bg_inventoryTransferCommand";
+};
+Window_InventoryTransferCommand.prototype.windowWidth = function() {
+    return 380;
+};
+Window_InventoryTransferCommand.prototype.windowHeight = function() {
+    return 168; // line height * 3 + bg padding
+};
+
+Window_InventoryTransferSpinner.prototype.backgroundImageName = function() {
+    return "bg_numberSpinner";
+};
+Window_InventoryTransferSpinner.prototype.windowWidth = function() {
+    return 160;
+};
+Window_InventoryTransferSpinner.prototype.windowHeight = function() {
+    return 96; // line height + bg padding
 };
