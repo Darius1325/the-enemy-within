@@ -68,8 +68,11 @@ Scene_Battle.prototype.createBackground = function() {
 
 Scene_Battle.prototype.changeBackground = function(commandLevel = 0) {
     this.removeChildAt(this.getChildIndex(this._background));
+    // this._background = new Sprite(ImageManager.loadSystem(
+    //     commandLevel === 0 ? 'bg_battle' : ('bg_battle_command' + commandLevel)
+    // ));
     this._background = new Sprite(ImageManager.loadSystem(
-        commandLevel === 0 ? 'bg_battle' : ('bg_battle_command' + commandLevel)
+        commandLevel === 0 ? 'bg_battle' : ('bg_battle_command1')
     ));
     this.addChildAt(this._background, this.getChildIndex(this._windowLayer));
 };

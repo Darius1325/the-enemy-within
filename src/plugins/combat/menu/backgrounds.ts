@@ -11,10 +11,10 @@ import Window_TurnOrder from "./Window_TurnOrder";
 // $StartCompilation
 
 Window_TacticsCommand.prototype.windowWidth = function() {
-    return 200; // 4 * line height + 2 * text padding + 2 * bg padding
+    return 234;
 };
 Window_TacticsCommand.prototype.windowHeight = function() {
-    return 240; // 4 * line height + 2 * text padding + 2 * bg padding
+    return 226;
 };
 
 Window_TacticsActionCommand.prototype.windowWidth = function() {

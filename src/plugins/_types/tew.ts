@@ -390,6 +390,12 @@ const TEW: {
 
             /** Whether the battle is lost */
             isDefeated?: boolean;
+
+            move?: string;
+
+            action?: string;
+
+            advantage?: string;
         }
         /**
          * Extract effects from a weapon's qualities.
