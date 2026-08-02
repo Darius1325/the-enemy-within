@@ -1,4 +1,4 @@
-// $PluginCompiler TEW_Combat.js
+// $PluginCompiler TEW_Combat.js 101
 
 import Spriteset_Tactics from "../sprite/Spriteset_Tactics";
 import Window_TacticsSkill from "./Window_TacticsSkill";
@@ -68,11 +68,8 @@ Scene_Battle.prototype.createBackground = function() {
 
 Scene_Battle.prototype.changeBackground = function(commandLevel = 0) {
     this.removeChildAt(this.getChildIndex(this._background));
-    // this._background = new Sprite(ImageManager.loadSystem(
-    //     commandLevel === 0 ? 'bg_battle' : ('bg_battle_command' + commandLevel)
-    // ));
     this._background = new Sprite(ImageManager.loadSystem(
-        commandLevel === 0 ? 'bg_battle' : ('bg_battle_command1')
+        commandLevel === 0 ? 'bg_battle' : ('bg_battle_command' + commandLevel)
     ));
     this.addChildAt(this._background, this.getChildIndex(this._windowLayer));
 };
@@ -212,6 +209,7 @@ Scene_Battle.prototype.createMoveCommandWindow = function() {
     this._moveCommandWindow.setHandler('cancel', () => {
         $gameMap.clearTiles();
         $gameMap._flexibleMovement = true; // Go back to free movement range if charge was selected
+        this._tacticsCommandWindow.extend();
         this._tacticsCommandWindow.activate();
         this._moveCommandWindow.deactivate();
         this._moveCommandWindow.hide();
@@ -227,6 +225,7 @@ Scene_Battle.prototype.createActionCommandWindow = function() {
     this._actionCommandWindow.setHandler('channelling', this.commandChannelling.bind(this));
     this._actionCommandWindow.setHandler('cancel', () => {
         $gameMap.clearTiles();
+        this._tacticsCommandWindow.extend();
         this._tacticsCommandWindow.activate();
         this._actionCommandWindow.deactivate();
         this._actionCommandWindow.hide();
@@ -533,7 +532,8 @@ Scene_Battle.prototype.isAnyInputWindowActive = function() {
 
 Scene_Battle.prototype.startActorCommandSelection = function() {
     this._actorWindow.show();
-    this._tacticsCommandWindow.setup(BattleManager.actor());
+    this._tacticsCommandWindow.setActor(BattleManager.actor());
+    this._tacticsCommandWindow.extend();
     this.changeBackground(1);
 };
 
@@ -583,7 +583,10 @@ Scene_Battle.prototype.commandMove = function() {
     this._moveCommandWindow.refresh();
     this.changeBackground(2);
     this._moveCommandWindow.show();
+
     this._tacticsCommandWindow.deactivate();
+    this._tacticsCommandWindow.collapse();
+
     this._moveCommandWindow.activate();
     $gameSelector.performTransfer(BattleManager._subject.x, BattleManager._subject.y);
     BattleManager.refreshMoveTiles();
@@ -675,7 +678,10 @@ Scene_Battle.prototype.commandAction = function() {
     this.changeBackground(2);
     this._actionCommandWindow.show();
     this._actionCommandWindow.activate();
+
     this._tacticsCommandWindow.deactivate();
+    this._tacticsCommandWindow.collapse();
+
     $gameSelector.performTransfer(BattleManager._subject.x, BattleManager._subject.y);
     BattleManager.refreshMoveTiles();
 };

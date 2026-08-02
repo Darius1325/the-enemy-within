@@ -1,4 +1,4 @@
-// $PluginCompiler TEW_Menus.js 2
+// $PluginCompiler TEW_Menus.js 101
 
 import { Sprite } from "../../../rmmv/core/Sprite";
 import Window_JournalContentsTable from "./Window_JournalContentsTable";

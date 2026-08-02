@@ -1,4 +1,4 @@
-// $PluginCompiler TEW_Menus.js 3
+// $PluginCompiler TEW_Menus.js 102
 
 import TEW from "../../../_types/tew";
 import { Sprite } from '../../../../rmmv/core/Sprite';

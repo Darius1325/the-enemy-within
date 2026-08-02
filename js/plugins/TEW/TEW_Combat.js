@@ -585,6 +585,154 @@ TEW.COMBAT.getWeaponFromId = (weaponId) => {
 };
 // #endregion =========================== utils ============================== //
 // ============================== //
+// #region ============================== Window_TacticsCommandBase ============================== //
+//-----------------------------------------------------------------------------
+// Window_TacticsCommandBase
+//
+// The window for selecting an actor's action on the tactics screen.
+function Window_TacticsCommandBase() {
+    this.initialize.apply(this, arguments);
+}
+Window_TacticsCommandBase.TEXT_COLOR = "#c0c0c0";
+Window_TacticsCommandBase.SELECTED_TEXT_COLOR = "#f0f0f0";
+Window_TacticsCommandBase.COLLAPSED_WIDTH = 86;
+Window_TacticsCommandBase.STATE_COLLAPSED = 'collapsed';
+Window_TacticsCommandBase.STATE_EXTENDED = 'extended';
+Window_TacticsCommandBase.LINE_HEIGHT = 54;
+Window_TacticsCommandBase.ICON_SLOT_WIDTH = 54;
+Window_TacticsCommandBase.TEXT_OFFSET_FROM_ICON = 8;
+Window_TacticsCommandBase.FONT_SIZE = 32;
+Window_TacticsCommandBase.BG_PADDING = 13;
+Window_TacticsCommandBase.prototype = Object.create(Window_ActorCommand.prototype);
+Window_TacticsCommandBase.prototype.constructor = Window_TacticsCommandBase;
+Window_TacticsCommandBase.prototype.initialize = function () {
+    Window_Command.prototype.initialize.call(this, this.xPos(), this.yPos());
+    this.openness = 0;
+    this.deactivate();
+    this._actor = null;
+    this._state = Window_TacticsCommandBase.STATE_EXTENDED;
+    this._imagesReady = false;
+};
+Window_TacticsCommandBase.prototype.setActor = function (actor) {
+    this._actor = actor;
+    this.refresh();
+    // refresh call clear and make command !
+    // don't need to call these methods
+    // this.clearCommand();
+    // this.makeCommand();
+    this.selectLast();
+    this.activate();
+    this.open();
+};
+Window_TacticsCommandBase.prototype.refresh = function () {
+    if (this._actor && this._imagesReady) {
+        Window_ActorCommand.prototype.refresh.call(this);
+    }
+};
+Window_TacticsCommandBase.prototype.drawAllItems = function () {
+    this.contents.fontSize = Window_TacticsCommandBase.FONT_SIZE;
+    Window_ActorCommand.prototype.drawAllItems.call(this);
+    this.contents.fontSize = this.standardFontSize();
+    this.resetTextColor();
+};
+Window_TacticsCommandBase.prototype.drawItem = function (index) {
+    const y = index * Window_TacticsCommandBase.LINE_HEIGHT;
+    let iconName = this._iconOrder[index];
+    if (this._index === index) {
+        iconName += '_selected';
+    }
+    const bitmap = ImageManager.loadSystem(iconName);
+    this.contents.blt(bitmap, 0, 0, bitmap.rect.width, bitmap.rect.height, 0, y);
+    // Extended view
+    console.log('Window_TacticsCommandBase.prototype.drawItem', this._state);
+    if (this._state === Window_TacticsCommandBase.STATE_EXTENDED) {
+        let textColor = Window_TacticsCommandBase.TEXT_COLOR;
+        if (this._index === index) {
+            textColor = Window_TacticsCommandBase.SELECTED_TEXT_COLOR;
+        }
+        this.changeTextColor(textColor);
+        this.drawText(this.commandName(index), Window_TacticsCommandBase.LINE_HEIGHT, y + Window_TacticsCommandBase.TEXT_OFFSET_FROM_ICON, this.textMaxWidth());
+    }
+};
+Window_TacticsCommandBase.prototype.itemRect = function (index) {
+    return new Rectangle(0, index * Window_TacticsCommandBase.LINE_HEIGHT, Window_TacticsCommandBase.ICON_SLOT_WIDTH + this.textMaxWidth(), Window_TacticsCommandBase.LINE_HEIGHT);
+};
+Window_TacticsCommandBase.prototype.itemRectForText = function (index) {
+    return this.itemRect(index);
+};
+Window_TacticsCommandBase.prototype.select = function (index) {
+    const changed = index >= 0 && index !== this.index();
+    Window_Selectable.prototype.select.call(this, index);
+    if (changed) {
+        this.refresh();
+    }
+};
+Window_TacticsCommandBase.prototype.collapse = function () {
+    if (this._state == Window_TacticsCommandBase.STATE_EXTENDED) {
+        this._state = Window_TacticsCommandBase.STATE_COLLAPSED;
+        this.width = Window_TacticsCommandBase.COLLAPSED_WIDTH;
+        this.refresh();
+    }
+};
+Window_TacticsCommandBase.prototype.extend = function () {
+    if (this._state == Window_TacticsCommandBase.STATE_COLLAPSED) {
+        this._state = Window_TacticsCommandBase.STATE_EXTENDED;
+        this.width = this.extendedWidth();
+        this.refresh();
+    }
+};
+// Legacy command list
+// Window_TacticsCommandBase.prototype.makeCommandList = function() {
+//     if (this._actor) {
+//         this.addActionCommand();
+//         this.addAttackCommand();
+//         this.addSkillCommands();
+//         if (this._actor.canGuard()) {
+//             this.addGuardCommand();
+//         } else {
+//             this.addWaitCommand();
+//         }
+//         this.addItemCommand();
+//     }
+// };
+// Event-defined actions
+// Window_TacticsCommandBase.prototype.addActionCommand = function() {
+//     this._actor.checkEventTriggerThere();
+//     this._actor.actionsButton().forEach(function(eventId) {
+//         var event = $gameMap.event(eventId);
+//         this.addCommand(event.name(), 'event');
+//     }, this);
+// };
+Window_TacticsCommandBase.prototype.close = function () {
+    ImageManager.releaseReservation(this.imageCacheRid());
+    Window_ActorCommand.prototype.close.call(this);
+};
+Window_TacticsCommandBase.prototype.horizontalBorderPadding = () => Window_TacticsCommandBase.BG_PADDING;
+Window_TacticsCommandBase.prototype.verticalBorderPadding = () => Window_TacticsCommandBase.BG_PADDING;
+Window_TacticsCommandBase.prototype.updateCursor = function () {
+    this.setCursorRect(0, 0, 0, 0);
+};
+Window_TacticsCommandBase.prototype.close = function () {
+    ImageManager.releaseReservation(this.imageCacheRid());
+    Window_ActorCommand.prototype.close.call(this);
+};
+Window_TacticsCommandBase.prototype.xPos = function () {
+    return 0;
+};
+Window_TacticsCommandBase.prototype.yPos = function () {
+    return 0;
+};
+Window_TacticsCommandBase.prototype.textMaxWidth = function () {
+    return 0;
+};
+Window_TacticsCommandBase.prototype.extendedWidth = function () {
+    return 0;
+};
+Window_TacticsCommandBase.prototype.imageCacheRid = function () {
+    return '';
+};
+// #endregion =========================== Window_TacticsCommandBase ============================== //
+// ============================== //
 // #region ============================== BattleManager ============================== //
 var Phase;
 (function (Phase) {
@@ -4412,20 +4560,35 @@ Game_Interpreter.prototype.command301 = function () {
 function Window_TacticsActionCommand() {
     this.initialize.apply(this, arguments);
 }
-Window_TacticsActionCommand.prototype = Object.create(Window_ActorCommand.prototype);
+Window_TacticsActionCommand.IMAGE_CACHE_RID = 'battleActionCommand';
+Window_TacticsActionCommand.X_POS = 458;
+Window_TacticsActionCommand.Y_POS = 467;
+Window_TacticsActionCommand.EXTENDED_WIDTH = 220;
+Window_TacticsActionCommand.TEXT_MAX_WIDTH = 150;
+Window_TacticsActionCommand.prototype = Object.create(Window_TacticsCommandBase.prototype);
 Window_TacticsActionCommand.prototype.constructor = Window_TacticsActionCommand;
 Window_TacticsActionCommand.prototype.initialize = function () {
-    Window_Command.prototype.initialize.call(this, 240, Graphics.boxHeight - this.windowHeight());
-    this.openness = 0;
-    this.deactivate();
-    this._actor = null;
+    Window_TacticsCommandBase.prototype.initialize.call(this);
+    this._iconOrder = ['icon_battleCommand_attack', 'icon_battleCommand_spell', 'icon_battleCommand_channelling'];
+    this.loadIcons();
 };
-Window_TacticsActionCommand.prototype.setActor = function (actor) {
-    this._actor = actor;
-    this.refresh();
-    this.selectLast();
-    this.activate();
-    this.open();
+Window_TacticsActionCommand.prototype.loadIcons = function () {
+    ImageManager.reserveSystem('icon_battleCommand_attack', 0, Window_TacticsActionCommand.IMAGE_CACHE_RID);
+    ImageManager.reserveSystem('icon_battleCommand_spell', 0, Window_TacticsActionCommand.IMAGE_CACHE_RID);
+    ImageManager.reserveSystem('icon_battleCommand_channelling', 0, Window_TacticsActionCommand.IMAGE_CACHE_RID);
+    ImageManager.reserveSystem('icon_battleCommand_attack_selected', 0, Window_TacticsActionCommand.IMAGE_CACHE_RID);
+    ImageManager.reserveSystem('icon_battleCommand_spell_selected', 0, Window_TacticsActionCommand.IMAGE_CACHE_RID);
+    ImageManager.reserveSystem('icon_battleCommand_channelling_selected', 0, Window_TacticsActionCommand.IMAGE_CACHE_RID);
+    const readyCheck = resolve => {
+        if (ImageManager.isReady())
+            resolve();
+        else
+            setTimeout(() => readyCheck(resolve), 100);
+    };
+    new Promise(readyCheck).then(() => {
+        this._imagesReady = true;
+        this.refresh();
+    });
 };
 Window_TacticsActionCommand.prototype.makeCommandList = function () {
     if (this._actor) {
@@ -4435,8 +4598,27 @@ Window_TacticsActionCommand.prototype.makeCommandList = function () {
     }
 };
 Window_TacticsActionCommand.prototype.select = function (index) {
-    Window_ActorCommand.prototype.select.call(this, index);
-    BattleManager.refreshMoveTiles();
+    const changed = index >= 0 && index !== this.index();
+    Window_Selectable.prototype.select.call(this, index);
+    if (changed) {
+        this.refresh();
+        BattleManager.refreshMoveTiles();
+    }
+};
+Window_TacticsActionCommand.prototype.xPos = function () {
+    return Window_TacticsActionCommand.X_POS;
+};
+Window_TacticsActionCommand.prototype.yPos = function () {
+    return Window_TacticsActionCommand.Y_POS;
+};
+Window_TacticsActionCommand.prototype.textMaxWidth = function () {
+    return Window_TacticsActionCommand.TEXT_MAX_WIDTH;
+};
+Window_TacticsActionCommand.prototype.extendedWidth = function () {
+    return Window_TacticsActionCommand.EXTENDED_WIDTH;
+};
+Window_TacticsActionCommand.prototype.imageCacheRid = function () {
+    return Window_TacticsActionCommand.IMAGE_CACHE_RID;
 };
 // #endregion =========================== Window_TacticsActionCommand ============================== //
 // ============================== //
@@ -4662,719 +4844,6 @@ Window_TacticsMoveCommand.prototype.select = function (index) {
     BattleManager.refreshMoveTiles();
 };
 // #endregion =========================== Window_TacticsMoveCommand ============================== //
-// ============================== //
-// #region ============================== Scene_Battle ============================== //
-//-----------------------------------------------------------------------------
-// Scene_Battle
-//
-// The scene class of the tactics screen.
-function Scene_Battle() {
-    this.initialize.apply(this, arguments);
-}
-Scene_Battle.prototype = Object.create(Scene_Base.prototype);
-Scene_Battle.prototype.constructor = Scene_Battle;
-Scene_Battle.prototype.initialize = function () {
-    Scene_Base.prototype.initialize.call(this);
-};
-Scene_Battle.prototype.create = function () {
-    Scene_Base.prototype.create.call(this);
-    this.createDisplayObjects();
-};
-Scene_Battle.prototype.createDisplayObjects = function () {
-    this.createSpriteset();
-    this.createWindowLayer();
-    this.createBackground();
-    this.createAllWindows();
-    BattleManager.setLogWindow(this._logWindow);
-    BattleManager.setCommandWindow(this._tacticsCommandWindow);
-    BattleManager.setActorWindow(this._actorWindow);
-    BattleManager.setEnemyWindow(this._enemyWindow);
-    BattleManager.setInfoWindow(this._infoWindow);
-    BattleManager.setSpriteset(this._spriteset);
-    this._logWindow.setSpriteset(this._spriteset);
-};
-Scene_Battle.prototype.createSpriteset = function () {
-    this._spriteset = new Spriteset_Tactics();
-    this.addChild(this._spriteset);
-};
-Scene_Battle.prototype.createBackground = function () {
-    this._background = new Sprite(ImageManager.loadSystem('bg_battle_command1'));
-    this.addChildAt(this._background, this.getChildIndex(this._windowLayer));
-};
-Scene_Battle.prototype.changeBackground = function (commandLevel = 0) {
-    this.removeChildAt(this.getChildIndex(this._background));
-    // this._background = new Sprite(ImageManager.loadSystem(
-    //     commandLevel === 0 ? 'bg_battle' : ('bg_battle_command' + commandLevel)
-    // ));
-    this._background = new Sprite(ImageManager.loadSystem(commandLevel === 0 ? 'bg_battle' : ('bg_battle_command1')));
-    this.addChildAt(this._background, this.getChildIndex(this._windowLayer));
-};
-Scene_Battle.prototype.createAllWindows = function () {
-    this.createLogWindow();
-    this.createUnitWindow();
-    this.createActorCommandWindow();
-    this.createHelpWindow();
-    this.createSkillWindow();
-    this.createItemWindow();
-    this.createMessageWindow();
-    this.createInfoWindow();
-    this.createMapWindow();
-    this.createStatusWindow();
-    this.createMoveCommandWindow();
-    this.createActionCommandWindow();
-    this.createWeaponCommandWindow();
-    this.createWeaponListWindow();
-    this.createWeaponDetailsWindow();
-    this.createSpellListWindow();
-    this.createSpellDetailsWindow();
-    this.createTurnOrderWindow();
-};
-Scene_Battle.prototype.createLogWindow = function () {
-    this._logWindow = new Window_BattleLog();
-    this.addWindow(this._logWindow);
-};
-Scene_Battle.prototype.createUnitWindow = function () {
-    this.createActorWindow();
-    this.createEnemyWindow();
-};
-Scene_Battle.prototype.createActorWindow = function () {
-    var sx = 32;
-    this._actorWindow = new Window_TacticsStatus();
-    this._actorWindow.x = Graphics.boxWidth / 2 + sx;
-    this.addWindow(this._actorWindow);
-};
-Scene_Battle.prototype.createEnemyWindow = function () {
-    var sx = 32;
-    this._enemyWindow = new Window_TacticsStatus();
-    this._enemyWindow.x = Graphics.boxWidth / 2 - this._enemyWindow.width - sx;
-    this.addWindow(this._enemyWindow);
-};
-Scene_Battle.prototype.createActorCommandWindow = function () {
-    this._tacticsCommandWindow = new Window_TacticsCommand();
-    this._tacticsCommandWindow.setHandler('move', this.commandMove.bind(this));
-    this._tacticsCommandWindow.setHandler('action', this.commandAction.bind(this));
-    // this._tacticsCommandWindow.setHandler('attack', this.commandAttack.bind(this));
-    // this._tacticsCommandWindow.setHandler('skill',  this.commandSkill.bind(this));
-    // this._tacticsCommandWindow.setHandler('guard',  this.commandGuard.bind(this));
-    // this._tacticsCommandWindow.setHandler('item',   this.commandItem.bind(this));
-    // this._tacticsCommandWindow.setHandler('event',  this.commandEvent.bind(this));
-    // this._tacticsCommandWindow.setHandler('cancel', this.selectPreviousCommand.bind(this));
-    this._tacticsCommandWindow.setHandler('wait', this.commandWait.bind(this));
-    this.addWindow(this._tacticsCommandWindow);
-};
-Scene_Battle.prototype.createHelpWindow = function () {
-    this._helpWindow = new Window_Help();
-    this._helpWindow.visible = false;
-    this.addWindow(this._helpWindow);
-};
-Scene_Battle.prototype.createSkillWindow = function () {
-    var wx = this._tacticsCommandWindow.x + this._tacticsCommandWindow.width;
-    var ww = Graphics.boxWidth - this._tacticsCommandWindow.width;
-    var wh = this._tacticsCommandWindow.fittingHeight(4);
-    this._skillWindow = new Window_TacticsSkill(wx, this._tacticsCommandWindow.y, ww, wh);
-    this._skillWindow.setHelpWindow(this._helpWindow);
-    this._skillWindow.setHandler('ok', this.onSkillOk.bind(this));
-    this._skillWindow.setHandler('cancel', this.onSkillCancel.bind(this));
-    this.addWindow(this._skillWindow);
-};
-Scene_Battle.prototype.createItemWindow = function () {
-    var wx = this._tacticsCommandWindow.x + this._tacticsCommandWindow.width;
-    var ww = Graphics.boxWidth - this._tacticsCommandWindow.width;
-    var wh = this._tacticsCommandWindow.fittingHeight(4);
-    this._itemWindow = new Window_TacticsItem(wx, this._tacticsCommandWindow.y, ww, wh);
-    this._itemWindow.setHelpWindow(this._helpWindow);
-    this._itemWindow.setHandler('ok', this.onItemOk.bind(this));
-    this._itemWindow.setHandler('cancel', this.onItemCancel.bind(this));
-    this.addWindow(this._itemWindow);
-};
-Scene_Battle.prototype.createMessageWindow = function () {
-    this._messageWindow = new Window_Message();
-    this.addWindow(this._messageWindow);
-    this._messageWindow.subWindows().forEach(function (window) {
-        this.addWindow(window);
-    }, this);
-};
-Scene_Battle.prototype.createInfoWindow = function () {
-    this._infoWindow = new Window_TacticsInfo();
-    this._infoWindow.x = Graphics.boxWidth / 2 - this._infoWindow.width / 2;
-    this._infoWindow.y = 0;
-    this.addWindow(this._infoWindow);
-};
-// TODO unused
-Scene_Battle.prototype.createMapWindow = function () {
-    this._mapWindow = new Window_TacticsMap(0, 0);
-    this._mapWindow.setHandler('endTurn', this.commandEndTurn.bind(this));
-    this._mapWindow.setHandler('equip', this.commandPersonal.bind(this));
-    this._mapWindow.setHandler('status', this.commandPersonal.bind(this));
-    this._mapWindow.setHandler('options', this.commandOptions.bind(this));
-    this._mapWindow.setHandler('gameEnd', this.commandGameEnd.bind(this));
-    this._mapWindow.setHandler('cancel', this.commandCancelMapWindow.bind(this));
-    this.addWindow(this._mapWindow);
-};
-Scene_Battle.prototype.createStatusWindow = function () {
-    var wx = this._mapWindow.x + this._mapWindow.width;
-    this._statusWindow = new Window_MenuStatus(wx, 0);
-    this._statusWindow.reserveFaceImages();
-    this._statusWindow.hide();
-    this.addWindow(this._statusWindow);
-};
-Scene_Battle.prototype.createMoveCommandWindow = function () {
-    this._moveCommandWindow = new Window_TacticsMoveCommand();
-    this._moveCommandWindow.setHandler('walk', this.commandWalk.bind(this));
-    this._moveCommandWindow.setHandler('run', this.commandRun.bind(this));
-    this._moveCommandWindow.setHandler('charge', this.commandCharge.bind(this));
-    this._moveCommandWindow.setHandler('switchWeapon', this.commandSwitchWeapon.bind(this));
-    this._moveCommandWindow.setHandler('cancel', () => {
-        $gameMap.clearTiles();
-        $gameMap._flexibleMovement = true; // Go back to free movement range if charge was selected
-        this._tacticsCommandWindow.activate();
-        this._moveCommandWindow.deactivate();
-        this._moveCommandWindow.hide();
-        this.changeBackground(1);
-    });
-    this.addWindow(this._moveCommandWindow);
-};
-Scene_Battle.prototype.createActionCommandWindow = function () {
-    this._actionCommandWindow = new Window_TacticsActionCommand();
-    this._actionCommandWindow.setHandler('attack', this.commandAttack.bind(this));
-    this._actionCommandWindow.setHandler('spell', this.commandSpell.bind(this));
-    this._actionCommandWindow.setHandler('channelling', this.commandChannelling.bind(this));
-    this._actionCommandWindow.setHandler('cancel', () => {
-        $gameMap.clearTiles();
-        this._tacticsCommandWindow.activate();
-        this._actionCommandWindow.deactivate();
-        this._actionCommandWindow.hide();
-        this.changeBackground(1);
-    });
-    this.addWindow(this._actionCommandWindow);
-};
-Scene_Battle.prototype.createWeaponCommandWindow = function () {
-    this._weaponsCommandWindow = new Window_TacticsWeaponCommand();
-    this._weaponsCommandWindow.setHandler('cancel', () => {
-        this._weaponsCommandWindow.deactivate();
-        this._weaponsCommandWindow.deselect();
-        this._weaponsWindow.refresh();
-        this._weaponsWindow.activate();
-    });
-    this._weaponsCommandWindow.setHandler('inventory_weapon_equip', this.equipWeapon.bind(this));
-    this._weaponsCommandWindow.setHandler('inventory_weapon_unequip', this.unequipWeapon.bind(this));
-    this._weaponsCommandWindow.hide();
-    this.addWindow(this._weaponsCommandWindow);
-};
-Scene_Battle.prototype.createWeaponListWindow = function () {
-    this._weaponsWindow = new Window_TacticsWeapons();
-    this._weaponsWindow.setHandler('cancel', () => {
-        this._moveCommandWindow.activate();
-        this._weaponsWindow.close();
-        this._weaponDetailsWindow.close();
-        this._weaponsCommandWindow.close();
-        this._moveCommandWindow.refresh();
-        this._moveCommandWindow.select(0);
-    });
-    this._weaponsWindow.setHandler('ok', () => {
-        this.activateCommandWindowWeapon();
-    });
-    this._weaponsWindow.hide();
-    this.addWindow(this._weaponsWindow);
-};
-Scene_Battle.prototype.createWeaponDetailsWindow = function () {
-    this._weaponDetailsWindow = new Window_TacticsWeaponDetails(this._weaponsCommandWindow.fittingHeight(this._weaponsCommandWindow._actionsNumber));
-    this._weaponsWindow.setHandler('show_weapon_details', () => {
-        this.showWeaponDetails();
-    });
-    this._weaponDetailsWindow.hide();
-    this.addWindow(this._weaponDetailsWindow);
-};
-Scene_Battle.prototype.createSpellListWindow = function () {
-    this._windowSpellList = new Window_TacticsSpellList();
-    this._windowSpellList.setHandler('cancel', () => {
-        this._actionCommandWindow.activate();
-        this._windowSpellList.close();
-        this._windowSpellDetails.close();
-        this._actionCommandWindow.refresh();
-        this._actionCommandWindow.select(1);
-    });
-    this._windowSpellList.setHandler('ok', () => {
-        this._windowSpellList.deactivate();
-        this.onSpellOk();
-    });
-    this._windowSpellList.hide();
-    this.addWindow(this._windowSpellList);
-};
-Scene_Battle.prototype.createSpellDetailsWindow = function () {
-    this._windowSpellDetails = new Window_TacticsSpellDetails();
-    this._windowSpellList.setHandler('show_spell_details', () => {
-        this.showSpellDetails();
-    });
-    this._windowSpellDetails.hide();
-    this.addWindow(this._windowSpellDetails);
-};
-Scene_Battle.prototype.createTurnOrderWindow = function () {
-    this._turnOrderWindow = new Window_TurnOrder();
-    this._turnOrderWindow.deactivate();
-    this._turnOrderWindow.show();
-    this.addWindow(this._turnOrderWindow);
-};
-Scene_Battle.prototype.activateCommandWindowWeapon = function () {
-    if (this._weaponsWindow.isOpenAndActive() && this._weaponsWindow.index() >= 0) {
-        this._weaponsCommandWindow.activate();
-        this._weaponsWindow.deactivate();
-        this._weaponsCommandWindow.show();
-        this._weaponsCommandWindow.select(0);
-    }
-};
-Scene_Battle.prototype.showWeaponDetails = function () {
-    const weapon = this._weaponsWindow.weaponFromIndex(this._weaponsWindow.index());
-    if (weapon) {
-        this._weaponDetailsWindow._weapon = weapon;
-        this._weaponsCommandWindow.refreshCommand(this._actor, weapon.equipIndex);
-        this._weaponDetailsWindow.refresh();
-    }
-    else {
-        this._weaponDetailsWindow.clear();
-        this._weaponsCommandWindow.clear();
-    }
-};
-Scene_Battle.prototype.showSpellDetails = function () {
-    this._windowSpellDetails._spell = this._windowSpellList.item();
-    this._windowSpellDetails.refresh();
-};
-Scene_Battle.prototype.equipWeapon = function () {
-    const weapon = this._weaponsWindow.item();
-    if (weapon.group === 5 /* WeaponGroup.PARRY */
-        || weapon.qualities.some((quality) => quality === 10 /* WeaponQuality.SHIELD_1 */
-            || quality === 11 /* WeaponQuality.SHIELD_2 */
-            || quality === 12 /* WeaponQuality.SHIELD_3 */
-            || quality === 13 /* WeaponQuality.SHIELD_4 */
-            || quality === 14 /* WeaponQuality.SHIELD_5 */)) {
-        BattleManager.actor().unequipSecondHand();
-        BattleManager.actor().equipSecondHand(weapon.equipIndex);
-    }
-    else {
-        BattleManager.actor().unequipMainHand();
-        BattleManager.actor().equipMainHand(weapon.equipIndex);
-    }
-    this._weaponsWindow.syncActor();
-    this._weaponsCommandWindow.callHandler('cancel');
-};
-Scene_Battle.prototype.unequipWeapon = function () {
-    const weaponIndex = this._weaponsWindow.index();
-    if (weaponIndex === 0) {
-        BattleManager.actor().unequipMainHand();
-    }
-    else if (weaponIndex === 1) {
-        BattleManager.actor().unequipSecondHand();
-    }
-    this._weaponsWindow.syncActor();
-    this._weaponsCommandWindow.callHandler('cancel');
-};
-Scene_Battle.prototype.commandPersonal = function () {
-    this._statusWindow.setFormationMode(false);
-    this._statusWindow.selectLast();
-    this._statusWindow.activate();
-    this._statusWindow.setHandler('ok', this.onPersonalOk.bind(this));
-    this._statusWindow.setHandler('cancel', this.onPersonalCancel.bind(this));
-};
-Scene_Battle.prototype.commandFormation = function () {
-};
-// TODO unused ?
-Scene_Battle.prototype.commandOptions = function () {
-    SceneManager.push(Scene_Options);
-    $gameSelector.setTransparent(false);
-    this._actorWindow.show();
-};
-// TODO unused ?
-Scene_Battle.prototype.commandGameEnd = function () {
-    SceneManager.push(Scene_GameEnd);
-};
-// TODO unused
-Scene_Battle.prototype.commandCancelMapWindow = function () {
-    $gameSelector.setTransparent(false);
-    this._actorWindow.show();
-    this._mapWindow.hide();
-    this._statusWindow.hide();
-    this._enemyWindow.show();
-    this._mapWindow.deactivate();
-    this.menuCalling = false;
-};
-Scene_Battle.prototype.start = function () {
-    $gameSwitches.setValue(TEW.COMBAT.SYSTEM.battleStartId, true);
-    $gamePlayer.setThrough(true);
-    Scene_Base.prototype.start.call(this);
-    BattleManager.startBattle();
-    this.startFadeIn(this.slowFadeSpeed(), false);
-    this.menuCalling = false;
-    this.loadFaceset();
-};
-Scene_Battle.prototype.loadFaceset = function () {
-    this._statusWindow.refresh();
-    this.loadFacesetActor();
-    this.loadFacesetEnemy();
-};
-Scene_Battle.prototype.loadFacesetActor = function () {
-    $gamePartyTs.members().forEach(function (member) {
-        ImageManager.loadFace(member.faceName());
-    });
-};
-Scene_Battle.prototype.loadFacesetEnemy = function () {
-    $gameTroopTs.members().forEach(function (member) {
-        ImageManager.loadEnemy(member.battlerName());
-    });
-};
-Scene_Battle.prototype.update = function () {
-    this.updateDestination();
-    var active = this.isActive();
-    $gameMap.update(active);
-    $gameTimer.update(active);
-    if (active && !this.isBusy()) {
-        this.updateBattleProcess();
-    }
-    $gameSelector.update();
-    $gameScreen.update();
-    Scene_Base.prototype.update.call(this);
-};
-Scene_Battle.prototype.isMenuEnabled = function () {
-    return $gameSystem.isMenuEnabled() && !$gameMap.isEventRunning();
-};
-Scene_Battle.prototype.isMenuCalled = function () {
-    return Input.isTriggered('menu') || TouchInput.isCancelled();
-};
-Scene_Battle.prototype.updateCallMenu = function () {
-    if (this.isMenuEnabled()) {
-        if (this.menuCalling) {
-            $gameSelector.setTransparent(true);
-            this._actorWindow.hide();
-            SceneManager.snapForBackground();
-            SoundManager.playOk();
-            this.callMenu();
-        }
-        if (this.isMenuCalled() && BattleManager.isExploring()) {
-            this.menuCalling = true;
-        }
-    }
-    else {
-        this.menuCalling = false;
-    }
-};
-Scene_Battle.prototype.callMenu = function () {
-    this.menuCalling = false;
-    this._mapWindow.show();
-    this._statusWindow.show();
-    this._actorWindow.hide();
-    this._enemyWindow.hide();
-    this._mapWindow.activate();
-};
-// TODO Obsolete
-Scene_Battle.prototype.commandEndTurn = function () {
-    SoundManager.playOk();
-    BattleManager.onAllTurnEnd();
-    this.commandCancelMapWindow();
-};
-Scene_Battle.prototype.updateDestination = function () {
-    if (this.isMapTouchOk()) {
-        this.processMapTouch();
-    }
-};
-Scene_Battle.prototype.isMapTouchOk = function () {
-    return this.isActive() && BattleManager.isActive() && !this.isAnyInputWindowActive();
-};
-Scene_Battle.prototype.processMapTouch = function () {
-    if (TouchInput.isTriggered()) {
-        var x = $gameMap.canvasToMapX(TouchInput.x);
-        var y = $gameMap.canvasToMapY(TouchInput.y);
-        $gameSelector.moveTo(x, y);
-    }
-};
-Scene_Battle.prototype.updateBattleProcess = function () {
-    if (!this.isAnyInputWindowActive() || BattleManager.isBattleEnd()) {
-        this.updateCallMenu();
-        $gameSelector.updateMoveByInput();
-        if (BattleManager.isInputting() && !$gameMap.isEventRunning()) {
-            this.startActorCommandSelection();
-        }
-        BattleManager.update();
-    }
-};
-Scene_Battle.prototype.isBusy = function () {
-    return ((this._messageWindow && this._messageWindow.isClosing()) ||
-        Scene_Base.prototype.isBusy.call(this) || $gameSelector.isBusy());
-};
-Scene_Battle.prototype.isAnyInputWindowActive = function () {
-    return (this._tacticsCommandWindow.active ||
-        this._skillWindow.active ||
-        this._itemWindow.active ||
-        this._mapWindow.active ||
-        this._statusWindow.active ||
-        this._moveCommandWindow.active ||
-        this._actionCommandWindow.active ||
-        this._weaponsWindow.active ||
-        this._weaponsCommandWindow.active ||
-        this._windowSpellList.active);
-};
-Scene_Battle.prototype.startActorCommandSelection = function () {
-    this._actorWindow.show();
-    this._tacticsCommandWindow.setup(BattleManager.actor());
-    this.changeBackground(1);
-};
-// Scene_Battle.prototype.commandAttack = function() {
-//     var action = BattleManager.inputtingAction();
-//     action.setAttack(); // TODO maybe get rid of that
-//     // BattleManager.setupCombat(action); // WTF are you doing step bro ?
-//     BattleManager.refreshRedCells(action);
-//     this.onSelectAction();
-// };
-// Scene_Battle.prototype.commandSkill = function() {
-//     this._actorWindow.hide();
-//     this._skillWindow.setActor(BattleManager.actor());
-//     this._skillWindow.setStypeId(this._tacticsCommandWindow.currentExt());
-//     this._skillWindow.refresh();
-//     this._skillWindow.show();
-//     this._skillWindow.activate();
-// };
-// Scene_Battle.prototype.commandGuard = function() {
-//     BattleManager.inputtingAction().setGuard();
-//     this._tacticsCommandWindow.close();
-//     BattleManager.setupAction();
-// };
-// Scene_Battle.prototype.commandItem = function() {
-//     this._actorWindow.hide();
-//     this._itemWindow.refresh();
-//     this._itemWindow.show();
-//     this._itemWindow.activate();
-// };
-// Scene_Battle.prototype.commandEvent = function() {
-//     $gameTemp.setCancel(false);
-//     var subject = BattleManager.actor();
-//     var eventId = subject.actionsButton()[this._tacticsCommandWindow.index()];
-//     var event = $gameMap.event(eventId);
-//     event.start();
-//     BattleManager.turnTowardCharacter(event);
-//     this._tacticsCommandWindow.close();
-// };
-Scene_Battle.prototype.commandMove = function () {
-    this._actorWindow.hide();
-    this._moveCommandWindow.setActor(BattleManager.actor());
-    this._moveCommandWindow.refresh();
-    this.changeBackground(2);
-    this._moveCommandWindow.show();
-    this._tacticsCommandWindow.deactivate();
-    this._moveCommandWindow.activate();
-    $gameSelector.performTransfer(BattleManager._subject.x, BattleManager._subject.y);
-    BattleManager.refreshMoveTiles();
-};
-Scene_Battle.prototype.commandWalk = function () {
-    // Spend a movement if possible or spend an action to move
-    if (BattleManager.canMove()) {
-        BattleManager.spendMove();
-        this.commandWalkOrRun();
-    }
-    else if (BattleManager.canAct()) {
-        BattleManager.spendAction();
-        this.commandWalkOrRun();
-    }
-    else {
-        SoundManager.playCancel();
-    }
-};
-Scene_Battle.prototype.commandRun = function () {
-    if (BattleManager.canRun()) {
-        BattleManager.spendMove();
-        BattleManager.spendAction();
-        this.commandWalkOrRun();
-    }
-    else {
-        SoundManager.playCancel();
-    }
-};
-Scene_Battle.prototype.commandCharge = function () {
-    if (BattleManager.canRun()) {
-        BattleManager._battlePhase = BattlePhase.InputCharge;
-        this.changeBackground();
-        this._moveCommandWindow.close();
-        this._tacticsCommandWindow.close();
-        // TODO account for critical failure
-        // TODO switch back to flexible movement when done
-        // TODO special phase for special pathfinding + no menu
-        BattleManager.refreshMoveTiles();
-    }
-    else {
-        SoundManager.playCancel();
-    }
-};
-Scene_Battle.prototype.commandWalkOrRun = function () {
-    // TODO restore move/action points
-    BattleManager._battlePhase = BattlePhase.InputMove;
-    this.changeBackground();
-    this._moveCommandWindow.close();
-    this._tacticsCommandWindow.close();
-    BattleManager.refreshMoveTiles();
-};
-Scene_Battle.prototype.commandSwitchWeapon = function () {
-    // Spend a movement if possible or spend an action to move
-    if (!BattleManager.canActOrMove()) {
-        SoundManager.playCancel();
-    }
-    else {
-        if (BattleManager.canMove()) {
-            BattleManager.spendMove();
-        }
-        else {
-            BattleManager.spendAction();
-        }
-        this._weaponsWindow.open();
-        this._weaponDetailsWindow.open();
-        this._weaponsCommandWindow.open();
-        this._weaponsWindow.setActor(BattleManager.actor());
-        this._weaponsWindow.select(0);
-        this._weaponDetailsWindow.refresh();
-        this._weaponsCommandWindow.refresh();
-        this._weaponsWindow.show();
-        this._weaponDetailsWindow.show();
-        this._weaponsCommandWindow.show();
-        this._weaponsWindow.activate();
-        this._moveCommandWindow.deactivate();
-    }
-};
-Scene_Battle.prototype.commandWait = function () {
-    BattleManager.inputtingAction().setWait();
-    BattleManager.setupAction();
-    this.changeBackground();
-    this._tacticsCommandWindow.close();
-};
-Scene_Battle.prototype.commandAction = function () {
-    this._actorWindow.hide();
-    this._actionCommandWindow.setActor(BattleManager.actor());
-    this._actionCommandWindow.refresh();
-    this.changeBackground(2);
-    this._actionCommandWindow.show();
-    this._actionCommandWindow.activate();
-    this._tacticsCommandWindow.deactivate();
-    $gameSelector.performTransfer(BattleManager._subject.x, BattleManager._subject.y);
-    BattleManager.refreshMoveTiles();
-};
-Scene_Battle.prototype.commandAttack = function () {
-    var action = BattleManager.inputtingAction();
-    action.setAttack(); // TODO maybe get rid of that
-    // BattleManager.setupCombat(action); // WTF are you doing step bro ?
-    BattleManager.refreshRedCells(action);
-    this.onSelectAction();
-};
-Scene_Battle.prototype.commandSpell = function () {
-    this.changeBackground('Spell');
-    this._windowSpellList.setActor(BattleManager.actor());
-    this._actionCommandWindow.deactivate();
-    this._windowSpellList.open();
-    this._windowSpellList.activate();
-    this._windowSpellList.select(0); // TODO keep previous spell selection ? Last selected spell is stored in actor data
-    this._windowSpellList.show();
-    this._windowSpellDetails.open();
-    this._windowSpellDetails.activate();
-    this._windowSpellDetails.show();
-};
-Scene_Battle.prototype.commandChannelling = function () {
-    this.changeBackground();
-    this._actionCommandWindow.close();
-    this._tacticsCommandWindow.close();
-    // TODO animation + sound
-    BattleManager.actor().doChannelling();
-    BattleManager.endAction();
-};
-Scene_Battle.prototype.onPersonalOk = function () {
-    $gameSelector.setTransparent(false);
-    switch (this._mapWindow.currentSymbol()) {
-        case 'skill':
-            SceneManager.push(Scene_Skill);
-            break;
-        case 'equip':
-            SceneManager.push(Scene_Equip);
-            break;
-        case 'status':
-            SceneManager.push(Scene_Status);
-            break;
-    }
-};
-Scene_Battle.prototype.onPersonalCancel = function () {
-    this._statusWindow.deselect();
-    this._mapWindow.activate();
-    $gameSelector.setTransparent(false);
-};
-Scene_Battle.prototype.selectPreviousCommand = function () {
-    if ($gameTemp.canCancel()) {
-        SoundManager.playCancel();
-        BattleManager.previousSelect();
-        this.endCommandSelection();
-    }
-};
-Scene_Battle.prototype.onSkillOk = function () {
-    this._actorWindow.show();
-    var skill = this._skillWindow.item();
-    var action = BattleManager.inputtingAction();
-    action.setSkill(skill.id);
-    BattleManager.actor().setLastBattleSkill(skill);
-    this.onSelectAction();
-};
-Scene_Battle.prototype.onSkillCancel = function () {
-    BattleManager.processCancel();
-    this._actorWindow.show();
-    this._skillWindow.hide();
-    this._tacticsCommandWindow.activate();
-};
-Scene_Battle.prototype.onSpellOk = function () {
-    var spellId = this._windowSpellList.item();
-    var action = BattleManager.inputtingAction();
-    action.setSpell(spellId);
-    BattleManager.actor().setLastSpell(spellId);
-    BattleManager.refreshRedCells(action);
-    this.onSelectAction();
-};
-Scene_Battle.prototype.onItemOk = function () {
-    this._actorWindow.show();
-    var item = this._itemWindow.item();
-    var action = BattleManager.inputtingAction();
-    action.setItem(item.id);
-    $gameParty.setLastItem(item);
-    this.onSelectAction();
-};
-Scene_Battle.prototype.onItemCancel = function () {
-    BattleManager.processCancel();
-    this._actorWindow.show();
-    this._itemWindow.hide();
-    this._tacticsCommandWindow.activate();
-};
-Scene_Battle.prototype.onSelectAction = function () {
-    this.changeBackground();
-    this._skillWindow.hide();
-    this._itemWindow.hide();
-    this._windowSpellList.close();
-    this._windowSpellDetails.close();
-    this._actionCommandWindow.close();
-    this._tacticsCommandWindow.close();
-    BattleManager.processTarget();
-};
-Scene_Battle.prototype.endCommandSelection = function () {
-    this.changeBackground();
-    this._tacticsCommandWindow.close();
-};
-Scene_Battle.prototype.stop = function () {
-    Scene_Base.prototype.stop.call(this);
-    if (this.needsSlowFadeOut()) {
-        this.startFadeOut(this.slowFadeSpeed(), false);
-    }
-    else {
-        this.startFadeOut(this.fadeSpeed(), false);
-    }
-    this._actorWindow.close();
-    this._enemyWindow.close();
-    this._infoWindow.close();
-};
-Scene_Battle.prototype.needsSlowFadeOut = function () {
-    return (SceneManager.isNextScene(Scene_Title) ||
-        SceneManager.isNextScene(Scene_Gameover));
-};
-Scene_Battle.prototype.terminate = function () {
-    Scene_Base.prototype.terminate.call(this);
-};
-// #endregion =========================== Scene_Battle ============================== //
 // ============================== //
 // #region ============================== Scene_Map ============================== //
 //-----------------------------------------------------------------------------
@@ -5768,24 +5237,24 @@ function Window_TacticsCommand() {
     this.initialize.apply(this, arguments);
 }
 Window_TacticsCommand.IMAGE_CACHE_RID = 'battleCommand';
-Window_TacticsCommand.TEXT_COLOR = "#f0f0f0";
 Window_TacticsCommand.X_POS = 368;
-Window_TacticsCommand.Y_POS = 485;
-Window_TacticsCommand.prototype = Object.create(Window_ActorCommand.prototype);
+Window_TacticsCommand.Y_POS = 467;
+Window_TacticsCommand.EXTENDED_WIDTH = 220;
+Window_TacticsCommand.TEXT_MAX_WIDTH = 150;
+Window_TacticsCommand.prototype = Object.create(Window_TacticsCommandBase.prototype);
 Window_TacticsCommand.prototype.constructor = Window_TacticsCommand;
 Window_TacticsCommand.prototype.initialize = function () {
-    Window_Command.prototype.initialize.call(this, 368, 485);
-    this.openness = 0;
-    this.deactivate();
-    this._actor = null;
-    this._iconOrder = ['icon_battleCommand_action', 'icon_battleCommand_move', 'icon_battleCommand_lastUsed', 'icon_battleCommand_wait'];
-    this._imagesReady = false;
-    ImageManager.reserveSystem('icon_battleCommand_action', 0, Window_TacticsCommand.IMAGE_CACHE_RID);
+    Window_TacticsCommandBase.prototype.initialize.call(this);
+    this._iconOrder = ['icon_battleCommand_move', 'icon_battleCommand_action', 'icon_battleCommand_lastUsed', 'icon_battleCommand_wait'];
+    this.loadIcons();
+};
+Window_TacticsCommand.prototype.loadIcons = function () {
     ImageManager.reserveSystem('icon_battleCommand_move', 0, Window_TacticsCommand.IMAGE_CACHE_RID);
+    ImageManager.reserveSystem('icon_battleCommand_action', 0, Window_TacticsCommand.IMAGE_CACHE_RID);
     ImageManager.reserveSystem('icon_battleCommand_lastUsed', 0, Window_TacticsCommand.IMAGE_CACHE_RID);
     ImageManager.reserveSystem('icon_battleCommand_wait', 0, Window_TacticsCommand.IMAGE_CACHE_RID);
-    ImageManager.reserveSystem('icon_battleCommand_action_selected', 0, Window_TacticsCommand.IMAGE_CACHE_RID);
     ImageManager.reserveSystem('icon_battleCommand_move_selected', 0, Window_TacticsCommand.IMAGE_CACHE_RID);
+    ImageManager.reserveSystem('icon_battleCommand_action_selected', 0, Window_TacticsCommand.IMAGE_CACHE_RID);
     ImageManager.reserveSystem('icon_battleCommand_lastUsed_selected', 0, Window_TacticsCommand.IMAGE_CACHE_RID);
     ImageManager.reserveSystem('icon_battleCommand_wait_selected', 0, Window_TacticsCommand.IMAGE_CACHE_RID);
     const readyCheck = resolve => {
@@ -5799,22 +5268,6 @@ Window_TacticsCommand.prototype.initialize = function () {
         this.refresh();
     });
 };
-Window_TacticsCommand.prototype.setup = function (actor) {
-    this._actor = actor;
-    this.refresh();
-    // refresh call clear and make command !
-    // don't need to call these methods
-    // this.clearCommand();
-    // this.makeCommand();
-    this.selectLast();
-    this.activate();
-    this.open();
-};
-Window_TacticsCommand.prototype.refresh = function () {
-    if (this._actor && this._imagesReady) {
-        Window_ActorCommand.prototype.refresh.call(this);
-    }
-};
 Window_TacticsCommand.prototype.makeCommandList = function () {
     if (this._actor) {
         this.addMoveCommand();
@@ -5823,21 +5276,6 @@ Window_TacticsCommand.prototype.makeCommandList = function () {
         this.addWaitCommand();
     }
 };
-Window_TacticsCommand.prototype.drawItem = function (index) {
-    const y = index * (TEW.MENU.LINE_HEIGHT + 8);
-    let iconName = this._index === index ? this._iconOrder[index] + '_selected' : this._iconOrder[index];
-    const bitmap = ImageManager.loadSystem(iconName);
-    this.contents.blt(bitmap, 0, 0, bitmap.rect.width, bitmap.rect.height, 0, y);
-    this.changeTextColor(Window_TacticsCommand.TEXT_COLOR);
-    this.drawText(this.commandName(index), 48, y, 152);
-    this.resetTextColor();
-};
-Window_TacticsCommand.prototype.itemRect = function (index) {
-    return new Rectangle(0, index * (TEW.MENU.LINE_HEIGHT + 8), 200, TEW.MENU.LINE_HEIGHT);
-};
-Window_TacticsCommand.prototype.itemRectForText = function (index) {
-    return this.itemRect(index);
-};
 Window_TacticsCommand.prototype.select = function (index) {
     const changed = index >= 0 && index !== this.index();
     Window_Selectable.prototype.select.call(this, index);
@@ -5845,28 +5283,6 @@ Window_TacticsCommand.prototype.select = function (index) {
         this.refresh();
     }
 };
-// Legacy command list
-// Window_TacticsCommand.prototype.makeCommandList = function() {
-//     if (this._actor) {
-//         this.addActionCommand();
-//         this.addAttackCommand();
-//         this.addSkillCommands();
-//         if (this._actor.canGuard()) {
-//             this.addGuardCommand();
-//         } else {
-//             this.addWaitCommand();
-//         }
-//         this.addItemCommand();
-//     }
-// };
-// Event-defined actions
-// Window_TacticsCommand.prototype.addActionCommand = function() {
-//     this._actor.checkEventTriggerThere();
-//     this._actor.actionsButton().forEach(function(eventId) {
-//         var event = $gameMap.event(eventId);
-//         this.addCommand(event.name(), 'event');
-//     }, this);
-// };
 Window_TacticsCommand.prototype.addMoveCommand = function () {
     this.addCommand(TEW.COMBAT.SYSTEM.move, 'move', BattleManager.canMove());
 };
@@ -5879,14 +5295,20 @@ Window_TacticsCommand.prototype.addAdvantageCommand = function () {
 Window_TacticsCommand.prototype.addWaitCommand = function () {
     this.addCommand(TEW.COMBAT.SYSTEM.wait, 'wait', true);
 };
-Window_TacticsCommand.prototype.close = function () {
-    ImageManager.releaseReservation(Window_TacticsCommand.IMAGE_CACHE_RID);
-    Window_ActorCommand.prototype.close.call(this);
+Window_TacticsCommand.prototype.xPos = function () {
+    return Window_TacticsCommand.X_POS;
 };
-Window_TacticsCommand.prototype.horizontalborderPadding = () => 25;
-Window_TacticsCommand.prototype.verticalBorderPadding = () => 25;
-Window_TacticsCommand.prototype.updateCursor = function () {
-    this.setCursorRect(0, 0, 0, 0);
+Window_TacticsCommand.prototype.yPos = function () {
+    return Window_TacticsCommand.Y_POS;
+};
+Window_TacticsCommand.prototype.textMaxWidth = function () {
+    return Window_TacticsCommand.TEXT_MAX_WIDTH;
+};
+Window_TacticsCommand.prototype.extendedWidth = function () {
+    return Window_TacticsCommand.EXTENDED_WIDTH;
+};
+Window_TacticsCommand.prototype.imageCacheRid = function () {
+    return Window_TacticsCommand.IMAGE_CACHE_RID;
 };
 // #endregion =========================== Window_TacticsCommand ============================== //
 // ============================== //
@@ -6957,11 +6379,8 @@ Spriteset_Tactics.prototype.isEffecting = function () {
 // #endregion =========================== Spriteset_Tactics ============================== //
 // ============================== //
 // #region ============================== backgrounds ============================== //
-Window_TacticsCommand.prototype.windowWidth = function () {
-    return 234;
-};
 Window_TacticsCommand.prototype.windowHeight = function () {
-    return 226;
+    return 244;
 };
 Window_TacticsActionCommand.prototype.windowWidth = function () {
     return 200; // 4 * line height + 2 * text padding + 2 * bg padding
@@ -6988,5 +6407,720 @@ Window_TacticsSpellDetails.prototype.windowWidth = function () {
     return 340; // 4 * line height + 2 * text padding + 2 * bg padding
 };
 // #endregion =========================== backgrounds ============================== //
+// ============================== //
+// #region ============================== Scene_Battle ============================== //
+//-----------------------------------------------------------------------------
+// Scene_Battle
+//
+// The scene class of the tactics screen.
+function Scene_Battle() {
+    this.initialize.apply(this, arguments);
+}
+Scene_Battle.prototype = Object.create(Scene_Base.prototype);
+Scene_Battle.prototype.constructor = Scene_Battle;
+Scene_Battle.prototype.initialize = function () {
+    Scene_Base.prototype.initialize.call(this);
+};
+Scene_Battle.prototype.create = function () {
+    Scene_Base.prototype.create.call(this);
+    this.createDisplayObjects();
+};
+Scene_Battle.prototype.createDisplayObjects = function () {
+    this.createSpriteset();
+    this.createWindowLayer();
+    this.createBackground();
+    this.createAllWindows();
+    BattleManager.setLogWindow(this._logWindow);
+    BattleManager.setCommandWindow(this._tacticsCommandWindow);
+    BattleManager.setActorWindow(this._actorWindow);
+    BattleManager.setEnemyWindow(this._enemyWindow);
+    BattleManager.setInfoWindow(this._infoWindow);
+    BattleManager.setSpriteset(this._spriteset);
+    this._logWindow.setSpriteset(this._spriteset);
+};
+Scene_Battle.prototype.createSpriteset = function () {
+    this._spriteset = new Spriteset_Tactics();
+    this.addChild(this._spriteset);
+};
+Scene_Battle.prototype.createBackground = function () {
+    this._background = new Sprite(ImageManager.loadSystem('bg_battle_command1'));
+    this.addChildAt(this._background, this.getChildIndex(this._windowLayer));
+};
+Scene_Battle.prototype.changeBackground = function (commandLevel = 0) {
+    this.removeChildAt(this.getChildIndex(this._background));
+    this._background = new Sprite(ImageManager.loadSystem(commandLevel === 0 ? 'bg_battle' : ('bg_battle_command' + commandLevel)));
+    this.addChildAt(this._background, this.getChildIndex(this._windowLayer));
+};
+Scene_Battle.prototype.createAllWindows = function () {
+    this.createLogWindow();
+    this.createUnitWindow();
+    this.createActorCommandWindow();
+    this.createHelpWindow();
+    this.createSkillWindow();
+    this.createItemWindow();
+    this.createMessageWindow();
+    this.createInfoWindow();
+    this.createMapWindow();
+    this.createStatusWindow();
+    this.createMoveCommandWindow();
+    this.createActionCommandWindow();
+    this.createWeaponCommandWindow();
+    this.createWeaponListWindow();
+    this.createWeaponDetailsWindow();
+    this.createSpellListWindow();
+    this.createSpellDetailsWindow();
+    this.createTurnOrderWindow();
+};
+Scene_Battle.prototype.createLogWindow = function () {
+    this._logWindow = new Window_BattleLog();
+    this.addWindow(this._logWindow);
+};
+Scene_Battle.prototype.createUnitWindow = function () {
+    this.createActorWindow();
+    this.createEnemyWindow();
+};
+Scene_Battle.prototype.createActorWindow = function () {
+    var sx = 32;
+    this._actorWindow = new Window_TacticsStatus();
+    this._actorWindow.x = Graphics.boxWidth / 2 + sx;
+    this.addWindow(this._actorWindow);
+};
+Scene_Battle.prototype.createEnemyWindow = function () {
+    var sx = 32;
+    this._enemyWindow = new Window_TacticsStatus();
+    this._enemyWindow.x = Graphics.boxWidth / 2 - this._enemyWindow.width - sx;
+    this.addWindow(this._enemyWindow);
+};
+Scene_Battle.prototype.createActorCommandWindow = function () {
+    this._tacticsCommandWindow = new Window_TacticsCommand();
+    this._tacticsCommandWindow.setHandler('move', this.commandMove.bind(this));
+    this._tacticsCommandWindow.setHandler('action', this.commandAction.bind(this));
+    // this._tacticsCommandWindow.setHandler('attack', this.commandAttack.bind(this));
+    // this._tacticsCommandWindow.setHandler('skill',  this.commandSkill.bind(this));
+    // this._tacticsCommandWindow.setHandler('guard',  this.commandGuard.bind(this));
+    // this._tacticsCommandWindow.setHandler('item',   this.commandItem.bind(this));
+    // this._tacticsCommandWindow.setHandler('event',  this.commandEvent.bind(this));
+    // this._tacticsCommandWindow.setHandler('cancel', this.selectPreviousCommand.bind(this));
+    this._tacticsCommandWindow.setHandler('wait', this.commandWait.bind(this));
+    this.addWindow(this._tacticsCommandWindow);
+};
+Scene_Battle.prototype.createHelpWindow = function () {
+    this._helpWindow = new Window_Help();
+    this._helpWindow.visible = false;
+    this.addWindow(this._helpWindow);
+};
+Scene_Battle.prototype.createSkillWindow = function () {
+    var wx = this._tacticsCommandWindow.x + this._tacticsCommandWindow.width;
+    var ww = Graphics.boxWidth - this._tacticsCommandWindow.width;
+    var wh = this._tacticsCommandWindow.fittingHeight(4);
+    this._skillWindow = new Window_TacticsSkill(wx, this._tacticsCommandWindow.y, ww, wh);
+    this._skillWindow.setHelpWindow(this._helpWindow);
+    this._skillWindow.setHandler('ok', this.onSkillOk.bind(this));
+    this._skillWindow.setHandler('cancel', this.onSkillCancel.bind(this));
+    this.addWindow(this._skillWindow);
+};
+Scene_Battle.prototype.createItemWindow = function () {
+    var wx = this._tacticsCommandWindow.x + this._tacticsCommandWindow.width;
+    var ww = Graphics.boxWidth - this._tacticsCommandWindow.width;
+    var wh = this._tacticsCommandWindow.fittingHeight(4);
+    this._itemWindow = new Window_TacticsItem(wx, this._tacticsCommandWindow.y, ww, wh);
+    this._itemWindow.setHelpWindow(this._helpWindow);
+    this._itemWindow.setHandler('ok', this.onItemOk.bind(this));
+    this._itemWindow.setHandler('cancel', this.onItemCancel.bind(this));
+    this.addWindow(this._itemWindow);
+};
+Scene_Battle.prototype.createMessageWindow = function () {
+    this._messageWindow = new Window_Message();
+    this.addWindow(this._messageWindow);
+    this._messageWindow.subWindows().forEach(function (window) {
+        this.addWindow(window);
+    }, this);
+};
+Scene_Battle.prototype.createInfoWindow = function () {
+    this._infoWindow = new Window_TacticsInfo();
+    this._infoWindow.x = Graphics.boxWidth / 2 - this._infoWindow.width / 2;
+    this._infoWindow.y = 0;
+    this.addWindow(this._infoWindow);
+};
+// TODO unused
+Scene_Battle.prototype.createMapWindow = function () {
+    this._mapWindow = new Window_TacticsMap(0, 0);
+    this._mapWindow.setHandler('endTurn', this.commandEndTurn.bind(this));
+    this._mapWindow.setHandler('equip', this.commandPersonal.bind(this));
+    this._mapWindow.setHandler('status', this.commandPersonal.bind(this));
+    this._mapWindow.setHandler('options', this.commandOptions.bind(this));
+    this._mapWindow.setHandler('gameEnd', this.commandGameEnd.bind(this));
+    this._mapWindow.setHandler('cancel', this.commandCancelMapWindow.bind(this));
+    this.addWindow(this._mapWindow);
+};
+Scene_Battle.prototype.createStatusWindow = function () {
+    var wx = this._mapWindow.x + this._mapWindow.width;
+    this._statusWindow = new Window_MenuStatus(wx, 0);
+    this._statusWindow.reserveFaceImages();
+    this._statusWindow.hide();
+    this.addWindow(this._statusWindow);
+};
+Scene_Battle.prototype.createMoveCommandWindow = function () {
+    this._moveCommandWindow = new Window_TacticsMoveCommand();
+    this._moveCommandWindow.setHandler('walk', this.commandWalk.bind(this));
+    this._moveCommandWindow.setHandler('run', this.commandRun.bind(this));
+    this._moveCommandWindow.setHandler('charge', this.commandCharge.bind(this));
+    this._moveCommandWindow.setHandler('switchWeapon', this.commandSwitchWeapon.bind(this));
+    this._moveCommandWindow.setHandler('cancel', () => {
+        $gameMap.clearTiles();
+        $gameMap._flexibleMovement = true; // Go back to free movement range if charge was selected
+        this._tacticsCommandWindow.extend();
+        this._tacticsCommandWindow.activate();
+        this._moveCommandWindow.deactivate();
+        this._moveCommandWindow.hide();
+        this.changeBackground(1);
+    });
+    this.addWindow(this._moveCommandWindow);
+};
+Scene_Battle.prototype.createActionCommandWindow = function () {
+    this._actionCommandWindow = new Window_TacticsActionCommand();
+    this._actionCommandWindow.setHandler('attack', this.commandAttack.bind(this));
+    this._actionCommandWindow.setHandler('spell', this.commandSpell.bind(this));
+    this._actionCommandWindow.setHandler('channelling', this.commandChannelling.bind(this));
+    this._actionCommandWindow.setHandler('cancel', () => {
+        $gameMap.clearTiles();
+        this._tacticsCommandWindow.extend();
+        this._tacticsCommandWindow.activate();
+        this._actionCommandWindow.deactivate();
+        this._actionCommandWindow.hide();
+        this.changeBackground(1);
+    });
+    this.addWindow(this._actionCommandWindow);
+};
+Scene_Battle.prototype.createWeaponCommandWindow = function () {
+    this._weaponsCommandWindow = new Window_TacticsWeaponCommand();
+    this._weaponsCommandWindow.setHandler('cancel', () => {
+        this._weaponsCommandWindow.deactivate();
+        this._weaponsCommandWindow.deselect();
+        this._weaponsWindow.refresh();
+        this._weaponsWindow.activate();
+    });
+    this._weaponsCommandWindow.setHandler('inventory_weapon_equip', this.equipWeapon.bind(this));
+    this._weaponsCommandWindow.setHandler('inventory_weapon_unequip', this.unequipWeapon.bind(this));
+    this._weaponsCommandWindow.hide();
+    this.addWindow(this._weaponsCommandWindow);
+};
+Scene_Battle.prototype.createWeaponListWindow = function () {
+    this._weaponsWindow = new Window_TacticsWeapons();
+    this._weaponsWindow.setHandler('cancel', () => {
+        this._moveCommandWindow.activate();
+        this._weaponsWindow.close();
+        this._weaponDetailsWindow.close();
+        this._weaponsCommandWindow.close();
+        this._moveCommandWindow.refresh();
+        this._moveCommandWindow.select(0);
+    });
+    this._weaponsWindow.setHandler('ok', () => {
+        this.activateCommandWindowWeapon();
+    });
+    this._weaponsWindow.hide();
+    this.addWindow(this._weaponsWindow);
+};
+Scene_Battle.prototype.createWeaponDetailsWindow = function () {
+    this._weaponDetailsWindow = new Window_TacticsWeaponDetails(this._weaponsCommandWindow.fittingHeight(this._weaponsCommandWindow._actionsNumber));
+    this._weaponsWindow.setHandler('show_weapon_details', () => {
+        this.showWeaponDetails();
+    });
+    this._weaponDetailsWindow.hide();
+    this.addWindow(this._weaponDetailsWindow);
+};
+Scene_Battle.prototype.createSpellListWindow = function () {
+    this._windowSpellList = new Window_TacticsSpellList();
+    this._windowSpellList.setHandler('cancel', () => {
+        this._actionCommandWindow.activate();
+        this._windowSpellList.close();
+        this._windowSpellDetails.close();
+        this._actionCommandWindow.refresh();
+        this._actionCommandWindow.select(1);
+    });
+    this._windowSpellList.setHandler('ok', () => {
+        this._windowSpellList.deactivate();
+        this.onSpellOk();
+    });
+    this._windowSpellList.hide();
+    this.addWindow(this._windowSpellList);
+};
+Scene_Battle.prototype.createSpellDetailsWindow = function () {
+    this._windowSpellDetails = new Window_TacticsSpellDetails();
+    this._windowSpellList.setHandler('show_spell_details', () => {
+        this.showSpellDetails();
+    });
+    this._windowSpellDetails.hide();
+    this.addWindow(this._windowSpellDetails);
+};
+Scene_Battle.prototype.createTurnOrderWindow = function () {
+    this._turnOrderWindow = new Window_TurnOrder();
+    this._turnOrderWindow.deactivate();
+    this._turnOrderWindow.show();
+    this.addWindow(this._turnOrderWindow);
+};
+Scene_Battle.prototype.activateCommandWindowWeapon = function () {
+    if (this._weaponsWindow.isOpenAndActive() && this._weaponsWindow.index() >= 0) {
+        this._weaponsCommandWindow.activate();
+        this._weaponsWindow.deactivate();
+        this._weaponsCommandWindow.show();
+        this._weaponsCommandWindow.select(0);
+    }
+};
+Scene_Battle.prototype.showWeaponDetails = function () {
+    const weapon = this._weaponsWindow.weaponFromIndex(this._weaponsWindow.index());
+    if (weapon) {
+        this._weaponDetailsWindow._weapon = weapon;
+        this._weaponsCommandWindow.refreshCommand(this._actor, weapon.equipIndex);
+        this._weaponDetailsWindow.refresh();
+    }
+    else {
+        this._weaponDetailsWindow.clear();
+        this._weaponsCommandWindow.clear();
+    }
+};
+Scene_Battle.prototype.showSpellDetails = function () {
+    this._windowSpellDetails._spell = this._windowSpellList.item();
+    this._windowSpellDetails.refresh();
+};
+Scene_Battle.prototype.equipWeapon = function () {
+    const weapon = this._weaponsWindow.item();
+    if (weapon.group === 5 /* WeaponGroup.PARRY */
+        || weapon.qualities.some((quality) => quality === 10 /* WeaponQuality.SHIELD_1 */
+            || quality === 11 /* WeaponQuality.SHIELD_2 */
+            || quality === 12 /* WeaponQuality.SHIELD_3 */
+            || quality === 13 /* WeaponQuality.SHIELD_4 */
+            || quality === 14 /* WeaponQuality.SHIELD_5 */)) {
+        BattleManager.actor().unequipSecondHand();
+        BattleManager.actor().equipSecondHand(weapon.equipIndex);
+    }
+    else {
+        BattleManager.actor().unequipMainHand();
+        BattleManager.actor().equipMainHand(weapon.equipIndex);
+    }
+    this._weaponsWindow.syncActor();
+    this._weaponsCommandWindow.callHandler('cancel');
+};
+Scene_Battle.prototype.unequipWeapon = function () {
+    const weaponIndex = this._weaponsWindow.index();
+    if (weaponIndex === 0) {
+        BattleManager.actor().unequipMainHand();
+    }
+    else if (weaponIndex === 1) {
+        BattleManager.actor().unequipSecondHand();
+    }
+    this._weaponsWindow.syncActor();
+    this._weaponsCommandWindow.callHandler('cancel');
+};
+Scene_Battle.prototype.commandPersonal = function () {
+    this._statusWindow.setFormationMode(false);
+    this._statusWindow.selectLast();
+    this._statusWindow.activate();
+    this._statusWindow.setHandler('ok', this.onPersonalOk.bind(this));
+    this._statusWindow.setHandler('cancel', this.onPersonalCancel.bind(this));
+};
+Scene_Battle.prototype.commandFormation = function () {
+};
+// TODO unused ?
+Scene_Battle.prototype.commandOptions = function () {
+    SceneManager.push(Scene_Options);
+    $gameSelector.setTransparent(false);
+    this._actorWindow.show();
+};
+// TODO unused ?
+Scene_Battle.prototype.commandGameEnd = function () {
+    SceneManager.push(Scene_GameEnd);
+};
+// TODO unused
+Scene_Battle.prototype.commandCancelMapWindow = function () {
+    $gameSelector.setTransparent(false);
+    this._actorWindow.show();
+    this._mapWindow.hide();
+    this._statusWindow.hide();
+    this._enemyWindow.show();
+    this._mapWindow.deactivate();
+    this.menuCalling = false;
+};
+Scene_Battle.prototype.start = function () {
+    $gameSwitches.setValue(TEW.COMBAT.SYSTEM.battleStartId, true);
+    $gamePlayer.setThrough(true);
+    Scene_Base.prototype.start.call(this);
+    BattleManager.startBattle();
+    this.startFadeIn(this.slowFadeSpeed(), false);
+    this.menuCalling = false;
+    this.loadFaceset();
+};
+Scene_Battle.prototype.loadFaceset = function () {
+    this._statusWindow.refresh();
+    this.loadFacesetActor();
+    this.loadFacesetEnemy();
+};
+Scene_Battle.prototype.loadFacesetActor = function () {
+    $gamePartyTs.members().forEach(function (member) {
+        ImageManager.loadFace(member.faceName());
+    });
+};
+Scene_Battle.prototype.loadFacesetEnemy = function () {
+    $gameTroopTs.members().forEach(function (member) {
+        ImageManager.loadEnemy(member.battlerName());
+    });
+};
+Scene_Battle.prototype.update = function () {
+    this.updateDestination();
+    var active = this.isActive();
+    $gameMap.update(active);
+    $gameTimer.update(active);
+    if (active && !this.isBusy()) {
+        this.updateBattleProcess();
+    }
+    $gameSelector.update();
+    $gameScreen.update();
+    Scene_Base.prototype.update.call(this);
+};
+Scene_Battle.prototype.isMenuEnabled = function () {
+    return $gameSystem.isMenuEnabled() && !$gameMap.isEventRunning();
+};
+Scene_Battle.prototype.isMenuCalled = function () {
+    return Input.isTriggered('menu') || TouchInput.isCancelled();
+};
+Scene_Battle.prototype.updateCallMenu = function () {
+    if (this.isMenuEnabled()) {
+        if (this.menuCalling) {
+            $gameSelector.setTransparent(true);
+            this._actorWindow.hide();
+            SceneManager.snapForBackground();
+            SoundManager.playOk();
+            this.callMenu();
+        }
+        if (this.isMenuCalled() && BattleManager.isExploring()) {
+            this.menuCalling = true;
+        }
+    }
+    else {
+        this.menuCalling = false;
+    }
+};
+Scene_Battle.prototype.callMenu = function () {
+    this.menuCalling = false;
+    this._mapWindow.show();
+    this._statusWindow.show();
+    this._actorWindow.hide();
+    this._enemyWindow.hide();
+    this._mapWindow.activate();
+};
+// TODO Obsolete
+Scene_Battle.prototype.commandEndTurn = function () {
+    SoundManager.playOk();
+    BattleManager.onAllTurnEnd();
+    this.commandCancelMapWindow();
+};
+Scene_Battle.prototype.updateDestination = function () {
+    if (this.isMapTouchOk()) {
+        this.processMapTouch();
+    }
+};
+Scene_Battle.prototype.isMapTouchOk = function () {
+    return this.isActive() && BattleManager.isActive() && !this.isAnyInputWindowActive();
+};
+Scene_Battle.prototype.processMapTouch = function () {
+    if (TouchInput.isTriggered()) {
+        var x = $gameMap.canvasToMapX(TouchInput.x);
+        var y = $gameMap.canvasToMapY(TouchInput.y);
+        $gameSelector.moveTo(x, y);
+    }
+};
+Scene_Battle.prototype.updateBattleProcess = function () {
+    if (!this.isAnyInputWindowActive() || BattleManager.isBattleEnd()) {
+        this.updateCallMenu();
+        $gameSelector.updateMoveByInput();
+        if (BattleManager.isInputting() && !$gameMap.isEventRunning()) {
+            this.startActorCommandSelection();
+        }
+        BattleManager.update();
+    }
+};
+Scene_Battle.prototype.isBusy = function () {
+    return ((this._messageWindow && this._messageWindow.isClosing()) ||
+        Scene_Base.prototype.isBusy.call(this) || $gameSelector.isBusy());
+};
+Scene_Battle.prototype.isAnyInputWindowActive = function () {
+    return (this._tacticsCommandWindow.active ||
+        this._skillWindow.active ||
+        this._itemWindow.active ||
+        this._mapWindow.active ||
+        this._statusWindow.active ||
+        this._moveCommandWindow.active ||
+        this._actionCommandWindow.active ||
+        this._weaponsWindow.active ||
+        this._weaponsCommandWindow.active ||
+        this._windowSpellList.active);
+};
+Scene_Battle.prototype.startActorCommandSelection = function () {
+    this._actorWindow.show();
+    this._tacticsCommandWindow.setActor(BattleManager.actor());
+    this._tacticsCommandWindow.extend();
+    this.changeBackground(1);
+};
+// Scene_Battle.prototype.commandAttack = function() {
+//     var action = BattleManager.inputtingAction();
+//     action.setAttack(); // TODO maybe get rid of that
+//     // BattleManager.setupCombat(action); // WTF are you doing step bro ?
+//     BattleManager.refreshRedCells(action);
+//     this.onSelectAction();
+// };
+// Scene_Battle.prototype.commandSkill = function() {
+//     this._actorWindow.hide();
+//     this._skillWindow.setActor(BattleManager.actor());
+//     this._skillWindow.setStypeId(this._tacticsCommandWindow.currentExt());
+//     this._skillWindow.refresh();
+//     this._skillWindow.show();
+//     this._skillWindow.activate();
+// };
+// Scene_Battle.prototype.commandGuard = function() {
+//     BattleManager.inputtingAction().setGuard();
+//     this._tacticsCommandWindow.close();
+//     BattleManager.setupAction();
+// };
+// Scene_Battle.prototype.commandItem = function() {
+//     this._actorWindow.hide();
+//     this._itemWindow.refresh();
+//     this._itemWindow.show();
+//     this._itemWindow.activate();
+// };
+// Scene_Battle.prototype.commandEvent = function() {
+//     $gameTemp.setCancel(false);
+//     var subject = BattleManager.actor();
+//     var eventId = subject.actionsButton()[this._tacticsCommandWindow.index()];
+//     var event = $gameMap.event(eventId);
+//     event.start();
+//     BattleManager.turnTowardCharacter(event);
+//     this._tacticsCommandWindow.close();
+// };
+Scene_Battle.prototype.commandMove = function () {
+    this._actorWindow.hide();
+    this._moveCommandWindow.setActor(BattleManager.actor());
+    this._moveCommandWindow.refresh();
+    this.changeBackground(2);
+    this._moveCommandWindow.show();
+    this._tacticsCommandWindow.deactivate();
+    this._tacticsCommandWindow.collapse();
+    this._moveCommandWindow.activate();
+    $gameSelector.performTransfer(BattleManager._subject.x, BattleManager._subject.y);
+    BattleManager.refreshMoveTiles();
+};
+Scene_Battle.prototype.commandWalk = function () {
+    // Spend a movement if possible or spend an action to move
+    if (BattleManager.canMove()) {
+        BattleManager.spendMove();
+        this.commandWalkOrRun();
+    }
+    else if (BattleManager.canAct()) {
+        BattleManager.spendAction();
+        this.commandWalkOrRun();
+    }
+    else {
+        SoundManager.playCancel();
+    }
+};
+Scene_Battle.prototype.commandRun = function () {
+    if (BattleManager.canRun()) {
+        BattleManager.spendMove();
+        BattleManager.spendAction();
+        this.commandWalkOrRun();
+    }
+    else {
+        SoundManager.playCancel();
+    }
+};
+Scene_Battle.prototype.commandCharge = function () {
+    if (BattleManager.canRun()) {
+        BattleManager._battlePhase = BattlePhase.InputCharge;
+        this.changeBackground();
+        this._moveCommandWindow.close();
+        this._tacticsCommandWindow.close();
+        // TODO account for critical failure
+        // TODO switch back to flexible movement when done
+        // TODO special phase for special pathfinding + no menu
+        BattleManager.refreshMoveTiles();
+    }
+    else {
+        SoundManager.playCancel();
+    }
+};
+Scene_Battle.prototype.commandWalkOrRun = function () {
+    // TODO restore move/action points
+    BattleManager._battlePhase = BattlePhase.InputMove;
+    this.changeBackground();
+    this._moveCommandWindow.close();
+    this._tacticsCommandWindow.close();
+    BattleManager.refreshMoveTiles();
+};
+Scene_Battle.prototype.commandSwitchWeapon = function () {
+    // Spend a movement if possible or spend an action to move
+    if (!BattleManager.canActOrMove()) {
+        SoundManager.playCancel();
+    }
+    else {
+        if (BattleManager.canMove()) {
+            BattleManager.spendMove();
+        }
+        else {
+            BattleManager.spendAction();
+        }
+        this._weaponsWindow.open();
+        this._weaponDetailsWindow.open();
+        this._weaponsCommandWindow.open();
+        this._weaponsWindow.setActor(BattleManager.actor());
+        this._weaponsWindow.select(0);
+        this._weaponDetailsWindow.refresh();
+        this._weaponsCommandWindow.refresh();
+        this._weaponsWindow.show();
+        this._weaponDetailsWindow.show();
+        this._weaponsCommandWindow.show();
+        this._weaponsWindow.activate();
+        this._moveCommandWindow.deactivate();
+    }
+};
+Scene_Battle.prototype.commandWait = function () {
+    BattleManager.inputtingAction().setWait();
+    BattleManager.setupAction();
+    this.changeBackground();
+    this._tacticsCommandWindow.close();
+};
+Scene_Battle.prototype.commandAction = function () {
+    this._actorWindow.hide();
+    this._actionCommandWindow.setActor(BattleManager.actor());
+    this._actionCommandWindow.refresh();
+    this.changeBackground(2);
+    this._actionCommandWindow.show();
+    this._actionCommandWindow.activate();
+    this._tacticsCommandWindow.deactivate();
+    this._tacticsCommandWindow.collapse();
+    $gameSelector.performTransfer(BattleManager._subject.x, BattleManager._subject.y);
+    BattleManager.refreshMoveTiles();
+};
+Scene_Battle.prototype.commandAttack = function () {
+    var action = BattleManager.inputtingAction();
+    action.setAttack(); // TODO maybe get rid of that
+    // BattleManager.setupCombat(action); // WTF are you doing step bro ?
+    BattleManager.refreshRedCells(action);
+    this.onSelectAction();
+};
+Scene_Battle.prototype.commandSpell = function () {
+    this.changeBackground('Spell');
+    this._windowSpellList.setActor(BattleManager.actor());
+    this._actionCommandWindow.deactivate();
+    this._windowSpellList.open();
+    this._windowSpellList.activate();
+    this._windowSpellList.select(0); // TODO keep previous spell selection ? Last selected spell is stored in actor data
+    this._windowSpellList.show();
+    this._windowSpellDetails.open();
+    this._windowSpellDetails.activate();
+    this._windowSpellDetails.show();
+};
+Scene_Battle.prototype.commandChannelling = function () {
+    this.changeBackground();
+    this._actionCommandWindow.close();
+    this._tacticsCommandWindow.close();
+    // TODO animation + sound
+    BattleManager.actor().doChannelling();
+    BattleManager.endAction();
+};
+Scene_Battle.prototype.onPersonalOk = function () {
+    $gameSelector.setTransparent(false);
+    switch (this._mapWindow.currentSymbol()) {
+        case 'skill':
+            SceneManager.push(Scene_Skill);
+            break;
+        case 'equip':
+            SceneManager.push(Scene_Equip);
+            break;
+        case 'status':
+            SceneManager.push(Scene_Status);
+            break;
+    }
+};
+Scene_Battle.prototype.onPersonalCancel = function () {
+    this._statusWindow.deselect();
+    this._mapWindow.activate();
+    $gameSelector.setTransparent(false);
+};
+Scene_Battle.prototype.selectPreviousCommand = function () {
+    if ($gameTemp.canCancel()) {
+        SoundManager.playCancel();
+        BattleManager.previousSelect();
+        this.endCommandSelection();
+    }
+};
+Scene_Battle.prototype.onSkillOk = function () {
+    this._actorWindow.show();
+    var skill = this._skillWindow.item();
+    var action = BattleManager.inputtingAction();
+    action.setSkill(skill.id);
+    BattleManager.actor().setLastBattleSkill(skill);
+    this.onSelectAction();
+};
+Scene_Battle.prototype.onSkillCancel = function () {
+    BattleManager.processCancel();
+    this._actorWindow.show();
+    this._skillWindow.hide();
+    this._tacticsCommandWindow.activate();
+};
+Scene_Battle.prototype.onSpellOk = function () {
+    var spellId = this._windowSpellList.item();
+    var action = BattleManager.inputtingAction();
+    action.setSpell(spellId);
+    BattleManager.actor().setLastSpell(spellId);
+    BattleManager.refreshRedCells(action);
+    this.onSelectAction();
+};
+Scene_Battle.prototype.onItemOk = function () {
+    this._actorWindow.show();
+    var item = this._itemWindow.item();
+    var action = BattleManager.inputtingAction();
+    action.setItem(item.id);
+    $gameParty.setLastItem(item);
+    this.onSelectAction();
+};
+Scene_Battle.prototype.onItemCancel = function () {
+    BattleManager.processCancel();
+    this._actorWindow.show();
+    this._itemWindow.hide();
+    this._tacticsCommandWindow.activate();
+};
+Scene_Battle.prototype.onSelectAction = function () {
+    this.changeBackground();
+    this._skillWindow.hide();
+    this._itemWindow.hide();
+    this._windowSpellList.close();
+    this._windowSpellDetails.close();
+    this._actionCommandWindow.close();
+    this._tacticsCommandWindow.close();
+    BattleManager.processTarget();
+};
+Scene_Battle.prototype.endCommandSelection = function () {
+    this.changeBackground();
+    this._tacticsCommandWindow.close();
+};
+Scene_Battle.prototype.stop = function () {
+    Scene_Base.prototype.stop.call(this);
+    if (this.needsSlowFadeOut()) {
+        this.startFadeOut(this.slowFadeSpeed(), false);
+    }
+    else {
+        this.startFadeOut(this.fadeSpeed(), false);
+    }
+    this._actorWindow.close();
+    this._enemyWindow.close();
+    this._infoWindow.close();
+};
+Scene_Battle.prototype.needsSlowFadeOut = function () {
+    return (SceneManager.isNextScene(Scene_Title) ||
+        SceneManager.isNextScene(Scene_Gameover));
+};
+Scene_Battle.prototype.terminate = function () {
+    Scene_Base.prototype.terminate.call(this);
+};
+// #endregion =========================== Scene_Battle ============================== //
 // ============================== //
 

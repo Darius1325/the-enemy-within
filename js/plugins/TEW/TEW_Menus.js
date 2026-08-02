@@ -134,167 +134,6 @@ Object.defineProperties(TextManager, {
 });
 // #endregion =========================== properties ============================== //
 // ============================== //
-// #region ============================== Scene_QuestLog ============================== //
-function Scene_QuestLog() {
-    this.initialize.apply(this, arguments);
-}
-Scene_QuestLog.prototype = Object.create(Scene_Base.prototype);
-Scene_QuestLog.prototype.constructor = Scene_QuestLog;
-Scene_QuestLog.prototype.initialize = function () {
-    Scene_Base.prototype.initialize.call(this);
-    this.createWindowLayer();
-    this.fetchQuests();
-};
-Scene_QuestLog.prototype.fetchQuests = function () {
-    this._quests = [];
-    for (let quest of TEW.DATABASE.QUESTS) {
-        const currentStep = $gameVariables.value(quest.gameVariableId);
-        if (currentStep === 1000) { // quest resolved
-            this._quests.push(quest);
-        }
-        else if (currentStep > 0) { // quest in progress
-            this._quests.push({
-                title: quest.title,
-                paragraphs: quest.paragraphs,
-                objective: quest.objective,
-                steps: quest.steps.slice(0, currentStep),
-                expandable: quest.steps.length > 0
-            });
-        }
-    }
-};
-Scene_QuestLog.prototype.create = function () {
-    Scene_Base.prototype.create.call(this);
-    this.addFullscreenBackground();
-    this.createQuestDetails();
-    this.createQuestList();
-};
-Scene_QuestLog.prototype.addFullscreenBackground = function () {
-    this._background = new Sprite(ImageManager.loadSystem('bg_questlog'));
-    this.addChildAt(this._background, this.getChildIndex(this._windowLayer));
-};
-Scene_QuestLog.prototype.createQuestDetails = function () {
-    this._windowQuestDetails = new Window_QuestDetails();
-    this.addWindow(this._windowQuestDetails);
-    this._windowQuestDetails.show();
-};
-Scene_QuestLog.prototype.createQuestList = function () {
-    this._windowQuestList = new Window_QuestList(this._quests);
-    this._windowQuestList.setHandler('cancel', this.popScene.bind(this));
-    this._windowQuestList.setHandler('show_quest_details', () => {
-        const details = this._windowQuestList.selectedQuestDetails();
-        this._windowQuestDetails._title = details.title;
-        this._windowQuestDetails._paragraphs = details.paragraphs;
-        this._windowQuestDetails.refresh();
-    });
-    this.addWindow(this._windowQuestList);
-    this._windowQuestList.show();
-    this._windowQuestList.activate();
-    this._windowQuestList.select(0);
-};
-// #endregion =========================== Scene_QuestLog ============================== //
-// ============================== //
-// #region ============================== Scene_Journal ============================== //
-function Scene_Journal() {
-    this.initialize.apply(this, arguments);
-}
-;
-Scene_Journal.prototype = Object.create(Scene_Base.prototype);
-Scene_Journal.prototype.constructor = Scene_Journal;
-Scene_Journal.prototype.initialize = function () {
-    Scene_Base.prototype.initialize.call(this);
-    this.createWindowLayer();
-    this.fetchEntries();
-};
-Scene_Journal.prototype.create = function () {
-    Scene_Base.prototype.create.call(this);
-    this.addFullscreenBackground();
-    this.createEntryWindow();
-    this.createContentsTable();
-    this.setupEntryWindow();
-};
-Scene_Journal.prototype.addFullscreenBackground = function () {
-    this._background = new Sprite(ImageManager.loadSystem(this.backgroundImageName()));
-    this.addChildAt(this._background, this.getChildIndex(this._windowLayer));
-};
-Scene_Journal.prototype.setupEntryWindow = function () {
-    this._windowEntryDetails._cancelHandler = () => {
-        this._windowEntryDetails.hide();
-        this._windowEntryDetails.deactivate();
-        this._windowContentsTable.show();
-        this._windowContentsTable.activate();
-    };
-    this._windowEntryDetails.hide();
-    this._windowEntryDetails.deactivate();
-    this.addWindow(this._windowEntryDetails);
-};
-Scene_Journal.prototype.createContentsTable = function () {
-    this._windowContentsTable = new Window_JournalContentsTable(this._entries);
-    this._windowContentsTable.setHandler('cancel', this.popScene.bind(this));
-    this._windowContentsTable.setHandler('ok', () => {
-        const selectedEntry = this._entries[this._windowContentsTable.index()];
-        if (this._windowEntryDetails._id !== selectedEntry.id) {
-            this._windowEntryDetails.reset(selectedEntry);
-        }
-        this._windowContentsTable.deactivate();
-        this._windowContentsTable.hide();
-        this._windowEntryDetails.show();
-        this._windowEntryDetails.activate();
-        this._windowEntryDetails.refresh();
-    });
-    this.addWindow(this._windowContentsTable);
-    this._windowContentsTable.show();
-    this._windowContentsTable.activate();
-    this._windowContentsTable.refresh();
-    this._windowContentsTable.select(0);
-};
-// #endregion =========================== Scene_Journal ============================== //
-// ============================== //
-// #region ============================== Scene_Journals ============================== //
-function Scene_Journals() {
-    this.initialize.apply(this, arguments);
-}
-Scene_Journals.prototype = Object.create(Scene_Base.prototype);
-Scene_Journals.prototype.constructor = Scene_Journals;
-Scene_Journals.prototype.initialize = function () {
-    Scene_Base.prototype.initialize.call(this);
-    this.createWindowLayer();
-};
-Scene_Journals.prototype.create = function () {
-    Scene_Base.prototype.create.call(this);
-    this.createJournalsCommands();
-};
-Scene_Journals.prototype.createJournalsCommands = function () {
-    this._windowJournals = new Window_Journals();
-    this._windowJournals.setHandler('cancel', this.popScene.bind(this));
-    this._windowJournals.setHandler('ok', this.openJournal.bind(this));
-    this.addWindow(this._windowJournals);
-    this._windowJournals.show();
-    this._windowJournals.activate();
-    this._windowJournals.select(0);
-};
-Scene_Journals.prototype.openJournal = function () {
-    const selectedJournal = this._windowJournals.item();
-    switch (selectedJournal) {
-        case "journal_quest_log":
-            SceneManager.push(Scene_QuestLog);
-            break;
-        case "journal_documents":
-            SceneManager.push(Scene_Documents);
-            break;
-        case "journal_characters":
-            SceneManager.push(Scene_Characters);
-            break;
-        case "journal_glossary":
-            SceneManager.push(Scene_Glossary);
-            break;
-        case "journal_tutorials":
-            SceneManager.push(Scene_Tutorials);
-            break;
-    }
-};
-// #endregion =========================== Scene_Journals ============================== //
-// ============================== //
 // #region ============================== Scene_Menu ============================== //
 // ----------------------
 function Scene_Menu() {
@@ -408,156 +247,6 @@ Scene_Menu.prototype.onFormationCancel = function () {
     }
 };
 // #endregion =========================== Scene_Menu ============================== //
-// ============================== //
-// #region ============================== Scene_Characters ============================== //
-function Scene_Characters() {
-    this.initialize.apply(this, arguments);
-}
-;
-Scene_Characters.prototype = Object.create(Scene_Journal.prototype);
-Scene_Characters.prototype.constructor = Scene_Characters;
-Scene_Characters.prototype.initialize = function () {
-    Scene_Journal.prototype.initialize.call(this);
-};
-Scene_Characters.prototype.fetchEntries = function () {
-    this._entries = TEW.DATABASE.CHARACTER_DESCRIPTIONS
-        .filter(char => $gameSwitches.value(char.id));
-};
-Scene_Characters.prototype.backgroundImageName = function () {
-    return 'bg_characters';
-};
-Scene_Characters.prototype.createEntryWindow = function () {
-    this._windowEntryDetails = new Window_CharacterEntry();
-};
-// #endregion =========================== Scene_Characters ============================== //
-// ============================== //
-// #region ============================== Scene_Documents ============================== //
-function Scene_Documents() {
-    this.initialize.apply(this, arguments);
-}
-;
-Scene_Documents.prototype = Object.create(Scene_Journal.prototype);
-Scene_Documents.prototype.constructor = Scene_Documents;
-Scene_Documents.prototype.initialize = function () {
-    Scene_Journal.prototype.initialize.call(this);
-};
-Scene_Documents.prototype.fetchEntries = function () {
-    this._entries = TEW.DATABASE.JOURNAL_DOCUMENTS
-        .filter(doc => $gameSwitches.value(doc.id));
-};
-Scene_Documents.prototype.backgroundImageName = function () {
-    return 'bg_documents';
-};
-Scene_Documents.prototype.createEntryWindow = function () {
-    this._windowEntryDetails = new Window_Document();
-};
-// #endregion =========================== Scene_Documents ============================== //
-// ============================== //
-// #region ============================== Scene_Glossary ============================== //
-function Scene_Glossary() {
-    this.initialize.apply(this, arguments);
-}
-Scene_Glossary.prototype = Object.create(Scene_Journal.prototype);
-Scene_Glossary.prototype.constructor = Scene_Glossary;
-Scene_Glossary.prototype.initialize = function () {
-    Scene_Journal.prototype.initialize.call(this);
-};
-Scene_Glossary.prototype.fetchEntries = function () {
-    this._entries = TEW.DATABASE.GLOSSARY
-        .filter(entry => $gameSwitches.value(entry))
-        .sort((a, b) => a.title.localeCompare(b.title));
-};
-Scene_Glossary.prototype.backgroundImageName = function () {
-    return 'bg_glossary';
-};
-Scene_Glossary.prototype.createEntryWindow = function () {
-    this._windowEntryDetails = new Window_GlossaryEntry();
-};
-// #endregion =========================== Scene_Glossary ============================== //
-// ============================== //
-// #region ============================== Scene_Tutorials ============================== //
-function Scene_Tutorials() {
-    this.initialize.apply(this, arguments);
-}
-;
-Scene_Tutorials.prototype = Object.create(Scene_Base.prototype);
-Scene_Tutorials.prototype.constructor = Scene_Tutorials;
-Scene_Tutorials.prototype.initialize = function () {
-    Scene_Base.prototype.initialize.call(this);
-    this.createWindowLayer();
-};
-Scene_Tutorials.prototype.create = function () {
-    Scene_Base.prototype.create.call(this);
-    this.addFullscreenBackground();
-    this.createEntryWindow();
-    this.createTutorialList();
-    this.createTutorialCategoryList();
-    this.setupEntryWindow();
-    this.setupTutorialList();
-    this.setupTutorialCategoryList();
-};
-Scene_Tutorials.prototype.addFullscreenBackground = function () {
-    this._background = new Sprite(ImageManager.loadSystem('bg_tutorials'));
-    this.addChildAt(this._background, this.getChildIndex(this._windowLayer));
-};
-Scene_Tutorials.prototype.createEntryWindow = function () {
-    this._windowEntry = new Window_TutorialEntry();
-};
-Scene_Tutorials.prototype.setupEntryWindow = function () {
-    this._windowEntry._cancelHandler = () => {
-        this._windowEntry.hide();
-        this._windowEntry.deactivate();
-        this._windowTutorialCategoryList.show();
-        this._windowTutorialList.show();
-        this._windowTutorialList.activate();
-    };
-    this._windowEntry.hide();
-    this._windowEntry.deactivate();
-    this.addWindow(this._windowEntry);
-};
-Scene_Tutorials.prototype.createTutorialCategoryList = function () {
-    this._windowTutorialCategoryList = new Window_TutorialCategoryList();
-};
-Scene_Tutorials.prototype.setupTutorialCategoryList = function () {
-    this._windowTutorialCategoryList.setHandler('cancel', this.popScene.bind(this));
-    this._windowTutorialCategoryList.setHandler('show_category_tutorials', () => {
-        const categoryIndex = this._windowTutorialCategoryList._index;
-        this._windowTutorialList._items = TEW.DATABASE.TUTORIALS[categoryIndex].subTutorials;
-        this._windowTutorialList.refresh();
-    });
-    this._windowTutorialCategoryList.setHandler('select_category', () => {
-        this._windowTutorialCategoryList.deactivate();
-        this._windowTutorialList.activate();
-        this._windowTutorialList.select(0);
-    });
-    this.addWindow(this._windowTutorialCategoryList);
-    this._windowTutorialCategoryList.show();
-    this._windowTutorialCategoryList.activate();
-    this._windowTutorialCategoryList.select(0);
-};
-Scene_Tutorials.prototype.createTutorialList = function () {
-    this._windowTutorialList = new Window_TutorialList(this._quests);
-};
-Scene_Tutorials.prototype.setupTutorialList = function () {
-    this._windowTutorialList.setHandler('cancel', () => {
-        this._windowTutorialList.deselect();
-        this._windowTutorialList.deactivate();
-        this._windowTutorialCategoryList.activate();
-    });
-    this._windowTutorialList.setHandler('show_tutorial_entry', () => {
-        const tutorialEntry = this._windowTutorialList.selectedEntry();
-        this._windowEntry.reset(tutorialEntry);
-        this._windowTutorialCategoryList.hide();
-        this._windowTutorialList.deactivate();
-        this._windowTutorialList.hide();
-        this._windowEntry.show();
-        this._windowEntry.activate();
-        this._windowEntry.refresh();
-    });
-    this.addWindow(this._windowTutorialList);
-    this._windowTutorialList.show();
-};
-// #endregion =========================== Scene_Tutorials ============================== //
 // ============================== //
 // #region ============================== HalfWindow_Details ============================== //
 //-----------------------------------------------------------------------------
@@ -4168,6 +3857,107 @@ Scene_Equip.prototype.doTransfer = function () {
 };
 // #endregion =========================== Scene_Equip ============================== //
 // ============================== //
+// #region ============================== Scene_Journal ============================== //
+function Scene_Journal() {
+    this.initialize.apply(this, arguments);
+}
+;
+Scene_Journal.prototype = Object.create(Scene_Base.prototype);
+Scene_Journal.prototype.constructor = Scene_Journal;
+Scene_Journal.prototype.initialize = function () {
+    Scene_Base.prototype.initialize.call(this);
+    this.createWindowLayer();
+    this.fetchEntries();
+};
+Scene_Journal.prototype.create = function () {
+    Scene_Base.prototype.create.call(this);
+    this.addFullscreenBackground();
+    this.createEntryWindow();
+    this.createContentsTable();
+    this.setupEntryWindow();
+};
+Scene_Journal.prototype.addFullscreenBackground = function () {
+    this._background = new Sprite(ImageManager.loadSystem(this.backgroundImageName()));
+    this.addChildAt(this._background, this.getChildIndex(this._windowLayer));
+};
+Scene_Journal.prototype.setupEntryWindow = function () {
+    this._windowEntryDetails._cancelHandler = () => {
+        this._windowEntryDetails.hide();
+        this._windowEntryDetails.deactivate();
+        this._windowContentsTable.show();
+        this._windowContentsTable.activate();
+    };
+    this._windowEntryDetails.hide();
+    this._windowEntryDetails.deactivate();
+    this.addWindow(this._windowEntryDetails);
+};
+Scene_Journal.prototype.createContentsTable = function () {
+    this._windowContentsTable = new Window_JournalContentsTable(this._entries);
+    this._windowContentsTable.setHandler('cancel', this.popScene.bind(this));
+    this._windowContentsTable.setHandler('ok', () => {
+        const selectedEntry = this._entries[this._windowContentsTable.index()];
+        if (this._windowEntryDetails._id !== selectedEntry.id) {
+            this._windowEntryDetails.reset(selectedEntry);
+        }
+        this._windowContentsTable.deactivate();
+        this._windowContentsTable.hide();
+        this._windowEntryDetails.show();
+        this._windowEntryDetails.activate();
+        this._windowEntryDetails.refresh();
+    });
+    this.addWindow(this._windowContentsTable);
+    this._windowContentsTable.show();
+    this._windowContentsTable.activate();
+    this._windowContentsTable.refresh();
+    this._windowContentsTable.select(0);
+};
+// #endregion =========================== Scene_Journal ============================== //
+// ============================== //
+// #region ============================== Scene_Journals ============================== //
+function Scene_Journals() {
+    this.initialize.apply(this, arguments);
+}
+Scene_Journals.prototype = Object.create(Scene_Base.prototype);
+Scene_Journals.prototype.constructor = Scene_Journals;
+Scene_Journals.prototype.initialize = function () {
+    Scene_Base.prototype.initialize.call(this);
+    this.createWindowLayer();
+};
+Scene_Journals.prototype.create = function () {
+    Scene_Base.prototype.create.call(this);
+    this.createJournalsCommands();
+};
+Scene_Journals.prototype.createJournalsCommands = function () {
+    this._windowJournals = new Window_Journals();
+    this._windowJournals.setHandler('cancel', this.popScene.bind(this));
+    this._windowJournals.setHandler('ok', this.openJournal.bind(this));
+    this.addWindow(this._windowJournals);
+    this._windowJournals.show();
+    this._windowJournals.activate();
+    this._windowJournals.select(0);
+};
+Scene_Journals.prototype.openJournal = function () {
+    const selectedJournal = this._windowJournals.item();
+    switch (selectedJournal) {
+        case "journal_quest_log":
+            SceneManager.push(Scene_QuestLog);
+            break;
+        case "journal_documents":
+            SceneManager.push(Scene_Documents);
+            break;
+        case "journal_characters":
+            SceneManager.push(Scene_Characters);
+            break;
+        case "journal_glossary":
+            SceneManager.push(Scene_Glossary);
+            break;
+        case "journal_tutorials":
+            SceneManager.push(Scene_Tutorials);
+            break;
+    }
+};
+// #endregion =========================== Scene_Journals ============================== //
+// ============================== //
 // #region ============================== Scene_Equip ============================== //
 // ----------------------
 Scene_Equip.prototype.createArmorsWindow = function () {
@@ -4591,5 +4381,215 @@ Scene_Equip.prototype.reloadWeapon = function () {
     this._weaponsCommandWindow.callHandler('cancel');
 };
 // #endregion =========================== Scene_Equip ============================== //
+// ============================== //
+// #region ============================== Scene_Characters ============================== //
+function Scene_Characters() {
+    this.initialize.apply(this, arguments);
+}
+;
+Scene_Characters.prototype = Object.create(Scene_Journal.prototype);
+Scene_Characters.prototype.constructor = Scene_Characters;
+Scene_Characters.prototype.initialize = function () {
+    Scene_Journal.prototype.initialize.call(this);
+};
+Scene_Characters.prototype.fetchEntries = function () {
+    this._entries = TEW.DATABASE.CHARACTER_DESCRIPTIONS
+        .filter(char => $gameSwitches.value(char.id));
+};
+Scene_Characters.prototype.backgroundImageName = function () {
+    return 'bg_characters';
+};
+Scene_Characters.prototype.createEntryWindow = function () {
+    this._windowEntryDetails = new Window_CharacterEntry();
+};
+// #endregion =========================== Scene_Characters ============================== //
+// ============================== //
+// #region ============================== Scene_Documents ============================== //
+function Scene_Documents() {
+    this.initialize.apply(this, arguments);
+}
+;
+Scene_Documents.prototype = Object.create(Scene_Journal.prototype);
+Scene_Documents.prototype.constructor = Scene_Documents;
+Scene_Documents.prototype.initialize = function () {
+    Scene_Journal.prototype.initialize.call(this);
+};
+Scene_Documents.prototype.fetchEntries = function () {
+    this._entries = TEW.DATABASE.JOURNAL_DOCUMENTS
+        .filter(doc => $gameSwitches.value(doc.id));
+};
+Scene_Documents.prototype.backgroundImageName = function () {
+    return 'bg_documents';
+};
+Scene_Documents.prototype.createEntryWindow = function () {
+    this._windowEntryDetails = new Window_Document();
+};
+// #endregion =========================== Scene_Documents ============================== //
+// ============================== //
+// #region ============================== Scene_Glossary ============================== //
+function Scene_Glossary() {
+    this.initialize.apply(this, arguments);
+}
+Scene_Glossary.prototype = Object.create(Scene_Journal.prototype);
+Scene_Glossary.prototype.constructor = Scene_Glossary;
+Scene_Glossary.prototype.initialize = function () {
+    Scene_Journal.prototype.initialize.call(this);
+};
+Scene_Glossary.prototype.fetchEntries = function () {
+    this._entries = TEW.DATABASE.GLOSSARY
+        .filter(entry => $gameSwitches.value(entry))
+        .sort((a, b) => a.title.localeCompare(b.title));
+};
+Scene_Glossary.prototype.backgroundImageName = function () {
+    return 'bg_glossary';
+};
+Scene_Glossary.prototype.createEntryWindow = function () {
+    this._windowEntryDetails = new Window_GlossaryEntry();
+};
+// #endregion =========================== Scene_Glossary ============================== //
+// ============================== //
+// #region ============================== Scene_QuestLog ============================== //
+function Scene_QuestLog() {
+    this.initialize.apply(this, arguments);
+}
+Scene_QuestLog.prototype = Object.create(Scene_Base.prototype);
+Scene_QuestLog.prototype.constructor = Scene_QuestLog;
+Scene_QuestLog.prototype.initialize = function () {
+    Scene_Base.prototype.initialize.call(this);
+    this.createWindowLayer();
+    this.fetchQuests();
+};
+Scene_QuestLog.prototype.fetchQuests = function () {
+    this._quests = [];
+    for (let quest of TEW.DATABASE.QUESTS) {
+        const currentStep = $gameVariables.value(quest.gameVariableId);
+        if (currentStep === 1000) { // quest resolved
+            this._quests.push(quest);
+        }
+        else if (currentStep > 0) { // quest in progress
+            this._quests.push({
+                title: quest.title,
+                paragraphs: quest.paragraphs,
+                objective: quest.objective,
+                steps: quest.steps.slice(0, currentStep),
+                expandable: quest.steps.length > 0
+            });
+        }
+    }
+};
+Scene_QuestLog.prototype.create = function () {
+    Scene_Base.prototype.create.call(this);
+    this.addFullscreenBackground();
+    this.createQuestDetails();
+    this.createQuestList();
+};
+Scene_QuestLog.prototype.addFullscreenBackground = function () {
+    this._background = new Sprite(ImageManager.loadSystem('bg_questlog'));
+    this.addChildAt(this._background, this.getChildIndex(this._windowLayer));
+};
+Scene_QuestLog.prototype.createQuestDetails = function () {
+    this._windowQuestDetails = new Window_QuestDetails();
+    this.addWindow(this._windowQuestDetails);
+    this._windowQuestDetails.show();
+};
+Scene_QuestLog.prototype.createQuestList = function () {
+    this._windowQuestList = new Window_QuestList(this._quests);
+    this._windowQuestList.setHandler('cancel', this.popScene.bind(this));
+    this._windowQuestList.setHandler('show_quest_details', () => {
+        const details = this._windowQuestList.selectedQuestDetails();
+        this._windowQuestDetails._title = details.title;
+        this._windowQuestDetails._paragraphs = details.paragraphs;
+        this._windowQuestDetails.refresh();
+    });
+    this.addWindow(this._windowQuestList);
+    this._windowQuestList.show();
+    this._windowQuestList.activate();
+    this._windowQuestList.select(0);
+};
+// #endregion =========================== Scene_QuestLog ============================== //
+// ============================== //
+// #region ============================== Scene_Tutorials ============================== //
+function Scene_Tutorials() {
+    this.initialize.apply(this, arguments);
+}
+;
+Scene_Tutorials.prototype = Object.create(Scene_Base.prototype);
+Scene_Tutorials.prototype.constructor = Scene_Tutorials;
+Scene_Tutorials.prototype.initialize = function () {
+    Scene_Base.prototype.initialize.call(this);
+    this.createWindowLayer();
+};
+Scene_Tutorials.prototype.create = function () {
+    Scene_Base.prototype.create.call(this);
+    this.addFullscreenBackground();
+    this.createEntryWindow();
+    this.createTutorialList();
+    this.createTutorialCategoryList();
+    this.setupEntryWindow();
+    this.setupTutorialList();
+    this.setupTutorialCategoryList();
+};
+Scene_Tutorials.prototype.addFullscreenBackground = function () {
+    this._background = new Sprite(ImageManager.loadSystem('bg_tutorials'));
+    this.addChildAt(this._background, this.getChildIndex(this._windowLayer));
+};
+Scene_Tutorials.prototype.createEntryWindow = function () {
+    this._windowEntry = new Window_TutorialEntry();
+};
+Scene_Tutorials.prototype.setupEntryWindow = function () {
+    this._windowEntry._cancelHandler = () => {
+        this._windowEntry.hide();
+        this._windowEntry.deactivate();
+        this._windowTutorialCategoryList.show();
+        this._windowTutorialList.show();
+        this._windowTutorialList.activate();
+    };
+    this._windowEntry.hide();
+    this._windowEntry.deactivate();
+    this.addWindow(this._windowEntry);
+};
+Scene_Tutorials.prototype.createTutorialCategoryList = function () {
+    this._windowTutorialCategoryList = new Window_TutorialCategoryList();
+};
+Scene_Tutorials.prototype.setupTutorialCategoryList = function () {
+    this._windowTutorialCategoryList.setHandler('cancel', this.popScene.bind(this));
+    this._windowTutorialCategoryList.setHandler('show_category_tutorials', () => {
+        const categoryIndex = this._windowTutorialCategoryList._index;
+        this._windowTutorialList._items = TEW.DATABASE.TUTORIALS[categoryIndex].subTutorials;
+        this._windowTutorialList.refresh();
+    });
+    this._windowTutorialCategoryList.setHandler('select_category', () => {
+        this._windowTutorialCategoryList.deactivate();
+        this._windowTutorialList.activate();
+        this._windowTutorialList.select(0);
+    });
+    this.addWindow(this._windowTutorialCategoryList);
+    this._windowTutorialCategoryList.show();
+    this._windowTutorialCategoryList.activate();
+    this._windowTutorialCategoryList.select(0);
+};
+Scene_Tutorials.prototype.createTutorialList = function () {
+    this._windowTutorialList = new Window_TutorialList(this._quests);
+};
+Scene_Tutorials.prototype.setupTutorialList = function () {
+    this._windowTutorialList.setHandler('cancel', () => {
+        this._windowTutorialList.deselect();
+        this._windowTutorialList.deactivate();
+        this._windowTutorialCategoryList.activate();
+    });
+    this._windowTutorialList.setHandler('show_tutorial_entry', () => {
+        const tutorialEntry = this._windowTutorialList.selectedEntry();
+        this._windowEntry.reset(tutorialEntry);
+        this._windowTutorialCategoryList.hide();
+        this._windowTutorialList.deactivate();
+        this._windowTutorialList.hide();
+        this._windowEntry.show();
+        this._windowEntry.activate();
+        this._windowEntry.refresh();
+    });
+    this.addWindow(this._windowTutorialList);
+    this._windowTutorialList.show();
+};
+// #endregion =========================== Scene_Tutorials ============================== //
 // ============================== //
 

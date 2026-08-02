@@ -1,4 +1,4 @@
-// $PluginCompiler TEW_Menus.js 2
+// $PluginCompiler TEW_Menus.js 102
 
 import { Sprite } from "../../../../rmmv/core/Sprite";
 import Window_QuestDetails from "./Window_QuestDetails";

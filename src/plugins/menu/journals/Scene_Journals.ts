@@ -1,4 +1,4 @@
-// $PluginCompiler TEW_Menus.js 2
+// $PluginCompiler TEW_Menus.js 101
 
 import Sprite_Selector from "../../combat/sprite/Sprite_Selector";
 import Scene_Characters from "./characters/Scene_Characters";

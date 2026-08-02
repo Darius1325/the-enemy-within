@@ -658,7 +658,7 @@ Game_BattlerBase.prototype.applyConditionsOnTurnStart = function(): number {
 Game_BattlerBase.prototype.totalConditionModifier = function(compId = 'NONE'): number {
     return Object.keys(this._conditions)
         .map(conditionId => TEW.DATABASE.CONDITIONS[conditionId].testModifier)
-        .filter(testModifier => testModifier?.comps === undefined || testModifier?.comps.includes(compId))
+        .filter(testModifier => testModifier && (testModifier.comps === undefined || testModifier.comps.includes(compId)))
         .reduce((acc, testModifier) => acc + testModifier.mod, 0);
 };
 

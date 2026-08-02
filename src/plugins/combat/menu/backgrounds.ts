@@ -9,12 +9,8 @@ import Window_TacticsCommand from "./Window_TacticsCommand";
 import Window_TurnOrder from "./Window_TurnOrder";
 
 // $StartCompilation
-
-Window_TacticsCommand.prototype.windowWidth = function() {
-    return 234;
-};
 Window_TacticsCommand.prototype.windowHeight = function() {
-    return 226;
+    return 244;
 };
 
 Window_TacticsActionCommand.prototype.windowWidth = function() {
