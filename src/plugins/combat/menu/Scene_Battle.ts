@@ -125,15 +125,15 @@ Scene_Battle.prototype.createEnemyWindow = function() {
 
 Scene_Battle.prototype.createActorCommandWindow = function() {
     this._tacticsCommandWindow = new Window_TacticsCommand();
-    this._tacticsCommandWindow.setHandler('move', this.commandMove.bind(this));
-    this._tacticsCommandWindow.setHandler('action', this.commandAction.bind(this));
+    this._tacticsCommandWindow.setHandler(TEW.COMBAT.SYSTEM.move, this.commandMove.bind(this));
+    this._tacticsCommandWindow.setHandler(TEW.COMBAT.SYSTEM.action, this.commandAction.bind(this));
     // this._tacticsCommandWindow.setHandler('attack', this.commandAttack.bind(this));
     // this._tacticsCommandWindow.setHandler('skill',  this.commandSkill.bind(this));
     // this._tacticsCommandWindow.setHandler('guard',  this.commandGuard.bind(this));
     // this._tacticsCommandWindow.setHandler('item',   this.commandItem.bind(this));
     // this._tacticsCommandWindow.setHandler('event',  this.commandEvent.bind(this));
     // this._tacticsCommandWindow.setHandler('cancel', this.selectPreviousCommand.bind(this));
-    this._tacticsCommandWindow.setHandler('wait', this.commandWait.bind(this));
+    this._tacticsCommandWindow.setHandler(TEW.COMBAT.SYSTEM.wait, this.commandWait.bind(this));
     this.addWindow(this._tacticsCommandWindow);
 };
 
@@ -202,10 +202,10 @@ Scene_Battle.prototype.createStatusWindow = function() {
 
 Scene_Battle.prototype.createMoveCommandWindow = function() {
     this._moveCommandWindow = new Window_TacticsMoveCommand();
-    this._moveCommandWindow.setHandler('walk', this.commandWalk.bind(this));
-    this._moveCommandWindow.setHandler('run', this.commandRun.bind(this));
-    this._moveCommandWindow.setHandler('charge', this.commandCharge.bind(this));
-    this._moveCommandWindow.setHandler('switchWeapon', this.commandSwitchWeapon.bind(this));
+    this._moveCommandWindow.setHandler(TEW.COMBAT.SYSTEM.moveWalk, this.commandWalk.bind(this));
+    this._moveCommandWindow.setHandler(TEW.COMBAT.SYSTEM.moveRun, this.commandRun.bind(this));
+    this._moveCommandWindow.setHandler(TEW.COMBAT.SYSTEM.moveCharge, this.commandCharge.bind(this));
+    this._moveCommandWindow.setHandler(TEW.COMBAT.SYSTEM.moveSwitchWeapon, this.commandSwitchWeapon.bind(this));
     this._moveCommandWindow.setHandler('cancel', () => {
         $gameMap.clearTiles();
         $gameMap._flexibleMovement = true; // Go back to free movement range if charge was selected
@@ -220,9 +220,9 @@ Scene_Battle.prototype.createMoveCommandWindow = function() {
 
 Scene_Battle.prototype.createActionCommandWindow = function() {
     this._actionCommandWindow = new Window_TacticsActionCommand();
-    this._actionCommandWindow.setHandler('attack', this.commandAttack.bind(this));
-    this._actionCommandWindow.setHandler('spell', this.commandSpell.bind(this));
-    this._actionCommandWindow.setHandler('channelling', this.commandChannelling.bind(this));
+    this._actionCommandWindow.setHandler(TEW.COMBAT.SYSTEM.actionAttack, this.commandAttack.bind(this));
+    this._actionCommandWindow.setHandler(TEW.COMBAT.SYSTEM.actionSpell, this.commandSpell.bind(this));
+    this._actionCommandWindow.setHandler(TEW.COMBAT.SYSTEM.actionChannelling, this.commandChannelling.bind(this));
     this._actionCommandWindow.setHandler('cancel', () => {
         $gameMap.clearTiles();
         this._tacticsCommandWindow.extend();

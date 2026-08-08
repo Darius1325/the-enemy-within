@@ -18,6 +18,7 @@ Game_Actor.prototype.initMembers = function() {
     TEW.MEMORY.gameActorInitMembers.call(this);
     this._actionsButton = [];
     this._lastSpell = new Game_Item();
+    this._lastBattleCommands = [];
 };
 
 Game_Actor.prototype.currentData = function() {
@@ -198,6 +199,13 @@ Game_Actor.prototype.refresh = function() {
         this.addState(this.deathStateId());
     } else {
         this.removeState(this.deathStateId());
+    }
+};
+
+Game_Actor.prototype.updateLastBattleCommands = function(commandName: string, requirement: () => boolean) {
+    this._lastBattleCommands.unshift({ name: commandName, canUse: requirement });
+    if (this._lastBattleCommands.length > 4) { // TODO constant
+        this._lastBattleCommands.pop();
     }
 };
 

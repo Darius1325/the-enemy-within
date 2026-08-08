@@ -50,19 +50,19 @@ Window_TacticsMoveCommand.prototype.makeCommandList = function() {
 };
 
 Window_TacticsMoveCommand.prototype.addWalkCommand = function() {
-    this.addCommand(TEW.COMBAT.SYSTEM.moveWalk, 'walk', BattleManager.canMove());
+    this.addCommand(TEW.COMBAT.SYSTEM.moveWalk, TEW.COMBAT.SYSTEM.moveWalk, BattleManager.canMove());
 };
 
 Window_TacticsMoveCommand.prototype.addRunCommand = function() {
-    this.addCommand(TEW.COMBAT.SYSTEM.moveRun, 'run', BattleManager.canRun());
+    this.addCommand(TEW.COMBAT.SYSTEM.moveRun, TEW.COMBAT.SYSTEM.moveRun, BattleManager.canRun());
 };
 
 Window_TacticsMoveCommand.prototype.addChargeCommand = function() {
-    this.addCommand(TEW.COMBAT.SYSTEM.moveCharge, 'charge', BattleManager.canRun());
+    this.addCommand(TEW.COMBAT.SYSTEM.moveCharge, TEW.COMBAT.SYSTEM.moveCharge, BattleManager.canRun());
 };
 
 Window_TacticsMoveCommand.prototype.addSwitchWeaponCommand = function() {
-    this.addCommand(TEW.COMBAT.SYSTEM.moveSwitchWeapon, 'switchWeapon', BattleManager.canMove());
+    this.addCommand(TEW.COMBAT.SYSTEM.moveSwitchWeapon, TEW.COMBAT.SYSTEM.moveSwitchWeapon, BattleManager.canMove());
 };
 
 Window_TacticsMoveCommand.prototype.select = function(index: number) {

@@ -49,9 +49,9 @@ Window_TacticsActionCommand.prototype.loadIcons = function() {
 
 Window_TacticsActionCommand.prototype.makeCommandList = function() {
     if (this._actor) {
-        this.addCommand(TEW.COMBAT.SYSTEM.actionAttack, 'attack', BattleManager.canAct());
-        this.addCommand(TEW.COMBAT.SYSTEM.actionSpell, 'spell', BattleManager.canAct());
-        this.addCommand(TEW.COMBAT.SYSTEM.actionChannelling, 'channelling', BattleManager.canAct());
+        this.addCommand(TEW.COMBAT.SYSTEM.actionAttack, TEW.COMBAT.SYSTEM.actionAttack, BattleManager.canAct());
+        this.addCommand(TEW.COMBAT.SYSTEM.actionSpell, TEW.COMBAT.SYSTEM.actionSpell, BattleManager.canAct());
+        this.addCommand(TEW.COMBAT.SYSTEM.actionChannelling, TEW.COMBAT.SYSTEM.actionChannelling, BattleManager.canAct());
     }
 };
 
