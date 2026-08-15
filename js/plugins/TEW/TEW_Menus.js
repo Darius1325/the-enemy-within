@@ -33,6 +33,12 @@ TEW.MENU.COMMAND_NAMES[51] = "Skills";
 TEW.MENU.COMMAND_NAMES[52] = "Talents";
 TEW.MENU.COMMAND_NAMES[53] = "Spells";
 TEW.MENU.COMMAND_NAMES[54] = "Cast";
+TEW.MENU.COMMAND_NAMES[55] = "Confirm";
+TEW.MENU.COMMAND_NAMES[56] = "Discard";
+TEW.MENU.COMMAND_NAMES[57] = "Back";
+TEW.MENU.COMMAND_NAMES[58] = "Level up";
+TEW.MENU.COMMAND_NAMES[59] = "XP left";
+TEW.MENU.COMMAND_NAMES[60] = "Spent";
 // Inventory Menu
 TEW.MENU.COMMAND_NAMES[70] = "InventoryNextChar";
 TEW.MENU.COMMAND_NAMES[71] = "InventoryPreviousChar";
@@ -87,6 +93,9 @@ TextManager.command = function (commandId) {
 // A key
 Input.keyMapper[65] = "A_Key";
 Input.keyMapper[69] = "E_Key";
+// Levelling mode is toggled from the status menu with the A key
+TEW.MENU.LEVEL_UP_KEY = "A_Key";
+TEW.MENU.LEVEL_UP_KEY_LABEL = "A";
 // Windows TODO move
 TEW.MENU.INVENTORY_WINDOW_TOPBAR_HEIGHT = 72;
 TEW.MENU.STATUS_WINDOW_TOPBAR_HEIGHT = 72;
@@ -108,6 +117,12 @@ Object.defineProperties(TextManager, {
     statusTalents: TextManager.getter('command', 52),
     statusSpells: TextManager.getter('command', 53),
     statusCastSpell: TextManager.getter('command', 54),
+    statusLevellingConfirm: TextManager.getter('command', 55),
+    statusLevellingDiscard: TextManager.getter('command', 56),
+    statusLevellingBack: TextManager.getter('command', 57),
+    statusLevelUp: TextManager.getter('command', 58),
+    statusExpLeft: TextManager.getter('command', 59),
+    statusExpSpent: TextManager.getter('command', 60),
     // Inventory Menu
     inventoryNextChar: TextManager.getter('command', 70),
     inventoryPreviousChar: TextManager.getter('command', 71),
@@ -718,6 +733,315 @@ Window_JournalPage.prototype.maxItems = function () {
     return ((_a = this._items) === null || _a === void 0 ? void 0 : _a.length) || 0;
 };
 // #endregion =========================== Window_JournalPage ============================== //
+// ============================== //
+// #region ============================== Game_Levelling ============================== //
+// ----------------------
+//-----------------------------------------------------------------------------
+// Game_Levelling
+//
+// Pending characteristic and competence advances for a single levelling session
+function Game_Levelling() {
+    this.initialize.apply(this, arguments);
+}
+Game_Levelling.prototype = Object.create(Object.prototype);
+Game_Levelling.prototype.constructor = Game_Levelling;
+// Initializing the session
+Game_Levelling.prototype.initialize = function () {
+    this._actor = null;
+    this.clear();
+};
+// Setting the actor. Pending advances belong to a single actor and are dropped on change
+Game_Levelling.prototype.setActor = function (actor) {
+    if (this._actor !== actor) {
+        this._actor = actor;
+        this.clear();
+    }
+};
+// Dropping every pending advance
+Game_Levelling.prototype.clear = function () {
+    this._compAdvances = {}; // ID: number of pending advances
+    this._statAdvances = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    this._spentExp = 0;
+};
+// #region ====== Experience === //
+// Experience points consumed by the pending advances
+Game_Levelling.prototype.spentExp = function () {
+    return this._spentExp;
+};
+// Experience points still available for new advances
+Game_Levelling.prototype.remainingExp = function () {
+    return this._actor ? this._actor.availableExp() - this._spentExp : 0;
+};
+// Whether anything is pending, i.e. whether exiting levelling mode needs a confirmation
+Game_Levelling.prototype.hasAdvances = function () {
+    return this._spentExp > 0;
+};
+// #endregion === Experience === //
+// === //
+// #region ====== Competences === //
+// Number of pending advances for a competence
+Game_Levelling.prototype.compAdvances = function (compId) {
+    return this._compAdvances[compId] || 0;
+};
+// Competence value including pending advances
+Game_Levelling.prototype.compValue = function (compId) {
+    return this._actor.compAdvances(compId) + this.compAdvances(compId);
+};
+// Experience cost of the next competence advance
+Game_Levelling.prototype.nextCompCost = function (compId) {
+    return TEW.LEVELLING.competenceCost(this.compValue(compId));
+};
+// Whether the remaining experience covers one more advance
+Game_Levelling.prototype.canIncreaseComp = function (compId) {
+    return !!this._actor && this.nextCompCost(compId) <= this.remainingExp();
+};
+// It is impossible to go under the actor's current value
+Game_Levelling.prototype.canDecreaseComp = function (compId) {
+    return this.compAdvances(compId) > 0;
+};
+// Buying one competence advance
+Game_Levelling.prototype.increaseComp = function (compId) {
+    if (!this.canIncreaseComp(compId)) {
+        return false;
+    }
+    this._spentExp += this.nextCompCost(compId);
+    this._compAdvances[compId] = this.compAdvances(compId) + 1;
+    return true;
+};
+// Refunding one competence advance
+Game_Levelling.prototype.decreaseComp = function (compId) {
+    if (!this.canDecreaseComp(compId)) {
+        return false;
+    }
+    this._compAdvances[compId] = this.compAdvances(compId) - 1;
+    // After the decrement, the next advance is the one that was just refunded
+    this._spentExp -= this.nextCompCost(compId);
+    if (this._compAdvances[compId] === 0) {
+        delete this._compAdvances[compId];
+    }
+    return true;
+};
+// #endregion === Competences === //
+// === //
+// #region ====== Characteristics === //
+// Number of pending advances for a characteristic
+Game_Levelling.prototype.statAdvances = function (paramId) {
+    return this._statAdvances[paramId];
+};
+// Total number of advances, used to find the cost bracket
+Game_Levelling.prototype.statAdvanceCount = function (paramId) {
+    return this._actor.statAdvances(paramId) + this._statAdvances[paramId];
+};
+// Characteristic value including pending advances
+Game_Levelling.prototype.statValue = function (paramId) {
+    return this._actor.param(paramId) + this._statAdvances[paramId];
+};
+// Experience cost of the next characteristic advance
+Game_Levelling.prototype.nextStatCost = function (paramId) {
+    return TEW.LEVELLING.characteristicCost(this.statAdvanceCount(paramId));
+};
+// Whether the remaining experience covers one more advance
+Game_Levelling.prototype.canIncreaseStat = function (paramId) {
+    return !!this._actor && this.nextStatCost(paramId) <= this.remainingExp();
+};
+// It is impossible to go under the actor's current value
+Game_Levelling.prototype.canDecreaseStat = function (paramId) {
+    return this._statAdvances[paramId] > 0;
+};
+// Buying one characteristic advance
+Game_Levelling.prototype.increaseStat = function (paramId) {
+    if (!this.canIncreaseStat(paramId)) {
+        return false;
+    }
+    this._spentExp += this.nextStatCost(paramId);
+    this._statAdvances[paramId] += 1;
+    return true;
+};
+// Refunding one characteristic advance
+Game_Levelling.prototype.decreaseStat = function (paramId) {
+    if (!this.canDecreaseStat(paramId)) {
+        return false;
+    }
+    this._statAdvances[paramId] -= 1;
+    // After the decrement, the next advance is the one that was just refunded
+    this._spentExp -= this.nextStatCost(paramId);
+    return true;
+};
+// #endregion === Characteristics === //
+// === //
+// #region ====== Summary and commit === //
+// Listing every pending advance, to be displayed in the confirmation window
+Game_Levelling.prototype.summary = function () {
+    const advances = [];
+    if (!this._actor) {
+        return advances;
+    }
+    for (let paramId = 0; paramId < this._statAdvances.length; paramId++) {
+        const pending = this._statAdvances[paramId];
+        if (pending > 0) {
+            const bought = this._actor.statAdvances(paramId);
+            advances.push({
+                name: TEW.CHARACTERS.STATS_VERBOSE[paramId],
+                from: this._actor.param(paramId),
+                to: this._actor.param(paramId) + pending,
+                cost: TEW.LEVELLING.characteristicRangeCost(bought, bought + pending)
+            });
+        }
+    }
+    Object.keys(this._compAdvances)
+        .sort((a, b) => TEW.DATABASE.COMPS.SET[a].name.localeCompare(TEW.DATABASE.COMPS.SET[b].name))
+        .forEach(compId => {
+        const bought = this._actor.compAdvances(compId);
+        const pending = this.compAdvances(compId);
+        advances.push({
+            name: TEW.DATABASE.COMPS.SET[compId].name,
+            from: bought,
+            to: bought + pending,
+            cost: TEW.LEVELLING.competenceRangeCost(bought, bought + pending)
+        });
+    });
+    return advances;
+};
+// Writing every pending advance to the actor and consuming the experience points
+Game_Levelling.prototype.apply = function () {
+    if (!this._actor) {
+        return;
+    }
+    for (let paramId = 0; paramId < this._statAdvances.length; paramId++) {
+        this._actor.applyStatAdvances(paramId, this._statAdvances[paramId]);
+    }
+    Object.keys(this._compAdvances).forEach(compId => {
+        this._actor.applyCompAdvances(compId, this._compAdvances[compId]);
+    });
+    this._actor.spendExp(this._spentExp);
+    this.clear();
+};
+// #endregion === Summary and commit === //
+// #endregion =========================== Game_Levelling ============================== //
+// ============================== //
+// #region ============================== Window_StatusLevellingConfirm ============================== //
+// ----------------------
+//-----------------------------------------------------------------------------
+// Window_StatusLevellingConfirm
+//
+// Confirming, discarding or resuming a levelling session
+function Window_StatusLevellingConfirm() {
+    this.initialize.apply(this, arguments);
+}
+Window_StatusLevellingConfirm.MARGIN_Y = 520;
+Window_StatusLevellingConfirm.prototype = Object.create(Window_Command.prototype);
+Window_StatusLevellingConfirm.prototype.constructor = Window_StatusLevellingConfirm;
+// Initializing the command window, horizontally centered under the summary
+Window_StatusLevellingConfirm.prototype.initialize = function () {
+    this._summaryWindow = null;
+    Window_Command.prototype.initialize.call(this, (Graphics.boxWidth - this.windowWidth()) / 2, Window_StatusLevellingConfirm.MARGIN_Y);
+};
+Window_StatusLevellingConfirm.prototype.makeCommandList = function () {
+    this.addCommand(TextManager.statusLevellingConfirm, 'levelling_confirm');
+    this.addCommand(TextManager.statusLevellingDiscard, 'levelling_discard');
+    this.addCommand(TextManager.statusLevellingBack, 'levelling_back');
+};
+Window_StatusLevellingConfirm.prototype.maxCols = function () {
+    return 1;
+};
+// Linking the summary window so page up and page down can scroll it
+Window_StatusLevellingConfirm.prototype.setSummaryWindow = function (summaryWindow) {
+    this._summaryWindow = summaryWindow;
+};
+Window_StatusLevellingConfirm.prototype.cursorPagedown = function () {
+    if (this._summaryWindow) {
+        this._summaryWindow.scrollDown();
+    }
+};
+Window_StatusLevellingConfirm.prototype.cursorPageup = function () {
+    if (this._summaryWindow) {
+        this._summaryWindow.scrollUp();
+    }
+};
+// #endregion =========================== Window_StatusLevellingConfirm ============================== //
+// ============================== //
+// #region ============================== Window_StatusLevellingSummary ============================== //
+// ----------------------
+//-----------------------------------------------------------------------------
+// Window_StatusLevellingSummary
+//
+// Scrollable summary of the advances waiting for confirmation
+function Window_StatusLevellingSummary() {
+    this.initialize.apply(this, arguments);
+}
+Window_StatusLevellingSummary.MARGIN_Y = 60;
+Window_StatusLevellingSummary.NAME_COLUMN_WIDTH = 300;
+Window_StatusLevellingSummary.VALUE_COLUMN_WIDTH = 60;
+Window_StatusLevellingSummary.ARROW_COLUMN_WIDTH = 30;
+Window_StatusLevellingSummary.COST_COLUMN_WIDTH = 130;
+Window_StatusLevellingSummary.prototype = Object.create(Window_Selectable.prototype);
+Window_StatusLevellingSummary.prototype.constructor = Window_StatusLevellingSummary;
+// Initializing the window, horizontally centered under the topbar
+Window_StatusLevellingSummary.prototype.initialize = function () {
+    this._levelling = null;
+    this._advances = [];
+    Window_Selectable.prototype.initialize.call(this, (Graphics.boxWidth - this.windowWidth()) / 2, Window_StatusLevellingSummary.MARGIN_Y, this.windowWidth(), this.windowHeight());
+    this.deactivate();
+    this.refresh();
+};
+// Linking the window to the levelling session holding the pending advances
+Window_StatusLevellingSummary.prototype.setLevelling = function (levelling) {
+    this._levelling = levelling;
+    this.refreshAdvances();
+};
+// Rebuilding the list, to be called every time the window is displayed
+Window_StatusLevellingSummary.prototype.refreshAdvances = function () {
+    this._advances = this._levelling ? this._levelling.summary() : [];
+    this.setTopRow(0);
+    this.refresh();
+};
+Window_StatusLevellingSummary.prototype.maxItems = function () {
+    return this._advances.length;
+};
+Window_StatusLevellingSummary.prototype.maxCols = () => 1;
+Window_StatusLevellingSummary.prototype.itemHeight = function () {
+    return TEW.MENU.LINE_HEIGHT;
+};
+// The window is only ever read, never selected
+Window_StatusLevellingSummary.prototype.isCursorVisible = function () {
+    return false;
+};
+// Drawing one advance: name, current value, new value and total cost
+Window_StatusLevellingSummary.prototype.drawItem = function (index) {
+    const y = (index - this.topIndex()) * this.itemHeight();
+    const advance = this._advances[index];
+    let x = 0;
+    this.changeTextColor(this.systemColor());
+    this.drawText(advance.name, x, y, Window_StatusLevellingSummary.NAME_COLUMN_WIDTH, 'left');
+    this.resetTextColor();
+    x += Window_StatusLevellingSummary.NAME_COLUMN_WIDTH;
+    this.drawText(`${advance.from}`, x, y, Window_StatusLevellingSummary.VALUE_COLUMN_WIDTH, 'right');
+    x += Window_StatusLevellingSummary.VALUE_COLUMN_WIDTH;
+    this.drawText('>', x, y, Window_StatusLevellingSummary.ARROW_COLUMN_WIDTH, 'center');
+    x += Window_StatusLevellingSummary.ARROW_COLUMN_WIDTH;
+    this.changeTextColor(this.powerUpColor());
+    this.drawText(`${advance.to}`, x, y, Window_StatusLevellingSummary.VALUE_COLUMN_WIDTH, 'right');
+    this.resetTextColor();
+    x += Window_StatusLevellingSummary.VALUE_COLUMN_WIDTH;
+    this.drawText(`- ${advance.cost}`, x, y, Window_StatusLevellingSummary.COST_COLUMN_WIDTH, 'right');
+};
+// Scrolling is driven from the confirmation window, the arrows are left alone
+Window_StatusLevellingSummary.prototype.cursorDown = function () { };
+Window_StatusLevellingSummary.prototype.cursorUp = function () { };
+Window_StatusLevellingSummary.prototype.cursorPagedown = function () { };
+Window_StatusLevellingSummary.prototype.cursorPageup = function () { };
+Window_StatusLevellingSummary.prototype.processWheel = function () {
+    if (this.visible) {
+        const threshold = 20;
+        if (TouchInput.wheelY >= threshold) {
+            this.scrollDown();
+        }
+        if (TouchInput.wheelY <= -threshold) {
+            this.scrollUp();
+        }
+    }
+};
+// #endregion =========================== Window_StatusLevellingSummary ============================== //
 // ============================== //
 // #region ============================== Window_InventoryTransferSpinner ============================== //
 //-----------------------------------------------------------------------------
@@ -2457,6 +2781,8 @@ Window_StatusCompetences.prototype.constructor = Window_StatusCompetences;
  * Constructor for the Window_StatusCompetences class.
  */
 Window_StatusCompetences.prototype.initialize = function () {
+    this._levelling = null;
+    this._levellingMode = false;
     HalfWindow_List.prototype.initialize.call(this);
     this._actor = null;
     this._maxItems = 0;
@@ -2500,10 +2826,12 @@ Window_StatusCompetences.prototype.drawItem = function (index) {
     this.changeTextColor(this.systemColor());
     this.drawText(comp[1].name, 0, y, Window_StatusCompetences.NAME_COLUMN_WIDTH, 'left');
     this.resetTextColor();
-    // Comp bonus
-    const compLevel = this._actor.compPlus(comp[0]);
+    // Comp bonus, including the advances about to be bought in levelling mode
+    const compLevel = comp[1].level;
     const compLevelText = compLevel > 0 ? `${compLevel}` : "Base";
+    this.changeTextColor(this.competenceLevelColor(comp[0]));
     this.drawText(compLevelText, Window_StatusCompetences.NAME_COLUMN_WIDTH, y, Window_StatusCompetences.LEVEL_COLUMN_WIDTH, 'left');
+    this.resetTextColor();
     // Stats which the comp depends on
     // const statName = comp ? comp[1].stat : null;
     // const statNumber = this._actor.comp(comp[0]);
@@ -2523,7 +2851,9 @@ Window_StatusCompetences.prototype.competenceFromIndex = function (index) {
     const comp = index < TEW.DATABASE.COMPS.BASE_ARRAY.length // [<internal name>, {<competence data>}]
         ? TEW.DATABASE.COMPS.BASE_ARRAY[index]
         : this._advancedCompsList[index - TEW.DATABASE.COMPS.BASE_ARRAY.length];
-    const level = this._actor.compPlus(comp[0]);
+    const level = this.isLevellingMode()
+        ? this._levelling.compValue(comp[0])
+        : this._actor.compPlus(comp[0]);
     return [comp[0], Object.assign(Object.assign({}, comp[1]), { level, value: level + this._actor.paramByName(comp[1].stat) })];
 };
 Window_StatusCompetences.prototype.competence = function () {
@@ -2545,6 +2875,75 @@ Window_StatusCompetences.prototype.select = function (index) {
 Window_StatusCompetences.prototype.maxItems = function () {
     return this._maxItems;
 };
+// #region ====== Levelling mode === //
+/**
+ * Links the window to the levelling session holding the pending advances.
+ */
+Window_StatusCompetences.prototype.setLevelling = function (levelling) {
+    this._levelling = levelling;
+    this.refresh();
+};
+/**
+ * Enters or leaves levelling mode.
+ */
+Window_StatusCompetences.prototype.setLevellingMode = function (active) {
+    if (this._levellingMode !== active) {
+        this._levellingMode = active;
+        this.refresh();
+    }
+};
+Window_StatusCompetences.prototype.isLevellingMode = function () {
+    return !!this._levellingMode && !!this._levelling && !!this._actor;
+};
+/**
+ * Green when advances are about to be bought, highlighted when they can be, plain otherwise.
+ */
+Window_StatusCompetences.prototype.competenceLevelColor = function (compId) {
+    if (!this.isLevellingMode()) {
+        return this.normalColor();
+    }
+    if (this._levelling.compAdvances(compId) > 0) {
+        return this.powerUpColor();
+    }
+    if (this._levelling.canIncreaseComp(compId)) {
+        return this.systemColor();
+    }
+    return this.normalColor();
+};
+/**
+ * In levelling mode, the horizontal arrows buy and refund advances instead of changing column.
+ */
+Window_StatusCompetences.prototype.cursorRight = function (wrap) {
+    if (this.isLevellingMode() && this.index() >= 0) {
+        this.changeCompetence(true);
+    }
+    else {
+        HalfWindow_List.prototype.cursorRight.call(this, wrap);
+    }
+};
+Window_StatusCompetences.prototype.cursorLeft = function (wrap) {
+    if (this.isLevellingMode() && this.index() >= 0) {
+        this.changeCompetence(false);
+    }
+    else {
+        HalfWindow_List.prototype.cursorLeft.call(this, wrap);
+    }
+};
+/**
+ * Buys or refunds one advance on the selected competence.
+ */
+Window_StatusCompetences.prototype.changeCompetence = function (increase) {
+    const compId = this.competenceFromIndex(this.index())[0];
+    const changed = increase
+        ? this._levelling.increaseComp(compId)
+        : this._levelling.decreaseComp(compId);
+    if (changed) {
+        SoundManager.playCursor();
+        this.refresh();
+        this.callHandler('levelling_change');
+    }
+};
+// #endregion === Levelling mode === //
 // #endregion =========================== Window_StatusCompetences ============================== //
 // ============================== //
 // #region ============================== Scene_Status ============================== //
@@ -2558,6 +2957,8 @@ Scene_Status.prototype.create = function () {
     // Init
     Scene_MenuBase.prototype.create.call(this);
     this.addFullscreenBackground();
+    // Levelling session, shared by every window able to buy advances
+    this.createLevelling();
     // Command window
     this.createCommandWindow();
     // Info window
@@ -2572,8 +2973,15 @@ Scene_Status.prototype.create = function () {
     this.createSpellsWindow();
     this.createSpellCommandWindow();
     this.createSpellDetailsWindow();
+    // Levelling confirmation, created last so it is drawn above every other window
+    this.createLevellingWindows();
     this.activateStatusStats(); // Desactivate all the windows, except the stats one
     this.refreshActor();
+};
+// Watching the levelling mode input key
+Scene_Status.prototype.update = function () {
+    Scene_MenuBase.prototype.update.call(this);
+    this.updateLevellingToggle();
 };
 Scene_Status.prototype.addFullscreenBackground = function () {
     this._background = new Sprite(ImageManager.loadSystem('bg_fullscreen'));
@@ -2634,17 +3042,51 @@ Scene_Status.prototype.displayWindow = function () {
 // Refreshing the actor
 Scene_Status.prototype.refreshActor = function () {
     var actor = this.actor();
+    this._levelling.setActor(actor);
     this._statsWindow.setActor(actor);
     this._competencesWindow.setActor(actor);
     this._talentsWindow.setActor(actor);
     this._spellsWindow.setActor(actor);
 };
+// Switching actor from the topbar
+Scene_Status.prototype.onActorChange = function () {
+    this.refreshActor();
+    this._commandWindow.refresh();
+    this._commandWindow.activate();
+};
+// Actors cannot be switched while advances are being bought, to avoid losing them silently
+Scene_Status.prototype.onNextActor = function () {
+    if (this.isLevellingMode()) {
+        this._commandWindow.activate();
+    }
+    else {
+        this.nextActor();
+    }
+};
+Scene_Status.prototype.onPreviousActor = function () {
+    if (this.isLevellingMode()) {
+        this._commandWindow.activate();
+    }
+    else {
+        this.previousActor();
+    }
+};
+// Leaving the menu is treated as leaving levelling mode
+Scene_Status.prototype.onStatusCancel = function () {
+    if (this.isLevellingMode()) {
+        this.requestLevellingExit(true);
+    }
+    else {
+        this.popScene();
+    }
+};
 // Creating the commands for this scene
 Scene_Status.prototype.createCommandWindow = function () {
     this._commandWindow = new Window_StatusCommand(0, 0);
-    this._commandWindow.setHandler('cancel', this.popScene.bind(this));
-    this._commandWindow.setHandler('pagedown', this.nextActor.bind(this));
-    this._commandWindow.setHandler('pageup', this.previousActor.bind(this));
+    this._commandWindow.setLevelling(this._levelling);
+    this._commandWindow.setHandler('cancel', this.onStatusCancel.bind(this));
+    this._commandWindow.setHandler('pagedown', this.onNextActor.bind(this));
+    this._commandWindow.setHandler('pageup', this.onPreviousActor.bind(this));
     this._commandWindow.setHandler('right', this.displayWindow.bind(this));
     this._commandWindow.setHandler('left', this.displayWindow.bind(this));
     this._commandWindow.setHandler('status_stats', this.activateStatusStats.bind(this));
@@ -2680,11 +3122,13 @@ Scene_Status.prototype.createCompsWindow = function () {
         this._competencesWindow.deselect();
     });
     this._competencesWindow.setHandler('show_details', () => {
-        const selectedComp = this._competencesWindow.competence();
-        if (selectedComp) {
-            this._competenceDetailsWindow.setCompetence(selectedComp[1]);
-        }
+        this.showCompetenceDetails();
     });
+    this._competencesWindow.setHandler('levelling_change', () => {
+        this._commandWindow.refresh();
+        this.showCompetenceDetails();
+    });
+    this._competencesWindow.setLevelling(this._levelling);
     this._competencesWindow.hide();
     this.addWindow(this._competencesWindow);
 };
@@ -2692,6 +3136,13 @@ Scene_Status.prototype.createCompDetailsWindow = function () {
     this._competenceDetailsWindow = new Window_StatusCompetenceDetails();
     this._competenceDetailsWindow.hide();
     this.addWindow(this._competenceDetailsWindow);
+};
+// Showing the details of the selected competence
+Scene_Status.prototype.showCompetenceDetails = function () {
+    const selectedComp = this._competencesWindow.competence();
+    if (selectedComp) {
+        this._competenceDetailsWindow.setCompetence(selectedComp[1]);
+    }
 };
 // Activating the competences window
 Scene_Status.prototype.activateStatusComps = function (index = 0) {
@@ -2831,6 +3282,146 @@ Scene_Status.prototype.activateCommandWindowSpells = function () {
     }
 };
 // #endregion === Spells windows === //
+// === //
+// #region ====== Levelling mode === //
+// Creating the session holding every advance until it is confirmed
+Scene_Status.prototype.createLevelling = function () {
+    this._levelling = new Game_Levelling();
+    this._levellingMode = false;
+    this._levellingPopOnResolve = false;
+    this._levellingReturnWindow = null;
+};
+// Creating the confirmation prompt, hidden until levelling mode is left with pending advances
+Scene_Status.prototype.createLevellingWindows = function () {
+    this._levellingSummaryWindow = new Window_StatusLevellingSummary();
+    this._levellingSummaryWindow.setLevelling(this._levelling);
+    this._levellingSummaryWindow.hide();
+    this.addWindow(this._levellingSummaryWindow);
+    this._levellingConfirmWindow = new Window_StatusLevellingConfirm();
+    this._levellingConfirmWindow.setSummaryWindow(this._levellingSummaryWindow);
+    this._levellingConfirmWindow.setHandler('levelling_confirm', this.onLevellingConfirm.bind(this));
+    this._levellingConfirmWindow.setHandler('levelling_discard', this.onLevellingDiscard.bind(this));
+    this._levellingConfirmWindow.setHandler('levelling_back', this.onLevellingBack.bind(this));
+    this._levellingConfirmWindow.setHandler('cancel', this.onLevellingBack.bind(this));
+    this._levellingConfirmWindow.deactivate();
+    this._levellingConfirmWindow.hide();
+    this.addWindow(this._levellingConfirmWindow);
+};
+Scene_Status.prototype.isLevellingMode = function () {
+    return this._levellingMode;
+};
+// Whether the confirmation prompt is currently displayed
+Scene_Status.prototype.isLevellingPrompt = function () {
+    return this._levellingConfirmWindow && this._levellingConfirmWindow.visible;
+};
+// Toggling levelling mode with the dedicated input key
+Scene_Status.prototype.updateLevellingToggle = function () {
+    if (this.isLevellingPrompt()) {
+        return;
+    }
+    if (Input.isTriggered(TEW.MENU.LEVEL_UP_KEY)) {
+        if (this.isLevellingMode()) {
+            this.requestLevellingExit(false);
+        }
+        else {
+            this.enterLevellingMode();
+        }
+    }
+};
+Scene_Status.prototype.enterLevellingMode = function () {
+    this._levellingMode = true;
+    this._levelling.clear();
+    this.refreshLevellingWindows();
+};
+Scene_Status.prototype.exitLevellingMode = function () {
+    this._levellingMode = false;
+    this._levelling.clear();
+    this.refreshLevellingWindows();
+};
+// Propagating the mode and the experience counters to every window displaying them
+Scene_Status.prototype.refreshLevellingWindows = function () {
+    this._commandWindow.setLevellingMode(this._levellingMode);
+    this._commandWindow.refresh();
+    this._competencesWindow.setLevellingMode(this._levellingMode);
+    this._competencesWindow.refresh();
+    this._statsWindow.refresh();
+};
+/**
+ * Leaving levelling mode. Exit is instantaneous with nothing spent, and prompts otherwise.
+ * @param popOnResolve whether the whole menu should be left once the prompt is resolved
+ */
+Scene_Status.prototype.requestLevellingExit = function (popOnResolve) {
+    if (!this._levelling.hasAdvances()) {
+        this.exitLevellingMode();
+        if (popOnResolve) {
+            this.popScene();
+        }
+        return;
+    }
+    this._levellingPopOnResolve = popOnResolve;
+    this.openLevellingPrompt();
+};
+// Finding the window currently reading inputs, to give it back the focus later on
+Scene_Status.prototype.activeStatusWindow = function () {
+    const windows = [
+        this._commandWindow,
+        this._competencesWindow,
+        this._talentsWindow,
+        this._spellsWindow,
+        this._spellsCommandWindow
+    ];
+    return windows.filter(window => window.active)[0] || null;
+};
+Scene_Status.prototype.openLevellingPrompt = function () {
+    this._levellingReturnWindow = this.activeStatusWindow();
+    if (this._levellingReturnWindow) {
+        this._levellingReturnWindow.deactivate();
+    }
+    this._levellingSummaryWindow.refreshAdvances();
+    this._levellingSummaryWindow.show();
+    this._levellingConfirmWindow.show();
+    this._levellingConfirmWindow.select(0);
+    this._levellingConfirmWindow.activate();
+};
+Scene_Status.prototype.closeLevellingPrompt = function () {
+    this._levellingConfirmWindow.deactivate();
+    this._levellingConfirmWindow.hide();
+    this._levellingSummaryWindow.hide();
+};
+// Giving the focus back to whichever window was reading inputs before the prompt
+Scene_Status.prototype.restoreLevellingFocus = function () {
+    const window = this._levellingReturnWindow || this._commandWindow;
+    this._levellingReturnWindow = null;
+    window.activate();
+};
+// Leaving levelling mode once the prompt is resolved, and the menu if it was being left
+Scene_Status.prototype.finishLevellingExit = function () {
+    this.exitLevellingMode();
+    if (this._levellingPopOnResolve) {
+        this._levellingPopOnResolve = false;
+        this._levellingReturnWindow = null;
+        this.popScene();
+    }
+    else {
+        this.restoreLevellingFocus();
+    }
+};
+Scene_Status.prototype.onLevellingConfirm = function () {
+    this._levelling.apply();
+    this.closeLevellingPrompt();
+    this.finishLevellingExit();
+};
+Scene_Status.prototype.onLevellingDiscard = function () {
+    this.closeLevellingPrompt();
+    this.finishLevellingExit();
+};
+// Going back to levelling mode, keeping every pending advance
+Scene_Status.prototype.onLevellingBack = function () {
+    this._levellingPopOnResolve = false;
+    this.closeLevellingPrompt();
+    this.restoreLevellingFocus();
+};
+// #endregion === Levelling mode === //
 // #endregion =========================== Scene_Status ============================== //
 // ============================== //
 // #region ============================== Window_StatusSpellCommand ============================== //
@@ -3179,16 +3770,25 @@ Window_Status.prototype.maxItems = function () {
 function Window_StatusCommand() {
     this.initialize.apply(this, arguments);
 }
+// Commands are packed on the left of the topbar to leave room for the levelling indicator
+Window_StatusCommand.COMMAND_WIDTH = 200;
+Window_StatusCommand.INDICATOR_MARGIN_X = 20;
 Window_StatusCommand.prototype = Object.create(Window_HorzCommand.prototype);
 Window_StatusCommand.prototype.constructor = Window_StatusCommand;
 // Initializing the command window
 Window_StatusCommand.prototype.initialize = function (x, y) {
     this._windowHeight = TEW.MENU.STATUS_WINDOW_TOPBAR_HEIGHT;
+    this._levelling = null;
+    this._levellingMode = false;
     Window_HorzCommand.prototype.initialize.call(this, x, y);
 };
 // Max column number
 Window_StatusCommand.prototype.maxCols = function () {
     return 4;
+};
+// Commands keep a fixed width instead of spreading over the whole topbar
+Window_StatusCommand.prototype.itemWidth = function () {
+    return Window_StatusCommand.COMMAND_WIDTH;
 };
 // Making the 4 tabs
 Window_StatusCommand.prototype.makeCommandList = function () {
@@ -3208,6 +3808,59 @@ Window_StatusCommand.prototype.cursorLeft = function (wrap) {
 Window_StatusCommand.prototype.verticalBorderPadding = function () {
     return 18;
 };
+// #region ====== Levelling indicator === //
+// Linking the window to the levelling session, so it can display its experience counters
+Window_StatusCommand.prototype.setLevelling = function (levelling) {
+    this._levelling = levelling;
+    this.refresh();
+};
+// Switching between the 'Level up' hint and the experience counters
+Window_StatusCommand.prototype.setLevellingMode = function (active) {
+    if (this._levellingMode !== active) {
+        this._levellingMode = active;
+        this.refresh();
+    }
+};
+Window_StatusCommand.prototype.isLevellingMode = function () {
+    return !!this._levellingMode && !!this._levelling;
+};
+// Left edge of the area left free by the commands
+Window_StatusCommand.prototype.indicatorX = function () {
+    return this.maxCols() * (Window_StatusCommand.COMMAND_WIDTH + this.spacing())
+        + Window_StatusCommand.INDICATOR_MARGIN_X;
+};
+Window_StatusCommand.prototype.refresh = function () {
+    Window_HorzCommand.prototype.refresh.call(this);
+    this.drawLevellingIndicator();
+};
+Window_StatusCommand.prototype.drawLevellingIndicator = function () {
+    const x = this.indicatorX();
+    const width = this.contentsWidth() - x;
+    if (width <= 0) {
+        return;
+    }
+    if (this.isLevellingMode()) {
+        this.drawExperienceCounters(x, width);
+    }
+    else {
+        this.changeTextColor(this.systemColor());
+        this.drawText(`${TextManager.statusLevelUp}: ${TEW.MENU.LEVEL_UP_KEY_LABEL}`, x, 0, width, 'right');
+        this.resetTextColor();
+    }
+};
+// Remaining and spent experience points, displayed side by side
+Window_StatusCommand.prototype.drawExperienceCounters = function (x, width) {
+    const halfWidth = width / 2;
+    this.changeTextColor(this.systemColor());
+    this.drawText(TextManager.statusExpLeft, x, 0, halfWidth, 'left');
+    this.resetTextColor();
+    this.drawText(`${this._levelling.remainingExp()}`, x, 0, halfWidth, 'right');
+    this.changeTextColor(this.systemColor());
+    this.drawText(TextManager.statusExpSpent, x + halfWidth, 0, halfWidth, 'left');
+    this.resetTextColor();
+    this.drawText(`${this._levelling.spentExp()}`, x + halfWidth, 0, halfWidth, 'right');
+};
+// #endregion === Levelling indicator === //
 // #endregion =========================== Window_StatusCommand ============================== //
 // ============================== //
 // #region ============================== Window_StatusStats ============================== //
@@ -3588,6 +4241,24 @@ Window_StatusStats.prototype.windowWidth = function () {
 };
 Window_StatusStats.prototype.windowHeight = function () {
     return Graphics.boxHeight - TEW.MENU.STATUS_WINDOW_TOPBAR_HEIGHT;
+};
+// Window_StatusLevellingSummary.prototype.backgroundImageName = function() {
+//     return "bg_menuHalfWindowList";
+// };
+Window_StatusLevellingSummary.prototype.windowWidth = function () {
+    return Graphics.boxWidth / 2;
+};
+Window_StatusLevellingSummary.prototype.windowHeight = function () {
+    return 440; // same box as the half window lists
+};
+Window_StatusLevellingConfirm.prototype.backgroundImageName = function () {
+    return "bg_menuDetailsCommand3";
+};
+Window_StatusLevellingConfirm.prototype.windowWidth = function () {
+    return 280;
+};
+Window_StatusLevellingConfirm.prototype.windowHeight = function () {
+    return 168; // line height * 3 + bg padding
 };
 Window_StatusTalents.prototype.backgroundImageName = function () {
     return "bg_menuHalfWindowFullHeight";

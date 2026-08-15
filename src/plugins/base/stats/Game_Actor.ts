@@ -1,10 +1,21 @@
 // $PluginCompiler TEW_Base.js
 
+import { $dataActors } from "../../../rmmv/variables";
 import { ConditionId } from "../../_types/enum";
+import TEW from "../../_types/tew";
 import { Game_BattlerBase } from "./Game_BattlerBase";
 export interface Game_Actor extends Game_BattlerBase {
     param: (paramId: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10) => number;
     paramPlus: (paramId: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10) => number;
+
+    availableExp: () => number;
+    spendExp: (amount: number) => void;
+    statAdvances: (paramId: number) => number;
+    compAdvances: (compId: string) => number;
+    nextStatAdvanceCost: (paramId: number) => number;
+    nextCompAdvanceCost: (compId: string) => number;
+    applyStatAdvances: (paramId: number, advances: number) => void;
+    applyCompAdvances: (compId: string, advances: number) => void;
 };
 
 // $StartCompilation
@@ -16,6 +27,44 @@ Game_Actor.prototype.initialize = function(actorId : number)  {
     this.initTEW(actorId);
 };
 
+Game_Actor.prototype.setup = function(actorId) {
+    var actor = $dataActors[actorId];
+    this._actorId = actorId;
+    this._name = actor.name;
+    this._nickname = actor.nickname;
+    this._exp = actor.exp || 0; // TODO ?
+    // this._profile = actor.profile;
+    // this._classId = actor.classId;
+    // this._level = actor.initialLevel;
+    this.initImages();
+    // this.initExp();
+    // this.initSkills();
+    // this.initEquips(actor.equips);
+    this.clearParamPlus();
+    this.recoverAll();
+};
+
+Game_Actor.prototype.initMembers = function() { // TODO remove useless attributes
+    Game_Battler.prototype.initMembers.call(this);
+    this._actorId = 0;
+    this._name = '';
+    this._nickname = '';
+    this._classId = 1; // TODO
+    this._level = 0;
+    this._characterName = '';
+    this._characterIndex = 0;
+    this._faceName = '';
+    this._faceIndex = 0;
+    this._battlerName = '';
+    this._exp = 0;
+    // this._skills = [];
+    this._equips = []; // TODO remove
+    this._actionInputIndex = 0;
+    // this._lastMenuSkill = new Game_Item();
+    // this._lastBattleSkill = new Game_Item();
+    // this._lastCommandSymbol = '';
+};
+
 Game_Actor.prototype.paramBase = function(paramId: number) {
     return this._paramBase[paramId];
 };
@@ -23,6 +72,55 @@ Game_Actor.prototype.paramBase = function(paramId: number) {
 Game_Actor.prototype.paramPlus = function(paramId: number) {
     return Game_Battler.prototype.paramPlus.call(this, paramId);
 };
+
+// #region ============================== Levelling ============================== //
+// Experience points still available to buy advances
+Game_Actor.prototype.availableExp = function() {
+    return this._exp;
+};
+
+// Consuming experience points. Callers are expected to check availableExp() beforehand
+Game_Actor.prototype.spendExp = function(amount: number) {
+    this._exp -= amount;
+};
+
+// Number of advances already bought for a characteristic (base values are not advances)
+Game_Actor.prototype.statAdvances = function(paramId: number) {
+    return this.paramPlus(paramId);
+};
+
+// Number of advances already bought for a competence (competences have no base value)
+Game_Actor.prototype.compAdvances = function(compId: string) {
+    return this.compPlus(compId);
+};
+
+// Experience cost of the next characteristic advance
+Game_Actor.prototype.nextStatAdvanceCost = function(paramId: number) {
+    return TEW.LEVELLING.characteristicCost(this.statAdvances(paramId));
+};
+
+// Experience cost of the next competence advance
+Game_Actor.prototype.nextCompAdvanceCost = function(compId: string) {
+    return TEW.LEVELLING.competenceCost(this.compAdvances(compId));
+};
+
+// Buying characteristic advances. Max wounds are derived from stats and must be recomputed
+Game_Actor.prototype.applyStatAdvances = function(paramId: number, advances: number) {
+    if (advances <= 0) {
+        return;
+    }
+    this.addParam(paramId, advances);
+    this._paramBase[0] = this.calculateMHP();
+};
+
+// Buying competence advances
+Game_Actor.prototype.applyCompAdvances = function(compId: string, advances: number) {
+    if (advances <= 0) {
+        return;
+    }
+    this.addComp(compId, advances);
+};
+// #endregion =========================== Levelling ============================== //
 
 Game_Actor.prototype.initTEW = function(actorId : number) {
     switch (actorId) {
@@ -133,6 +231,9 @@ Game_Actor.prototype.initCecile = function() {
 
     // conditions
     this.addCondition("ABLAZE", 3);
+
+    // XP
+    this._exp = 500;
 }
 
 // Initialization function for Cheplu

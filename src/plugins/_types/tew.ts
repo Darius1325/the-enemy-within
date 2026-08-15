@@ -158,10 +158,63 @@ const TEW: {
         JOURNAL_DOCUMENTS?: JournalDocument[];
     };
 
+    /**
+     * Experience spending rules
+     * Costs are expressed per advance and increase with the number of advances already bought
+     */
+    LEVELLING?: {
+        /** Number of advances covered by a single cost bracket (past the first one) */
+        BRACKET_SIZE?: number;
+        /** Index of the last cost bracket (every advance past it costs the same) */
+        LAST_BRACKET?: number;
+        /** XP cost of one characteristic advance, indexed by cost bracket */
+        CHARACTERISTIC_COSTS?: number[];
+        /** XP cost of one competence advance, indexed by cost bracket */
+        COMPETENCE_COSTS?: number[];
+
+        /**
+         * Find the cost bracket matching a number of advances
+         * @param advances number of advances already bought
+         * @returns an index in CHARACTERISTIC_COSTS / COMPETENCE_COSTS
+         */
+        bracket?: (advances: number) => number;
+        /**
+         * Cost of the next characteristic advance
+         * @param advances number of advances already bought
+         * @returns the XP cost of the following advance
+         */
+        characteristicCost?: (advances: number) => number;
+        /**
+         * Cost of the next competence advance
+         * @param advances number of advances already bought
+         * @returns the XP cost of the following advance
+         */
+        competenceCost?: (advances: number) => number;
+        /**
+         * Total cost of every characteristic advance between two advance counts
+         * @param fromAdvances number of advances already bought
+         * @param toAdvances targeted number of advances
+         * @returns the total XP cost
+         */
+        characteristicRangeCost?: (fromAdvances: number, toAdvances: number) => number;
+        /**
+         * Total cost of every competence advance between two advance counts
+         * @param fromAdvances number of advances already bought
+         * @param toAdvances targeted number of advances
+         * @returns the total XP cost
+         */
+        competenceRangeCost?: (fromAdvances: number, toAdvances: number) => number;
+    };
+
     /** Constants used in menu plugins for readability */
     MENU?: {
         /** Links commands (used to control interactions with windows) to human-readable names */
         COMMAND_NAMES?: Record<number, string>;
+
+        /** Input key toggling levelling mode in the status menu */
+        LEVEL_UP_KEY?: string;
+        /** Human-readable name of LEVEL_UP_KEY, displayed in the status menu topbar */
+        LEVEL_UP_KEY_LABEL?: string;
 
         /** Common line height for several menus */
         LINE_HEIGHT?: number;

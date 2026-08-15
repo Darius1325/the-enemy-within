@@ -2282,6 +2282,7 @@ Game_Actor.prototype.initMembers = function () {
     TEW.MEMORY.gameActorInitMembers.call(this);
     this._actionsButton = [];
     this._lastSpell = new Game_Item();
+    this._lastBattleCommands = [];
 };
 Game_Actor.prototype.currentData = function () {
     return Game_Battler.prototype.currentData.call(this).concat(this.currentClass());
@@ -2440,6 +2441,12 @@ Game_Actor.prototype.refresh = function () {
     }
     else {
         this.removeState(this.deathStateId());
+    }
+};
+Game_Actor.prototype.updateLastBattleCommands = function (commandName, requirement) {
+    this._lastBattleCommands.unshift({ name: commandName, canUse: requirement });
+    if (this._lastBattleCommands.length > 4) { // TODO constant
+        this._lastBattleCommands.pop();
     }
 };
 // unused RMMV base function
@@ -4592,9 +4599,9 @@ Window_TacticsActionCommand.prototype.loadIcons = function () {
 };
 Window_TacticsActionCommand.prototype.makeCommandList = function () {
     if (this._actor) {
-        this.addCommand(TEW.COMBAT.SYSTEM.actionAttack, 'attack', BattleManager.canAct());
-        this.addCommand(TEW.COMBAT.SYSTEM.actionSpell, 'spell', BattleManager.canAct());
-        this.addCommand(TEW.COMBAT.SYSTEM.actionChannelling, 'channelling', BattleManager.canAct());
+        this.addCommand(TEW.COMBAT.SYSTEM.actionAttack, TEW.COMBAT.SYSTEM.actionAttack, BattleManager.canAct());
+        this.addCommand(TEW.COMBAT.SYSTEM.actionSpell, TEW.COMBAT.SYSTEM.actionSpell, BattleManager.canAct());
+        this.addCommand(TEW.COMBAT.SYSTEM.actionChannelling, TEW.COMBAT.SYSTEM.actionChannelling, BattleManager.canAct());
     }
 };
 Window_TacticsActionCommand.prototype.select = function (index) {
@@ -4772,6 +4779,77 @@ HalfWindow_TacticsList.prototype.maxItems = function () {
 HalfWindow_TacticsList.prototype.maxCols = () => 1;
 // #endregion =========================== HalfWindow_TacticsList ============================== //
 // ============================== //
+// #region ============================== Window_TacticsLastUsedCommand ============================== //
+//-----------------------------------------------------------------------------
+// Window_TacticsActionCommand
+//
+// The window for selecting an actor's action on the tactics screen.
+function Window_TacticsLastUsedCommand() {
+    this.initialize.apply(this, arguments);
+}
+Window_TacticsLastUsedCommand.IMAGE_CACHE_RID = 'battleLastUsedCommand';
+Window_TacticsLastUsedCommand.X_POS = 458;
+Window_TacticsLastUsedCommand.Y_POS = 467;
+Window_TacticsLastUsedCommand.EXTENDED_WIDTH = 220;
+Window_TacticsLastUsedCommand.TEXT_MAX_WIDTH = 150;
+Window_TacticsLastUsedCommand.prototype = Object.create(Window_TacticsCommandBase.prototype);
+Window_TacticsLastUsedCommand.prototype.constructor = Window_TacticsLastUsedCommand;
+Window_TacticsLastUsedCommand.prototype.initialize = function () {
+    Window_TacticsCommandBase.prototype.initialize.call(this);
+    this.loadIcons();
+};
+Window_TacticsLastUsedCommand.prototype.loadIcons = function () {
+    ImageManager.reserveSystem('icon_battleCommand_attack', 0, Window_TacticsLastUsedCommand.IMAGE_CACHE_RID);
+    ImageManager.reserveSystem('icon_battleCommand_spell', 0, Window_TacticsLastUsedCommand.IMAGE_CACHE_RID);
+    ImageManager.reserveSystem('icon_battleCommand_channelling', 0, Window_TacticsLastUsedCommand.IMAGE_CACHE_RID);
+    ImageManager.reserveSystem('icon_battleCommand_attack_selected', 0, Window_TacticsLastUsedCommand.IMAGE_CACHE_RID);
+    ImageManager.reserveSystem('icon_battleCommand_spell_selected', 0, Window_TacticsLastUsedCommand.IMAGE_CACHE_RID);
+    ImageManager.reserveSystem('icon_battleCommand_channelling_selected', 0, Window_TacticsLastUsedCommand.IMAGE_CACHE_RID);
+    const readyCheck = resolve => {
+        if (ImageManager.isReady())
+            resolve();
+        else
+            setTimeout(() => readyCheck(resolve), 100);
+    };
+    new Promise(readyCheck).then(() => {
+        this._imagesReady = true;
+        this.refresh();
+    });
+};
+Window_TacticsLastUsedCommand.prototype.makeCommandList = function () {
+    if (this._actor) {
+        let recentCommand;
+        for (recentCommand of this._actor._lastBattleCommands) {
+            this.addCommand(recentCommand.name, recentCommand.name, recentCommand.canUse());
+            this._iconOrder.push('icon_battleCommand_' + recentCommand.name);
+        }
+    }
+};
+Window_TacticsLastUsedCommand.prototype.select = function (index) {
+    const changed = index >= 0 && index !== this.index();
+    Window_Selectable.prototype.select.call(this, index);
+    if (changed) {
+        this.refresh();
+        BattleManager.refreshMoveTiles();
+    }
+};
+Window_TacticsLastUsedCommand.prototype.xPos = function () {
+    return Window_TacticsLastUsedCommand.X_POS;
+};
+Window_TacticsLastUsedCommand.prototype.yPos = function () {
+    return Window_TacticsLastUsedCommand.Y_POS;
+};
+Window_TacticsLastUsedCommand.prototype.textMaxWidth = function () {
+    return Window_TacticsLastUsedCommand.TEXT_MAX_WIDTH;
+};
+Window_TacticsLastUsedCommand.prototype.extendedWidth = function () {
+    return Window_TacticsLastUsedCommand.EXTENDED_WIDTH;
+};
+Window_TacticsLastUsedCommand.prototype.imageCacheRid = function () {
+    return Window_TacticsLastUsedCommand.IMAGE_CACHE_RID;
+};
+// #endregion =========================== Window_TacticsLastUsedCommand ============================== //
+// ============================== //
 // #region ============================== Window_TacticsMoveCommand ============================== //
 //-----------------------------------------------------------------------------
 // Window_MoveCommand
@@ -4812,16 +4890,16 @@ Window_TacticsMoveCommand.prototype.makeCommandList = function () {
     }
 };
 Window_TacticsMoveCommand.prototype.addWalkCommand = function () {
-    this.addCommand(TEW.COMBAT.SYSTEM.moveWalk, 'walk', BattleManager.canMove());
+    this.addCommand(TEW.COMBAT.SYSTEM.moveWalk, TEW.COMBAT.SYSTEM.moveWalk, BattleManager.canMove());
 };
 Window_TacticsMoveCommand.prototype.addRunCommand = function () {
-    this.addCommand(TEW.COMBAT.SYSTEM.moveRun, 'run', BattleManager.canRun());
+    this.addCommand(TEW.COMBAT.SYSTEM.moveRun, TEW.COMBAT.SYSTEM.moveRun, BattleManager.canRun());
 };
 Window_TacticsMoveCommand.prototype.addChargeCommand = function () {
-    this.addCommand(TEW.COMBAT.SYSTEM.moveCharge, 'charge', BattleManager.canRun());
+    this.addCommand(TEW.COMBAT.SYSTEM.moveCharge, TEW.COMBAT.SYSTEM.moveCharge, BattleManager.canRun());
 };
 Window_TacticsMoveCommand.prototype.addSwitchWeaponCommand = function () {
-    this.addCommand(TEW.COMBAT.SYSTEM.moveSwitchWeapon, 'switchWeapon', BattleManager.canMove());
+    this.addCommand(TEW.COMBAT.SYSTEM.moveSwitchWeapon, TEW.COMBAT.SYSTEM.moveSwitchWeapon, BattleManager.canMove());
 };
 Window_TacticsMoveCommand.prototype.select = function (index) {
     Window_ActorCommand.prototype.select.call(this, index);
@@ -5284,16 +5362,16 @@ Window_TacticsCommand.prototype.select = function (index) {
     }
 };
 Window_TacticsCommand.prototype.addMoveCommand = function () {
-    this.addCommand(TEW.COMBAT.SYSTEM.move, 'move', BattleManager.canMove());
+    this.addCommand(TEW.COMBAT.SYSTEM.move, TEW.COMBAT.SYSTEM.move, BattleManager.canMove());
 };
 Window_TacticsCommand.prototype.addActionCommand = function () {
-    this.addCommand(TEW.COMBAT.SYSTEM.action, 'action', true);
+    this.addCommand(TEW.COMBAT.SYSTEM.action, TEW.COMBAT.SYSTEM.action, true);
 };
 Window_TacticsCommand.prototype.addAdvantageCommand = function () {
-    this.addCommand(TEW.COMBAT.SYSTEM.advantage, 'advantage', false);
+    this.addCommand(TEW.COMBAT.SYSTEM.advantage, TEW.COMBAT.SYSTEM.advantage, false);
 };
 Window_TacticsCommand.prototype.addWaitCommand = function () {
-    this.addCommand(TEW.COMBAT.SYSTEM.wait, 'wait', true);
+    this.addCommand(TEW.COMBAT.SYSTEM.wait, TEW.COMBAT.SYSTEM.wait, true);
 };
 Window_TacticsCommand.prototype.xPos = function () {
     return Window_TacticsCommand.X_POS;
@@ -6493,15 +6571,15 @@ Scene_Battle.prototype.createEnemyWindow = function () {
 };
 Scene_Battle.prototype.createActorCommandWindow = function () {
     this._tacticsCommandWindow = new Window_TacticsCommand();
-    this._tacticsCommandWindow.setHandler('move', this.commandMove.bind(this));
-    this._tacticsCommandWindow.setHandler('action', this.commandAction.bind(this));
+    this._tacticsCommandWindow.setHandler(TEW.COMBAT.SYSTEM.move, this.commandMove.bind(this));
+    this._tacticsCommandWindow.setHandler(TEW.COMBAT.SYSTEM.action, this.commandAction.bind(this));
     // this._tacticsCommandWindow.setHandler('attack', this.commandAttack.bind(this));
     // this._tacticsCommandWindow.setHandler('skill',  this.commandSkill.bind(this));
     // this._tacticsCommandWindow.setHandler('guard',  this.commandGuard.bind(this));
     // this._tacticsCommandWindow.setHandler('item',   this.commandItem.bind(this));
     // this._tacticsCommandWindow.setHandler('event',  this.commandEvent.bind(this));
     // this._tacticsCommandWindow.setHandler('cancel', this.selectPreviousCommand.bind(this));
-    this._tacticsCommandWindow.setHandler('wait', this.commandWait.bind(this));
+    this._tacticsCommandWindow.setHandler(TEW.COMBAT.SYSTEM.wait, this.commandWait.bind(this));
     this.addWindow(this._tacticsCommandWindow);
 };
 Scene_Battle.prototype.createHelpWindow = function () {
@@ -6562,10 +6640,10 @@ Scene_Battle.prototype.createStatusWindow = function () {
 };
 Scene_Battle.prototype.createMoveCommandWindow = function () {
     this._moveCommandWindow = new Window_TacticsMoveCommand();
-    this._moveCommandWindow.setHandler('walk', this.commandWalk.bind(this));
-    this._moveCommandWindow.setHandler('run', this.commandRun.bind(this));
-    this._moveCommandWindow.setHandler('charge', this.commandCharge.bind(this));
-    this._moveCommandWindow.setHandler('switchWeapon', this.commandSwitchWeapon.bind(this));
+    this._moveCommandWindow.setHandler(TEW.COMBAT.SYSTEM.moveWalk, this.commandWalk.bind(this));
+    this._moveCommandWindow.setHandler(TEW.COMBAT.SYSTEM.moveRun, this.commandRun.bind(this));
+    this._moveCommandWindow.setHandler(TEW.COMBAT.SYSTEM.moveCharge, this.commandCharge.bind(this));
+    this._moveCommandWindow.setHandler(TEW.COMBAT.SYSTEM.moveSwitchWeapon, this.commandSwitchWeapon.bind(this));
     this._moveCommandWindow.setHandler('cancel', () => {
         $gameMap.clearTiles();
         $gameMap._flexibleMovement = true; // Go back to free movement range if charge was selected
@@ -6579,9 +6657,9 @@ Scene_Battle.prototype.createMoveCommandWindow = function () {
 };
 Scene_Battle.prototype.createActionCommandWindow = function () {
     this._actionCommandWindow = new Window_TacticsActionCommand();
-    this._actionCommandWindow.setHandler('attack', this.commandAttack.bind(this));
-    this._actionCommandWindow.setHandler('spell', this.commandSpell.bind(this));
-    this._actionCommandWindow.setHandler('channelling', this.commandChannelling.bind(this));
+    this._actionCommandWindow.setHandler(TEW.COMBAT.SYSTEM.actionAttack, this.commandAttack.bind(this));
+    this._actionCommandWindow.setHandler(TEW.COMBAT.SYSTEM.actionSpell, this.commandSpell.bind(this));
+    this._actionCommandWindow.setHandler(TEW.COMBAT.SYSTEM.actionChannelling, this.commandChannelling.bind(this));
     this._actionCommandWindow.setHandler('cancel', () => {
         $gameMap.clearTiles();
         this._tacticsCommandWindow.extend();

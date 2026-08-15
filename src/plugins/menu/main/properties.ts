@@ -28,6 +28,12 @@ TEW.MENU.COMMAND_NAMES[51] = "Skills";
 TEW.MENU.COMMAND_NAMES[52] = "Talents";
 TEW.MENU.COMMAND_NAMES[53] = "Spells";
 TEW.MENU.COMMAND_NAMES[54] = "Cast";
+TEW.MENU.COMMAND_NAMES[55] = "Confirm";
+TEW.MENU.COMMAND_NAMES[56] = "Discard";
+TEW.MENU.COMMAND_NAMES[57] = "Back";
+TEW.MENU.COMMAND_NAMES[58] = "Level up";
+TEW.MENU.COMMAND_NAMES[59] = "XP left";
+TEW.MENU.COMMAND_NAMES[60] = "Spent";
 
 // Inventory Menu
 TEW.MENU.COMMAND_NAMES[70] = "InventoryNextChar";
@@ -88,6 +94,10 @@ TextManager.command = function(commandId: number) {
 Input.keyMapper[65] = "A_Key";
 Input.keyMapper[69] = "E_Key";
 
+// Levelling mode is toggled from the status menu with the A key
+TEW.MENU.LEVEL_UP_KEY = "A_Key";
+TEW.MENU.LEVEL_UP_KEY_LABEL = "A";
+
 
 // Windows TODO move
 TEW.MENU.INVENTORY_WINDOW_TOPBAR_HEIGHT = 72;
@@ -113,6 +123,12 @@ Object.defineProperties(TextManager, {
     statusTalents :             TextManager.getter('command', 52),
     statusSpells :              TextManager.getter('command', 53),
     statusCastSpell :           TextManager.getter('command', 54),
+    statusLevellingConfirm :    TextManager.getter('command', 55),
+    statusLevellingDiscard :    TextManager.getter('command', 56),
+    statusLevellingBack :       TextManager.getter('command', 57),
+    statusLevelUp :             TextManager.getter('command', 58),
+    statusExpLeft :             TextManager.getter('command', 59),
+    statusExpSpent :            TextManager.getter('command', 60),
 
     // Inventory Menu
     inventoryNextChar :         TextManager.getter('command', 70),

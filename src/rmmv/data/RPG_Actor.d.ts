@@ -9,8 +9,7 @@ interface DataActor
 	equips:number[];
 	faceIndex:number;
 	faceName:string;
-	initialLevel:number;
-	maxLevel:number;
+	exp:number;
 	name:string;
 	nickname:string;
 	note:string;

@@ -381,6 +381,12 @@ Window_Dice.prototype.update = function () {
 };
 // #endregion =========================== Window_Dice ============================== //
 // ============================== //
+// #region ============================== Game_Player ============================== //
+Game_Player.prototype.canEncounter = function () {
+    return false;
+};
+// #endregion =========================== Game_Player ============================== //
+// ============================== //
 // #region ============================== Graphics ============================== //
 Graphics._createGameFontLoader = function () {
     this._createFontLoader('GameFont');
@@ -395,12 +401,89 @@ Game_Actor.prototype.initialize = function (actorId) {
     this.setup(actorId);
     this.initTEW(actorId);
 };
+Game_Actor.prototype.setup = function (actorId) {
+    var actor = $dataActors[actorId];
+    this._actorId = actorId;
+    this._name = actor.name;
+    this._nickname = actor.nickname;
+    this._exp = actor.exp || 0; // TODO ?
+    // this._profile = actor.profile;
+    // this._classId = actor.classId;
+    // this._level = actor.initialLevel;
+    this.initImages();
+    // this.initExp();
+    // this.initSkills();
+    // this.initEquips(actor.equips);
+    this.clearParamPlus();
+    this.recoverAll();
+};
+Game_Actor.prototype.initMembers = function () {
+    Game_Battler.prototype.initMembers.call(this);
+    this._actorId = 0;
+    this._name = '';
+    this._nickname = '';
+    this._classId = 1; // TODO
+    this._level = 0;
+    this._characterName = '';
+    this._characterIndex = 0;
+    this._faceName = '';
+    this._faceIndex = 0;
+    this._battlerName = '';
+    this._exp = 0;
+    // this._skills = [];
+    this._equips = []; // TODO remove
+    this._actionInputIndex = 0;
+    // this._lastMenuSkill = new Game_Item();
+    // this._lastBattleSkill = new Game_Item();
+    // this._lastCommandSymbol = '';
+};
 Game_Actor.prototype.paramBase = function (paramId) {
     return this._paramBase[paramId];
 };
 Game_Actor.prototype.paramPlus = function (paramId) {
     return Game_Battler.prototype.paramPlus.call(this, paramId);
 };
+// #region ============================== Levelling ============================== //
+// Experience points still available to buy advances
+Game_Actor.prototype.availableExp = function () {
+    return this._exp;
+};
+// Consuming experience points. Callers are expected to check availableExp() beforehand
+Game_Actor.prototype.spendExp = function (amount) {
+    this._exp -= amount;
+};
+// Number of advances already bought for a characteristic (base values are not advances)
+Game_Actor.prototype.statAdvances = function (paramId) {
+    return this.paramPlus(paramId);
+};
+// Number of advances already bought for a competence (competences have no base value)
+Game_Actor.prototype.compAdvances = function (compId) {
+    return this.compPlus(compId);
+};
+// Experience cost of the next characteristic advance
+Game_Actor.prototype.nextStatAdvanceCost = function (paramId) {
+    return TEW.LEVELLING.characteristicCost(this.statAdvances(paramId));
+};
+// Experience cost of the next competence advance
+Game_Actor.prototype.nextCompAdvanceCost = function (compId) {
+    return TEW.LEVELLING.competenceCost(this.compAdvances(compId));
+};
+// Buying characteristic advances. Max wounds are derived from stats and must be recomputed
+Game_Actor.prototype.applyStatAdvances = function (paramId, advances) {
+    if (advances <= 0) {
+        return;
+    }
+    this.addParam(paramId, advances);
+    this._paramBase[0] = this.calculateMHP();
+};
+// Buying competence advances
+Game_Actor.prototype.applyCompAdvances = function (compId, advances) {
+    if (advances <= 0) {
+        return;
+    }
+    this.addComp(compId, advances);
+};
+// #endregion =========================== Levelling ============================== //
 Game_Actor.prototype.initTEW = function (actorId) {
     switch (actorId) {
         case 1: // Cecile
@@ -499,6 +582,8 @@ Game_Actor.prototype.initCecile = function () {
     this.addAmmo('BOLT', 20);
     // conditions
     this.addCondition("ABLAZE", 3);
+    // XP
+    this._exp = 500;
 };
 // Initialization function for Cheplu
 Game_Actor.prototype.initCheplu = function () {
@@ -678,7 +763,6 @@ Game_Actor.prototype.initGalaandril = function () {
     // armors
     // ammo
 };
-
 // #endregion =========================== Init TEW ============================== //
 // #endregion =========================== Game_Actor ============================== //
 // ============================== //
@@ -1145,7 +1229,7 @@ Game_BattlerBase.prototype.applyConditionsOnTurnStart = function () {
 Game_BattlerBase.prototype.totalConditionModifier = function (compId = 'NONE') {
     return Object.keys(this._conditions)
         .map(conditionId => TEW.DATABASE.CONDITIONS[conditionId].testModifier)
-        .filter(testModifier => (testModifier === null || testModifier === void 0 ? void 0 : testModifier.comps) === undefined || (testModifier === null || testModifier === void 0 ? void 0 : testModifier.comps.includes(compId)))
+        .filter(testModifier => testModifier && (testModifier.comps === undefined || testModifier.comps.includes(compId)))
         .reduce((acc, testModifier) => acc + testModifier.mod, 0);
 };
 Game_BattlerBase.prototype.isActionBlockedByCondition = function () {
