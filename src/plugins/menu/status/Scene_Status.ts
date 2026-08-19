@@ -14,7 +14,7 @@
 import Window_StatusCommand from "./Window_StatusCommand";
 import Window_StatusCompetences from "./competences/Window_StatusCompetences";
 import Window_StatusSpells from "./spells/Window_StatusSpells";
-import Window_StatusStats from "./Window_StatusStats";
+import Window_StatusStats from "./stats/Window_StatusStats";
 import Window_StatusTalents from "./talents/Window_StatusTalents";
 import Window_StatusSpellCommand from "./spells/Window_StatusSpellCommand";
 import Window_StatusSpellDetails from "./spells/Window_StatusSpellDetails";
@@ -202,14 +202,24 @@ Scene_Status.prototype.createCommandWindow = function() {
 Scene_Status.prototype.createStatsWindow = function() {
     this._statsWindow = new Window_StatusStats();
     this._statsWindow.reserveFaceImages();
+    this._statsWindow.setHandler('cancel', () => {
+        this._commandWindow.activate();
+        this._statsWindow.deselect();
+    });
+    this._statsWindow.setHandler('levelling_change', () => {
+        this._commandWindow.refresh();
+    });
+    this._statsWindow.setLevelling(this._levelling);
     this.addWindow(this._statsWindow);
 };
 
 // Activating the stats window
-Scene_Status.prototype.activateStatusStats = function() {
+Scene_Status.prototype.activateStatusStats = function(index:number = 0) {
     this.hideAllWindows();
     this._statsWindow.show();
-    this._commandWindow.activate();
+    this._commandWindow.deactivate();
+    this._statsWindow.activate();
+    this._statsWindow.select(index);
     this._statsWindow.refresh();
 };
 // #endregion === Stats window === //
@@ -462,6 +472,7 @@ Scene_Status.prototype.refreshLevellingWindows = function() {
     this._commandWindow.refresh();
     this._competencesWindow.setLevellingMode(this._levellingMode);
     this._competencesWindow.refresh();
+    this._statsWindow.setLevellingMode(this._levellingMode);
     this._statsWindow.refresh();
 };
 
@@ -485,6 +496,7 @@ Scene_Status.prototype.requestLevellingExit = function(popOnResolve: boolean) {
 Scene_Status.prototype.activeStatusWindow = function() {
     const windows = [
         this._commandWindow,
+        this._statsWindow,
         this._competencesWindow,
         this._talentsWindow,
         this._spellsWindow,

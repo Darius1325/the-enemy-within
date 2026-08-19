@@ -72,9 +72,17 @@ If levelling mode is exited with spent experience > 0, it should prompt for conf
 
 The player should be able to navigate between the four windows of the status menu in levelling mode. However, quitting the menu altogether (i.e. cancelling while the topbar is active) should be treated as exiting levelling mode and prompt for confirmation accordingly.
 
+### Stat augment
+
+In `Window_StatusStats`, the window should become selectable.
+Levelling mode should color the value of all stats that can be augmented in blue (`textColor(1)`).
+When the cursor is placed on a given stat, using right of left arrow will change the new value to assign, and consume/refund experience points to match.
+It is impossible to go under the current value, or to go above available experience points.
+When a competence's displayed value is higher than the current value (expected to level up), it should be colored green.
+
 ### Competence augment
 
-In `Window_StatusCompetences`, levelling mode should color the value of all competences that can be augmented (using `systemColor()`).
+In `Window_StatusCompetences`, levelling mode should color the value of all competences that can be augmented in blue (`textColor(1)`).
 When the cursor is placed on a given competence, using right of left arrow will change the new value to assign, and consume/refund experience points to match.
 It is impossible to go under the current value, or to go above available experience points.
 When a competence's displayed value is higher than the current value (expected to level up), it should be colored green.

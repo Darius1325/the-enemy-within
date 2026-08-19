@@ -12,7 +12,7 @@ import Window_Journals from "./journals/Window_Journals";
 import Window_StatusCommand from "./status/Window_StatusCommand";
 import Window_StatusLevellingConfirm from "./status/Window_StatusLevellingConfirm";
 import Window_StatusLevellingSummary from "./status/Window_StatusLevellingSummary";
-import Window_StatusStats from "./status/Window_StatusStats";
+import Window_StatusStats from "./status/stats/Window_StatusStats";
 import Window_StatusTalentDetails from "./status/talents/Window_StatusTalentDetails";
 import Window_StatusTalents from "./status/talents/Window_StatusTalents";
 

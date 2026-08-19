@@ -173,7 +173,7 @@ Window_StatusCompetences.prototype.isLevellingMode = function() {
 };
 
 /**
- * Green when advances are about to be bought, highlighted when they can be, plain otherwise.
+ * Green when advances are about to be bought, blue when they can be, plain otherwise.
  */
 Window_StatusCompetences.prototype.competenceLevelColor = function(compId: string) {
     if (!this.isLevellingMode()) {
@@ -183,7 +183,7 @@ Window_StatusCompetences.prototype.competenceLevelColor = function(compId: strin
         return this.powerUpColor();
     }
     if (this._levelling.canIncreaseComp(compId)) {
-        return this.systemColor();
+        return this.levellingColor();
     }
     return this.normalColor();
 };

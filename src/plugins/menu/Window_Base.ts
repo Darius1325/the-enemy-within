@@ -212,6 +212,10 @@ Window_Base.prototype.whiteColor = function() {
 Window_Base.prototype.normalColor = function() {
     return this.textColor(15);
 };
+// Colour of a value which can be augmented while levelling mode is active
+Window_Base.prototype.levellingColor = function() {
+    return this.textColor(1);
+};
 
 Window_Base.prototype.resetTextColor = function() {
     this.changeTextColor(this.normalColor());

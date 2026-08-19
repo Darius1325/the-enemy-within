@@ -29,6 +29,7 @@ import { CharacterDescription } from "./characterDescription";
 import { JournalDocument } from "./journalDocument";
 import { Critical } from "./critical";
 import { Condition } from "./condition";
+import { Career, CareerPath } from "./career";
 
 /** Storage object for all TEW plugins */
 const TEW: {
@@ -115,6 +116,18 @@ const TEW: {
             /** Decoupled map of talents */
             ARRAY?: [string, Talent][];
         };
+
+        /** Pursuable careers */
+        CAREERS?: {
+            /** All career paths by ID, each holding its four levels in order */
+            PATHS?: Record<string, CareerPath>;
+            /** All careers by ID, an ID being a path ID and a level (APOTHECARY_1) */
+            SET?: Record<string, Career>;
+            /** Career path IDs */
+            PATH_IDS?: string[];
+            /** Career IDs */
+            IDS?: string[];
+        }
 
         /** Relevant data for NPCs */
         NPCS?: {

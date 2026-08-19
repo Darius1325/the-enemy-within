@@ -2896,7 +2896,7 @@ Window_StatusCompetences.prototype.isLevellingMode = function () {
     return !!this._levellingMode && !!this._levelling && !!this._actor;
 };
 /**
- * Green when advances are about to be bought, highlighted when they can be, plain otherwise.
+ * Green when advances are about to be bought, blue when they can be, plain otherwise.
  */
 Window_StatusCompetences.prototype.competenceLevelColor = function (compId) {
     if (!this.isLevellingMode()) {
@@ -2906,7 +2906,7 @@ Window_StatusCompetences.prototype.competenceLevelColor = function (compId) {
         return this.powerUpColor();
     }
     if (this._levelling.canIncreaseComp(compId)) {
-        return this.systemColor();
+        return this.levellingColor();
     }
     return this.normalColor();
 };
@@ -3102,13 +3102,23 @@ Scene_Status.prototype.createCommandWindow = function () {
 Scene_Status.prototype.createStatsWindow = function () {
     this._statsWindow = new Window_StatusStats();
     this._statsWindow.reserveFaceImages();
+    this._statsWindow.setHandler('cancel', () => {
+        this._commandWindow.activate();
+        this._statsWindow.deselect();
+    });
+    this._statsWindow.setHandler('levelling_change', () => {
+        this._commandWindow.refresh();
+    });
+    this._statsWindow.setLevelling(this._levelling);
     this.addWindow(this._statsWindow);
 };
 // Activating the stats window
-Scene_Status.prototype.activateStatusStats = function () {
+Scene_Status.prototype.activateStatusStats = function (index = 0) {
     this.hideAllWindows();
     this._statsWindow.show();
-    this._commandWindow.activate();
+    this._commandWindow.deactivate();
+    this._statsWindow.activate();
+    this._statsWindow.select(index);
     this._statsWindow.refresh();
 };
 // #endregion === Stats window === //
@@ -3344,6 +3354,7 @@ Scene_Status.prototype.refreshLevellingWindows = function () {
     this._commandWindow.refresh();
     this._competencesWindow.setLevellingMode(this._levellingMode);
     this._competencesWindow.refresh();
+    this._statsWindow.setLevellingMode(this._levellingMode);
     this._statsWindow.refresh();
 };
 /**
@@ -3365,6 +3376,7 @@ Scene_Status.prototype.requestLevellingExit = function (popOnResolve) {
 Scene_Status.prototype.activeStatusWindow = function () {
     const windows = [
         this._commandWindow,
+        this._statsWindow,
         this._competencesWindow,
         this._talentsWindow,
         this._spellsWindow,
@@ -3568,6 +3580,223 @@ Window_StatusSpells.prototype.processOk = function () {
     }
 };
 // #endregion =========================== Window_StatusSpells ============================== //
+// ============================== //
+// #region ============================== Window_StatusStats ============================== //
+// ----------------------
+// -----------------------------------------------------------------------------
+// Window_StatusStats
+//
+// Character stats window
+function Window_StatusStats() {
+    this.initialize.apply(this, arguments);
+}
+// Max wounds are derived from other characteristics, so the list starts at the second param
+Window_StatusStats.FIRST_PARAM_ID = 1;
+Window_StatusStats.STATS_PER_COLUMN = 5;
+Window_StatusStats.COLUMN_COUNT = 2;
+Window_StatusStats.COLUMNS_X = [48, 432];
+Window_StatusStats.NAME_COLUMN_WIDTH = 160;
+Window_StatusStats.VALUE_COLUMN_WIDTH = 60;
+// Line, in TEW.MENU.LINE_HEIGHT units, on which the first characteristic of each column is drawn
+Window_StatusStats.STATS_FIRST_LINE = 8;
+Window_StatusStats.SEPARATOR_LINE = 7;
+// Horizontal room left around a characteristic for the selection cursor
+Window_StatusStats.CURSOR_PADDING = 8;
+Window_StatusStats.BASIC_INFO_WIDTH = 186;
+Window_StatusStats.prototype = Object.create(Window_Status.prototype);
+Window_StatusStats.prototype.constructor = Window_StatusStats;
+Window_StatusStats.prototype.initialize = function () {
+    this._levelling = null;
+    this._levellingMode = false;
+    Window_Status.prototype.initialize.call(this);
+};
+Window_StatusStats.prototype.setActor = function (actor) {
+    if (this._actor !== actor) {
+        this._actor = actor;
+        this._bgSprite = new Sprite(ImageManager.loadSystem("bg_menuStats_" + actor.name()));
+        this.addChildAt(this._bgSprite, 0);
+        this.refresh();
+    }
+};
+// #region ====== Layout === //
+/**
+ * Characteristics are navigated column by column, so that the horizontal arrows stay free
+ * for levelling mode.
+ */
+Window_StatusStats.prototype.maxCols = () => 1;
+Window_StatusStats.prototype.maxItems = function () {
+    return Window_StatusStats.STATS_PER_COLUMN * Window_StatusStats.COLUMN_COUNT;
+};
+/**
+ * Param number of the characteristic displayed at the given index.
+ */
+Window_StatusStats.prototype.paramFromIndex = function (index) {
+    return index + Window_StatusStats.FIRST_PARAM_ID;
+};
+Window_StatusStats.prototype.statX = function (index) {
+    return Window_StatusStats.COLUMNS_X[Math.floor(index / Window_StatusStats.STATS_PER_COLUMN)];
+};
+Window_StatusStats.prototype.statY = function (index) {
+    const line = Window_StatusStats.STATS_FIRST_LINE + index % Window_StatusStats.STATS_PER_COLUMN;
+    return TEW.MENU.LINE_HEIGHT * line;
+};
+/**
+ * The two columns are hardcoded, so the selection cursor is placed on them rather than on the
+ * rows a single-column list would compute.
+ */
+Window_StatusStats.prototype.itemRect = function (index) {
+    return new Rectangle(this.statX(index) - Window_StatusStats.CURSOR_PADDING, this.statY(index), Window_StatusStats.NAME_COLUMN_WIDTH
+        + Window_StatusStats.VALUE_COLUMN_WIDTH
+        + Window_StatusStats.CURSOR_PADDING * 2, this.lineHeight());
+};
+// #endregion === Layout === //
+// === //
+// #region ====== Drawing === //
+Window_StatusStats.prototype.drawAllItems = function () {
+    this.drawCharacterInfo(1);
+    this.drawHorzLine(TEW.MENU.LINE_HEIGHT * Window_StatusStats.SEPARATOR_LINE);
+    this.drawStats();
+};
+Window_StatusStats.prototype.drawCharacterInfo = function (y) {
+    this.drawActorName(this._actor, 6, y);
+    this.drawActorClass(this._actor, 192, y);
+    this.drawHorzLine(y + TEW.MENU.LINE_HEIGHT);
+    this.drawActorFace(this._actor, 12, y + TEW.MENU.LINE_HEIGHT * 2);
+    this.drawBasicInfo(204, y + TEW.MENU.LINE_HEIGHT * 2);
+};
+Window_StatusStats.prototype.drawBasicInfo = function (x, y) {
+    var lineHeight = this.lineHeight();
+    this.drawActorHp(this._actor, x, y + lineHeight * 0);
+    this.drawActorExp(this._actor, x, y + lineHeight * 1);
+    this.drawActorFate(this._actor, x, y + lineHeight * 2);
+    this.drawActorResilience(this._actor, x, y + lineHeight * 3);
+};
+Window_StatusStats.prototype.drawActorHp = function (actor, x, y) {
+    const width = Window_StatusStats.BASIC_INFO_WIDTH;
+    const color1 = this.hpGaugeColor1();
+    const color2 = this.normalColor();
+    this.drawGauge(x, y, width, actor.hpRate(), color1, color2);
+    this.drawCurrentOverMax(actor.hp, actor.mhp, x, y, width, color1, color2, TextManager.hpA);
+};
+Window_StatusStats.prototype.drawActorExp = function (actor, x, y) {
+    const width = Window_StatusStats.BASIC_INFO_WIDTH;
+    // While levelling, pending advances are already deducted, as in the topbar indicator
+    const exp = this.isLevellingMode() ? this._levelling.remainingExp() : actor.availableExp();
+    const valueWidth = this.textWidth(exp);
+    this.changeTextColor(this.systemColor());
+    this.drawText(TextManager.expA, x, y, 48);
+    this.resetTextColor();
+    this.drawText(exp, x + width - valueWidth, y, valueWidth, 'right');
+};
+Window_StatusStats.prototype.drawActorFate = function (actor, x, y) {
+    const width = Window_StatusStats.BASIC_INFO_WIDTH;
+    this.drawCurrentOverMax(actor._fortune, actor._fate, x, y, width, this.normalColor(), this.normalColor(), 'FATE'); // TODO
+};
+Window_StatusStats.prototype.drawActorResilience = function (actor, x, y) {
+    const width = Window_StatusStats.BASIC_INFO_WIDTH;
+    this.drawCurrentOverMax(actor._resolve, actor._resilience, x, y, width, this.normalColor(), this.normalColor(), 'RESIL'); // TODO
+};
+Window_StatusStats.prototype.drawStats = function () {
+    for (let index = 0; index < this.maxItems(); index++) {
+        this.drawItem(index);
+    }
+};
+/**
+ * Draws one characteristic, including the advances about to be bought in levelling mode.
+ */
+Window_StatusStats.prototype.drawItem = function (index) {
+    const paramId = this.paramFromIndex(index);
+    const x = this.statX(index);
+    const y = this.statY(index);
+    // Characteristic name
+    this.changeTextColor(this.systemColor());
+    this.drawText(TextManager.param(paramId), x, y, Window_StatusStats.NAME_COLUMN_WIDTH);
+    // Characteristic value
+    this.changeTextColor(this.statValueColor(paramId));
+    this.drawText(this.statValue(paramId), x + Window_StatusStats.NAME_COLUMN_WIDTH, y, Window_StatusStats.VALUE_COLUMN_WIDTH, 'right');
+    this.resetTextColor();
+};
+// #endregion === Drawing === //
+// === //
+// #region ====== Levelling mode === //
+/**
+ * Links the window to the levelling session holding the pending advances.
+ */
+Window_StatusStats.prototype.setLevelling = function (levelling) {
+    this._levelling = levelling;
+    this.refresh();
+};
+/**
+ * Enters or leaves levelling mode.
+ */
+Window_StatusStats.prototype.setLevellingMode = function (active) {
+    if (this._levellingMode !== active) {
+        this._levellingMode = active;
+        this.refresh();
+    }
+};
+Window_StatusStats.prototype.isLevellingMode = function () {
+    return !!this._levellingMode && !!this._levelling && !!this._actor;
+};
+/**
+ * Displayed value of a characteristic, including the advances about to be bought.
+ */
+Window_StatusStats.prototype.statValue = function (paramId) {
+    return this.isLevellingMode()
+        ? this._levelling.statValue(paramId)
+        : this._actor.param(paramId);
+};
+/**
+ * Green when advances are about to be bought, blue when they can be, plain otherwise.
+ */
+Window_StatusStats.prototype.statValueColor = function (paramId) {
+    if (!this.isLevellingMode()) {
+        return this.normalColor();
+    }
+    if (this._levelling.statAdvances(paramId) > 0) {
+        return this.powerUpColor();
+    }
+    if (this._levelling.canIncreaseStat(paramId)) {
+        return this.levellingColor();
+    }
+    return this.normalColor();
+};
+/**
+ * In levelling mode, the horizontal arrows buy and refund advances. Columns are navigated with
+ * the vertical arrows, so nothing becomes unreachable.
+ */
+Window_StatusStats.prototype.cursorRight = function (wrap) {
+    if (this.isLevellingMode() && this.index() >= 0) {
+        this.changeStat(true);
+    }
+    else {
+        Window_Status.prototype.cursorRight.call(this, wrap);
+    }
+};
+Window_StatusStats.prototype.cursorLeft = function (wrap) {
+    if (this.isLevellingMode() && this.index() >= 0) {
+        this.changeStat(false);
+    }
+    else {
+        Window_Status.prototype.cursorLeft.call(this, wrap);
+    }
+};
+/**
+ * Buys or refunds one advance on the selected characteristic.
+ */
+Window_StatusStats.prototype.changeStat = function (increase) {
+    const paramId = this.paramFromIndex(this.index());
+    const changed = increase
+        ? this._levelling.increaseStat(paramId)
+        : this._levelling.decreaseStat(paramId);
+    if (changed) {
+        SoundManager.playCursor();
+        this.refresh();
+        this.callHandler('levelling_change');
+    }
+};
+// #endregion === Levelling mode === //
+// #endregion =========================== Window_StatusStats ============================== //
 // ============================== //
 // #region ============================== Window_StatusTalentDetails ============================== //
 // ----------------------
@@ -3863,85 +4092,6 @@ Window_StatusCommand.prototype.drawExperienceCounters = function (x, width) {
 // #endregion === Levelling indicator === //
 // #endregion =========================== Window_StatusCommand ============================== //
 // ============================== //
-// #region ============================== Window_StatusStats ============================== //
-// -----------------------------------------------------------------------------
-// Window_StatusStats
-//
-// Character stats window
-function Window_StatusStats() {
-    this.initialize.apply(this, arguments);
-}
-Window_StatusStats.prototype = Object.create(Window_Status.prototype);
-Window_StatusStats.prototype.constructor = Window_StatusStats;
-Window_StatusStats.prototype.initialize = function () {
-    Window_Status.prototype.initialize.call(this);
-};
-Window_StatusStats.prototype.setActor = function (actor) {
-    if (this._actor !== actor) {
-        this._actor = actor;
-        this._bgSprite = new Sprite(ImageManager.loadSystem("bg_menuStats_" + actor.name()));
-        this.addChildAt(this._bgSprite, 0);
-        this.refresh();
-    }
-};
-Window_StatusStats.prototype.drawAllItems = function () {
-    this.drawCharacterInfo(1);
-    this.drawHorzLine(TEW.MENU.LINE_HEIGHT * 7);
-    this.drawStats(TEW.MENU.LINE_HEIGHT * 8);
-};
-Window_StatusStats.prototype.drawCharacterInfo = function (y) {
-    this.drawActorName(this._actor, 6, y);
-    this.drawActorClass(this._actor, 192, y);
-    this.drawHorzLine(y + TEW.MENU.LINE_HEIGHT);
-    this.drawActorFace(this._actor, 12, y + TEW.MENU.LINE_HEIGHT * 2);
-    this.drawBasicInfo(204, y + TEW.MENU.LINE_HEIGHT * 2);
-};
-Window_StatusStats.prototype.drawBasicInfo = function (x, y) {
-    var lineHeight = this.lineHeight();
-    this.drawActorHp(this._actor, x, y + lineHeight * 0);
-    this.drawActorExp(this._actor, x, y + lineHeight * 1);
-    this.drawActorFate(this._actor, x, y + lineHeight * 2);
-    this.drawActorResilience(this._actor, x, y + lineHeight * 3);
-};
-Window_StatusStats.prototype.drawActorHp = function (actor, x, y) {
-    const width = 186;
-    const color1 = this.hpGaugeColor1();
-    const color2 = this.normalColor();
-    this.drawGauge(x, y, width, actor.hpRate(), color1, color2);
-    this.drawCurrentOverMax(actor.hp, actor.mhp, x, y, width, color1, color2, TextManager.hpA);
-};
-Window_StatusStats.prototype.drawActorExp = function (actor, x, y) {
-    const width = 186;
-    const valueWidth = this.textWidth(actor._exp);
-    this.changeTextColor(this.systemColor());
-    this.drawText(TextManager.expA, x, y, 48);
-    this.resetTextColor();
-    this.drawText(actor._exp, x + width - valueWidth, y, valueWidth, 'right');
-};
-Window_StatusStats.prototype.drawActorFate = function (actor, x, y) {
-    const width = 186;
-    this.drawCurrentOverMax(actor._fortune, actor._fate, x, y, width, this.normalColor(), this.normalColor(), 'FATE'); // TODO
-};
-Window_StatusStats.prototype.drawActorResilience = function (actor, x, y) {
-    const width = 186;
-    this.drawCurrentOverMax(actor._resolve, actor._resilience, x, y, width, this.normalColor(), this.normalColor(), 'RESIL'); // TODO
-};
-Window_StatusStats.prototype.drawStats = function (y) {
-    this.drawParameters(48, y, 0);
-    this.drawParameters(432, y, 5);
-};
-Window_StatusStats.prototype.drawParameters = function (x, y, offset) {
-    for (var i = 0; i < 5; i++) {
-        var paramId = i + offset + 1;
-        var y2 = y + TEW.MENU.LINE_HEIGHT * i;
-        this.changeTextColor(this.systemColor());
-        this.drawText(TextManager.param(paramId), x, y2, 160);
-        this.resetTextColor();
-        this.drawText(this._actor.param(paramId), x + 160, y2, 60, 'right');
-    }
-};
-// #endregion =========================== Window_StatusStats ============================== //
-// ============================== //
 // #region ============================== Window ============================== //
 Window.prototype.horizontalBorderPadding = function () {
     return this.padding;
@@ -4155,6 +4305,10 @@ Window_Base.prototype.whiteColor = function () {
 Window_Base.prototype.normalColor = function () {
     return this.textColor(15);
 };
+// Colour of a value which can be augmented while levelling mode is active
+Window_Base.prototype.levellingColor = function () {
+    return this.textColor(1);
+};
 Window_Base.prototype.resetTextColor = function () {
     this.changeTextColor(this.normalColor());
     this.contents.outlineWidth = 0;
@@ -4242,9 +4396,9 @@ Window_StatusStats.prototype.windowWidth = function () {
 Window_StatusStats.prototype.windowHeight = function () {
     return Graphics.boxHeight - TEW.MENU.STATUS_WINDOW_TOPBAR_HEIGHT;
 };
-// Window_StatusLevellingSummary.prototype.backgroundImageName = function() {
-//     return "bg_menuHalfWindowList";
-// };
+Window_StatusLevellingSummary.prototype.backgroundImageName = function () {
+    return "bg_menuHalfWindowList";
+};
 Window_StatusLevellingSummary.prototype.windowWidth = function () {
     return Graphics.boxWidth / 2;
 };

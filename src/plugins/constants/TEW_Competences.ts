@@ -20,7 +20,7 @@ import TEW from "../_types/tew";
 
 TEW.DATABASE.COMPS = {};
 // #region ====== COMPS SET === //
-TEW.DATABASE.COMPS.SET = { 
+TEW.DATABASE.COMPS.SET = {
     ANIMAL_CARE: {
         name: "Animal Care",
         stat: Stat.INTL,
@@ -31,6 +31,26 @@ TEW.DATABASE.COMPS.SET = {
         stat: Stat.INTL,
         isBase: false
     },
+    ANIMAL_TRAINING_DOG: {
+        name: "Animal Training (Dog)",
+        stat: Stat.INTL,
+        isBase: false
+    },
+    ANIMAL_TRAINING_HORSE: {
+        name: "Animal Training (Horse)",
+        stat: Stat.INTL,
+        isBase: false
+    },
+    ANIMAL_TRAINING_PIGEON: {
+        name: "Animal Training (Pigeon)",
+        stat: Stat.INTL,
+        isBase: false
+    },
+    ART_CALLIGRAPHY: {
+        name: "Art (Calligraphy)",
+        stat: Stat.DEXT,
+        isBase: false
+    },
     ART_CARTOGRAPHY: {
         name: "Art (Cartography)",
         stat: Stat.DEXT,
@@ -38,6 +58,11 @@ TEW.DATABASE.COMPS.SET = {
     },
     ART_ENGRAVING: {
         name: "Art (Engraving)",
+        stat: Stat.DEXT,
+        isBase: false
+    },
+    ART_ICONS: {
+        name: "Art (Icons)",
         stat: Stat.DEXT,
         isBase: false
     },
@@ -58,6 +83,11 @@ TEW.DATABASE.COMPS.SET = {
     },
     ART_WEAVING: {
         name: "Art (Weaving)",
+        stat: Stat.DEXT,
+        isBase: false
+    },
+    ART_WRITING: {
+        name: "Art (Writing)",
         stat: Stat.DEXT,
         isBase: false
     },
@@ -166,13 +196,43 @@ TEW.DATABASE.COMPS.SET = {
         stat: Stat.FELW,
         isBase: false
     },
+    ENTERTAIN_FORTUNE_TELLING: {
+        name: "Entertain (Fortune Telling)",
+        stat: Stat.FELW,
+        isBase: false
+    },
+    ENTERTAIN_LECTURE: {
+        name: "Entertain (Lecture)",
+        stat: Stat.FELW,
+        isBase: false
+    },
+    ENTERTAIN_PROPHECY: {
+        name: "Entertain (Prophecy)",
+        stat: Stat.FELW,
+        isBase: false
+    },
+    ENTERTAIN_RHETORIC: {
+        name: "Entertain (Rhetoric)",
+        stat: Stat.FELW,
+        isBase: false
+    },
     ENTERTAIN_SINGING: {
         name: "Entertain (Singing)",
         stat: Stat.FELW,
         isBase: false
     },
+    ENTERTAIN_SPEECHES: {
+        name: "Entertain (Speeches)",
+        stat: Stat.FELW,
+        isBase: false
+    },
     ENTERTAIN_STORYTELLING: {
         name: "Entertain (Storytelling)",
+        stat: Stat.FELW,
+        isBase: false
+    },
+    ENTERTAIN_TAUNT: {
+        name: "Entertain (Taunt)",
         stat: Stat.FELW,
         isBase: false
     },
@@ -231,6 +291,11 @@ TEW.DATABASE.COMPS.SET = {
         stat: Stat.INTL,
         isBase: false
     },
+    LANGUAGE_ESTALIAN: {
+        name: "Language (Estalian)",
+        stat: Stat.INTL,
+        isBase: false
+    },
     LANGUAGE_GUILDER: {
         name: "Language (Guilder)",
         stat: Stat.INTL,
@@ -251,6 +316,16 @@ TEW.DATABASE.COMPS.SET = {
         stat: Stat.INTL,
         isBase: false
     },
+    LANGUAGE_THIEF: {
+        name: "Language (Thief)",
+        stat: Stat.INTL,
+        isBase: false
+    },
+    LANGUAGE_TILEAN: {
+        name: "Language (Tilean)",
+        stat: Stat.INTL,
+        isBase: false
+    },
     LANGUAGE_WASTELANDER: {
         name: "Language (Wastelander)",
         stat: Stat.INTL,
@@ -261,8 +336,28 @@ TEW.DATABASE.COMPS.SET = {
         stat: Stat.FELW,
         isBase: true
     },
+    LORE_ANATOMY: {
+        name: "Lore (Anatomy)",
+        stat: Stat.INTL,
+        isBase: false
+    },
+    LORE_ART: {
+        name: "Lore (Art)",
+        stat: Stat.INTL,
+        isBase: false
+    },
+    LORE_ASTROLOGY: {
+        name: "Lore (Astrology)",
+        stat: Stat.INTL,
+        isBase: false
+    },
     LORE_BEASTS: {
         name: "Lore (Beasts)",
+        stat: Stat.INTL,
+        isBase: false
+    },
+    LORE_CHAOS: {
+        name: "Lore (Chaos)",
         stat: Stat.INTL,
         isBase: false
     },
@@ -271,8 +366,18 @@ TEW.DATABASE.COMPS.SET = {
         stat: Stat.INTL,
         isBase: false
     },
+    LORE_DARK_MAGIC: {
+        name: "Lore (Dark Magic)",
+        stat: Stat.INTL,
+        isBase: false
+    },
     LORE_DEMONOLOGY: {
         name: "Lore (Demonology)",
+        stat: Stat.INTL,
+        isBase: false
+    },
+    LORE_DRAGONS: {
+        name: "Lore (Dragons)",
         stat: Stat.INTL,
         isBase: false
     },
@@ -283,6 +388,36 @@ TEW.DATABASE.COMPS.SET = {
     },
     LORE_ENGINEERING: {
         name: "Lore (Engineering)",
+        stat: Stat.INTL,
+        isBase: false
+    },
+    LORE_ETIQUETTE: {
+        name: "Lore (Etiquette)",
+        stat: Stat.INTL,
+        isBase: false
+    },
+    LORE_FOLKLORE: {
+        name: "Lore (Folklore)",
+        stat: Stat.INTL,
+        isBase: false
+    },
+    LORE_GENEALOGY: {
+        name: "Lore (Genealogy)",
+        stat: Stat.INTL,
+        isBase: false
+    },
+    LORE_GEOGRAPHY: {
+        name: "Lore (Geography)",
+        stat: Stat.INTL,
+        isBase: false
+    },
+    LORE_GEOLOGY: {
+        name: "Lore (Geology)",
+        stat: Stat.INTL,
+        isBase: false
+    },
+    LORE_GIANTS: {
+        name: "Lore (Giants)",
         stat: Stat.INTL,
         isBase: false
     },
@@ -303,6 +438,11 @@ TEW.DATABASE.COMPS.SET = {
     },
     LORE_LAW: {
         name: "Lore (Law)",
+        stat: Stat.INTL,
+        isBase: false
+    },
+    LORE_LOCAL: {
+        name: "Lore (Local)",
         stat: Stat.INTL,
         isBase: false
     },
@@ -341,8 +481,38 @@ TEW.DATABASE.COMPS.SET = {
         stat: Stat.INTL,
         isBase: false
     },
+    LORE_PLANTS: {
+        name: "Lore (Plants)",
+        stat: Stat.INTL,
+        isBase: false
+    },
+    LORE_POISON: {
+        name: "Lore (Poison)",
+        stat: Stat.INTL,
+        isBase: false
+    },
+    LORE_POLITICS: {
+        name: "Lore (Politics)",
+        stat: Stat.INTL,
+        isBase: false
+    },
+    LORE_PROPHECY: {
+        name: "Lore (Prophecy)",
+        stat: Stat.INTL,
+        isBase: false
+    },
     LORE_REIKLAND: {
         name: "Lore (Reikland)",
+        stat: Stat.INTL,
+        isBase: false
+    },
+    LORE_RIVERWAYS: {
+        name: "Lore (Riverways)",
+        stat: Stat.INTL,
+        isBase: false
+    },
+    LORE_ROUTES: {
+        name: "Lore (Routes)",
         stat: Stat.INTL,
         isBase: false
     },
@@ -356,8 +526,28 @@ TEW.DATABASE.COMPS.SET = {
         stat: Stat.INTL,
         isBase: false
     },
+    LORE_SPIRITS: {
+        name: "Lore (Spirits)",
+        stat: Stat.INTL,
+        isBase: false
+    },
+    LORE_TAXES: {
+        name: "Lore (Taxes)",
+        stat: Stat.INTL,
+        isBase: false
+    },
     LORE_THEOLOGY: {
         name: "Lore (Theology)",
+        stat: Stat.INTL,
+        isBase: false
+    },
+    LORE_TORTURE: {
+        name: "Lore (Torture)",
+        stat: Stat.INTL,
+        isBase: false
+    },
+    LORE_TROLLS: {
+        name: "Lore (Trolls)",
         stat: Stat.INTL,
         isBase: false
     },
@@ -368,6 +558,16 @@ TEW.DATABASE.COMPS.SET = {
     },
     LORE_WAR: {
         name: "Lore (War)",
+        stat: Stat.INTL,
+        isBase: false
+    },
+    LORE_WITCHES: {
+        name: "Lore (Witches)",
+        stat: Stat.INTL,
+        isBase: false
+    },
+    LORE_WRECKS: {
+        name: "Lore (Wrecks)",
         stat: Stat.INTL,
         isBase: false
     },
@@ -441,6 +641,11 @@ TEW.DATABASE.COMPS.SET = {
         stat: Stat.AGIL,
         isBase: false
     },
+    PERFORM_FIGHT: {
+        name: "Perform (Fight)",
+        stat: Stat.AGIL,
+        isBase: false
+    },
     PERFORM_FIREBREATHING: {
         name: "Perform (Firebreathing)",
         stat: Stat.AGIL,
@@ -476,6 +681,11 @@ TEW.DATABASE.COMPS.SET = {
         stat: Stat.DEXT,
         isBase: false
     },
+    PLAY_FIFE: {
+        name: "Play (Fife)",
+        stat: Stat.DEXT,
+        isBase: false
+    },
     PLAY_FLUTE: {
         name: "Play (Flute)",
         stat: Stat.DEXT,
@@ -499,6 +709,11 @@ TEW.DATABASE.COMPS.SET = {
     PLAY_VIOLIN: {
         name: "Play (Violin)",
         stat: Stat.DEXT,
+        isBase: false
+    },
+    PRAY: {
+        name: "Pray",
+        stat: Stat.FELW,
         isBase: false
     },
     PREY: {
@@ -576,6 +791,21 @@ TEW.DATABASE.COMPS.SET = {
         stat: Stat.INTL,
         isBase: false
     },
+    SECRET_SIGNS_HUNTER: {
+        name: "Secret Signs (Hunter)",
+        stat: Stat.INTL,
+        isBase: false
+    },
+    SECRET_SIGNS_KNIGHTLY_ORDER: {
+        name: "Secret Signs (Knightly Order)",
+        stat: Stat.INTL,
+        isBase: false
+    },
+    SECRET_SIGNS_MINER: {
+        name: "Secret Signs (Miner)",
+        stat: Stat.INTL,
+        isBase: false
+    },
     SECRET_SIGNS_RANGER: {
         name: "Secret Signs (Ranger)",
         stat: Stat.INTL,
@@ -586,8 +816,18 @@ TEW.DATABASE.COMPS.SET = {
         stat: Stat.INTL,
         isBase: false
     },
+    SECRET_SIGNS_SMUGGLER: {
+        name: "Secret Signs (Smuggler)",
+        stat: Stat.INTL,
+        isBase: false
+    },
     SECRET_SIGNS_THIEF: {
         name: "Secret Signs (Thief)",
+        stat: Stat.INTL,
+        isBase: false
+    },
+    SECRET_SIGNS_VAGABOND: {
+        name: "Secret Signs (Vagabond)",
         stat: Stat.INTL,
         isBase: false
     },
@@ -641,8 +881,23 @@ TEW.DATABASE.COMPS.SET = {
         stat: Stat.DEXT,
         isBase: false
     },
+    TRADE_ART_SUPPLIES: {
+        name: "Trade (Art Supplies)",
+        stat: Stat.DEXT,
+        isBase: false
+    },
+    TRADE_BARBER: {
+        name: "Trade (Barber)",
+        stat: Stat.DEXT,
+        isBase: false
+    },
     TRADE_BLACKSMITH: {
         name: "Trade (Blacksmith)",
+        stat: Stat.DEXT,
+        isBase: false
+    },
+    TRADE_BOATBUILDING: {
+        name: "Trade (Boatbuilding)",
         stat: Stat.DEXT,
         isBase: false
     },
@@ -656,6 +911,11 @@ TEW.DATABASE.COMPS.SET = {
         stat: Stat.DEXT,
         isBase: false
     },
+    TRADE_CARTOGRAPHER: {
+        name: "Trade (Cartographer)",
+        stat: Stat.DEXT,
+        isBase: false
+    },
     TRADE_CHANDLER: {
         name: "Trade (Chandler)",
         stat: Stat.DEXT,
@@ -663,6 +923,11 @@ TEW.DATABASE.COMPS.SET = {
     },
     TRADE_CARPENTER: {
         name: "Trade (Carpenter)",
+        stat: Stat.DEXT,
+        isBase: false
+    },
+    TRADE_CHARMS: {
+        name: "Trade (Charms)",
         stat: Stat.DEXT,
         isBase: false
     },
@@ -681,6 +946,21 @@ TEW.DATABASE.COMPS.SET = {
         stat: Stat.DEXT,
         isBase: false
     },
+    TRADE_ENGRAVER: {
+        name: "Trade (Engraver)",
+        stat: Stat.DEXT,
+        isBase: false
+    },
+    TRADE_EXPLOSIVES: {
+        name: "Trade (Explosives)",
+        stat: Stat.DEXT,
+        isBase: false
+    },
+    TRADE_FARRIER: {
+        name: "Trade (Farrier)",
+        stat: Stat.DEXT,
+        isBase: false
+    },
     TRADE_FLETCHER: {
         name: "Trade (Fletcher)",
         stat: Stat.DEXT,
@@ -691,13 +971,38 @@ TEW.DATABASE.COMPS.SET = {
         stat: Stat.DEXT,
         isBase: false
     },
+    TRADE_GUNSMITH: {
+        name: "Trade (Gunsmith)",
+        stat: Stat.DEXT,
+        isBase: false
+    },
     TRADE_HERBALIST: {
         name: "Trade (Herbalist)",
         stat: Stat.DEXT,
         isBase: false
     },
+    TRADE_POISONER: {
+        name: "Trade (Poisoner)",
+        stat: Stat.DEXT,
+        isBase: false
+    },
+    TRADE_PRINTING: {
+        name: "Trade (Printing)",
+        stat: Stat.DEXT,
+        isBase: false
+    },
     TRADE_TANNER: {
         name: "Trade (Tanner)",
+        stat: Stat.DEXT,
+        isBase: false
+    },
+    TRADE_TINKER: {
+        name: "Trade (Tinker)",
+        stat: Stat.DEXT,
+        isBase: false
+    },
+    TRADE_VINTNER: {
+        name: "Trade (Vintner)",
         stat: Stat.DEXT,
         isBase: false
     },

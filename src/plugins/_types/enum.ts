@@ -286,3 +286,20 @@ export const enum ConditionRemoval {
     TEST,
     NONE
 }
+
+export const enum CareerStatusTier {
+    BRASS = "Brass",
+    SILVER = "Silver",
+    GOLD = "Gold"
+}
+
+export const enum CareerClass {
+    ACADEMIC = "Academic",
+    BURGHER = "Burgher",
+    COURTIER = "Courtier",
+    PEASANT = "Peasant",
+    RANGER = "Ranger",
+    RIVERFOLK = "Riverfolk",
+    ROGUE = "Rogue",
+    WARRIOR = "Warrior"
+}

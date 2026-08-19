@@ -76,6 +76,21 @@ TEW.DATABASE.TALENTS.SET = {
         description: "You either study one of the 8 Arcane Lores of Magic - Beasts, Death, Fire, Heavens, Metal, Shadow, Light, or Life - or practice a lesser known Lore, such as Hedgecraft or Necromancy. You may now memorise spells from your chosen Lore. Under normal circumstances, you may not learn more than one Arcane Magic (Lore) Talent. Further, you may not learn the Bless or Invoke Talents when you have the Arcane Magic Talent. You can unlearn this Talent for 100 XP, but will immediately lose all of your spells if you do so.",
         maxTaken: 1
     },
+    ARCANE_MAGIC_CELESTIAL: {
+        name: "Arcane Magic (Celestial)",
+        description: "You either study one of the 8 Arcane Lores of Magic - Beasts, Death, Fire, Heavens, Metal, Shadow, Light, or Life - or practice a lesser known Lore, such as Hedgecraft or Necromancy. You may now memorise spells from your chosen Lore. Under normal circumstances, you may not learn more than one Arcane Magic (Lore) Talent. Further, you may not learn the Bless or Invoke Talents when you have the Arcane Magic Talent. You can unlearn this Talent for 100 XP, but will immediately lose all of your spells if you do so.",
+        maxTaken: 1
+    },
+    ARCANE_MAGIC_HEDGECRAFT: {
+        name: "Arcane Magic (Hedgecraft)",
+        description: "You either study one of the 8 Arcane Lores of Magic - Beasts, Death, Fire, Heavens, Metal, Shadow, Light, or Life - or practice a lesser known Lore, such as Hedgecraft or Necromancy. You may now memorise spells from your chosen Lore. Under normal circumstances, you may not learn more than one Arcane Magic (Lore) Talent. Further, you may not learn the Bless or Invoke Talents when you have the Arcane Magic Talent. You can unlearn this Talent for 100 XP, but will immediately lose all of your spells if you do so.",
+        maxTaken: 1
+    },
+    ARCANE_MAGIC_WITCHERY: {
+        name: "Arcane Magic (Witchery)",
+        description: "You either study one of the 8 Arcane Lores of Magic - Beasts, Death, Fire, Heavens, Metal, Shadow, Light, or Life - or practice a lesser known Lore, such as Hedgecraft or Necromancy. You may now memorise spells from your chosen Lore. Under normal circumstances, you may not learn more than one Arcane Magic (Lore) Talent. Further, you may not learn the Bless or Invoke Talents when you have the Arcane Magic Talent. You can unlearn this Talent for 100 XP, but will immediately lose all of your spells if you do so.",
+        maxTaken: 1
+    },
     ARGUMENTATIVE: {
         name: "Argumentative",
         description: "You are used to arguing your points and winning. If you roll a successful Charm Test to debate with an opponent, you can choose to either use your rolled SL, or the number rolled on your units die. So, a successful roll of 24 could be used for +4 SL.",
@@ -251,6 +266,31 @@ TEW.DATABASE.TALENTS.SET = {
         description: "You have true creative talent. Add one Trade Skill to any Career you enter. If the Trade Skill is already in your Career, you may instead purchase the Skill for 5 XP fewer per Advance.",
         maxTaken: Stat.DEXT
     },
+    CRAFTSMAN_APOTHECARY: {
+        name: "Craftsman (Apothecary)",
+        description: "You have true creative talent. Add one Trade Skill to any Career you enter. If the Trade Skill is already in your Career, you may instead purchase the Skill for 5 XP fewer per Advance.",
+        maxTaken: Stat.DEXT
+    },
+    CRAFTSMAN_BOATBUILDER: {
+        name: "Craftsman (Boatbuilder)",
+        description: "You have true creative talent. Add one Trade Skill to any Career you enter. If the Trade Skill is already in your Career, you may instead purchase the Skill for 5 XP fewer per Advance.",
+        maxTaken: Stat.DEXT
+    },
+    CRAFTSMAN_ENGINEER: {
+        name: "Craftsman (Engineer)",
+        description: "You have true creative talent. Add one Trade Skill to any Career you enter. If the Trade Skill is already in your Career, you may instead purchase the Skill for 5 XP fewer per Advance.",
+        maxTaken: Stat.DEXT
+    },
+    CRAFTSMAN_EXPLOSIVES: {
+        name: "Craftsman (Explosives)",
+        description: "You have true creative talent. Add one Trade Skill to any Career you enter. If the Trade Skill is already in your Career, you may instead purchase the Skill for 5 XP fewer per Advance.",
+        maxTaken: Stat.DEXT
+    },
+    CRAFTSMAN_HERBALIST: {
+        name: "Craftsman (Herbalist)",
+        description: "You have true creative talent. Add one Trade Skill to any Career you enter. If the Trade Skill is already in your Career, you may instead purchase the Skill for 5 XP fewer per Advance.",
+        maxTaken: Stat.DEXT
+    },
     CRIMINAL: {//TODO
         name: "Criminal",
         description: "TODO",
@@ -361,8 +401,28 @@ TEW.DATABASE.TALENTS.SET = {
         description: "If you have a loaded ranged weapon, you can fire it outside the normal Initiative Order before any other combatant reacts in the following Round. You roll to hit using all the normal modifiers. Employing Fast Shot requires both your Action and Move for your upcoming turn, and these will count as having been spent when your next turn arrives. If two or more characters use Fast Shot, the character who has taken this Talent most goes first. If any characters have taken Fast Shot an equal number of times, both shots are fired simultaneously, and should both be handled at the same time.",
         maxTaken: Stat.WILL
     },
+    FEARLESS_ANIMALS: {
+        name: "Fearless (Animals)",
+        description: "You are either brave enough or crazy enough that fear of certain enemies has become a distant memory. With a single Average (+20%) Cool Test, you may ignore any Intimidate, Fear, or Terror effects from the specified enemy when encountered.",
+        maxTaken: Stat.WILL
+    },
     FEARLESS_BEASTMEN: {
         name: "Fearless (Beastmen)",
+        description: "You are either brave enough or crazy enough that fear of certain enemies has become a distant memory. With a single Average (+20%) Cool Test, you may ignore any Intimidate, Fear, or Terror effects from the specified enemy when encountered.",
+        maxTaken: Stat.WILL
+    },
+    FEARLESS_BOUNTIES: {
+        name: "Fearless (Bounties)",
+        description: "You are either brave enough or crazy enough that fear of certain enemies has become a distant memory. With a single Average (+20%) Cool Test, you may ignore any Intimidate, Fear, or Terror effects from the specified enemy when encountered.",
+        maxTaken: Stat.WILL
+    },
+    FEARLESS_CRIMINALS: {
+        name: "Fearless (Criminals)",
+        description: "You are either brave enough or crazy enough that fear of certain enemies has become a distant memory. With a single Average (+20%) Cool Test, you may ignore any Intimidate, Fear, or Terror effects from the specified enemy when encountered.",
+        maxTaken: Stat.WILL
+    },
+    FEARLESS_EVERYTHING: {
+        name: "Fearless (Everything)",
         description: "You are either brave enough or crazy enough that fear of certain enemies has become a distant memory. With a single Average (+20%) Cool Test, you may ignore any Intimidate, Fear, or Terror effects from the specified enemy when encountered.",
         maxTaken: Stat.WILL
     },
@@ -371,8 +431,48 @@ TEW.DATABASE.TALENTS.SET = {
         description: "You are either brave enough or crazy enough that fear of certain enemies has become a distant memory. With a single Average (+20%) Cool Test, you may ignore any Intimidate, Fear, or Terror effects from the specified enemy when encountered.",
         maxTaken: Stat.WILL
     },
+    FEARLESS_HERETICS: {
+        name: "Fearless (Heretics)",
+        description: "You are either brave enough or crazy enough that fear of certain enemies has become a distant memory. With a single Average (+20%) Cool Test, you may ignore any Intimidate, Fear, or Terror effects from the specified enemy when encountered.",
+        maxTaken: Stat.WILL
+    },
+    FEARLESS_INTRUDERS: {
+        name: "Fearless (Intruders)",
+        description: "You are either brave enough or crazy enough that fear of certain enemies has become a distant memory. With a single Average (+20%) Cool Test, you may ignore any Intimidate, Fear, or Terror effects from the specified enemy when encountered.",
+        maxTaken: Stat.WILL
+    },
+    FEARLESS_MONSTERS: {
+        name: "Fearless (Monsters)",
+        description: "You are either brave enough or crazy enough that fear of certain enemies has become a distant memory. With a single Average (+20%) Cool Test, you may ignore any Intimidate, Fear, or Terror effects from the specified enemy when encountered.",
+        maxTaken: Stat.WILL
+    },
     FEARLESS_OUTLAWS: {
         name: "Fearless (Outlaws)",
+        description: "You are either brave enough or crazy enough that fear of certain enemies has become a distant memory. With a single Average (+20%) Cool Test, you may ignore any Intimidate, Fear, or Terror effects from the specified enemy when encountered.",
+        maxTaken: Stat.WILL
+    },
+    FEARLESS_RATS: {
+        name: "Fearless (Rats)",
+        description: "You are either brave enough or crazy enough that fear of certain enemies has become a distant memory. With a single Average (+20%) Cool Test, you may ignore any Intimidate, Fear, or Terror effects from the specified enemy when encountered.",
+        maxTaken: Stat.WILL
+    },
+    FEARLESS_RIVERWARDENS: {
+        name: "Fearless (Riverwardens)",
+        description: "You are either brave enough or crazy enough that fear of certain enemies has become a distant memory. With a single Average (+20%) Cool Test, you may ignore any Intimidate, Fear, or Terror effects from the specified enemy when encountered.",
+        maxTaken: Stat.WILL
+    },
+    FEARLESS_ROAD_WARDENS: {
+        name: "Fearless (Road Wardens)",
+        description: "You are either brave enough or crazy enough that fear of certain enemies has become a distant memory. With a single Average (+20%) Cool Test, you may ignore any Intimidate, Fear, or Terror effects from the specified enemy when encountered.",
+        maxTaken: Stat.WILL
+    },
+    FEARLESS_SKAVEN: {
+        name: "Fearless (Skaven)",
+        description: "You are either brave enough or crazy enough that fear of certain enemies has become a distant memory. With a single Average (+20%) Cool Test, you may ignore any Intimidate, Fear, or Terror effects from the specified enemy when encountered.",
+        maxTaken: Stat.WILL
+    },
+    FEARLESS_UNDEAD: {
+        name: "Fearless (Undead)",
         description: "You are either brave enough or crazy enough that fear of certain enemies has become a distant memory. With a single Average (+20%) Cool Test, you may ignore any Intimidate, Fear, or Terror effects from the specified enemy when encountered.",
         maxTaken: Stat.WILL
     },
@@ -388,6 +488,11 @@ TEW.DATABASE.TALENTS.SET = {
     },
     FEARLESS_WITCHES: {
         name: "Fearless (Witches)",
+        description: "You are either brave enough or crazy enough that fear of certain enemies has become a distant memory. With a single Average (+20%) Cool Test, you may ignore any Intimidate, Fear, or Terror effects from the specified enemy when encountered.",
+        maxTaken: Stat.WILL
+    },
+    FEARLESS_WRECKERS: {
+        name: "Fearless (Wreckers)",
         description: "You are either brave enough or crazy enough that fear of certain enemies has become a distant memory. With a single Average (+20%) Cool Test, you may ignore any Intimidate, Fear, or Terror effects from the specified enemy when encountered.",
         maxTaken: Stat.WILL
     },
@@ -453,6 +558,16 @@ TEW.DATABASE.TALENTS.SET = {
     },
     HATRED: {//TODO
         name: "Hatred",
+        description: "TODO",
+        maxTaken: Stat.WILL
+    },
+    HATRED_HERETICS: {
+        name: "Hatred (Heretics)",
+        description: "TODO",
+        maxTaken: Stat.WILL
+    },
+    HATRED_OUTLAWS: {
+        name: "Hatred (Outlaws)",
         description: "TODO",
         maxTaken: Stat.WILL
     },
@@ -621,6 +736,31 @@ TEW.DATABASE.TALENTS.SET = {
         description: "You are exceptionally skilled at your specified Trade skill. You reduce the required SL of any Extended Test using your Trade Skill by the level of your Master Tradesman Talent.",
         maxTaken: Stat.DEXT
     },
+    MASTER_TRADESMAN_APOTHECARY: {
+        name: "Master Tradesman (Apothecary)",
+        description: "You are exceptionally skilled at your specified Trade skill. You reduce the required SL of any Extended Test using your Trade Skill by the level of your Master Tradesman Talent.",
+        maxTaken: Stat.DEXT
+    },
+    MASTER_TRADESMAN_BOATBUILDER: {
+        name: "Master Tradesman (Boatbuilder)",
+        description: "You are exceptionally skilled at your specified Trade skill. You reduce the required SL of any Extended Test using your Trade Skill by the level of your Master Tradesman Talent.",
+        maxTaken: Stat.DEXT
+    },
+    MASTER_TRADESMAN_ENGINEERING: {
+        name: "Master Tradesman (Engineering)",
+        description: "You are exceptionally skilled at your specified Trade skill. You reduce the required SL of any Extended Test using your Trade Skill by the level of your Master Tradesman Talent.",
+        maxTaken: Stat.DEXT
+    },
+    MASTER_TRADESMAN_HERBALIST: {
+        name: "Master Tradesman (Herbalist)",
+        description: "You are exceptionally skilled at your specified Trade skill. You reduce the required SL of any Extended Test using your Trade Skill by the level of your Master Tradesman Talent.",
+        maxTaken: Stat.DEXT
+    },
+    MASTER_TRADESMAN_POISONER: {
+        name: "Master Tradesman (Poisoner)",
+        description: "You are exceptionally skilled at your specified Trade skill. You reduce the required SL of any Extended Test using your Trade Skill by the level of your Master Tradesman Talent.",
+        maxTaken: Stat.DEXT
+    },
     MENACING: {
         name: "Menacing",
         description: "You have an imposing presence. When using the Intimidate Skill, gain a SL bonus equal to your levels of Menacing.",
@@ -781,6 +921,46 @@ TEW.DATABASE.TALENTS.SET = {
         description: "You are exceptionally learned, and have a significant degree of specialised knowledge in a single field of study. You automatically know a number of pieces of correct information equal to you Savant (Lore) level about a relevant issue without having to test your Lore Skill.",
         maxTaken: Stat.INTL
     },
+    SAVANT_APOTHECARY: {
+        name: "Savant (Apothecary)",
+        description: "You are exceptionally learned, and have a significant degree of specialised knowledge in a single field of study. You automatically know a number of pieces of correct information equal to you Savant (Lore) level about a relevant issue without having to test your Lore Skill.",
+        maxTaken: Stat.INTL
+    },
+    SAVANT_ENGINEERING: {
+        name: "Savant (Engineering)",
+        description: "You are exceptionally learned, and have a significant degree of specialised knowledge in a single field of study. You automatically know a number of pieces of correct information equal to you Savant (Lore) level about a relevant issue without having to test your Lore Skill.",
+        maxTaken: Stat.INTL
+    },
+    SAVANT_HERBS: {
+        name: "Savant (Herbs)",
+        description: "You are exceptionally learned, and have a significant degree of specialised knowledge in a single field of study. You automatically know a number of pieces of correct information equal to you Savant (Lore) level about a relevant issue without having to test your Lore Skill.",
+        maxTaken: Stat.INTL
+    },
+    SAVANT_LAW: {
+        name: "Savant (Law)",
+        description: "You are exceptionally learned, and have a significant degree of specialised knowledge in a single field of study. You automatically know a number of pieces of correct information equal to you Savant (Lore) level about a relevant issue without having to test your Lore Skill.",
+        maxTaken: Stat.INTL
+    },
+    SAVANT_LOCAL: {
+        name: "Savant (Local)",
+        description: "You are exceptionally learned, and have a significant degree of specialised knowledge in a single field of study. You automatically know a number of pieces of correct information equal to you Savant (Lore) level about a relevant issue without having to test your Lore Skill.",
+        maxTaken: Stat.INTL
+    },
+    SAVANT_MEDICINE: {
+        name: "Savant (Medicine)",
+        description: "You are exceptionally learned, and have a significant degree of specialised knowledge in a single field of study. You automatically know a number of pieces of correct information equal to you Savant (Lore) level about a relevant issue without having to test your Lore Skill.",
+        maxTaken: Stat.INTL
+    },
+    SAVANT_RIVERWAYS: {
+        name: "Savant (Riverways)",
+        description: "You are exceptionally learned, and have a significant degree of specialised knowledge in a single field of study. You automatically know a number of pieces of correct information equal to you Savant (Lore) level about a relevant issue without having to test your Lore Skill.",
+        maxTaken: Stat.INTL
+    },
+    SAVANT_THEOLOGY: {
+        name: "Savant (Theology)",
+        description: "You are exceptionally learned, and have a significant degree of specialised knowledge in a single field of study. You automatically know a number of pieces of correct information equal to you Savant (Lore) level about a relevant issue without having to test your Lore Skill.",
+        maxTaken: Stat.INTL
+    },
     SAVVY: {
         name: "Savvy",
         description: "You gain a permanent +5 bonus to your starting Intelligence Characteristic (this does not count towards your Advances).",
@@ -883,6 +1063,26 @@ TEW.DATABASE.TALENTS.SET = {
     },
     STRIDER: {
         name: "Strider",
+        description: "You are experienced in traversing difficult ground. You ignore all movement penalties when crossing over or through a specified terrain.",
+        maxTaken: Stat.AGIL
+    },
+    STRIDER_COASTAL: {
+        name: "Strider (Coastal)",
+        description: "You are experienced in traversing difficult ground. You ignore all movement penalties when crossing over or through a specified terrain.",
+        maxTaken: Stat.AGIL
+    },
+    STRIDER_MARSHES: {
+        name: "Strider (Marshes)",
+        description: "You are experienced in traversing difficult ground. You ignore all movement penalties when crossing over or through a specified terrain.",
+        maxTaken: Stat.AGIL
+    },
+    STRIDER_ROCKY: {
+        name: "Strider (Rocky)",
+        description: "You are experienced in traversing difficult ground. You ignore all movement penalties when crossing over or through a specified terrain.",
+        maxTaken: Stat.AGIL
+    },
+    STRIDER_WOODLANDS: {
+        name: "Strider (Woodlands)",
         description: "You are experienced in traversing difficult ground. You ignore all movement penalties when crossing over or through a specified terrain.",
         maxTaken: Stat.AGIL
     },
