@@ -279,6 +279,10 @@ Scene_Status.prototype.createTalentsWindow = function() {
         this._commandWindow.activate();
         this._talentsWindow.deselect();
     });
+    this._talentsWindow.setHandler('levelling_change', () => {
+        this._commandWindow.refresh();
+    });
+    this._talentsWindow.setLevelling(this._levelling);
     this._talentsWindow.hide();
     this.addWindow(this._talentsWindow);
 };
@@ -474,6 +478,8 @@ Scene_Status.prototype.refreshLevellingWindows = function() {
     this._competencesWindow.refresh();
     this._statsWindow.setLevellingMode(this._levellingMode);
     this._statsWindow.refresh();
+    this._talentsWindow.setLevellingMode(this._levellingMode);
+    this._talentsWindow.refresh();
 };
 
 /**

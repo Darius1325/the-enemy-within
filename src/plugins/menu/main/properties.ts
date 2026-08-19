@@ -34,6 +34,8 @@ TEW.MENU.COMMAND_NAMES[57] = "Back";
 TEW.MENU.COMMAND_NAMES[58] = "Level up";
 TEW.MENU.COMMAND_NAMES[59] = "XP left";
 TEW.MENU.COMMAND_NAMES[60] = "Spent";
+TEW.MENU.COMMAND_NAMES[61] = "Base";
+TEW.MENU.COMMAND_NAMES[62] = "Unlearned";
 
 // Inventory Menu
 TEW.MENU.COMMAND_NAMES[70] = "InventoryNextChar";
@@ -100,6 +102,7 @@ TEW.MENU.LEVEL_UP_KEY_LABEL = "A";
 
 
 // Windows TODO move
+TEW.MENU.CAREER_LABEL_WIDTH = 240;
 TEW.MENU.INVENTORY_WINDOW_TOPBAR_HEIGHT = 72;
 TEW.MENU.STATUS_WINDOW_TOPBAR_HEIGHT = 72;
 TEW.MENU.STATUS_WINDOW_BOTTOM_DESCRIPTION_HEIGHT = 134;
@@ -129,6 +132,8 @@ Object.defineProperties(TextManager, {
     statusLevelUp :             TextManager.getter('command', 58),
     statusExpLeft :             TextManager.getter('command', 59),
     statusExpSpent :            TextManager.getter('command', 60),
+    statusCompBase :            TextManager.getter('command', 61),
+    statusCompUnlearned :       TextManager.getter('command', 62),
 
     // Inventory Menu
     inventoryNextChar :         TextManager.getter('command', 70),

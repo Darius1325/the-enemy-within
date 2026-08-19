@@ -2,10 +2,10 @@
 
 // ----------------------
 
-// File: Scene_Status.ts
+// File: Window_StatusTalents.ts
 // Author: Ersokili, 7evy, Sebibebi67
 // Date: 01/05/2025
-// Description: This file contains the implementation of the Scene_Status class, which is responsible for displaying the status screen in the game. It includes methods for creating the command window, stats window, competences window, talents window, and spells window. The class also handles user input and navigation between different windows within the status screen.
+// Description: This file contains the implementation of the Window_StatusTalents class, which lists the talents an actor has acquired along with their level. While levelling mode is active, the talents belonging to the actor's career which have not been acquired yet are added at the top of the list, and can be bought and refunded with the left and right arrows.
 
 // ----------------------
 // Imports
@@ -22,6 +22,10 @@ function Window_StatusTalents() {
     this.initialize.apply(this, arguments);
 }
 
+Window_StatusTalents.LEFT_PADDING = 48;
+Window_StatusTalents.NAME_COLUMN_WIDTH = 400;
+Window_StatusTalents.LEVEL_COLUMN_WIDTH = 120;
+
 export default Window_StatusTalents.prototype = Object.create(HalfWindow_List.prototype);
 Window_StatusTalents.prototype.constructor = Window_StatusTalents;
 
@@ -29,6 +33,9 @@ Window_StatusTalents.prototype.constructor = Window_StatusTalents;
  * Constructor for the Window_StatusTalents class.
  */
 Window_StatusTalents.prototype.initialize = function() {
+    this._levelling = null;
+    this._levellingMode = false;
+    this._talents = [];
     HalfWindow_List.prototype.initialize.call(this);
 };
 
@@ -38,10 +45,36 @@ Window_StatusTalents.prototype.initialize = function() {
 Window_StatusTalents.prototype.setActor = function(actor:any) {
     if (this._actor !== actor) {
         this._actor = actor;
-        this._talents = TEW.DATABASE.TALENTS.ARRAY.filter(talent => actor.hasTalent(talent[0]));   // [<internal name>, {<talent data>}]
-        this._maxItems = this._talents.length;
+        this.makeTalentsList();
         this.refresh();
     }
+};
+
+/**
+ * Building the displayed list. Outside of levelling mode it only holds the acquired talents.
+ * In levelling mode, the career talents which have not been acquired yet are added at the top
+ * in alphabetical order, so that they may be bought.
+ */
+Window_StatusTalents.prototype.makeTalentsList = function() {
+    if (!this._actor) {
+        this._talents = [];
+        this._maxItems = 0;
+        return;
+    }
+
+    // [<internal name>, {<talent data>}]
+    const ownedTalents = TEW.DATABASE.TALENTS.ARRAY.filter(talent => this._actor.hasTalent(talent[0]));
+
+    if (!this.isLevellingMode()) {
+        this._talents = ownedTalents;
+    } else {
+        const buyableTalents = this._actor.buyableTalents()
+            .map(talentId => [talentId, TEW.DATABASE.TALENTS.SET[talentId]])
+            .sort((a, b) => a[1].name.localeCompare(b[1].name));
+        this._talents = buyableTalents.concat(ownedTalents);
+    }
+
+    this._maxItems = this._talents.length;
 };
 
 /**
@@ -62,25 +95,26 @@ Window_StatusTalents.prototype.drawAllItems = function() {
  */
 Window_StatusTalents.prototype.drawItem = function(index: number) {
     const normalizedIndex = index - this.topIndex();
-    const x = 48;
+    const x = Window_StatusTalents.LEFT_PADDING;
     const y = normalizedIndex * TEW.MENU.LINE_HEIGHT;
 
     const talent = this.talentFromIndex(index);
 
     // Talent name
     this.changeTextColor(this.systemColor());
-    this.drawText(talent[1].name, x, y, this._talentColumnWidth);
+    this.drawText(talent[1].name, x, y, Window_StatusTalents.NAME_COLUMN_WIDTH);
     this.resetTextColor();
 
-    // Talent level
-
-    const level = this._actor.talent(talent[0]);
-    const levelText = `lvl${level}`;
+    // Talent level, or the price of a talent which has not been bought yet
+    this.changeTextColor(this.talentLevelColor(talent[0]));
     this.drawText(
-        levelText,
-        x + this._talentColumnWidth,
+        this.talentLevelText(talent[0]),
+        x + Window_StatusTalents.NAME_COLUMN_WIDTH,
         y,
-        this._levelColumnWidth, 'right');
+        Window_StatusTalents.LEVEL_COLUMN_WIDTH,
+        'right'
+    );
+    this.resetTextColor();
 };
 
 /**
@@ -120,6 +154,111 @@ Window_StatusTalents.prototype.select = function(index: number) {
 //     this.updateCursor();
 //     this.callUpdateHelp();
 // };
+
+// #region ====== Levelling mode === //
+/**
+ * Links the window to the levelling session holding the pending purchases.
+ */
+Window_StatusTalents.prototype.setLevelling = function(levelling: any) {
+    this._levelling = levelling;
+    this.refresh();
+};
+
+/**
+ * Enters or leaves levelling mode. The buyable talents appear and disappear with it, so the
+ * selected talent is followed to its new index rather than left behind.
+ */
+Window_StatusTalents.prototype.setLevellingMode = function(active: boolean) {
+    if (this._levellingMode === active) {
+        return;
+    }
+    const selectedTalentId = this.index() >= 0 && this._talents[this.index()]
+        ? this._talents[this.index()][0]
+        : null;
+    this._levellingMode = active;
+    this.makeTalentsList();
+    if (selectedTalentId) {
+        const newIndex = this._talents.map(talent => talent[0]).indexOf(selectedTalentId);
+        this.select(Math.min(Math.max(newIndex, 0), this.maxItems() - 1));
+    }
+    this.refresh();
+};
+
+Window_StatusTalents.prototype.isLevellingMode = function() {
+    return !!this._levellingMode && !!this._levelling && !!this._actor;
+};
+
+/**
+ * Level of a talent, including the purchase about to be made.
+ */
+Window_StatusTalents.prototype.talentLevel = function(talentId: string) {
+    return this.isLevellingMode()
+        ? this._levelling.talentValue(talentId)
+        : this._actor.talent(talentId);
+};
+
+/**
+ * Talents which are not acquired yet display their price instead of a level of 0.
+ */
+Window_StatusTalents.prototype.talentLevelText = function(talentId: string) {
+    const level = this.talentLevel(talentId);
+    if (level > 0 || !this.isLevellingMode()) {
+        return `lvl${level}`;
+    }
+    return `${this._levelling.talentCost()} ${TextManager.expA}`;
+};
+
+/**
+ * Green when the talent is about to be bought, blue when the career allows buying it,
+ * plain otherwise. Running out of experience does not change the colour.
+ */
+Window_StatusTalents.prototype.talentLevelColor = function(talentId: string) {
+    if (!this.isLevellingMode()) {
+        return this.normalColor();
+    }
+    if (this._levelling.isTalentBought(talentId)) {
+        return this.powerUpColor();
+    }
+    if (this._levelling.canBuyTalent(talentId)) {
+        return this.levellingColor();
+    }
+    return this.normalColor();
+};
+
+/**
+ * In levelling mode, the horizontal arrows buy and refund talents.
+ */
+Window_StatusTalents.prototype.cursorRight = function(wrap: boolean) {
+    if (this.isLevellingMode() && this.index() >= 0) {
+        this.changeTalent(true);
+    } else {
+        HalfWindow_List.prototype.cursorRight.call(this, wrap);
+    }
+};
+
+Window_StatusTalents.prototype.cursorLeft = function(wrap: boolean) {
+    if (this.isLevellingMode() && this.index() >= 0) {
+        this.changeTalent(false);
+    } else {
+        HalfWindow_List.prototype.cursorLeft.call(this, wrap);
+    }
+};
+
+/**
+ * Buys or refunds the selected talent.
+ */
+Window_StatusTalents.prototype.changeTalent = function(buy: boolean) {
+    const talentId = this.talentFromIndex(this.index())[0];
+    const changed = buy
+        ? this._levelling.buyTalent(talentId)
+        : this._levelling.refundTalent(talentId);
+    if (changed) {
+        SoundManager.playCursor();
+        this.refresh();
+        this.callHandler('levelling_change');
+    }
+};
+// #endregion === Levelling mode === //
 
 /**
  * Called when the process successfully completes.

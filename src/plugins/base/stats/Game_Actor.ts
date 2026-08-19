@@ -1,6 +1,7 @@
 // $PluginCompiler TEW_Base.js
 
 import { $dataActors } from "../../../rmmv/variables";
+import { Career } from "../../_types/career";
 import { ConditionId } from "../../_types/enum";
 import TEW from "../../_types/tew";
 import { Game_BattlerBase } from "./Game_BattlerBase";
@@ -16,6 +17,16 @@ export interface Game_Actor extends Game_BattlerBase {
     nextCompAdvanceCost: (compId: string) => number;
     applyStatAdvances: (paramId: number, advances: number) => void;
     applyCompAdvances: (compId: string, advances: number) => void;
+
+    career: () => Career;
+    careerName: () => string;
+    improvableStats: () => number[];
+    improvableComps: () => string[];
+    careerTalents: () => string[];
+    buyableTalents: () => string[];
+    canImproveStat: (paramId: number) => boolean;
+    canImproveComp: (compId: string) => boolean;
+    canBuyTalent: (talentId: string) => boolean;
 };
 
 // $StartCompilation
@@ -32,6 +43,7 @@ Game_Actor.prototype.setup = function(actorId) {
     this._actorId = actorId;
     this._name = actor.name;
     this._nickname = actor.nickname;
+    this._career = undefined; // TODO add to actors JSON
     this._exp = actor.exp || 0; // TODO ?
     // this._profile = actor.profile;
     // this._classId = actor.classId;
@@ -113,14 +125,83 @@ Game_Actor.prototype.applyStatAdvances = function(paramId: number, advances: num
     this._paramBase[0] = this.calculateMHP();
 };
 
-// Buying competence advances
+// Buying competence advances. Advanced competences must be learnt before they can be advanced
 Game_Actor.prototype.applyCompAdvances = function(compId: string, advances: number) {
     if (advances <= 0) {
         return;
     }
+    this.learnComp(compId);
     this.addComp(compId, advances);
 };
 // #endregion =========================== Levelling ============================== //
+
+// #region ============================== Career ============================== //
+// Career data of the actor. Every playable character is expected to have one
+Game_Actor.prototype.career = function() {
+    return TEW.DATABASE.CAREERS.SET[this._career];
+};
+
+Game_Actor.prototype.careerName = function() {
+    return this.career().name;
+};
+
+/**
+ * Rebuilding the lists of what the career allows to improve. They only change with the career,
+ * and are cached rather than filtered on every draw.
+ * Wildcard entries (MELEE_ANY and the like) are not resolved yet and are left out.
+ */
+Game_Actor.prototype.refreshCareerCache = function() {
+    const career = this.career();
+    this._careerCacheId = this._career;
+    this._improvableStats = career.improvableStats
+        .map(stat => TEW.CHARACTERS.STATS[stat.toLowerCase()])
+        .filter(paramId => paramId !== undefined);
+    this._improvableComps = career.competences.filter(compId => !!TEW.DATABASE.COMPS.SET[compId]);
+    this._careerTalents = career.talents.filter(talentId => !!TEW.DATABASE.TALENTS.SET[talentId]);
+};
+
+// The cache is keyed on the career ID, so that assigning a career directly is enough to drop it
+Game_Actor.prototype.checkCareerCache = function() {
+    if (this._careerCacheId !== this._career) {
+        this.refreshCareerCache();
+    }
+};
+
+// Param IDs of the characteristics the career allows to improve
+Game_Actor.prototype.improvableStats = function() {
+    this.checkCareerCache();
+    return this._improvableStats;
+};
+
+// IDs of the competences the career allows to improve, learnt or not
+Game_Actor.prototype.improvableComps = function() {
+    this.checkCareerCache();
+    return this._improvableComps;
+};
+
+// IDs of every talent belonging to the career, acquired or not
+Game_Actor.prototype.careerTalents = function() {
+    this.checkCareerCache();
+    return this._careerTalents;
+};
+
+// IDs of the career talents which have not been acquired yet
+Game_Actor.prototype.buyableTalents = function() {
+    return this.careerTalents().filter(talentId => !this.hasTalent(talentId));
+};
+
+Game_Actor.prototype.canImproveStat = function(paramId: number) {
+    return this.improvableStats().includes(paramId);
+};
+
+Game_Actor.prototype.canImproveComp = function(compId: string) {
+    return this.improvableComps().includes(compId);
+};
+
+Game_Actor.prototype.canBuyTalent = function(talentId: string) {
+    return this.careerTalents().includes(talentId) && !this.hasTalent(talentId);
+};
+// #endregion =========================== Career ============================== //
 
 Game_Actor.prototype.initTEW = function(actorId : number) {
     switch (actorId) {
@@ -177,6 +258,9 @@ Game_Actor.prototype.initCecile = function() {
     this._resilience = 3;
     this._resolve = 3;
 
+    // Career
+    this._career = 'DUELLIST_1';
+
     // competences
     this.addComp('CHARM', 3);
     this.addComp('LEADERSHIP', 3);
@@ -196,7 +280,7 @@ Game_Actor.prototype.initCecile = function() {
     // talents
     this.addTalent('SAVVY');
     this.addTalent('PURE_SOUL');
-    this.addTalent('COOLHEADED');
+    this.addTalent('COOL_HEADED');
     this.addTalent('WARRIOR_BORN');
     this.addTalent('FEINT');
     // test
@@ -260,6 +344,9 @@ Game_Actor.prototype.initCheplu = function() {
     this._resilience = 3;
     this._resolve = 3;
 
+    // Career
+    this._career = 'HERBALIST_1';
+
     // competences
     this.addComp('CHARM', 3);
     this.addComp('LEADERSHIP', 3);
@@ -281,7 +368,7 @@ Game_Actor.prototype.initCheplu = function() {
     this.addTalent('ACUTE_SENSE_TASTE');
     this.addTalent('ACUTE_SENSE_SMELL');
     this.addTalent('NIMBLE_FINGERED');
-    this.addTalent('COOLHEADED');    
+    this.addTalent('COOL_HEADED');    
 
     // spells
     // Test data
@@ -329,6 +416,9 @@ Game_Actor.prototype.initCiara = function() {
     this._resilience = 2;
     this._resolve = 2;
 
+    // Career
+    this._career = 'WIZARD_1';
+
     // competences
     this.addComp('LANGUAGE_BRETONNIAN', 3);
     this.addComp('LANGUAGE_WASTELANDER', 3);
@@ -349,7 +439,7 @@ Game_Actor.prototype.initCiara = function() {
     this.addTalent('SUAVE');
     this.addTalent('NIGHT_VISION');
     this.addTalent('WARRIOR_BORN');
-    this.addTalent('PETTY_MAGICK');    
+    this.addTalent('PETTY_MAGIC');    
 
     // spells
     this.addSpell("WARNING");
@@ -407,7 +497,7 @@ Game_Actor.prototype.initGalaandril = function() {
     this.addComp('COOL', 8);
     this.addComp('LANGUAGE_ELTHARIN', 5);
     this.addComp('MELEE_BASIC', 5);
-    this.addComp('EVALUATION', 5);
+    this.addComp('EVALUATE', 5);
     this.addComp('CHARM', 5);
     this.addComp('CLIMB', 5);
     this.addComp('GOSSIP', 5);
@@ -418,7 +508,7 @@ Game_Actor.prototype.initGalaandril = function() {
 
     // talents
     this.addTalent('ACUTE_SENSE_SIGHT');
-    this.addTalent('COOLHEADED');
+    this.addTalent('COOL_HEADED');
     this.addTalent('NIGHT_VISION');
     this.addTalent('SIXTH_SENSE');
     this.addTalent('READ_WRITE');    

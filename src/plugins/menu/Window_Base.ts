@@ -19,6 +19,13 @@ Window_Base.prototype.backgroundImageName = function() {
     return undefined;
 };
 
+// Careers replace RMMV's classes, which are left unused
+Window_Base.prototype.drawActorCareer = function(actor: any, x: number, y: number, width: number = TEW.MENU.CAREER_LABEL_WIDTH) {
+    this.changeTextColor(this.systemColor());
+    this.drawText(actor.careerName(), x, y, width);
+    this.resetTextColor();
+};
+
 // Drawing an underlined Text
 Window_Base.prototype.drawUnderlinedText = function(text: string, x: number, y: number, width: number, align: string) {
     // Draw text

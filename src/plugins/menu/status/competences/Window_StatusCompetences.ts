@@ -5,7 +5,7 @@
 // File: Window_StatusCompetences.ts
 // Author: Ersokili, 7evy, Sebibebi67
 // Date: 01/05/2025
-// Description: This file contains the implementation of the Window_StatusCompetences class, which lists every competence available to an actor along with its level. While levelling mode is active, the window also lets the player buy and refund competence advances with the left and right arrows.
+// Description: This file contains the implementation of the Window_StatusCompetences class, which lists every competence available to an actor along with its level. While levelling mode is active, the window also lets the player buy and refund competence advances with the left and right arrows, and the competences the actor's career allows to improve are moved to the top of the list. Those include the career competences which have not been learnt yet, so that they may be bought from scratch.
 
 // ----------------------
 // Imports
@@ -34,6 +34,7 @@ Window_StatusCompetences.prototype.constructor = Window_StatusCompetences;
 Window_StatusCompetences.prototype.initialize = function() {
     this._levelling = null;
     this._levellingMode = false;
+    this._compsList = [];
     HalfWindow_List.prototype.initialize.call(this);
     this._actor = null;
     this._maxItems = 0;
@@ -46,10 +47,41 @@ Window_StatusCompetences.prototype.initialize = function() {
 Window_StatusCompetences.prototype.setActor = function(actor: any) {
     if (this._actor !== actor) {
         this._actor = actor;
-        this._advancedCompsList = TEW.DATABASE.COMPS.ADVANCED_ARRAY.filter(comp => actor.hasComp(comp[0]));
-        this._maxItems = TEW.DATABASE.COMPS.BASE_ARRAY.length + this._advancedCompsList.length;
+        this.makeCompsList();
         this.refresh();
     }
+};
+
+/**
+ * Building the displayed list. Outside of levelling mode it holds every base competence
+ * followed by the advanced ones the actor has learnt.
+ * In levelling mode, the competences the career allows to improve are moved to the top in
+ * alphabetical order, unlearnt ones included, and the rest keeps its usual order.
+ */
+Window_StatusCompetences.prototype.makeCompsList = function() {
+    if (!this._actor) {
+        this._compsList = [];
+        this._maxItems = 0;
+        return;
+    }
+
+    const knownComps = TEW.DATABASE.COMPS.BASE_ARRAY.concat(
+        TEW.DATABASE.COMPS.ADVANCED_ARRAY.filter(comp => this._actor.hasComp(comp[0]))
+    );
+
+    if (!this.isLevellingMode()) {
+        this._compsList = knownComps;
+    } else {
+        const improvableIds = this._actor.improvableComps();
+        const improvableComps = improvableIds
+            .map(compId => [compId, TEW.DATABASE.COMPS.SET[compId]])
+            .sort((a, b) => a[1].name.localeCompare(b[1].name));
+        this._compsList = improvableComps.concat(
+            knownComps.filter(comp => improvableIds.indexOf(comp[0]) < 0)
+        );
+    }
+
+    this._maxItems = this._compsList.length;
 };
 
 /**
@@ -85,7 +117,9 @@ Window_StatusCompetences.prototype.drawItem = function(index: number) {
 
     // Comp bonus, including the advances about to be bought in levelling mode
     const compLevel = comp[1].level;
-    const compLevelText = compLevel > 0 ? `${compLevel}` : "Base";
+    const compLevelText = compLevel > 0
+        ? `${compLevel}`
+        : this._actor.hasComp(comp[0]) ? TextManager.statusCompBase : TextManager.statusCompUnlearned;
     this.changeTextColor(this.competenceLevelColor(comp[0]));
     this.drawText(
         compLevelText,
@@ -114,9 +148,7 @@ Window_StatusCompetences.prototype.drawItem = function(index: number) {
  * Returns the competence from the given index.
  */
 Window_StatusCompetences.prototype.competenceFromIndex = function(index: number) {
-    const comp: [string, Competence] = index < TEW.DATABASE.COMPS.BASE_ARRAY.length  // [<internal name>, {<competence data>}]
-        ? TEW.DATABASE.COMPS.BASE_ARRAY[index]
-        : this._advancedCompsList[index - TEW.DATABASE.COMPS.BASE_ARRAY.length];
+    const comp: [string, Competence] = this._compsList[index]; // [<internal name>, {<competence data>}]
     const level = this.isLevellingMode()
         ? this._levelling.compValue(comp[0])
         : this._actor.compPlus(comp[0]);
@@ -159,13 +191,23 @@ Window_StatusCompetences.prototype.setLevelling = function(levelling: any) {
 };
 
 /**
- * Enters or leaves levelling mode.
+ * Enters or leaves levelling mode. The list is reordered, so the selected competence is
+ * followed to its new index rather than left behind.
  */
 Window_StatusCompetences.prototype.setLevellingMode = function(active: boolean) {
-    if (this._levellingMode !== active) {
-        this._levellingMode = active;
-        this.refresh();
+    if (this._levellingMode === active) {
+        return;
     }
+    const selectedCompId = this.index() >= 0 && this._compsList[this.index()]
+        ? this._compsList[this.index()][0]
+        : null;
+    this._levellingMode = active;
+    this.makeCompsList();
+    if (selectedCompId) {
+        const newIndex = this._compsList.map(comp => comp[0]).indexOf(selectedCompId);
+        this.select(newIndex >= 0 ? newIndex : 0);
+    }
+    this.refresh();
 };
 
 Window_StatusCompetences.prototype.isLevellingMode = function() {
@@ -173,7 +215,8 @@ Window_StatusCompetences.prototype.isLevellingMode = function() {
 };
 
 /**
- * Green when advances are about to be bought, blue when they can be, plain otherwise.
+ * Green when advances are about to be bought, blue when the career allows them, plain otherwise.
+ * Running out of experience does not change the colour, only what the arrows are able to do.
  */
 Window_StatusCompetences.prototype.competenceLevelColor = function(compId: string) {
     if (!this.isLevellingMode()) {
@@ -182,7 +225,7 @@ Window_StatusCompetences.prototype.competenceLevelColor = function(compId: strin
     if (this._levelling.compAdvances(compId) > 0) {
         return this.powerUpColor();
     }
-    if (this._levelling.canIncreaseComp(compId)) {
+    if (this._levelling.canImproveComp(compId)) {
         return this.levellingColor();
     }
     return this.normalColor();

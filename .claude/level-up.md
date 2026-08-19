@@ -79,6 +79,7 @@ Levelling mode should color the value of all stats that can be augmented in blue
 When the cursor is placed on a given stat, using right of left arrow will change the new value to assign, and consume/refund experience points to match.
 It is impossible to go under the current value, or to go above available experience points.
 When a competence's displayed value is higher than the current value (expected to level up), it should be colored green.
+Improvable stats are determined by the character's career.
 
 ### Competence augment
 
@@ -86,3 +87,13 @@ In `Window_StatusCompetences`, levelling mode should color the value of all comp
 When the cursor is placed on a given competence, using right of left arrow will change the new value to assign, and consume/refund experience points to match.
 It is impossible to go under the current value, or to go above available experience points.
 When a competence's displayed value is higher than the current value (expected to level up), it should be colored green.
+Improvable competences are determined by the character's career.
+Only in levelling mode, improvable competences should be moved to the top of the list, still in alphabetical order.
+
+### Talents
+
+In `Window_StatusTalents`, levelling mode should change the list to include buyable talents that have not yet been acquired.
+These are determined by the character's career. Buyable talents should appear in blue (`textColor(1)`) and at the top of the list.
+Each talent costs 100 experience points.
+
+Per the rules, some talents can be bought several times for an increasing cost, but this will be implemented later. Only new talents should show up for now.

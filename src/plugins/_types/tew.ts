@@ -184,6 +184,8 @@ const TEW: {
         CHARACTERISTIC_COSTS?: number[];
         /** XP cost of one competence advance, indexed by cost bracket */
         COMPETENCE_COSTS?: number[];
+        /** XP cost of a talent which has not been acquired yet */
+        TALENT_COST?: number;
 
         /**
          * Find the cost bracket matching a number of advances
@@ -228,6 +230,9 @@ const TEW: {
         LEVEL_UP_KEY?: string;
         /** Human-readable name of LEVEL_UP_KEY, displayed in the status menu topbar */
         LEVEL_UP_KEY_LABEL?: string;
+
+        /** Width left to the career name drawn next to an actor's name */
+        CAREER_LABEL_WIDTH?: number;
 
         /** Common line height for several menus */
         LINE_HEIGHT?: number;

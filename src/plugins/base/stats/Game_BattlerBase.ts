@@ -48,6 +48,7 @@ export interface Game_BattlerBase {
     hasComp: (compId: string) => boolean;
     hasAnyCompOfCategory: (compCategory: string) => boolean;
     addComp: (compId: string, value: number) => void;
+    learnComp: (compId: string) => void;
 
     talent: (talentId: string) => number;
     allTalents: () => string[];
@@ -152,6 +153,7 @@ Game_BattlerBase.prototype.initialize = function() {
     this._equippedArmors = [];
     this._ammo = {}; // ID: quantity
     this._conditions = {}; // ID: data
+    this._career = undefined;
     this._exp = 0;
     this._fate = 0;
     this._fortune = 0;
@@ -266,6 +268,17 @@ Game_BattlerBase.prototype.hasAnyCompOfCategory = function(compCategory: string)
 Game_BattlerBase.prototype.addComp = function(compId: string, value: number) {
     this._competences[TEW.DATABASE.COMPS.IDS.indexOf(compId)] += value;
     // this.refresh();
+};
+
+/**
+ * Unlocking an advanced competence, which is stored as -1 until it is learnt.
+ * Learning it only brings it to 0 advances: the advances themselves are bought separately.
+ */
+Game_BattlerBase.prototype.learnComp = function(compId: string) {
+    if (this.hasComp(compId)) {
+        return;
+    }
+    this._competences[TEW.DATABASE.COMPS.IDS.indexOf(compId)] = 0;
 };
 
 // Talents

@@ -5,7 +5,7 @@
 // File: Game_Levelling.ts
 // Author: Ersokili, 7evy, Sebibebi67
 // Date: 15/08/2026
-// Description: This file contains the implementation of the Game_Levelling class, which holds the advances an actor is about to buy while levelling mode is active in the status menu. Nothing is written to the actor until the player confirms: the class only tracks pending advances and the experience points they would consume, so that the whole session can be discarded at once.
+// Description: This file contains the implementation of the Game_Levelling class, which holds the advances and talents an actor is about to buy while levelling mode is active in the status menu. Nothing is written to the actor until the player confirms: the class only tracks pending purchases and the experience points they would consume, so that the whole session can be discarded at once. What may be bought at all is decided by the actor's career.
 
 // ----------------------
 // Imports
@@ -59,6 +59,7 @@ Game_Levelling.prototype.setActor = function(actor: Game_Actor) {
 Game_Levelling.prototype.clear = function() {
     this._compAdvances = {}; // ID: number of pending advances
     this._statAdvances = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    this._talentPurchases = []; // IDs of the talents about to be bought
     this._spentExp = 0;
 };
 
@@ -79,6 +80,21 @@ Game_Levelling.prototype.hasAdvances = function() {
 };
 // #endregion === Experience === //
 // === //
+// #region ====== Career restrictions === //
+// Careers gate what experience may be spent on, and are expected to always be defined
+Game_Levelling.prototype.canImproveStat = function(paramId: number) {
+    return !!this._actor && this._actor.canImproveStat(paramId);
+};
+
+Game_Levelling.prototype.canImproveComp = function(compId: string) {
+    return !!this._actor && this._actor.canImproveComp(compId);
+};
+
+Game_Levelling.prototype.canBuyTalent = function(talentId: string) {
+    return !!this._actor && this._actor.canBuyTalent(talentId);
+};
+// #endregion === Career restrictions === //
+// === //
 // #region ====== Competences === //
 // Number of pending advances for a competence
 Game_Levelling.prototype.compAdvances = function(compId: string) {
@@ -95,9 +111,9 @@ Game_Levelling.prototype.nextCompCost = function(compId: string) {
     return TEW.LEVELLING.competenceCost(this.compValue(compId));
 };
 
-// Whether the remaining experience covers one more advance
+// Whether the career allows the advance and the remaining experience covers it
 Game_Levelling.prototype.canIncreaseComp = function(compId: string) {
-    return !!this._actor && this.nextCompCost(compId) <= this.remainingExp();
+    return this.canImproveComp(compId) && this.nextCompCost(compId) <= this.remainingExp();
 };
 
 // It is impossible to go under the actor's current value
@@ -151,9 +167,9 @@ Game_Levelling.prototype.nextStatCost = function(paramId: number) {
     return TEW.LEVELLING.characteristicCost(this.statAdvanceCount(paramId));
 };
 
-// Whether the remaining experience covers one more advance
+// Whether the career allows the advance and the remaining experience covers it
 Game_Levelling.prototype.canIncreaseStat = function(paramId: number) {
-    return !!this._actor && this.nextStatCost(paramId) <= this.remainingExp();
+    return this.canImproveStat(paramId) && this.nextStatCost(paramId) <= this.remainingExp();
 };
 
 // It is impossible to go under the actor's current value
@@ -182,6 +198,52 @@ Game_Levelling.prototype.decreaseStat = function(paramId: number) {
     return true;
 };
 // #endregion === Characteristics === //
+// === //
+// #region ====== Talents === //
+// Experience cost of a talent which has not been acquired yet
+Game_Levelling.prototype.talentCost = function() {
+    return TEW.LEVELLING.TALENT_COST;
+};
+
+// Whether a talent is about to be bought
+Game_Levelling.prototype.isTalentBought = function(talentId: string) {
+    return this._talentPurchases.indexOf(talentId) >= 0;
+};
+
+// Buying a talent twice is not implemented yet, so only new talents may be bought
+Game_Levelling.prototype.canBuyMoreTalent = function(talentId: string) {
+    return this.canBuyTalent(talentId)
+        && !this.isTalentBought(talentId)
+        && this.talentCost() <= this.remainingExp();
+};
+
+Game_Levelling.prototype.canRefundTalent = function(talentId: string) {
+    return this.isTalentBought(talentId);
+};
+
+Game_Levelling.prototype.buyTalent = function(talentId: string) {
+    if (!this.canBuyMoreTalent(talentId)) {
+        return false;
+    }
+    this._talentPurchases.push(talentId);
+    this._spentExp += this.talentCost();
+    return true;
+};
+
+Game_Levelling.prototype.refundTalent = function(talentId: string) {
+    if (!this.canRefundTalent(talentId)) {
+        return false;
+    }
+    this._talentPurchases.splice(this._talentPurchases.indexOf(talentId), 1);
+    this._spentExp -= this.talentCost();
+    return true;
+};
+
+// Talent level including the purchase about to be made
+Game_Levelling.prototype.talentValue = function(talentId: string) {
+    return this._actor.talent(talentId) + (this.isTalentBought(talentId) ? 1 : 0);
+};
+// #endregion === Talents === //
 // === //
 // #region ====== Summary and commit === //
 // Listing every pending advance, to be displayed in the confirmation window
@@ -217,6 +279,19 @@ Game_Levelling.prototype.summary = function() {
             });
         });
 
+    this._talentPurchases
+        .slice()
+        .sort((a, b) => TEW.DATABASE.TALENTS.SET[a].name.localeCompare(TEW.DATABASE.TALENTS.SET[b].name))
+        .forEach(talentId => {
+            const bought = this._actor.talent(talentId);
+            advances.push({
+                name: TEW.DATABASE.TALENTS.SET[talentId].name,
+                from: bought,
+                to: bought + 1,
+                cost: this.talentCost()
+            });
+        });
+
     return advances;
 };
 
@@ -230,6 +305,9 @@ Game_Levelling.prototype.apply = function() {
     }
     Object.keys(this._compAdvances).forEach(compId => {
         this._actor.applyCompAdvances(compId, this._compAdvances[compId]);
+    });
+    this._talentPurchases.forEach(talentId => {
+        this._actor.addTalent(talentId);
     });
     this._actor.spendExp(this._spentExp);
     this.clear();

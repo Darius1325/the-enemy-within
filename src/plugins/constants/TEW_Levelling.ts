@@ -21,6 +21,9 @@ import TEW from "../_types/tew";
 TEW.LEVELLING.BRACKET_SIZE = 5;
 TEW.LEVELLING.LAST_BRACKET = 14;
 
+// Talents have a flat cost for now, as buying one several times is not implemented yet
+TEW.LEVELLING.TALENT_COST = 100;
+
 // Brackets: 0-5, 6-10, 11-15, ..., 66-70, 71+
 TEW.LEVELLING.CHARACTERISTIC_COSTS = [
     25,  // 0 - 5

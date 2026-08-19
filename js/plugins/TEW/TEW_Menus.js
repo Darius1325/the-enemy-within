@@ -39,6 +39,8 @@ TEW.MENU.COMMAND_NAMES[57] = "Back";
 TEW.MENU.COMMAND_NAMES[58] = "Level up";
 TEW.MENU.COMMAND_NAMES[59] = "XP left";
 TEW.MENU.COMMAND_NAMES[60] = "Spent";
+TEW.MENU.COMMAND_NAMES[61] = "Base";
+TEW.MENU.COMMAND_NAMES[62] = "Unlearned";
 // Inventory Menu
 TEW.MENU.COMMAND_NAMES[70] = "InventoryNextChar";
 TEW.MENU.COMMAND_NAMES[71] = "InventoryPreviousChar";
@@ -97,6 +99,7 @@ Input.keyMapper[69] = "E_Key";
 TEW.MENU.LEVEL_UP_KEY = "A_Key";
 TEW.MENU.LEVEL_UP_KEY_LABEL = "A";
 // Windows TODO move
+TEW.MENU.CAREER_LABEL_WIDTH = 240;
 TEW.MENU.INVENTORY_WINDOW_TOPBAR_HEIGHT = 72;
 TEW.MENU.STATUS_WINDOW_TOPBAR_HEIGHT = 72;
 TEW.MENU.STATUS_WINDOW_BOTTOM_DESCRIPTION_HEIGHT = 134;
@@ -123,6 +126,8 @@ Object.defineProperties(TextManager, {
     statusLevelUp: TextManager.getter('command', 58),
     statusExpLeft: TextManager.getter('command', 59),
     statusExpSpent: TextManager.getter('command', 60),
+    statusCompBase: TextManager.getter('command', 61),
+    statusCompUnlearned: TextManager.getter('command', 62),
     // Inventory Menu
     inventoryNextChar: TextManager.getter('command', 70),
     inventoryPreviousChar: TextManager.getter('command', 71),
@@ -761,6 +766,7 @@ Game_Levelling.prototype.setActor = function (actor) {
 Game_Levelling.prototype.clear = function () {
     this._compAdvances = {}; // ID: number of pending advances
     this._statAdvances = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    this._talentPurchases = []; // IDs of the talents about to be bought
     this._spentExp = 0;
 };
 // #region ====== Experience === //
@@ -778,6 +784,19 @@ Game_Levelling.prototype.hasAdvances = function () {
 };
 // #endregion === Experience === //
 // === //
+// #region ====== Career restrictions === //
+// Careers gate what experience may be spent on, and are expected to always be defined
+Game_Levelling.prototype.canImproveStat = function (paramId) {
+    return !!this._actor && this._actor.canImproveStat(paramId);
+};
+Game_Levelling.prototype.canImproveComp = function (compId) {
+    return !!this._actor && this._actor.canImproveComp(compId);
+};
+Game_Levelling.prototype.canBuyTalent = function (talentId) {
+    return !!this._actor && this._actor.canBuyTalent(talentId);
+};
+// #endregion === Career restrictions === //
+// === //
 // #region ====== Competences === //
 // Number of pending advances for a competence
 Game_Levelling.prototype.compAdvances = function (compId) {
@@ -791,9 +810,9 @@ Game_Levelling.prototype.compValue = function (compId) {
 Game_Levelling.prototype.nextCompCost = function (compId) {
     return TEW.LEVELLING.competenceCost(this.compValue(compId));
 };
-// Whether the remaining experience covers one more advance
+// Whether the career allows the advance and the remaining experience covers it
 Game_Levelling.prototype.canIncreaseComp = function (compId) {
-    return !!this._actor && this.nextCompCost(compId) <= this.remainingExp();
+    return this.canImproveComp(compId) && this.nextCompCost(compId) <= this.remainingExp();
 };
 // It is impossible to go under the actor's current value
 Game_Levelling.prototype.canDecreaseComp = function (compId) {
@@ -840,9 +859,9 @@ Game_Levelling.prototype.statValue = function (paramId) {
 Game_Levelling.prototype.nextStatCost = function (paramId) {
     return TEW.LEVELLING.characteristicCost(this.statAdvanceCount(paramId));
 };
-// Whether the remaining experience covers one more advance
+// Whether the career allows the advance and the remaining experience covers it
 Game_Levelling.prototype.canIncreaseStat = function (paramId) {
-    return !!this._actor && this.nextStatCost(paramId) <= this.remainingExp();
+    return this.canImproveStat(paramId) && this.nextStatCost(paramId) <= this.remainingExp();
 };
 // It is impossible to go under the actor's current value
 Game_Levelling.prototype.canDecreaseStat = function (paramId) {
@@ -868,6 +887,46 @@ Game_Levelling.prototype.decreaseStat = function (paramId) {
     return true;
 };
 // #endregion === Characteristics === //
+// === //
+// #region ====== Talents === //
+// Experience cost of a talent which has not been acquired yet
+Game_Levelling.prototype.talentCost = function () {
+    return TEW.LEVELLING.TALENT_COST;
+};
+// Whether a talent is about to be bought
+Game_Levelling.prototype.isTalentBought = function (talentId) {
+    return this._talentPurchases.indexOf(talentId) >= 0;
+};
+// Buying a talent twice is not implemented yet, so only new talents may be bought
+Game_Levelling.prototype.canBuyMoreTalent = function (talentId) {
+    return this.canBuyTalent(talentId)
+        && !this.isTalentBought(talentId)
+        && this.talentCost() <= this.remainingExp();
+};
+Game_Levelling.prototype.canRefundTalent = function (talentId) {
+    return this.isTalentBought(talentId);
+};
+Game_Levelling.prototype.buyTalent = function (talentId) {
+    if (!this.canBuyMoreTalent(talentId)) {
+        return false;
+    }
+    this._talentPurchases.push(talentId);
+    this._spentExp += this.talentCost();
+    return true;
+};
+Game_Levelling.prototype.refundTalent = function (talentId) {
+    if (!this.canRefundTalent(talentId)) {
+        return false;
+    }
+    this._talentPurchases.splice(this._talentPurchases.indexOf(talentId), 1);
+    this._spentExp -= this.talentCost();
+    return true;
+};
+// Talent level including the purchase about to be made
+Game_Levelling.prototype.talentValue = function (talentId) {
+    return this._actor.talent(talentId) + (this.isTalentBought(talentId) ? 1 : 0);
+};
+// #endregion === Talents === //
 // === //
 // #region ====== Summary and commit === //
 // Listing every pending advance, to be displayed in the confirmation window
@@ -900,6 +959,18 @@ Game_Levelling.prototype.summary = function () {
             cost: TEW.LEVELLING.competenceRangeCost(bought, bought + pending)
         });
     });
+    this._talentPurchases
+        .slice()
+        .sort((a, b) => TEW.DATABASE.TALENTS.SET[a].name.localeCompare(TEW.DATABASE.TALENTS.SET[b].name))
+        .forEach(talentId => {
+        const bought = this._actor.talent(talentId);
+        advances.push({
+            name: TEW.DATABASE.TALENTS.SET[talentId].name,
+            from: bought,
+            to: bought + 1,
+            cost: this.talentCost()
+        });
+    });
     return advances;
 };
 // Writing every pending advance to the actor and consuming the experience points
@@ -912,6 +983,9 @@ Game_Levelling.prototype.apply = function () {
     }
     Object.keys(this._compAdvances).forEach(compId => {
         this._actor.applyCompAdvances(compId, this._compAdvances[compId]);
+    });
+    this._talentPurchases.forEach(talentId => {
+        this._actor.addTalent(talentId);
     });
     this._actor.spendExp(this._spentExp);
     this.clear();
@@ -2783,6 +2857,7 @@ Window_StatusCompetences.prototype.constructor = Window_StatusCompetences;
 Window_StatusCompetences.prototype.initialize = function () {
     this._levelling = null;
     this._levellingMode = false;
+    this._compsList = [];
     HalfWindow_List.prototype.initialize.call(this);
     this._actor = null;
     this._maxItems = 0;
@@ -2794,10 +2869,34 @@ Window_StatusCompetences.prototype.initialize = function () {
 Window_StatusCompetences.prototype.setActor = function (actor) {
     if (this._actor !== actor) {
         this._actor = actor;
-        this._advancedCompsList = TEW.DATABASE.COMPS.ADVANCED_ARRAY.filter(comp => actor.hasComp(comp[0]));
-        this._maxItems = TEW.DATABASE.COMPS.BASE_ARRAY.length + this._advancedCompsList.length;
+        this.makeCompsList();
         this.refresh();
     }
+};
+/**
+ * Building the displayed list. Outside of levelling mode it holds every base competence
+ * followed by the advanced ones the actor has learnt.
+ * In levelling mode, the competences the career allows to improve are moved to the top in
+ * alphabetical order, unlearnt ones included, and the rest keeps its usual order.
+ */
+Window_StatusCompetences.prototype.makeCompsList = function () {
+    if (!this._actor) {
+        this._compsList = [];
+        this._maxItems = 0;
+        return;
+    }
+    const knownComps = TEW.DATABASE.COMPS.BASE_ARRAY.concat(TEW.DATABASE.COMPS.ADVANCED_ARRAY.filter(comp => this._actor.hasComp(comp[0])));
+    if (!this.isLevellingMode()) {
+        this._compsList = knownComps;
+    }
+    else {
+        const improvableIds = this._actor.improvableComps();
+        const improvableComps = improvableIds
+            .map(compId => [compId, TEW.DATABASE.COMPS.SET[compId]])
+            .sort((a, b) => a[1].name.localeCompare(b[1].name));
+        this._compsList = improvableComps.concat(knownComps.filter(comp => improvableIds.indexOf(comp[0]) < 0));
+    }
+    this._maxItems = this._compsList.length;
 };
 /**
  * Returns the maximum number of columns in the window.
@@ -2828,7 +2927,9 @@ Window_StatusCompetences.prototype.drawItem = function (index) {
     this.resetTextColor();
     // Comp bonus, including the advances about to be bought in levelling mode
     const compLevel = comp[1].level;
-    const compLevelText = compLevel > 0 ? `${compLevel}` : "Base";
+    const compLevelText = compLevel > 0
+        ? `${compLevel}`
+        : this._actor.hasComp(comp[0]) ? TextManager.statusCompBase : TextManager.statusCompUnlearned;
     this.changeTextColor(this.competenceLevelColor(comp[0]));
     this.drawText(compLevelText, Window_StatusCompetences.NAME_COLUMN_WIDTH, y, Window_StatusCompetences.LEVEL_COLUMN_WIDTH, 'left');
     this.resetTextColor();
@@ -2848,9 +2949,7 @@ Window_StatusCompetences.prototype.drawItem = function (index) {
  * Returns the competence from the given index.
  */
 Window_StatusCompetences.prototype.competenceFromIndex = function (index) {
-    const comp = index < TEW.DATABASE.COMPS.BASE_ARRAY.length // [<internal name>, {<competence data>}]
-        ? TEW.DATABASE.COMPS.BASE_ARRAY[index]
-        : this._advancedCompsList[index - TEW.DATABASE.COMPS.BASE_ARRAY.length];
+    const comp = this._compsList[index]; // [<internal name>, {<competence data>}]
     const level = this.isLevellingMode()
         ? this._levelling.compValue(comp[0])
         : this._actor.compPlus(comp[0]);
@@ -2884,19 +2983,30 @@ Window_StatusCompetences.prototype.setLevelling = function (levelling) {
     this.refresh();
 };
 /**
- * Enters or leaves levelling mode.
+ * Enters or leaves levelling mode. The list is reordered, so the selected competence is
+ * followed to its new index rather than left behind.
  */
 Window_StatusCompetences.prototype.setLevellingMode = function (active) {
-    if (this._levellingMode !== active) {
-        this._levellingMode = active;
-        this.refresh();
+    if (this._levellingMode === active) {
+        return;
     }
+    const selectedCompId = this.index() >= 0 && this._compsList[this.index()]
+        ? this._compsList[this.index()][0]
+        : null;
+    this._levellingMode = active;
+    this.makeCompsList();
+    if (selectedCompId) {
+        const newIndex = this._compsList.map(comp => comp[0]).indexOf(selectedCompId);
+        this.select(newIndex >= 0 ? newIndex : 0);
+    }
+    this.refresh();
 };
 Window_StatusCompetences.prototype.isLevellingMode = function () {
     return !!this._levellingMode && !!this._levelling && !!this._actor;
 };
 /**
- * Green when advances are about to be bought, blue when they can be, plain otherwise.
+ * Green when advances are about to be bought, blue when the career allows them, plain otherwise.
+ * Running out of experience does not change the colour, only what the arrows are able to do.
  */
 Window_StatusCompetences.prototype.competenceLevelColor = function (compId) {
     if (!this.isLevellingMode()) {
@@ -2905,7 +3015,7 @@ Window_StatusCompetences.prototype.competenceLevelColor = function (compId) {
     if (this._levelling.compAdvances(compId) > 0) {
         return this.powerUpColor();
     }
-    if (this._levelling.canIncreaseComp(compId)) {
+    if (this._levelling.canImproveComp(compId)) {
         return this.levellingColor();
     }
     return this.normalColor();
@@ -3175,6 +3285,10 @@ Scene_Status.prototype.createTalentsWindow = function () {
         this._commandWindow.activate();
         this._talentsWindow.deselect();
     });
+    this._talentsWindow.setHandler('levelling_change', () => {
+        this._commandWindow.refresh();
+    });
+    this._talentsWindow.setLevelling(this._levelling);
     this._talentsWindow.hide();
     this.addWindow(this._talentsWindow);
 };
@@ -3356,6 +3470,8 @@ Scene_Status.prototype.refreshLevellingWindows = function () {
     this._competencesWindow.refresh();
     this._statsWindow.setLevellingMode(this._levellingMode);
     this._statsWindow.refresh();
+    this._talentsWindow.setLevellingMode(this._levellingMode);
+    this._talentsWindow.refresh();
 };
 /**
  * Leaving levelling mode. Exit is instantaneous with nothing spent, and prompts otherwise.
@@ -3659,7 +3775,7 @@ Window_StatusStats.prototype.drawAllItems = function () {
 };
 Window_StatusStats.prototype.drawCharacterInfo = function (y) {
     this.drawActorName(this._actor, 6, y);
-    this.drawActorClass(this._actor, 192, y);
+    this.drawActorCareer(this._actor, 192, y);
     this.drawHorzLine(y + TEW.MENU.LINE_HEIGHT);
     this.drawActorFace(this._actor, 12, y + TEW.MENU.LINE_HEIGHT * 2);
     this.drawBasicInfo(204, y + TEW.MENU.LINE_HEIGHT * 2);
@@ -3747,7 +3863,8 @@ Window_StatusStats.prototype.statValue = function (paramId) {
         : this._actor.param(paramId);
 };
 /**
- * Green when advances are about to be bought, blue when they can be, plain otherwise.
+ * Green when advances are about to be bought, blue when the career allows them, plain otherwise.
+ * Running out of experience does not change the colour, only what the arrows are able to do.
  */
 Window_StatusStats.prototype.statValueColor = function (paramId) {
     if (!this.isLevellingMode()) {
@@ -3756,7 +3873,7 @@ Window_StatusStats.prototype.statValueColor = function (paramId) {
     if (this._levelling.statAdvances(paramId) > 0) {
         return this.powerUpColor();
     }
-    if (this._levelling.canIncreaseStat(paramId)) {
+    if (this._levelling.canImproveStat(paramId)) {
         return this.levellingColor();
     }
     return this.normalColor();
@@ -3845,12 +3962,18 @@ Window_StatusTalentDetails.prototype.drawDetails = function (talent) {
 function Window_StatusTalents() {
     this.initialize.apply(this, arguments);
 }
+Window_StatusTalents.LEFT_PADDING = 48;
+Window_StatusTalents.NAME_COLUMN_WIDTH = 400;
+Window_StatusTalents.LEVEL_COLUMN_WIDTH = 120;
 Window_StatusTalents.prototype = Object.create(HalfWindow_List.prototype);
 Window_StatusTalents.prototype.constructor = Window_StatusTalents;
 /**
  * Constructor for the Window_StatusTalents class.
  */
 Window_StatusTalents.prototype.initialize = function () {
+    this._levelling = null;
+    this._levellingMode = false;
+    this._talents = [];
     HalfWindow_List.prototype.initialize.call(this);
 };
 /**
@@ -3859,10 +3982,33 @@ Window_StatusTalents.prototype.initialize = function () {
 Window_StatusTalents.prototype.setActor = function (actor) {
     if (this._actor !== actor) {
         this._actor = actor;
-        this._talents = TEW.DATABASE.TALENTS.ARRAY.filter(talent => actor.hasTalent(talent[0])); // [<internal name>, {<talent data>}]
-        this._maxItems = this._talents.length;
+        this.makeTalentsList();
         this.refresh();
     }
+};
+/**
+ * Building the displayed list. Outside of levelling mode it only holds the acquired talents.
+ * In levelling mode, the career talents which have not been acquired yet are added at the top
+ * in alphabetical order, so that they may be bought.
+ */
+Window_StatusTalents.prototype.makeTalentsList = function () {
+    if (!this._actor) {
+        this._talents = [];
+        this._maxItems = 0;
+        return;
+    }
+    // [<internal name>, {<talent data>}]
+    const ownedTalents = TEW.DATABASE.TALENTS.ARRAY.filter(talent => this._actor.hasTalent(talent[0]));
+    if (!this.isLevellingMode()) {
+        this._talents = ownedTalents;
+    }
+    else {
+        const buyableTalents = this._actor.buyableTalents()
+            .map(talentId => [talentId, TEW.DATABASE.TALENTS.SET[talentId]])
+            .sort((a, b) => a[1].name.localeCompare(b[1].name));
+        this._talents = buyableTalents.concat(ownedTalents);
+    }
+    this._maxItems = this._talents.length;
 };
 /**
  * Draws all items in the window.
@@ -3881,17 +4027,17 @@ Window_StatusTalents.prototype.drawAllItems = function () {
  */
 Window_StatusTalents.prototype.drawItem = function (index) {
     const normalizedIndex = index - this.topIndex();
-    const x = 48;
+    const x = Window_StatusTalents.LEFT_PADDING;
     const y = normalizedIndex * TEW.MENU.LINE_HEIGHT;
     const talent = this.talentFromIndex(index);
     // Talent name
     this.changeTextColor(this.systemColor());
-    this.drawText(talent[1].name, x, y, this._talentColumnWidth);
+    this.drawText(talent[1].name, x, y, Window_StatusTalents.NAME_COLUMN_WIDTH);
     this.resetTextColor();
-    // Talent level
-    const level = this._actor.talent(talent[0]);
-    const levelText = `lvl${level}`;
-    this.drawText(levelText, x + this._talentColumnWidth, y, this._levelColumnWidth, 'right');
+    // Talent level, or the price of a talent which has not been bought yet
+    this.changeTextColor(this.talentLevelColor(talent[0]));
+    this.drawText(this.talentLevelText(talent[0]), x + Window_StatusTalents.NAME_COLUMN_WIDTH, y, Window_StatusTalents.LEVEL_COLUMN_WIDTH, 'right');
+    this.resetTextColor();
 };
 /**
  * Returns the talent from the given index.
@@ -3927,6 +4073,104 @@ Window_StatusTalents.prototype.select = function (index) {
 //     this.updateCursor();
 //     this.callUpdateHelp();
 // };
+// #region ====== Levelling mode === //
+/**
+ * Links the window to the levelling session holding the pending purchases.
+ */
+Window_StatusTalents.prototype.setLevelling = function (levelling) {
+    this._levelling = levelling;
+    this.refresh();
+};
+/**
+ * Enters or leaves levelling mode. The buyable talents appear and disappear with it, so the
+ * selected talent is followed to its new index rather than left behind.
+ */
+Window_StatusTalents.prototype.setLevellingMode = function (active) {
+    if (this._levellingMode === active) {
+        return;
+    }
+    const selectedTalentId = this.index() >= 0 && this._talents[this.index()]
+        ? this._talents[this.index()][0]
+        : null;
+    this._levellingMode = active;
+    this.makeTalentsList();
+    if (selectedTalentId) {
+        const newIndex = this._talents.map(talent => talent[0]).indexOf(selectedTalentId);
+        this.select(Math.min(Math.max(newIndex, 0), this.maxItems() - 1));
+    }
+    this.refresh();
+};
+Window_StatusTalents.prototype.isLevellingMode = function () {
+    return !!this._levellingMode && !!this._levelling && !!this._actor;
+};
+/**
+ * Level of a talent, including the purchase about to be made.
+ */
+Window_StatusTalents.prototype.talentLevel = function (talentId) {
+    return this.isLevellingMode()
+        ? this._levelling.talentValue(talentId)
+        : this._actor.talent(talentId);
+};
+/**
+ * Talents which are not acquired yet display their price instead of a level of 0.
+ */
+Window_StatusTalents.prototype.talentLevelText = function (talentId) {
+    const level = this.talentLevel(talentId);
+    if (level > 0 || !this.isLevellingMode()) {
+        return `lvl${level}`;
+    }
+    return `${this._levelling.talentCost()} ${TextManager.expA}`;
+};
+/**
+ * Green when the talent is about to be bought, blue when the career allows buying it,
+ * plain otherwise. Running out of experience does not change the colour.
+ */
+Window_StatusTalents.prototype.talentLevelColor = function (talentId) {
+    if (!this.isLevellingMode()) {
+        return this.normalColor();
+    }
+    if (this._levelling.isTalentBought(talentId)) {
+        return this.powerUpColor();
+    }
+    if (this._levelling.canBuyTalent(talentId)) {
+        return this.levellingColor();
+    }
+    return this.normalColor();
+};
+/**
+ * In levelling mode, the horizontal arrows buy and refund talents.
+ */
+Window_StatusTalents.prototype.cursorRight = function (wrap) {
+    if (this.isLevellingMode() && this.index() >= 0) {
+        this.changeTalent(true);
+    }
+    else {
+        HalfWindow_List.prototype.cursorRight.call(this, wrap);
+    }
+};
+Window_StatusTalents.prototype.cursorLeft = function (wrap) {
+    if (this.isLevellingMode() && this.index() >= 0) {
+        this.changeTalent(false);
+    }
+    else {
+        HalfWindow_List.prototype.cursorLeft.call(this, wrap);
+    }
+};
+/**
+ * Buys or refunds the selected talent.
+ */
+Window_StatusTalents.prototype.changeTalent = function (buy) {
+    const talentId = this.talentFromIndex(this.index())[0];
+    const changed = buy
+        ? this._levelling.buyTalent(talentId)
+        : this._levelling.refundTalent(talentId);
+    if (changed) {
+        SoundManager.playCursor();
+        this.refresh();
+        this.callHandler('levelling_change');
+    }
+};
+// #endregion === Levelling mode === //
 /**
  * Called when the process successfully completes.
  */
@@ -4158,6 +4402,12 @@ Window_Base.prototype.initialize = function (x, y, width, height) {
 };
 Window_Base.prototype.backgroundImageName = function () {
     return undefined;
+};
+// Careers replace RMMV's classes, which are left unused
+Window_Base.prototype.drawActorCareer = function (actor, x, y, width = TEW.MENU.CAREER_LABEL_WIDTH) {
+    this.changeTextColor(this.systemColor());
+    this.drawText(actor.careerName(), x, y, width);
+    this.resetTextColor();
 };
 // Drawing an underlined Text
 Window_Base.prototype.drawUnderlinedText = function (text, x, y, width, align) {

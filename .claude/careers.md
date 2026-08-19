@@ -9,6 +9,8 @@ Career data is stored in ./src/plugins/constants/TEW_Careers.ts
 
 ## Rules
 
+A playable character (one for whom the menu can be opened) must have a career. There is no need to check for a PC's career's existence, as we want to throw an error if a PC does not have one.
+
 ### Class
 
 A class is comprised of several career paths, and defines what part of society the character is part of.
@@ -48,5 +50,4 @@ The stats and skills for a given level should be compounded for ease of access: 
 
 ### Levelling restrictions
 
-This will be implemented later, as characters have no career yet.
 The status menu's levelling mode should take into account the character's career to limit what stats, skills and talents experience may be used on. As before, non improvable items should keep the normal color.

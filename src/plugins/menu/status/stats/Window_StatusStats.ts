@@ -111,7 +111,7 @@ Window_StatusStats.prototype.drawAllItems = function() {
 
 Window_StatusStats.prototype.drawCharacterInfo = function(y) {
     this.drawActorName(this._actor, 6, y);
-    this.drawActorClass(this._actor, 192, y);
+    this.drawActorCareer(this._actor, 192, y);
     this.drawHorzLine(y + TEW.MENU.LINE_HEIGHT);
     this.drawActorFace(this._actor, 12, y + TEW.MENU.LINE_HEIGHT * 2);
     this.drawBasicInfo(204, y + TEW.MENU.LINE_HEIGHT * 2);
@@ -220,7 +220,8 @@ Window_StatusStats.prototype.statValue = function(paramId: number) {
 };
 
 /**
- * Green when advances are about to be bought, blue when they can be, plain otherwise.
+ * Green when advances are about to be bought, blue when the career allows them, plain otherwise.
+ * Running out of experience does not change the colour, only what the arrows are able to do.
  */
 Window_StatusStats.prototype.statValueColor = function(paramId: number) {
     if (!this.isLevellingMode()) {
@@ -229,7 +230,7 @@ Window_StatusStats.prototype.statValueColor = function(paramId: number) {
     if (this._levelling.statAdvances(paramId) > 0) {
         return this.powerUpColor();
     }
-    if (this._levelling.canIncreaseStat(paramId)) {
+    if (this._levelling.canImproveStat(paramId)) {
         return this.levellingColor();
     }
     return this.normalColor();
