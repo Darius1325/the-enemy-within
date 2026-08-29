@@ -24,6 +24,15 @@ TEW.LEVELLING.LAST_BRACKET = 14;
 // Talents have a flat cost for now, as buying one several times is not implemented yet
 TEW.LEVELLING.TALENT_COST = 100;
 
+/**
+ * Spells do not use the brackets below: their cost is a flat amount per bracket, and a bracket
+ * is worth as many spells as the caster's relevant characteristic bonus.
+ * Petty Magic uses the Willpower bonus and 50 XP, Arcane Magic the Intelligence bonus and
+ * 100 XP (see Petty Magic and Arcane Magic (Lore) in wfrp4e.pdf, Chapter 4: Skills and Talents).
+ */
+TEW.LEVELLING.PETTY_SPELL_COST = 50;
+TEW.LEVELLING.ARCANE_SPELL_COST = 100;
+
 // Brackets: 0-5, 6-10, 11-15, ..., 66-70, 71+
 TEW.LEVELLING.CHARACTERISTIC_COSTS = [
     25,  // 0 - 5
@@ -64,11 +73,8 @@ TEW.LEVELLING.COMPETENCE_COSTS = [
 // === //
 // #region ====== COST COMPUTATION === //
 TEW.LEVELLING.bracket = function(advances: number) {
-    if (advances <= TEW.LEVELLING.BRACKET_SIZE) {
-        return 0;
-    }
     return Math.min(
-        Math.ceil(advances / TEW.LEVELLING.BRACKET_SIZE) - 1,
+        Math.ceil((advances + 1) / TEW.LEVELLING.BRACKET_SIZE) - 1,
         TEW.LEVELLING.LAST_BRACKET
     );
 };
@@ -93,6 +99,35 @@ TEW.LEVELLING.competenceRangeCost = function(fromAdvances: number, toAdvances: n
     let total = 0;
     for (let advances = fromAdvances; advances < toAdvances; advances++) {
         total += TEW.LEVELLING.competenceCost(advances);
+    }
+    return total;
+};
+
+/**
+ * Cost of one more spell in a pool.
+ * The first bracket covers everything up to one bonus worth of spells, the second up to two,
+ * and so on, so a caster with a Willpower bonus of 3 holding 3 petty spells still pays the
+ * first bracket and pays the second for the next three.
+ * A bonus of 0 would leave no bracket to fall in, so it counts as 1.
+ * @param known number of spells already known in the pool
+ * @param bonus Willpower bonus for petty spells, Intelligence bonus for arcane ones
+ * @param cost XP cost of one bracket
+ */
+TEW.LEVELLING.spellCost = function(known: number, bonus: number, cost: number) {
+    return Math.max(1, Math.ceil((known + 1) / Math.max(1, bonus))) * cost;
+};
+
+/**
+ * Total cost of every spell bought between two pool sizes
+ * @param fromKnown number of spells already known in the pool
+ * @param toKnown targeted number of spells
+ * @param bonus Willpower bonus for petty spells, Intelligence bonus for arcane ones
+ * @param cost XP cost of one bracket
+ */
+TEW.LEVELLING.spellRangeCost = function(fromKnown: number, toKnown: number, bonus: number, cost: number) {
+    let total = 0;
+    for (let known = fromKnown; known < toKnown; known++) {
+        total += TEW.LEVELLING.spellCost(known, bonus, cost);
     }
     return total;
 };

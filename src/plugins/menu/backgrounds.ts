@@ -10,7 +10,6 @@ import Window_InventoryTransferSpinner from "./inventory/Window_InventoryTransfe
 import Window_InventoryInfo from "./inventory/info/Window_InventoryInfo";
 import Window_Journals from "./journals/Window_Journals";
 import Window_StatusCommand from "./status/Window_StatusCommand";
-import Window_StatusLevellingConfirm from "./status/Window_StatusLevellingConfirm";
 import Window_StatusLevellingSummary from "./status/Window_StatusLevellingSummary";
 import Window_StatusStats from "./status/stats/Window_StatusStats";
 import Window_StatusTalentDetails from "./status/talents/Window_StatusTalentDetails";
@@ -69,24 +68,11 @@ Window_StatusStats.prototype.windowHeight = function() {
     return Graphics.boxHeight - TEW.MENU.STATUS_WINDOW_TOPBAR_HEIGHT;
 };
 
-Window_StatusLevellingSummary.prototype.backgroundImageName = function() {
-    return "bg_menuHalfWindowList";
-};
 Window_StatusLevellingSummary.prototype.windowWidth = function() {
-    return Graphics.boxWidth / 2;
+    return Graphics.boxWidth / 2; // TODO: adjust once the background is redrawn
 };
 Window_StatusLevellingSummary.prototype.windowHeight = function() {
-    return 440; // same box as the half window lists
-};
-
-Window_StatusLevellingConfirm.prototype.backgroundImageName = function() {
-    return "bg_menuDetailsCommand3";
-};
-Window_StatusLevellingConfirm.prototype.windowWidth = function() {
-    return 280;
-};
-Window_StatusLevellingConfirm.prototype.windowHeight = function() {
-    return 168; // line height * 3 + bg padding
+    return 650;
 };
 
 Window_StatusTalents.prototype.backgroundImageName = function() {

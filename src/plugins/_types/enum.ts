@@ -212,6 +212,27 @@ export const enum Status {
     GOLD_3
 }
 
+// Magic Specifications
+
+/**
+ * Winds of magic
+ * Every actor is tied to one of them, or to none. The wind decides which magical talent they
+ * may take, how their Channelling skill is named, and which spells they may learn
+ */
+export const enum Wind {
+    NONE = "None",
+    AQSHY = "Aqshy",
+    AZYR = "Azyr",
+    CHAMON = "Chamon",
+    DHAR = "Dhar",
+    GHUR = "Ghur",
+    GHYRAN = "Ghyran",
+    HYSH = "Hysh",
+    SHYISH = "Shyish",
+    ULGU = "Ulgu"
+}
+export type WindName = 'NONE' | 'AQSHY' | 'AZYR' | 'CHAMON' | 'DHAR' | 'GHUR' | 'GHYRAN' | 'HYSH' | 'SHYISH' | 'ULGU';
+
 // Spell Specifications
 
 export const enum SpellType {
@@ -219,10 +240,23 @@ export const enum SpellType {
     CANTRIP
 }
 
+/**
+ * Spell domains
+ * Petty and arcane spells are open to any caster holding the matching talent, while the others
+ * are keyed on a wind of magic and named after the lore that wind carries
+ */
 export const enum SpellDomain {
     ARCANE = "Arcane",
-    FIRE = "Fire",
-    PETTY = "Petty"
+    PETTY = "Petty",
+    AQSHY = "Fire",
+    AZYR = "Heavens",
+    CHAMON = "Metal",
+    DHAR = "Dark",
+    GHUR = "Beasts",
+    GHYRAN = "Life",
+    HYSH = "Light",
+    SHYISH = "Death",
+    ULGU = "Shadow"
 }
 
 export const enum SpellTarget {

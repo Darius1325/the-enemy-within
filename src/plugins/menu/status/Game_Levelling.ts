@@ -5,17 +5,18 @@
 // File: Game_Levelling.ts
 // Author: Ersokili, 7evy, Sebibebi67
 // Date: 15/08/2026
-// Description: This file contains the implementation of the Game_Levelling class, which holds the advances and talents an actor is about to buy while levelling mode is active in the status menu. Nothing is written to the actor until the player confirms: the class only tracks pending purchases and the experience points they would consume, so that the whole session can be discarded at once. What may be bought at all is decided by the actor's career.
+// Description: This file contains the implementation of the Game_Levelling class, which holds the advances, talents and spells an actor is about to buy while levelling mode is active in the status menu. Nothing is written to the actor until the player confirms: the class only tracks pending purchases and the experience points they would consume, so that the whole session can be discarded at once. What may be bought at all is decided by the actor's career, and for spells by the magical talents they hold or are about to buy.
 
 // ----------------------
 // Imports
 // ----------------------
 
+import { SpellDomain } from "../../_types/enum";
 import { Game_Actor } from "../../base/stats/Game_Actor";
 import TEW from "../../_types/tew";
 
 export type LevellingAdvance = {
-    /** Displayed name of the characteristic or competence */
+    /** Displayed name of the characteristic, competence, talent or spell */
     name: string;
     /** Value before the advances */
     from: number;
@@ -23,6 +24,8 @@ export type LevellingAdvance = {
     to: number;
     /** Total experience cost of the advances */
     cost: number;
+    /** Displayed in place of the two values above, for purchases which have no level */
+    text?: string;
 };
 
 // ----------------------
@@ -60,23 +63,29 @@ Game_Levelling.prototype.clear = function() {
     this._compAdvances = {}; // ID: number of pending advances
     this._statAdvances = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     this._talentPurchases = []; // IDs of the talents about to be bought
+    this._spellPurchases = []; // IDs of the spells about to be memorised, in purchase order
     this._spentExp = 0;
 };
 
 // #region ====== Experience === //
-// Experience points consumed by the pending advances
+/**
+ * Experience points consumed by the pending advances.
+ * Everything but spells is accumulated as it is bought, since each purchase has a cost of its
+ * own. Spells share a cost bracket per pool, so their total is replayed from the purchase list
+ * instead, which keeps it right whichever spell is refunded.
+ */
 Game_Levelling.prototype.spentExp = function() {
-    return this._spentExp;
+    return this._spentExp + this.spellExp();
 };
 
 // Experience points still available for new advances
 Game_Levelling.prototype.remainingExp = function() {
-    return this._actor ? this._actor.availableExp() - this._spentExp : 0;
+    return this._actor ? this._actor.availableExp() - this.spentExp() : 0;
 };
 
 // Whether anything is pending, i.e. whether exiting levelling mode needs a confirmation
 Game_Levelling.prototype.hasAdvances = function() {
-    return this._spentExp > 0;
+    return this.spentExp() > 0;
 };
 // #endregion === Experience === //
 // === //
@@ -236,6 +245,8 @@ Game_Levelling.prototype.refundTalent = function(talentId: string) {
     }
     this._talentPurchases.splice(this._talentPurchases.indexOf(talentId), 1);
     this._spentExp -= this.talentCost();
+    // A refunded magical talent takes the spells it opened along with it
+    this.dropUnavailableSpells();
     return true;
 };
 
@@ -244,6 +255,145 @@ Game_Levelling.prototype.talentValue = function(talentId: string) {
     return this._actor.talent(talentId) + (this.isTalentBought(talentId) ? 1 : 0);
 };
 // #endregion === Talents === //
+// === //
+// #region ====== Spells === //
+/**
+ * Whether a spell domain is open, counting the magical talents about to be bought.
+ * The bare Arcane Magic talent stands for the Arcane Lore of the actor's wind, so buying it
+ * opens the generic arcane spells and that lore's own at once.
+ */
+Game_Levelling.prototype.canCastDomain = function(domain: SpellDomain) {
+    if (!this._actor) {
+        return false;
+    }
+    if (this._actor.canCastDomain(domain)) {
+        return true;
+    }
+    if (domain === SpellDomain.PETTY) {
+        return this.isTalentBought(TEW.MAGIC.PETTY_TALENT);
+    }
+    if (!this.isTalentBought(TEW.MAGIC.ARCANE_TALENT) || !this._actor.arcaneTalent()) {
+        return false;
+    }
+    return domain === SpellDomain.ARCANE
+        || TEW.MAGIC.WIND_DOMAINS[this._actor.wind()] === domain;
+};
+
+// IDs of the spells which may be memorised, i.e. open and not known or pending yet
+Game_Levelling.prototype.buyableSpells = function() {
+    if (!this._actor) {
+        return [];
+    }
+    return TEW.DATABASE.SPELLS.IDS.filter(spellId =>
+        !this._actor.hasSpell(spellId)
+        && this.canCastDomain(TEW.DATABASE.SPELLS.SET[spellId].domain));
+};
+
+// Cost pool a spell is priced in
+Game_Levelling.prototype.spellPool = function(spellId: string) {
+    return TEW.MAGIC.spellPool(TEW.DATABASE.SPELLS.SET[spellId].domain);
+};
+
+/**
+ * Petty spells manifested by the Petty Magic talent and not picked yet, counting the talent
+ * about to be bought. They cost nothing, and are spent oldest first.
+ */
+Game_Levelling.prototype.totalFreePettySpells = function() {
+    const granted = this.isTalentBought(TEW.MAGIC.PETTY_TALENT)
+        ? this._actor.paramBonus('WILL')
+        : 0;
+    return this._actor.freePettySpells() + granted;
+};
+
+Game_Levelling.prototype.freePettySpells = function() {
+    const pending = this._spellPurchases
+        .filter((spellId: string) => this.spellPool(spellId) === TEW.MAGIC.PETTY_POOL)
+        .length;
+    return Math.max(0, this.totalFreePettySpells() - pending);
+};
+
+// Number of spells in a pool, including the ones about to be memorised
+Game_Levelling.prototype.spellPoolSize = function(pool: string) {
+    const pending = this._spellPurchases
+        .filter((spellId: string) => this.spellPool(spellId) === pool)
+        .length;
+    return this._actor.spellsInPool(pool).length + pending;
+};
+
+// Experience cost of the next spell of a pool
+Game_Levelling.prototype.nextSpellCost = function(spellId: string) {
+    const pool = this.spellPool(spellId);
+    return this._actor.spellCost(pool, this.spellPoolSize(pool), this.freePettySpells());
+};
+
+/**
+ * Total cost of the pending spells.
+ * A spell's cost depends on how many are already known in its pool, so the whole list is
+ * replayed in purchase order rather than accumulated.
+ */
+Game_Levelling.prototype.spellExp = function() {
+    if (!this._actor) {
+        return 0;
+    }
+    return this.spellCosts().reduce((total: number, cost: number) => total + cost, 0);
+};
+
+// Cost of each pending spell, in purchase order, as the confirmation summary displays them
+Game_Levelling.prototype.spellCosts = function() {
+    const poolSizes: Record<string, number> = {};
+    let free = this.totalFreePettySpells();
+    return this._spellPurchases.map((spellId: string) => {
+        const pool = this.spellPool(spellId);
+        if (poolSizes[pool] === undefined) {
+            poolSizes[pool] = this._actor.spellsInPool(pool).length;
+        }
+        const cost = this._actor.spellCost(pool, poolSizes[pool], free);
+        if (pool === TEW.MAGIC.PETTY_POOL && free > 0) {
+            free--;
+        }
+        poolSizes[pool]++;
+        return cost;
+    });
+};
+
+Game_Levelling.prototype.isSpellBought = function(spellId: string) {
+    return this._spellPurchases.indexOf(spellId) >= 0;
+};
+
+Game_Levelling.prototype.canBuySpell = function(spellId: string) {
+    return !!this._actor
+        && !this._actor.hasSpell(spellId)
+        && !this.isSpellBought(spellId)
+        && this.canCastDomain(TEW.DATABASE.SPELLS.SET[spellId].domain)
+        && this.nextSpellCost(spellId) <= this.remainingExp();
+};
+
+Game_Levelling.prototype.canRefundSpell = function(spellId: string) {
+    return this.isSpellBought(spellId);
+};
+
+Game_Levelling.prototype.buySpell = function(spellId: string) {
+    if (!this.canBuySpell(spellId)) {
+        return false;
+    }
+    this._spellPurchases.push(spellId);
+    return true;
+};
+
+Game_Levelling.prototype.refundSpell = function(spellId: string) {
+    if (!this.canRefundSpell(spellId)) {
+        return false;
+    }
+    this._spellPurchases.splice(this._spellPurchases.indexOf(spellId), 1);
+    return true;
+};
+
+// Dropping the pending spells whose domain is no longer open, after a talent is refunded
+Game_Levelling.prototype.dropUnavailableSpells = function() {
+    this._spellPurchases = this._spellPurchases.filter((spellId: string) =>
+        this.canCastDomain(TEW.DATABASE.SPELLS.SET[spellId].domain));
+};
+// #endregion === Spells === //
 // === //
 // #region ====== Summary and commit === //
 // Listing every pending advance, to be displayed in the confirmation window
@@ -267,12 +417,12 @@ Game_Levelling.prototype.summary = function() {
     }
 
     Object.keys(this._compAdvances)
-        .sort((a, b) => TEW.DATABASE.COMPS.SET[a].name.localeCompare(TEW.DATABASE.COMPS.SET[b].name))
+        .sort((a, b) => this._actor.compName(a).localeCompare(this._actor.compName(b)))
         .forEach(compId => {
             const bought = this._actor.compAdvances(compId);
             const pending = this.compAdvances(compId);
             advances.push({
-                name: TEW.DATABASE.COMPS.SET[compId].name,
+                name: this._actor.compName(compId),
                 from: bought,
                 to: bought + pending,
                 cost: TEW.LEVELLING.competenceRangeCost(bought, bought + pending)
@@ -292,14 +442,31 @@ Game_Levelling.prototype.summary = function() {
             });
         });
 
+    // Spells keep their purchase order, as each one is priced by how many came before it
+    const spellCosts = this.spellCosts();
+    this._spellPurchases.forEach((spellId: string, index: number) => {
+        advances.push({
+            name: TEW.DATABASE.SPELLS.SET[spellId].name,
+            from: 0,
+            to: 0,
+            cost: spellCosts[index],
+            text: TextManager.statusSpellLearned
+        });
+    });
+
     return advances;
 };
 
-// Writing every pending advance to the actor and consuming the experience points
+/**
+ * Writing every pending advance to the actor and consuming the experience points.
+ * Talents are applied before spells, so that the free petty spells the Petty Magic talent
+ * manifests are already granted when the spells bought with them are memorised.
+ */
 Game_Levelling.prototype.apply = function() {
     if (!this._actor) {
         return;
     }
+    const spentExp = this.spentExp();
     for (let paramId = 0; paramId < this._statAdvances.length; paramId++) {
         this._actor.applyStatAdvances(paramId, this._statAdvances[paramId]);
     }
@@ -309,7 +476,10 @@ Game_Levelling.prototype.apply = function() {
     this._talentPurchases.forEach(talentId => {
         this._actor.addTalent(talentId);
     });
-    this._actor.spendExp(this._spentExp);
+    this._spellPurchases.forEach((spellId: string) => {
+        this._actor.learnSpell(spellId, this.spellPool(spellId) === TEW.MAGIC.PETTY_POOL);
+    });
+    this._actor.spendExp(spentExp);
     this.clear();
 };
 // #endregion === Summary and commit === //

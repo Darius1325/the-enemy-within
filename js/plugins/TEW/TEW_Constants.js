@@ -5,7 +5,107 @@ Imported.TEW_Constants = true;
 var TEW = TEW || {};
 TEW.DATABASE = TEW.DATABASE || {};
 TEW.LEVELLING = TEW.LEVELLING || {};
+TEW.MAGIC = TEW.MAGIC || {};
 // #endregion =========================== import ============================== //
+// ============================== //
+// #region ============================== TEW_Magic ============================== //
+// ----------------------
+TEW.MAGIC = TEW.MAGIC || {};
+// #region ====== WINDS === //
+// Every wind a character may be tied to, NONE excluded
+TEW.MAGIC.WIND_IDS = [
+    'AQSHY',
+    'AZYR',
+    'CHAMON',
+    'DHAR',
+    'GHUR',
+    'GHYRAN',
+    'HYSH',
+    'SHYISH',
+    'ULGU'
+];
+// Display name of a wind, used to name the Channelling competence
+TEW.MAGIC.WIND_NAMES = {
+    NONE: "None" /* Wind.NONE */,
+    AQSHY: "Aqshy" /* Wind.AQSHY */,
+    AZYR: "Azyr" /* Wind.AZYR */,
+    CHAMON: "Chamon" /* Wind.CHAMON */,
+    DHAR: "Dhar" /* Wind.DHAR */,
+    GHUR: "Ghur" /* Wind.GHUR */,
+    GHYRAN: "Ghyran" /* Wind.GHYRAN */,
+    HYSH: "Hysh" /* Wind.HYSH */,
+    SHYISH: "Shyish" /* Wind.SHYISH */,
+    ULGU: "Ulgu" /* Wind.ULGU */
+};
+// #endregion === WINDS === //
+// === //
+// #region ====== TALENTS AND COMPETENCES === //
+// Talent opening petty magic, which no wind is needed to cast but a wind is needed to hold
+TEW.MAGIC.PETTY_TALENT = 'PETTY_MAGIC';
+// Talent bought to gain arcane magic, transformed into the wind's own talent once acquired
+TEW.MAGIC.ARCANE_TALENT = 'ARCANE_MAGIC';
+/**
+ * Arcane Magic talent granted by each wind
+ * Dhar is dark magic rather than one of the eight Arcane Lores and grants none, so a character
+ * tied to it cannot buy the Arcane Magic talent
+ */
+TEW.MAGIC.ARCANE_TALENTS = {
+    AQSHY: 'ARCANE_MAGIC_AQSHY',
+    AZYR: 'ARCANE_MAGIC_AZYR',
+    CHAMON: 'ARCANE_MAGIC_CHAMON',
+    GHUR: 'ARCANE_MAGIC_GHUR',
+    GHYRAN: 'ARCANE_MAGIC_GHYRAN',
+    HYSH: 'ARCANE_MAGIC_HYSH',
+    SHYISH: 'ARCANE_MAGIC_SHYISH',
+    ULGU: 'ARCANE_MAGIC_ULGU'
+};
+/**
+ * Lesser lores, which no wind grants and which specific careers hand out instead
+ * They open the generic arcane spells like the eight Arcane Lores do, but have no lore spells
+ * of their own and never specialise Channelling
+ */
+TEW.MAGIC.LESSER_ARCANE_TALENTS = [
+    'ARCANE_MAGIC_HEDGECRAFT',
+    'ARCANE_MAGIC_WITCHERY'
+];
+// Whether a talent is one of the eight Arcane Lores keyed on a wind
+TEW.MAGIC.isWindArcaneTalent = function (talentId) {
+    return TEW.MAGIC.WIND_IDS.some(windId => TEW.MAGIC.ARCANE_TALENTS[windId] === talentId);
+};
+// Channelling is a single ungrouped competence, renamed after the caster's wind once attuned
+TEW.MAGIC.CHANNELLING_COMP = 'CHANNELLING';
+// Competence marking a career as magical
+TEW.MAGIC.MAGICK_COMP = 'LANGUAGE_MAGICK';
+// Career entries picking a specialisation, resolved to the entries above rather than to a group
+TEW.MAGIC.CHANNELLING_ANY = 'CHANNELLING_ANY';
+TEW.MAGIC.ARCANE_MAGIC_ANY = 'ARCANE_MAGIC_ANY';
+// #endregion === TALENTS AND COMPETENCES === //
+// === //
+// #region ====== SPELL DOMAINS === //
+// Lore spells each wind gives access to
+TEW.MAGIC.WIND_DOMAINS = {
+    AQSHY: "Fire" /* SpellDomain.AQSHY */,
+    AZYR: "Heavens" /* SpellDomain.AZYR */,
+    CHAMON: "Metal" /* SpellDomain.CHAMON */,
+    DHAR: "Dark" /* SpellDomain.DHAR */,
+    GHUR: "Beasts" /* SpellDomain.GHUR */,
+    GHYRAN: "Life" /* SpellDomain.GHYRAN */,
+    HYSH: "Light" /* SpellDomain.HYSH */,
+    SHYISH: "Death" /* SpellDomain.SHYISH */,
+    ULGU: "Shadow" /* SpellDomain.ULGU */
+};
+/**
+ * Pool a spell domain is priced in
+ * The Arcane Magic talent covers the generic arcane spells and the caster's lore at once, so
+ * both count towards the same cost bracket. Petty magic keeps its own.
+ */
+TEW.MAGIC.PETTY_POOL = 'PETTY';
+TEW.MAGIC.ARCANE_POOL = 'ARCANE';
+TEW.MAGIC.spellPool = function (domain) {
+    return domain === "Petty" /* SpellDomain.PETTY */ ? TEW.MAGIC.PETTY_POOL : TEW.MAGIC.ARCANE_POOL;
+};
+// #endregion === SPELL DOMAINS === //
+// #endregion =========================== TEW_Magic ============================== //
 // ============================== //
 // #region ============================== TEW_Icons ============================== //
 // ----------------------
@@ -2471,9 +2571,9 @@ TEW.DATABASE.CAREERS.SET = {
             "CHARM", "ENTERTAIN_FORTUNE_TELLING", "DODGE", "GOSSIP", "HAGGLE", "INTUITION", "PERCEPTION",
             "SLEIGHT_OF_HAND", "BRIBERY", "COOL", "ENTERTAIN_PROPHECY", "EVALUATE", "INTIMIDATE", "LORE_ASTROLOGY",
             "ART_WRITING", "CHARM_ANIMAL", "ENTERTAIN_STORYTELLING", "LANGUAGE_ANY", "LORE_PROPHECY",
-            "CHANNELLING_AZYR"
+            "CHANNELLING"
         ],
-        talents: ["ARCANE_MAGIC_CELESTIAL", "MAGICAL_SENSE", "MENACING", "STRONG_MINDED"]
+        talents: ["ARCANE_MAGIC_AZYR", "MAGICAL_SENSE", "MENACING", "STRONG_MINDED"]
     },
     // Scout
     SCOUT_1: {
@@ -4069,6 +4169,16 @@ Object.keys(TEW.DATABASE.CAREERS.PATHS).forEach((pathId) => {
 });
 // #endregion === CAREER PATH LINKING === //
 // === //
+// #region ====== MAGICAL CAREERS === //
+// A career opens the way to magic when it teaches the language spells are cast in
+Object.keys(TEW.DATABASE.CAREERS.SET).forEach((careerId) => {
+    const career = TEW.DATABASE.CAREERS.SET[careerId];
+    career.isMagical = career.competences.indexOf(TEW.MAGIC.MAGICK_COMP) >= 0;
+});
+TEW.DATABASE.CAREERS.MAGICAL_IDS = Object.keys(TEW.DATABASE.CAREERS.SET)
+    .filter((careerId) => TEW.DATABASE.CAREERS.SET[careerId].isMagical);
+// #endregion === MAGICAL CAREERS === //
+// === //
 // #region ====== CAREER IDS === //
 // The path IDs are the keys of the PATHS object, the career IDs those of the SET object
 TEW.DATABASE.CAREERS.PATH_IDS = Object.keys(TEW.DATABASE.CAREERS.PATHS);
@@ -4284,48 +4394,13 @@ TEW.DATABASE.COMPS.SET = {
         stat: "FELW" /* Stat.FELW */,
         isBase: true
     },
-    CHANNELLING_AQSHY: {
-        name: "Channelling (Aqshy)",
-        stat: "WILL" /* Stat.WILL */,
-        isBase: false
-    },
-    CHANNELLING_AZYR: {
-        name: "Channelling (Azyr)",
-        stat: "WILL" /* Stat.WILL */,
-        isBase: false
-    },
-    CHANNELLING_CHAMON: {
-        name: "Channelling (Chamon)",
-        stat: "WILL" /* Stat.WILL */,
-        isBase: false
-    },
-    CHANNELLING_DHAR: {
-        name: "Channelling (Dhar)",
-        stat: "WILL" /* Stat.WILL */,
-        isBase: false
-    },
-    CHANNELLING_GHUR: {
-        name: "Channelling (Ghur)",
-        stat: "WILL" /* Stat.WILL */,
-        isBase: false
-    },
-    CHANNELLING_GHYRAN: {
-        name: "Channelling (Ghyran)",
-        stat: "WILL" /* Stat.WILL */,
-        isBase: false
-    },
-    CHANNELLING_HYSH: {
-        name: "Channelling (Hysh)",
-        stat: "WILL" /* Stat.WILL */,
-        isBase: false
-    },
-    CHANNELLING_SHYISH: {
-        name: "Channelling (Shyish)",
-        stat: "WILL" /* Stat.WILL */,
-        isBase: false
-    },
-    CHANNELLING_ULGU: {
-        name: "Channelling (Ulgu)",
+    /**
+     * Channelling is both grouped and ungrouped: casters trained in a lore channel their own
+     * wind, everyone else channels raw magic. Rather than one entry per wind, a single
+     * competence holds the advances and Game_Actor renames it after the caster's wind
+     */
+    CHANNELLING: {
+        name: "Channelling",
         stat: "WILL" /* Stat.WILL */,
         isBase: false
     },
@@ -7447,6 +7522,14 @@ TEW.LEVELLING.BRACKET_SIZE = 5;
 TEW.LEVELLING.LAST_BRACKET = 14;
 // Talents have a flat cost for now, as buying one several times is not implemented yet
 TEW.LEVELLING.TALENT_COST = 100;
+/**
+ * Spells do not use the brackets below: their cost is a flat amount per bracket, and a bracket
+ * is worth as many spells as the caster's relevant characteristic bonus.
+ * Petty Magic uses the Willpower bonus and 50 XP, Arcane Magic the Intelligence bonus and
+ * 100 XP (see Petty Magic and Arcane Magic (Lore) in wfrp4e.pdf, Chapter 4: Skills and Talents).
+ */
+TEW.LEVELLING.PETTY_SPELL_COST = 50;
+TEW.LEVELLING.ARCANE_SPELL_COST = 100;
 // Brackets: 0-5, 6-10, 11-15, ..., 66-70, 71+
 TEW.LEVELLING.CHARACTERISTIC_COSTS = [
     25, // 0 - 5
@@ -7486,10 +7569,7 @@ TEW.LEVELLING.COMPETENCE_COSTS = [
 // === //
 // #region ====== COST COMPUTATION === //
 TEW.LEVELLING.bracket = function (advances) {
-    if (advances <= TEW.LEVELLING.BRACKET_SIZE) {
-        return 0;
-    }
-    return Math.min(Math.ceil(advances / TEW.LEVELLING.BRACKET_SIZE) - 1, TEW.LEVELLING.LAST_BRACKET);
+    return Math.min(Math.ceil((advances + 1) / TEW.LEVELLING.BRACKET_SIZE) - 1, TEW.LEVELLING.LAST_BRACKET);
 };
 TEW.LEVELLING.characteristicCost = function (advances) {
     return TEW.LEVELLING.CHARACTERISTIC_COSTS[TEW.LEVELLING.bracket(advances)];
@@ -7508,6 +7588,33 @@ TEW.LEVELLING.competenceRangeCost = function (fromAdvances, toAdvances) {
     let total = 0;
     for (let advances = fromAdvances; advances < toAdvances; advances++) {
         total += TEW.LEVELLING.competenceCost(advances);
+    }
+    return total;
+};
+/**
+ * Cost of one more spell in a pool.
+ * The first bracket covers everything up to one bonus worth of spells, the second up to two,
+ * and so on, so a caster with a Willpower bonus of 3 holding 3 petty spells still pays the
+ * first bracket and pays the second for the next three.
+ * A bonus of 0 would leave no bracket to fall in, so it counts as 1.
+ * @param known number of spells already known in the pool
+ * @param bonus Willpower bonus for petty spells, Intelligence bonus for arcane ones
+ * @param cost XP cost of one bracket
+ */
+TEW.LEVELLING.spellCost = function (known, bonus, cost) {
+    return Math.max(1, Math.ceil((known + 1) / Math.max(1, bonus))) * cost;
+};
+/**
+ * Total cost of every spell bought between two pool sizes
+ * @param fromKnown number of spells already known in the pool
+ * @param toKnown targeted number of spells
+ * @param bonus Willpower bonus for petty spells, Intelligence bonus for arcane ones
+ * @param cost XP cost of one bracket
+ */
+TEW.LEVELLING.spellRangeCost = function (fromKnown, toKnown, bonus, cost) {
+    let total = 0;
+    for (let known = fromKnown; known < toKnown; known++) {
+        total += TEW.LEVELLING.spellCost(known, bonus, cost);
     }
     return total;
 };
@@ -8601,7 +8708,7 @@ TEW.DATABASE.SPELLS.SET = {
     AQSHYS_AEGIS: {
         name: "Aqshy's Aegis",
         type: 0 /* SpellType.SPELL */,
-        domain: "Fire" /* SpellDomain.FIRE */,
+        domain: "Fire" /* SpellDomain.AQSHY */,
         cn: 5,
         target: {
             type: "Self" /* SpellTarget.SELF */
@@ -8618,7 +8725,7 @@ TEW.DATABASE.SPELLS.SET = {
     CAUTERISE: {
         name: "Cauterise",
         type: 0 /* SpellType.SPELL */,
-        domain: "Fire" /* SpellDomain.FIRE */,
+        domain: "Fire" /* SpellDomain.AQSHY */,
         cn: 4,
         range: {
             type: "Touch" /* SpellRange.TOUCH */
@@ -8638,7 +8745,7 @@ TEW.DATABASE.SPELLS.SET = {
     CROWN_OF_FLAME: {
         name: "Crown of Flame",
         type: 0 /* SpellType.SPELL */,
-        domain: "Fire" /* SpellDomain.FIRE */,
+        domain: "Fire" /* SpellDomain.AQSHY */,
         cn: 8,
         target: {
             type: "Self" /* SpellTarget.SELF */
@@ -8655,7 +8762,7 @@ TEW.DATABASE.SPELLS.SET = {
     FLAMING_HEARTS: {
         name: "Flaming Hearts",
         type: 0 /* SpellType.SPELL */,
-        domain: "Fire" /* SpellDomain.FIRE */,
+        domain: "Fire" /* SpellDomain.AQSHY */,
         cn: 8,
         range: {
             type: "Willpower" /* SpellRange.WILL */
@@ -8676,7 +8783,7 @@ TEW.DATABASE.SPELLS.SET = {
     FIREWALL: {
         name: "Firewall",
         type: 0 /* SpellType.SPELL */,
-        domain: "Fire" /* SpellDomain.FIRE */,
+        domain: "Fire" /* SpellDomain.AQSHY */,
         cn: 6,
         range: {
             type: "Willpower" /* SpellRange.WILL */
@@ -8697,7 +8804,7 @@ TEW.DATABASE.SPELLS.SET = {
     GREAT_FIRES_OF_UZHUL: {
         name: "Great Fires of U'Zhul",
         type: 0 /* SpellType.SPELL */,
-        domain: "Fire" /* SpellDomain.FIRE */,
+        domain: "Fire" /* SpellDomain.AQSHY */,
         cn: 10,
         range: {
             type: "Willpower" /* SpellRange.WILL */
@@ -8718,7 +8825,7 @@ TEW.DATABASE.SPELLS.SET = {
     FLAMING_SWORD_OF_RHUIN: {
         name: "Flaming Sword of Rhuin",
         type: 0 /* SpellType.SPELL */,
-        domain: "Fire" /* SpellDomain.FIRE */,
+        domain: "Fire" /* SpellDomain.AQSHY */,
         cn: 8,
         range: {
             type: "Willpower" /* SpellRange.WILL */
@@ -8738,7 +8845,7 @@ TEW.DATABASE.SPELLS.SET = {
     PURGE: {
         name: "Purge",
         type: 0 /* SpellType.SPELL */,
-        domain: "Fire" /* SpellDomain.FIRE */,
+        domain: "Fire" /* SpellDomain.AQSHY */,
         cn: 10,
         range: {
             type: "Willpower" /* SpellRange.WILL */
@@ -8832,8 +8939,45 @@ TEW.DATABASE.TALENTS.SET = {
         description: "You either study one of the 8 Arcane Lores of Magic - Beasts, Death, Fire, Heavens, Metal, Shadow, Light, or Life - or practice a lesser known Lore, such as Hedgecraft or Necromancy. You may now memorise spells from your chosen Lore. Under normal circumstances, you may not learn more than one Arcane Magic (Lore) Talent. Further, you may not learn the Bless or Invoke Talents when you have the Arcane Magic Talent. You can unlearn this Talent for 100 XP, but will immediately lose all of your spells if you do so.",
         maxTaken: 1
     },
-    ARCANE_MAGIC_CELESTIAL: {
-        name: "Arcane Magic (Celestial)",
+    // The eight Arcane Lores are keyed by the wind they draw on, and named after the lore
+    // itself. The lesser lores below belong to no wind and are granted by a career instead
+    ARCANE_MAGIC_AQSHY: {
+        name: "Arcane Magic (Fire)",
+        description: "You either study one of the 8 Arcane Lores of Magic - Beasts, Death, Fire, Heavens, Metal, Shadow, Light, or Life - or practice a lesser known Lore, such as Hedgecraft or Necromancy. You may now memorise spells from your chosen Lore. Under normal circumstances, you may not learn more than one Arcane Magic (Lore) Talent. Further, you may not learn the Bless or Invoke Talents when you have the Arcane Magic Talent. You can unlearn this Talent for 100 XP, but will immediately lose all of your spells if you do so.",
+        maxTaken: 1
+    },
+    ARCANE_MAGIC_AZYR: {
+        name: "Arcane Magic (Heavens)",
+        description: "You either study one of the 8 Arcane Lores of Magic - Beasts, Death, Fire, Heavens, Metal, Shadow, Light, or Life - or practice a lesser known Lore, such as Hedgecraft or Necromancy. You may now memorise spells from your chosen Lore. Under normal circumstances, you may not learn more than one Arcane Magic (Lore) Talent. Further, you may not learn the Bless or Invoke Talents when you have the Arcane Magic Talent. You can unlearn this Talent for 100 XP, but will immediately lose all of your spells if you do so.",
+        maxTaken: 1
+    },
+    ARCANE_MAGIC_CHAMON: {
+        name: "Arcane Magic (Metal)",
+        description: "You either study one of the 8 Arcane Lores of Magic - Beasts, Death, Fire, Heavens, Metal, Shadow, Light, or Life - or practice a lesser known Lore, such as Hedgecraft or Necromancy. You may now memorise spells from your chosen Lore. Under normal circumstances, you may not learn more than one Arcane Magic (Lore) Talent. Further, you may not learn the Bless or Invoke Talents when you have the Arcane Magic Talent. You can unlearn this Talent for 100 XP, but will immediately lose all of your spells if you do so.",
+        maxTaken: 1
+    },
+    ARCANE_MAGIC_GHUR: {
+        name: "Arcane Magic (Beasts)",
+        description: "You either study one of the 8 Arcane Lores of Magic - Beasts, Death, Fire, Heavens, Metal, Shadow, Light, or Life - or practice a lesser known Lore, such as Hedgecraft or Necromancy. You may now memorise spells from your chosen Lore. Under normal circumstances, you may not learn more than one Arcane Magic (Lore) Talent. Further, you may not learn the Bless or Invoke Talents when you have the Arcane Magic Talent. You can unlearn this Talent for 100 XP, but will immediately lose all of your spells if you do so.",
+        maxTaken: 1
+    },
+    ARCANE_MAGIC_GHYRAN: {
+        name: "Arcane Magic (Life)",
+        description: "You either study one of the 8 Arcane Lores of Magic - Beasts, Death, Fire, Heavens, Metal, Shadow, Light, or Life - or practice a lesser known Lore, such as Hedgecraft or Necromancy. You may now memorise spells from your chosen Lore. Under normal circumstances, you may not learn more than one Arcane Magic (Lore) Talent. Further, you may not learn the Bless or Invoke Talents when you have the Arcane Magic Talent. You can unlearn this Talent for 100 XP, but will immediately lose all of your spells if you do so.",
+        maxTaken: 1
+    },
+    ARCANE_MAGIC_HYSH: {
+        name: "Arcane Magic (Light)",
+        description: "You either study one of the 8 Arcane Lores of Magic - Beasts, Death, Fire, Heavens, Metal, Shadow, Light, or Life - or practice a lesser known Lore, such as Hedgecraft or Necromancy. You may now memorise spells from your chosen Lore. Under normal circumstances, you may not learn more than one Arcane Magic (Lore) Talent. Further, you may not learn the Bless or Invoke Talents when you have the Arcane Magic Talent. You can unlearn this Talent for 100 XP, but will immediately lose all of your spells if you do so.",
+        maxTaken: 1
+    },
+    ARCANE_MAGIC_SHYISH: {
+        name: "Arcane Magic (Death)",
+        description: "You either study one of the 8 Arcane Lores of Magic - Beasts, Death, Fire, Heavens, Metal, Shadow, Light, or Life - or practice a lesser known Lore, such as Hedgecraft or Necromancy. You may now memorise spells from your chosen Lore. Under normal circumstances, you may not learn more than one Arcane Magic (Lore) Talent. Further, you may not learn the Bless or Invoke Talents when you have the Arcane Magic Talent. You can unlearn this Talent for 100 XP, but will immediately lose all of your spells if you do so.",
+        maxTaken: 1
+    },
+    ARCANE_MAGIC_ULGU: {
+        name: "Arcane Magic (Shadow)",
         description: "You either study one of the 8 Arcane Lores of Magic - Beasts, Death, Fire, Heavens, Metal, Shadow, Light, or Life - or practice a lesser known Lore, such as Hedgecraft or Necromancy. You may now memorise spells from your chosen Lore. Under normal circumstances, you may not learn more than one Arcane Magic (Lore) Talent. Further, you may not learn the Bless or Invoke Talents when you have the Arcane Magic Talent. You can unlearn this Talent for 100 XP, but will immediately lose all of your spells if you do so.",
         maxTaken: 1
     },

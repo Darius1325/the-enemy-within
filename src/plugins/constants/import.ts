@@ -16,3 +16,4 @@ Imported.TEW_Constants = true;
 var TEW = TEW || {};
 TEW.DATABASE = TEW.DATABASE || {};
 TEW.LEVELLING = TEW.LEVELLING || {};
+TEW.MAGIC = TEW.MAGIC || {};

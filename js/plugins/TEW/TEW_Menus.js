@@ -41,6 +41,8 @@ TEW.MENU.COMMAND_NAMES[59] = "XP left";
 TEW.MENU.COMMAND_NAMES[60] = "Spent";
 TEW.MENU.COMMAND_NAMES[61] = "Base";
 TEW.MENU.COMMAND_NAMES[62] = "Unlearned";
+TEW.MENU.COMMAND_NAMES[63] = "Learned";
+TEW.MENU.COMMAND_NAMES[64] = "Free";
 // Inventory Menu
 TEW.MENU.COMMAND_NAMES[70] = "InventoryNextChar";
 TEW.MENU.COMMAND_NAMES[71] = "InventoryPreviousChar";
@@ -128,6 +130,8 @@ Object.defineProperties(TextManager, {
     statusExpSpent: TextManager.getter('command', 60),
     statusCompBase: TextManager.getter('command', 61),
     statusCompUnlearned: TextManager.getter('command', 62),
+    statusSpellLearned: TextManager.getter('command', 63),
+    statusSpellFree: TextManager.getter('command', 64),
     // Inventory Menu
     inventoryNextChar: TextManager.getter('command', 70),
     inventoryPreviousChar: TextManager.getter('command', 71),
@@ -767,20 +771,26 @@ Game_Levelling.prototype.clear = function () {
     this._compAdvances = {}; // ID: number of pending advances
     this._statAdvances = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     this._talentPurchases = []; // IDs of the talents about to be bought
+    this._spellPurchases = []; // IDs of the spells about to be memorised, in purchase order
     this._spentExp = 0;
 };
 // #region ====== Experience === //
-// Experience points consumed by the pending advances
+/**
+ * Experience points consumed by the pending advances.
+ * Everything but spells is accumulated as it is bought, since each purchase has a cost of its
+ * own. Spells share a cost bracket per pool, so their total is replayed from the purchase list
+ * instead, which keeps it right whichever spell is refunded.
+ */
 Game_Levelling.prototype.spentExp = function () {
-    return this._spentExp;
+    return this._spentExp + this.spellExp();
 };
 // Experience points still available for new advances
 Game_Levelling.prototype.remainingExp = function () {
-    return this._actor ? this._actor.availableExp() - this._spentExp : 0;
+    return this._actor ? this._actor.availableExp() - this.spentExp() : 0;
 };
 // Whether anything is pending, i.e. whether exiting levelling mode needs a confirmation
 Game_Levelling.prototype.hasAdvances = function () {
-    return this._spentExp > 0;
+    return this.spentExp() > 0;
 };
 // #endregion === Experience === //
 // === //
@@ -920,6 +930,8 @@ Game_Levelling.prototype.refundTalent = function (talentId) {
     }
     this._talentPurchases.splice(this._talentPurchases.indexOf(talentId), 1);
     this._spentExp -= this.talentCost();
+    // A refunded magical talent takes the spells it opened along with it
+    this.dropUnavailableSpells();
     return true;
 };
 // Talent level including the purchase about to be made
@@ -927,6 +939,129 @@ Game_Levelling.prototype.talentValue = function (talentId) {
     return this._actor.talent(talentId) + (this.isTalentBought(talentId) ? 1 : 0);
 };
 // #endregion === Talents === //
+// === //
+// #region ====== Spells === //
+/**
+ * Whether a spell domain is open, counting the magical talents about to be bought.
+ * The bare Arcane Magic talent stands for the Arcane Lore of the actor's wind, so buying it
+ * opens the generic arcane spells and that lore's own at once.
+ */
+Game_Levelling.prototype.canCastDomain = function (domain) {
+    if (!this._actor) {
+        return false;
+    }
+    if (this._actor.canCastDomain(domain)) {
+        return true;
+    }
+    if (domain === "Petty" /* SpellDomain.PETTY */) {
+        return this.isTalentBought(TEW.MAGIC.PETTY_TALENT);
+    }
+    if (!this.isTalentBought(TEW.MAGIC.ARCANE_TALENT) || !this._actor.arcaneTalent()) {
+        return false;
+    }
+    return domain === "Arcane" /* SpellDomain.ARCANE */
+        || TEW.MAGIC.WIND_DOMAINS[this._actor.wind()] === domain;
+};
+// IDs of the spells which may be memorised, i.e. open and not known or pending yet
+Game_Levelling.prototype.buyableSpells = function () {
+    if (!this._actor) {
+        return [];
+    }
+    return TEW.DATABASE.SPELLS.IDS.filter(spellId => !this._actor.hasSpell(spellId)
+        && this.canCastDomain(TEW.DATABASE.SPELLS.SET[spellId].domain));
+};
+// Cost pool a spell is priced in
+Game_Levelling.prototype.spellPool = function (spellId) {
+    return TEW.MAGIC.spellPool(TEW.DATABASE.SPELLS.SET[spellId].domain);
+};
+/**
+ * Petty spells manifested by the Petty Magic talent and not picked yet, counting the talent
+ * about to be bought. They cost nothing, and are spent oldest first.
+ */
+Game_Levelling.prototype.totalFreePettySpells = function () {
+    const granted = this.isTalentBought(TEW.MAGIC.PETTY_TALENT)
+        ? this._actor.paramBonus('WILL')
+        : 0;
+    return this._actor.freePettySpells() + granted;
+};
+Game_Levelling.prototype.freePettySpells = function () {
+    const pending = this._spellPurchases
+        .filter((spellId) => this.spellPool(spellId) === TEW.MAGIC.PETTY_POOL)
+        .length;
+    return Math.max(0, this.totalFreePettySpells() - pending);
+};
+// Number of spells in a pool, including the ones about to be memorised
+Game_Levelling.prototype.spellPoolSize = function (pool) {
+    const pending = this._spellPurchases
+        .filter((spellId) => this.spellPool(spellId) === pool)
+        .length;
+    return this._actor.spellsInPool(pool).length + pending;
+};
+// Experience cost of the next spell of a pool
+Game_Levelling.prototype.nextSpellCost = function (spellId) {
+    const pool = this.spellPool(spellId);
+    return this._actor.spellCost(pool, this.spellPoolSize(pool), this.freePettySpells());
+};
+/**
+ * Total cost of the pending spells.
+ * A spell's cost depends on how many are already known in its pool, so the whole list is
+ * replayed in purchase order rather than accumulated.
+ */
+Game_Levelling.prototype.spellExp = function () {
+    if (!this._actor) {
+        return 0;
+    }
+    return this.spellCosts().reduce((total, cost) => total + cost, 0);
+};
+// Cost of each pending spell, in purchase order, as the confirmation summary displays them
+Game_Levelling.prototype.spellCosts = function () {
+    const poolSizes = {};
+    let free = this.totalFreePettySpells();
+    return this._spellPurchases.map((spellId) => {
+        const pool = this.spellPool(spellId);
+        if (poolSizes[pool] === undefined) {
+            poolSizes[pool] = this._actor.spellsInPool(pool).length;
+        }
+        const cost = this._actor.spellCost(pool, poolSizes[pool], free);
+        if (pool === TEW.MAGIC.PETTY_POOL && free > 0) {
+            free--;
+        }
+        poolSizes[pool]++;
+        return cost;
+    });
+};
+Game_Levelling.prototype.isSpellBought = function (spellId) {
+    return this._spellPurchases.indexOf(spellId) >= 0;
+};
+Game_Levelling.prototype.canBuySpell = function (spellId) {
+    return !!this._actor
+        && !this._actor.hasSpell(spellId)
+        && !this.isSpellBought(spellId)
+        && this.canCastDomain(TEW.DATABASE.SPELLS.SET[spellId].domain)
+        && this.nextSpellCost(spellId) <= this.remainingExp();
+};
+Game_Levelling.prototype.canRefundSpell = function (spellId) {
+    return this.isSpellBought(spellId);
+};
+Game_Levelling.prototype.buySpell = function (spellId) {
+    if (!this.canBuySpell(spellId)) {
+        return false;
+    }
+    this._spellPurchases.push(spellId);
+    return true;
+};
+Game_Levelling.prototype.refundSpell = function (spellId) {
+    if (!this.canRefundSpell(spellId)) {
+        return false;
+    }
+    this._spellPurchases.splice(this._spellPurchases.indexOf(spellId), 1);
+    return true;
+};
+// Dropping the pending spells whose domain is no longer open, after a talent is refunded
+Game_Levelling.prototype.dropUnavailableSpells = function () {
+    this._spellPurchases = this._spellPurchases.filter((spellId) => this.canCastDomain(TEW.DATABASE.SPELLS.SET[spellId].domain));
+};
+// #endregion === Spells === //
 // === //
 // #region ====== Summary and commit === //
 // Listing every pending advance, to be displayed in the confirmation window
@@ -948,12 +1083,12 @@ Game_Levelling.prototype.summary = function () {
         }
     }
     Object.keys(this._compAdvances)
-        .sort((a, b) => TEW.DATABASE.COMPS.SET[a].name.localeCompare(TEW.DATABASE.COMPS.SET[b].name))
+        .sort((a, b) => this._actor.compName(a).localeCompare(this._actor.compName(b)))
         .forEach(compId => {
         const bought = this._actor.compAdvances(compId);
         const pending = this.compAdvances(compId);
         advances.push({
-            name: TEW.DATABASE.COMPS.SET[compId].name,
+            name: this._actor.compName(compId),
             from: bought,
             to: bought + pending,
             cost: TEW.LEVELLING.competenceRangeCost(bought, bought + pending)
@@ -971,13 +1106,29 @@ Game_Levelling.prototype.summary = function () {
             cost: this.talentCost()
         });
     });
+    // Spells keep their purchase order, as each one is priced by how many came before it
+    const spellCosts = this.spellCosts();
+    this._spellPurchases.forEach((spellId, index) => {
+        advances.push({
+            name: TEW.DATABASE.SPELLS.SET[spellId].name,
+            from: 0,
+            to: 0,
+            cost: spellCosts[index],
+            text: TextManager.statusSpellLearned
+        });
+    });
     return advances;
 };
-// Writing every pending advance to the actor and consuming the experience points
+/**
+ * Writing every pending advance to the actor and consuming the experience points.
+ * Talents are applied before spells, so that the free petty spells the Petty Magic talent
+ * manifests are already granted when the spells bought with them are memorised.
+ */
 Game_Levelling.prototype.apply = function () {
     if (!this._actor) {
         return;
     }
+    const spentExp = this.spentExp();
     for (let paramId = 0; paramId < this._statAdvances.length; paramId++) {
         this._actor.applyStatAdvances(paramId, this._statAdvances[paramId]);
     }
@@ -987,7 +1138,10 @@ Game_Levelling.prototype.apply = function () {
     this._talentPurchases.forEach(talentId => {
         this._actor.addTalent(talentId);
     });
-    this._actor.spendExp(this._spentExp);
+    this._spellPurchases.forEach((spellId) => {
+        this._actor.learnSpell(spellId, this.spellPool(spellId) === TEW.MAGIC.PETTY_POOL);
+    });
+    this._actor.spendExp(spentExp);
     this.clear();
 };
 // #endregion === Summary and commit === //
@@ -1039,7 +1193,8 @@ Window_StatusLevellingConfirm.prototype.cursorPageup = function () {
 //-----------------------------------------------------------------------------
 // Window_StatusLevellingSummary
 //
-// Scrollable summary of the advances waiting for confirmation
+// Confirmation prompt: a scrollable summary of the pending advances, with the
+// Cancel/Confirm/Discard commands in a single selectable row at the bottom
 function Window_StatusLevellingSummary() {
     this.initialize.apply(this, arguments);
 }
@@ -1048,15 +1203,18 @@ Window_StatusLevellingSummary.NAME_COLUMN_WIDTH = 300;
 Window_StatusLevellingSummary.VALUE_COLUMN_WIDTH = 60;
 Window_StatusLevellingSummary.ARROW_COLUMN_WIDTH = 30;
 Window_StatusLevellingSummary.COST_COLUMN_WIDTH = 130;
-Window_StatusLevellingSummary.prototype = Object.create(Window_Selectable.prototype);
+// Room taken by the two values and the arrow between them, or by a label drawn in their place
+Window_StatusLevellingSummary.VALUES_WIDTH = 150; // 2 * value column + arrow column
+// Gap left between the last visible row of the list and the command row below it
+Window_StatusLevellingSummary.LIST_BOTTOM_PADDING = 20;
+Window_StatusLevellingSummary.prototype = Object.create(Window_HorzCommand.prototype);
 Window_StatusLevellingSummary.prototype.constructor = Window_StatusLevellingSummary;
 // Initializing the window, horizontally centered under the topbar
 Window_StatusLevellingSummary.prototype.initialize = function () {
     this._levelling = null;
     this._advances = [];
-    Window_Selectable.prototype.initialize.call(this, (Graphics.boxWidth - this.windowWidth()) / 2, Window_StatusLevellingSummary.MARGIN_Y, this.windowWidth(), this.windowHeight());
-    this.deactivate();
-    this.refresh();
+    this._listScroll = 0;
+    Window_HorzCommand.prototype.initialize.call(this, (Graphics.boxWidth - this.windowWidth()) / 2, Window_StatusLevellingSummary.MARGIN_Y);
 };
 // Linking the window to the levelling session holding the pending advances
 Window_StatusLevellingSummary.prototype.setLevelling = function (levelling) {
@@ -1066,55 +1224,127 @@ Window_StatusLevellingSummary.prototype.setLevelling = function (levelling) {
 // Rebuilding the list, to be called every time the window is displayed
 Window_StatusLevellingSummary.prototype.refreshAdvances = function () {
     this._advances = this._levelling ? this._levelling.summary() : [];
-    this.setTopRow(0);
+    this._listScroll = 0;
     this.refresh();
 };
-Window_StatusLevellingSummary.prototype.maxItems = function () {
-    return this._advances.length;
+// #region ====== Bottom command row === //
+// Cancel goes back to levelling mode keeping every pending advance, same as the cancel handler
+Window_StatusLevellingSummary.prototype.makeCommandList = function () {
+    this.addCommand(TextManager.statusLevellingBack, 'levelling_back');
+    this.addCommand(TextManager.statusLevellingConfirm, 'levelling_confirm');
+    this.addCommand(TextManager.statusLevellingDiscard, 'levelling_discard');
 };
-Window_StatusLevellingSummary.prototype.maxCols = () => 1;
+// A single row of 3 commands
+Window_StatusLevellingSummary.prototype.maxCols = function () {
+    return 3;
+};
 Window_StatusLevellingSummary.prototype.itemHeight = function () {
     return TEW.MENU.LINE_HEIGHT;
 };
-// The window is only ever read, never selected
-Window_StatusLevellingSummary.prototype.isCursorVisible = function () {
-    return false;
+Window_StatusLevellingSummary.prototype.commandRowY = function () {
+    return this.contentsHeight() - this.itemHeight();
 };
-// Drawing one advance: name, current value, new value and total cost
-Window_StatusLevellingSummary.prototype.drawItem = function (index) {
-    const y = (index - this.topIndex()) * this.itemHeight();
+// The command row is pinned to the bottom of the window, regardless of the list's height
+Window_StatusLevellingSummary.prototype.itemRect = function (index) {
+    const rect = Window_Selectable.prototype.itemRect.call(this, index);
+    rect.y = this.commandRowY();
+    return rect;
+};
+// #endregion === Bottom command row === //
+// === //
+// #region ====== Advances list === //
+// Height available to the list above the command row, minus the bottom padding
+Window_StatusLevellingSummary.prototype.listAreaHeight = function () {
+    return this.commandRowY() - Window_StatusLevellingSummary.LIST_BOTTOM_PADDING;
+};
+Window_StatusLevellingSummary.prototype.listVisibleRows = function () {
+    return Math.max(0, Math.floor(this.listAreaHeight() / this.itemHeight()));
+};
+Window_StatusLevellingSummary.prototype.maxListScroll = function () {
+    return Math.max(0, this._advances.length - this.listVisibleRows());
+};
+Window_StatusLevellingSummary.prototype.setListScroll = function (scroll) {
+    const clamped = scroll.clamp(0, this.maxListScroll());
+    if (this._listScroll !== clamped) {
+        this._listScroll = clamped;
+        this.refresh();
+    }
+};
+Window_StatusLevellingSummary.prototype.scrollListDown = function () {
+    this.setListScroll(this._listScroll + 1);
+};
+Window_StatusLevellingSummary.prototype.scrollListUp = function () {
+    this.setListScroll(this._listScroll - 1);
+};
+// Drawing every advance currently visible, above the command row
+Window_StatusLevellingSummary.prototype.drawAdvancesList = function () {
+    const lastIndex = Math.min(this._listScroll + this.listVisibleRows(), this._advances.length);
+    for (let index = this._listScroll; index < lastIndex; index++) {
+        this.drawAdvance(index);
+    }
+};
+/**
+ * Drawing one advance: name, current value, new value and total cost.
+ * Purchases which have no level, spells among them, carry a label instead of the two values.
+ */
+Window_StatusLevellingSummary.prototype.drawAdvance = function (index) {
+    const y = (index - this._listScroll) * this.itemHeight();
     const advance = this._advances[index];
     let x = 0;
     this.changeTextColor(this.systemColor());
     this.drawText(advance.name, x, y, Window_StatusLevellingSummary.NAME_COLUMN_WIDTH, 'left');
     this.resetTextColor();
     x += Window_StatusLevellingSummary.NAME_COLUMN_WIDTH;
-    this.drawText(`${advance.from}`, x, y, Window_StatusLevellingSummary.VALUE_COLUMN_WIDTH, 'right');
-    x += Window_StatusLevellingSummary.VALUE_COLUMN_WIDTH;
-    this.drawText('>', x, y, Window_StatusLevellingSummary.ARROW_COLUMN_WIDTH, 'center');
-    x += Window_StatusLevellingSummary.ARROW_COLUMN_WIDTH;
-    this.changeTextColor(this.powerUpColor());
-    this.drawText(`${advance.to}`, x, y, Window_StatusLevellingSummary.VALUE_COLUMN_WIDTH, 'right');
-    this.resetTextColor();
-    x += Window_StatusLevellingSummary.VALUE_COLUMN_WIDTH;
+    if (advance.text) {
+        this.changeTextColor(this.powerUpColor());
+        this.drawText(advance.text, x, y, Window_StatusLevellingSummary.VALUES_WIDTH, 'right');
+        this.resetTextColor();
+    }
+    else {
+        this.drawText(`${advance.from}`, x, y, Window_StatusLevellingSummary.VALUE_COLUMN_WIDTH, 'right');
+        this.drawText('>', x + Window_StatusLevellingSummary.VALUE_COLUMN_WIDTH, y, Window_StatusLevellingSummary.ARROW_COLUMN_WIDTH, 'center');
+        this.changeTextColor(this.powerUpColor());
+        this.drawText(`${advance.to}`, x + Window_StatusLevellingSummary.VALUE_COLUMN_WIDTH
+            + Window_StatusLevellingSummary.ARROW_COLUMN_WIDTH, y, Window_StatusLevellingSummary.VALUE_COLUMN_WIDTH, 'right');
+        this.resetTextColor();
+    }
+    x += Window_StatusLevellingSummary.VALUES_WIDTH;
     this.drawText(`- ${advance.cost}`, x, y, Window_StatusLevellingSummary.COST_COLUMN_WIDTH, 'right');
 };
-// Scrolling is driven from the confirmation window, the arrows are left alone
-Window_StatusLevellingSummary.prototype.cursorDown = function () { };
-Window_StatusLevellingSummary.prototype.cursorUp = function () { };
-Window_StatusLevellingSummary.prototype.cursorPagedown = function () { };
-Window_StatusLevellingSummary.prototype.cursorPageup = function () { };
+// Drawing the list first, then the command row on top of it
+Window_StatusLevellingSummary.prototype.drawAllItems = function () {
+    this.drawAdvancesList();
+    Window_Selectable.prototype.drawAllItems.call(this);
+};
+// #endregion === Advances list === //
+// === //
+// #region ====== Input === //
+// Left and right move the selected command (handled by the base class); up and
+// down leave the selection alone and scroll the list instead
+Window_StatusLevellingSummary.prototype.cursorDown = function () {
+    this.scrollListDown();
+};
+Window_StatusLevellingSummary.prototype.cursorUp = function () {
+    this.scrollListUp();
+};
+Window_StatusLevellingSummary.prototype.cursorPagedown = function () {
+    this.setListScroll(this._listScroll + this.listVisibleRows());
+};
+Window_StatusLevellingSummary.prototype.cursorPageup = function () {
+    this.setListScroll(this._listScroll - this.listVisibleRows());
+};
 Window_StatusLevellingSummary.prototype.processWheel = function () {
     if (this.visible) {
         const threshold = 20;
         if (TouchInput.wheelY >= threshold) {
-            this.scrollDown();
+            this.scrollListDown();
         }
         if (TouchInput.wheelY <= -threshold) {
-            this.scrollUp();
+            this.scrollListUp();
         }
     }
 };
+// #endregion === Input === //
 // #endregion =========================== Window_StatusLevellingSummary ============================== //
 // ============================== //
 // #region ============================== Window_InventoryTransferSpinner ============================== //
@@ -2893,7 +3123,7 @@ Window_StatusCompetences.prototype.makeCompsList = function () {
         const improvableIds = this._actor.improvableComps();
         const improvableComps = improvableIds
             .map(compId => [compId, TEW.DATABASE.COMPS.SET[compId]])
-            .sort((a, b) => a[1].name.localeCompare(b[1].name));
+            .sort((a, b) => this._actor.compName(a[0]).localeCompare(this._actor.compName(b[0])));
         this._compsList = improvableComps.concat(knownComps.filter(comp => improvableIds.indexOf(comp[0]) < 0));
     }
     this._maxItems = this._compsList.length;
@@ -2953,7 +3183,9 @@ Window_StatusCompetences.prototype.competenceFromIndex = function (index) {
     const level = this.isLevellingMode()
         ? this._levelling.compValue(comp[0])
         : this._actor.compPlus(comp[0]);
-    return [comp[0], Object.assign(Object.assign({}, comp[1]), { level, value: level + this._actor.paramByName(comp[1].stat) })];
+    return [comp[0], Object.assign(Object.assign({}, comp[1]), { 
+            // Channelling is named after the actor's wind, thus depends on the actor
+            name: this._actor.compName(comp[0]), level, value: level + this._actor.paramByName(comp[1].stat) })];
 };
 Window_StatusCompetences.prototype.competence = function () {
     return this.competenceFromIndex(this.index());
@@ -3085,7 +3317,7 @@ Scene_Status.prototype.create = function () {
     this.createSpellDetailsWindow();
     // Levelling confirmation, created last so it is drawn above every other window
     this.createLevellingWindows();
-    this.activateStatusStats(); // Desactivate all the windows, except the stats one
+    this._commandWindow.activate();
     this.refreshActor();
 };
 // Watching the levelling mode input key
@@ -3184,7 +3416,7 @@ Scene_Status.prototype.onPreviousActor = function () {
 // Leaving the menu is treated as leaving levelling mode
 Scene_Status.prototype.onStatusCancel = function () {
     if (this.isLevellingMode()) {
-        this.requestLevellingExit(true);
+        this.requestLevellingExit();
     }
     else {
         this.popScene();
@@ -3341,6 +3573,11 @@ Scene_Status.prototype.createSpellsWindow = function () {
     this._spellsWindow.setHandler('ok', () => {
         this.activateCommandWindowSpells();
     });
+    this._spellsWindow.setHandler('levelling_change', () => {
+        this._commandWindow.refresh();
+        this._spellsWindow.refresh();
+    });
+    this._spellsWindow.setLevelling(this._levelling);
     this._spellsWindow.hide();
     this.addWindow(this._spellsWindow);
 };
@@ -3412,31 +3649,26 @@ Scene_Status.prototype.activateCommandWindowSpells = function () {
 Scene_Status.prototype.createLevelling = function () {
     this._levelling = new Game_Levelling();
     this._levellingMode = false;
-    this._levellingPopOnResolve = false;
     this._levellingReturnWindow = null;
 };
 // Creating the confirmation prompt, hidden until levelling mode is left with pending advances
 Scene_Status.prototype.createLevellingWindows = function () {
     this._levellingSummaryWindow = new Window_StatusLevellingSummary();
     this._levellingSummaryWindow.setLevelling(this._levelling);
+    this._levellingSummaryWindow.setHandler('levelling_confirm', this.onLevellingConfirm.bind(this));
+    this._levellingSummaryWindow.setHandler('levelling_discard', this.onLevellingDiscard.bind(this));
+    this._levellingSummaryWindow.setHandler('levelling_back', this.onLevellingBack.bind(this));
+    this._levellingSummaryWindow.setHandler('cancel', this.onLevellingBack.bind(this));
+    this._levellingSummaryWindow.deactivate();
     this._levellingSummaryWindow.hide();
     this.addWindow(this._levellingSummaryWindow);
-    this._levellingConfirmWindow = new Window_StatusLevellingConfirm();
-    this._levellingConfirmWindow.setSummaryWindow(this._levellingSummaryWindow);
-    this._levellingConfirmWindow.setHandler('levelling_confirm', this.onLevellingConfirm.bind(this));
-    this._levellingConfirmWindow.setHandler('levelling_discard', this.onLevellingDiscard.bind(this));
-    this._levellingConfirmWindow.setHandler('levelling_back', this.onLevellingBack.bind(this));
-    this._levellingConfirmWindow.setHandler('cancel', this.onLevellingBack.bind(this));
-    this._levellingConfirmWindow.deactivate();
-    this._levellingConfirmWindow.hide();
-    this.addWindow(this._levellingConfirmWindow);
 };
 Scene_Status.prototype.isLevellingMode = function () {
     return this._levellingMode;
 };
 // Whether the confirmation prompt is currently displayed
 Scene_Status.prototype.isLevellingPrompt = function () {
-    return this._levellingConfirmWindow && this._levellingConfirmWindow.visible;
+    return this._levellingSummaryWindow && this._levellingSummaryWindow.visible;
 };
 // Toggling levelling mode with the dedicated input key
 Scene_Status.prototype.updateLevellingToggle = function () {
@@ -3445,7 +3677,7 @@ Scene_Status.prototype.updateLevellingToggle = function () {
     }
     if (Input.isTriggered(TEW.MENU.LEVEL_UP_KEY)) {
         if (this.isLevellingMode()) {
-            this.requestLevellingExit(false);
+            this.requestLevellingExit();
         }
         else {
             this.enterLevellingMode();
@@ -3472,20 +3704,18 @@ Scene_Status.prototype.refreshLevellingWindows = function () {
     this._statsWindow.refresh();
     this._talentsWindow.setLevellingMode(this._levellingMode);
     this._talentsWindow.refresh();
+    this._spellsWindow.setLevellingMode(this._levellingMode);
+    this._spellsWindow.refresh();
 };
 /**
  * Leaving levelling mode. Exit is instantaneous with nothing spent, and prompts otherwise.
  * @param popOnResolve whether the whole menu should be left once the prompt is resolved
  */
-Scene_Status.prototype.requestLevellingExit = function (popOnResolve) {
+Scene_Status.prototype.requestLevellingExit = function () {
     if (!this._levelling.hasAdvances()) {
         this.exitLevellingMode();
-        if (popOnResolve) {
-            this.popScene();
-        }
         return;
     }
-    this._levellingPopOnResolve = popOnResolve;
     this.openLevellingPrompt();
 };
 // Finding the window currently reading inputs, to give it back the focus later on
@@ -3507,13 +3737,11 @@ Scene_Status.prototype.openLevellingPrompt = function () {
     }
     this._levellingSummaryWindow.refreshAdvances();
     this._levellingSummaryWindow.show();
-    this._levellingConfirmWindow.show();
-    this._levellingConfirmWindow.select(0);
-    this._levellingConfirmWindow.activate();
+    this._levellingSummaryWindow.selectSymbol('levelling_back'); // defaulting to Back avoids misclicks confirming/discarding
+    this._levellingSummaryWindow.activate();
 };
 Scene_Status.prototype.closeLevellingPrompt = function () {
-    this._levellingConfirmWindow.deactivate();
-    this._levellingConfirmWindow.hide();
+    this._levellingSummaryWindow.deactivate();
     this._levellingSummaryWindow.hide();
 };
 // Giving the focus back to whichever window was reading inputs before the prompt
@@ -3525,14 +3753,7 @@ Scene_Status.prototype.restoreLevellingFocus = function () {
 // Leaving levelling mode once the prompt is resolved, and the menu if it was being left
 Scene_Status.prototype.finishLevellingExit = function () {
     this.exitLevellingMode();
-    if (this._levellingPopOnResolve) {
-        this._levellingPopOnResolve = false;
-        this._levellingReturnWindow = null;
-        this.popScene();
-    }
-    else {
-        this.restoreLevellingFocus();
-    }
+    this.restoreLevellingFocus();
 };
 Scene_Status.prototype.onLevellingConfirm = function () {
     this._levelling.apply();
@@ -3545,7 +3766,6 @@ Scene_Status.prototype.onLevellingDiscard = function () {
 };
 // Going back to levelling mode, keeping every pending advance
 Scene_Status.prototype.onLevellingBack = function () {
-    this._levellingPopOnResolve = false;
     this.closeLevellingPrompt();
     this.restoreLevellingFocus();
 };
@@ -3641,18 +3861,47 @@ Window_StatusSpellDetails.prototype.drawDetails = function (spell) {
 function Window_StatusSpells() {
     this.initialize.apply(this, arguments);
 }
+Window_StatusSpells.LEFT_PADDING = 48;
+Window_StatusSpells.NAME_COLUMN_WIDTH = 400;
+Window_StatusSpells.COST_COLUMN_WIDTH = 120;
 Window_StatusSpells.prototype = Object.create(HalfWindow_List.prototype);
 Window_StatusSpells.prototype.constructor = Window_StatusSpells;
 Window_StatusSpells.prototype.initialize = function () {
+    this._levelling = null;
+    this._levellingMode = false;
+    this._spells = [];
     HalfWindow_List.prototype.initialize.call(this);
 };
 Window_StatusSpells.prototype.setActor = function (actor) {
     if (this._actor !== actor) {
         this._actor = actor;
-        this._spells = TEW.DATABASE.SPELLS.ARRAY.filter(spell => actor.hasSpell(spell[0])); // [<internal name>, {<talent data>}] // TODO
-        this._maxItems = this._spells.length;
+        this.makeSpellsList();
         this.refresh();
     }
+};
+/**
+ * Building the displayed list. Outside of levelling mode it only holds the memorised spells.
+ * In levelling mode, the spells the actor's magical talents open and which are not memorised
+ * yet are added at the top in alphabetical order, so that they may be bought.
+ */
+Window_StatusSpells.prototype.makeSpellsList = function () {
+    if (!this._actor) {
+        this._spells = [];
+        this._maxItems = 0;
+        return;
+    }
+    // [<internal name>, {<spell data>}]
+    const knownSpells = TEW.DATABASE.SPELLS.ARRAY.filter(spell => this._actor.hasSpell(spell[0]));
+    if (!this.isLevellingMode()) {
+        this._spells = knownSpells;
+    }
+    else {
+        const buyableSpells = this._levelling.buyableSpells()
+            .map((spellId) => [spellId, TEW.DATABASE.SPELLS.SET[spellId]])
+            .sort((a, b) => a[1].name.localeCompare(b[1].name));
+        this._spells = buyableSpells.concat(knownSpells);
+    }
+    this._maxItems = this._spells.length;
 };
 Window_StatusSpells.prototype.drawAllItems = function () {
     var topIndex = this.topIndex();
@@ -3665,12 +3914,20 @@ Window_StatusSpells.prototype.drawAllItems = function () {
 };
 Window_StatusSpells.prototype.drawItem = function (index) {
     const normalizedIndex = index - this.topIndex();
-    const x = 48;
+    const x = Window_StatusSpells.LEFT_PADDING;
     const y = normalizedIndex * TEW.MENU.LINE_HEIGHT;
     const spell = this.spellFromIndex(index);
-    this.changeTextColor(this.systemColor());
-    this.drawText(spell[1].name, x, y, 160);
+    // Spell name
+    this.changeTextColor(this.spellColor(spell[0]));
+    this.drawText(spell[1].name, x, y, Window_StatusSpells.NAME_COLUMN_WIDTH);
     this.resetTextColor();
+    // Price of a spell which is not memorised yet, nothing for the ones already known
+    const costText = this.spellCostText(spell[0]);
+    if (costText) {
+        this.changeTextColor(this.spellColor(spell[0]));
+        this.drawText(costText, x + Window_StatusSpells.NAME_COLUMN_WIDTH, y, Window_StatusSpells.COST_COLUMN_WIDTH, 'right');
+        this.resetTextColor();
+    }
 };
 Window_StatusSpells.prototype.spellFromIndex = function (index) {
     return this._spells[index];
@@ -3685,15 +3942,101 @@ Window_StatusSpells.prototype.select = function (index) {
     this.updateCursor();
     this.callUpdateHelp();
 };
-Window_StatusSpells.prototype.processOk = function () {
-    if (this.isCurrentItemEnabled()) {
+// #region ====== Levelling mode === //
+/**
+ * Links the window to the levelling session holding the pending purchases.
+ */
+Window_StatusSpells.prototype.setLevelling = function (levelling) {
+    this._levelling = levelling;
+    this.refresh();
+};
+/**
+ * Enters or leaves levelling mode. The buyable spells appear and disappear with it, so the
+ * selected spell is followed to its new index rather than left behind.
+ */
+Window_StatusSpells.prototype.setLevellingMode = function (active) {
+    if (this._levellingMode === active) {
+        return;
+    }
+    const selectedSpellId = this.index() >= 0 && this._spells[this.index()]
+        ? this._spells[this.index()][0]
+        : null;
+    this._levellingMode = active;
+    this.makeSpellsList();
+    if (selectedSpellId) {
+        const newIndex = this._spells.map(spell => spell[0]).indexOf(selectedSpellId);
+        this.select(Math.min(Math.max(newIndex, 0), this.maxItems() - 1));
+    }
+    this.refresh();
+};
+Window_StatusSpells.prototype.isLevellingMode = function () {
+    return !!this._levellingMode && !!this._levelling && !!this._actor;
+};
+/**
+ * Price of a spell which is not memorised yet, and nothing for the ones already known.
+ * The spells manifested by the Petty Magic talent cost no experience at all.
+ */
+Window_StatusSpells.prototype.spellCostText = function (spellId) {
+    if (!this.isLevellingMode() || this._actor.hasSpell(spellId)) {
+        return '';
+    }
+    const cost = this._levelling.nextSpellCost(spellId);
+    return cost > 0 ? `${cost} ${TextManager.expA}` : TextManager.statusSpellFree;
+};
+/**
+ * Green when the spell is about to be memorised, blue when it may be bought, and the usual
+ * colour for the ones already known. Running out of experience does not change the colour.
+ */
+Window_StatusSpells.prototype.spellColor = function (spellId) {
+    if (!this.isLevellingMode() || this._actor.hasSpell(spellId)) {
+        return this.systemColor();
+    }
+    if (this._levelling.isSpellBought(spellId)) {
+        return this.powerUpColor();
+    }
+    return this.levellingColor();
+};
+/**
+ * Buys or refunds the selected spell. Spells have no level, so unlike every other levelling
+ * window this one is driven by the confirmation key rather than by the horizontal arrows.
+ */
+Window_StatusSpells.prototype.changeSpell = function () {
+    const spellId = this.spellFromIndex(this.index())[0];
+    if (this._actor.hasSpell(spellId)) {
+        this.playBuzzerSound();
+        return;
+    }
+    const changed = this._levelling.isSpellBought(spellId)
+        ? this._levelling.refundSpell(spellId)
+        : this._levelling.buySpell(spellId);
+    if (changed) {
         this.playOkSound();
-        this.updateInputData();
-        this.callOkHandler();
+        this.refresh();
+        this.callHandler('levelling_change');
     }
     else {
         this.playBuzzerSound();
     }
+};
+// #endregion === Levelling mode === //
+/**
+ * Called when the process successfully completes.
+ * In levelling mode the confirmation key buys and refunds spells instead of opening the
+ * command window, which has nothing to offer on a spell that is not memorised yet.
+ */
+Window_StatusSpells.prototype.processOk = function () {
+    if (!this.isCurrentItemEnabled()) {
+        this.playBuzzerSound();
+        return;
+    }
+    if (this.isLevellingMode() && this.index() >= 0) {
+        this.updateInputData();
+        this.changeSpell();
+        return;
+    }
+    this.playOkSound();
+    this.updateInputData();
+    this.callOkHandler();
 };
 // #endregion =========================== Window_StatusSpells ============================== //
 // ============================== //
@@ -3729,7 +4072,8 @@ Window_StatusStats.prototype.initialize = function () {
 Window_StatusStats.prototype.setActor = function (actor) {
     if (this._actor !== actor) {
         this._actor = actor;
-        this._bgSprite = new Sprite(ImageManager.loadSystem("bg_menuStats_" + actor.name()));
+        // this._bgSprite = new Sprite(ImageManager.loadSystem("bg_menuStats_" + actor.name()));
+        this._bgSprite = new Sprite(ImageManager.loadSystem("bg_menuStats"));
         this.addChildAt(this._bgSprite, 0);
         this.refresh();
     }
@@ -4555,9 +4899,13 @@ Window_Base.prototype.whiteColor = function () {
 Window_Base.prototype.normalColor = function () {
     return this.textColor(15);
 };
-// Colour of a value which can be augmented while levelling mode is active
+// Colour of an improvable value in levelling mode
 Window_Base.prototype.levellingColor = function () {
-    return this.textColor(1);
+    return this.textColor(9);
+};
+// Colour of an improved value in levelling mode
+Window_Base.prototype.powerUpColor = function () {
+    return this.textColor(28);
 };
 Window_Base.prototype.resetTextColor = function () {
     this.changeTextColor(this.normalColor());
@@ -4646,23 +4994,11 @@ Window_StatusStats.prototype.windowWidth = function () {
 Window_StatusStats.prototype.windowHeight = function () {
     return Graphics.boxHeight - TEW.MENU.STATUS_WINDOW_TOPBAR_HEIGHT;
 };
-Window_StatusLevellingSummary.prototype.backgroundImageName = function () {
-    return "bg_menuHalfWindowList";
-};
 Window_StatusLevellingSummary.prototype.windowWidth = function () {
-    return Graphics.boxWidth / 2;
+    return Graphics.boxWidth / 2; // TODO: adjust once the background is redrawn
 };
 Window_StatusLevellingSummary.prototype.windowHeight = function () {
-    return 440; // same box as the half window lists
-};
-Window_StatusLevellingConfirm.prototype.backgroundImageName = function () {
-    return "bg_menuDetailsCommand3";
-};
-Window_StatusLevellingConfirm.prototype.windowWidth = function () {
-    return 280;
-};
-Window_StatusLevellingConfirm.prototype.windowHeight = function () {
-    return 168; // line height * 3 + bg padding
+    return 650;
 };
 Window_StatusTalents.prototype.backgroundImageName = function () {
     return "bg_menuHalfWindowFullHeight";

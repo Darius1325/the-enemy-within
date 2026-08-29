@@ -101,48 +101,13 @@ TEW.DATABASE.COMPS.SET = {
         stat: Stat.FELW,
         isBase: true
     },
-    CHANNELLING_AQSHY: {
-        name: "Channelling (Aqshy)",
-        stat: Stat.WILL,
-        isBase: false
-    },
-    CHANNELLING_AZYR: {
-        name: "Channelling (Azyr)",
-        stat: Stat.WILL,
-        isBase: false
-    },
-    CHANNELLING_CHAMON: {
-        name: "Channelling (Chamon)",
-        stat: Stat.WILL,
-        isBase: false
-    },
-    CHANNELLING_DHAR: {
-        name: "Channelling (Dhar)",
-        stat: Stat.WILL,
-        isBase: false
-    },
-    CHANNELLING_GHUR: {
-        name: "Channelling (Ghur)",
-        stat: Stat.WILL,
-        isBase: false
-    },
-    CHANNELLING_GHYRAN: {
-        name: "Channelling (Ghyran)",
-        stat: Stat.WILL,
-        isBase: false
-    },
-    CHANNELLING_HYSH: {
-        name: "Channelling (Hysh)",
-        stat: Stat.WILL,
-        isBase: false
-    },
-    CHANNELLING_SHYISH: {
-        name: "Channelling (Shyish)",
-        stat: Stat.WILL,
-        isBase: false
-    },
-    CHANNELLING_ULGU: {
-        name: "Channelling (Ulgu)",
+    /**
+     * Channelling is both grouped and ungrouped: casters trained in a lore channel their own
+     * wind, everyone else channels raw magic. Rather than one entry per wind, a single
+     * competence holds the advances and Game_Actor renames it after the caster's wind
+     */
+    CHANNELLING: {
+        name: "Channelling",
         stat: Stat.WILL,
         isBase: false
     },

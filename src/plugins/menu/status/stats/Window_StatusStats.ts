@@ -53,7 +53,8 @@ Window_StatusStats.prototype.initialize = function() {
 Window_StatusStats.prototype.setActor = function(actor: any) {
     if (this._actor !== actor) {
         this._actor = actor;
-        this._bgSprite = new Sprite(ImageManager.loadSystem("bg_menuStats_" + actor.name()));
+        // this._bgSprite = new Sprite(ImageManager.loadSystem("bg_menuStats_" + actor.name()));
+        this._bgSprite = new Sprite(ImageManager.loadSystem("bg_menuStats"));
         this.addChildAt(this._bgSprite, 0);
         this.refresh();
     }

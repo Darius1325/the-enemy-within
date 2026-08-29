@@ -18,7 +18,7 @@ import { Talent } from "./talent";
 import { MeleeWeapon } from "./meleeWeapon";
 import { RangedWeapon } from "./rangedWeapon";
 import { Ammunition } from "./ammunition";
-import { ArmorGroup, WeaponGroup, WeaponQuality } from "./enum";
+import { ArmorGroup, SpellDomain, WeaponGroup, WeaponQuality, Wind, WindName } from "./enum";
 import {Game_BattlerBase} from "../base/stats/Game_BattlerBase";
 import { Troop } from "./troop";
 import { BattlerAI } from "./battlerAI";
@@ -127,6 +127,8 @@ const TEW: {
             PATH_IDS?: string[];
             /** Career IDs */
             IDS?: string[];
+            /** IDs of the careers giving access to magic, i.e. holding the Language (Magick) skill */
+            MAGICAL_IDS?: string[];
         }
 
         /** Relevant data for NPCs */
@@ -186,6 +188,10 @@ const TEW: {
         COMPETENCE_COSTS?: number[];
         /** XP cost of a talent which has not been acquired yet */
         TALENT_COST?: number;
+        /** XP cost of one bracket of petty spells */
+        PETTY_SPELL_COST?: number;
+        /** XP cost of one bracket of arcane spells */
+        ARCANE_SPELL_COST?: number;
 
         /**
          * Find the cost bracket matching a number of advances
@@ -219,6 +225,72 @@ const TEW: {
          * @returns the total XP cost
          */
         competenceRangeCost?: (fromAdvances: number, toAdvances: number) => number;
+        /**
+         * Cost of one more spell in a pool
+         * @param known number of spells already known in the pool
+         * @param bonus Willpower bonus for petty spells, Intelligence bonus for arcane ones
+         * @param cost XP cost of one bracket
+         * @returns the XP cost of the following spell
+         */
+        spellCost?: (known: number, bonus: number, cost: number) => number;
+        /**
+         * Total cost of every spell bought between two pool sizes
+         * @param fromKnown number of spells already known in the pool
+         * @param toKnown targeted number of spells
+         * @param bonus Willpower bonus for petty spells, Intelligence bonus for arcane ones
+         * @param cost XP cost of one bracket
+         * @returns the total XP cost
+         */
+        spellRangeCost?: (fromKnown: number, toKnown: number, bonus: number, cost: number) => number;
+    };
+
+    /**
+     * Winds of magic and the talents, competences and spell domains they are tied to
+     * Petty magic and the generic arcane spells belong to no wind, and neither do the lesser
+     * lores (Hedgecraft, Witchery) which specific careers grant outright
+     */
+    MAGIC?: {
+        /** Every wind a character may be tied to, NONE excluded */
+        WIND_IDS?: WindName[];
+        /** Display name of every wind, NONE included */
+        WIND_NAMES?: Record<string, Wind>;
+
+        /** ID of the Petty Magic talent */
+        PETTY_TALENT?: string;
+        /** ID of the bare Arcane Magic talent, transformed into the wind's own once acquired */
+        ARCANE_TALENT?: string;
+        /** Arcane Magic talent granted by each wind, Dhar excluded as it grants no Arcane Lore */
+        ARCANE_TALENTS?: Record<string, string>;
+        /** Arcane Magic talents belonging to a lesser lore, which no wind grants */
+        LESSER_ARCANE_TALENTS?: string[];
+        /**
+         * Whether a talent is one of the eight Arcane Lores keyed on a wind
+         * @param talentId ID of the talent
+         * @returns true for an ARCANE_TALENTS entry, false for a lesser lore or anything else
+         */
+        isWindArcaneTalent?: (talentId: string) => boolean;
+        /** ID of the ungrouped Channelling competence, renamed after the caster's wind */
+        CHANNELLING_COMP?: string;
+        /** ID of the competence marking a career as magical */
+        MAGICK_COMP?: string;
+        /** Career competence entry resolved to CHANNELLING_COMP */
+        CHANNELLING_ANY?: string;
+        /** Career talent entry resolved to ARCANE_TALENT */
+        ARCANE_MAGIC_ANY?: string;
+
+        /** Lore spells each wind gives access to */
+        WIND_DOMAINS?: Record<string, SpellDomain>;
+
+        /** Pool holding the petty spells */
+        PETTY_POOL?: string;
+        /** Pool holding the generic arcane spells and every lore spell */
+        ARCANE_POOL?: string;
+        /**
+         * Pool a spell domain is priced in
+         * @param domain the spell's domain
+         * @returns PETTY_POOL or ARCANE_POOL
+         */
+        spellPool?: (domain: SpellDomain) => string;
     };
 
     /** Constants used in menu plugins for readability */

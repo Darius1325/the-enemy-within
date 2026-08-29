@@ -36,6 +36,8 @@ TEW.MENU.COMMAND_NAMES[59] = "XP left";
 TEW.MENU.COMMAND_NAMES[60] = "Spent";
 TEW.MENU.COMMAND_NAMES[61] = "Base";
 TEW.MENU.COMMAND_NAMES[62] = "Unlearned";
+TEW.MENU.COMMAND_NAMES[63] = "Learned";
+TEW.MENU.COMMAND_NAMES[64] = "Free";
 
 // Inventory Menu
 TEW.MENU.COMMAND_NAMES[70] = "InventoryNextChar";
@@ -134,6 +136,8 @@ Object.defineProperties(TextManager, {
     statusExpSpent :            TextManager.getter('command', 60),
     statusCompBase :            TextManager.getter('command', 61),
     statusCompUnlearned :       TextManager.getter('command', 62),
+    statusSpellLearned :        TextManager.getter('command', 63),
+    statusSpellFree :           TextManager.getter('command', 64),
 
     // Inventory Menu
     inventoryNextChar :         TextManager.getter('command', 70),

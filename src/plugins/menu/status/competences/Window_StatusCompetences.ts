@@ -75,7 +75,7 @@ Window_StatusCompetences.prototype.makeCompsList = function() {
         const improvableIds = this._actor.improvableComps();
         const improvableComps = improvableIds
             .map(compId => [compId, TEW.DATABASE.COMPS.SET[compId]])
-            .sort((a, b) => a[1].name.localeCompare(b[1].name));
+            .sort((a, b) => this._actor.compName(a[0]).localeCompare(this._actor.compName(b[0])));
         this._compsList = improvableComps.concat(
             knownComps.filter(comp => improvableIds.indexOf(comp[0]) < 0)
         );
@@ -154,6 +154,8 @@ Window_StatusCompetences.prototype.competenceFromIndex = function(index: number)
         : this._actor.compPlus(comp[0]);
     return [comp[0], {
         ...comp[1],
+        // Channelling is named after the actor's wind, thus depends on the actor
+        name: this._actor.compName(comp[0]),
         level,
         value: level + this._actor.paramByName(comp[1].stat)
     }];

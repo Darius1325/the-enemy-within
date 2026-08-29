@@ -6,16 +6,33 @@ Some skills and talents are *grouped*: the name is a heading covering several *s
 behaves as a skill of its own. Careers may list a grouped skill as `Skill (Any)`, meaning the character picks one
 specialisation of that group.
 
-There are currently 14 such competence entries and 12 such talent entries across the 256 careers in
+There are currently 13 such competence entries and 11 such talent entries across the 256 careers in
 ./src/plugins/constants/TEW_Careers.ts:
 
 | Competences | Talents |
 |-|-|
-| `LANGUAGE_ANY` (41 careers), `MELEE_ANY` (29), `LORE_ANY` (18), `STEALTH_ANY` (12), `CHANNELLING_ANY` (12), `PLAY_ANY` (11), `ENTERTAIN_ANY` (11), `TRADE_ANY` (10), `RANGED_ANY` (10), `PERFORM_ANY` (4), `ART_ANY` (4), `SECRET_SIGNS_ANY` (3), `RIDE_ANY` (3), `ANIMAL_TRAINING_ANY` (3) | `ETIQUETTE_ANY` (15), `ACUTE_SENSE_ANY` (5), `STRIDER_ANY` (4), `HATRED_ANY` (4), `SAVANT_ANY` (3), `INVOKE_ANY` (3), `BLESS_ANY` (3), `RESISTANCE_ANY` (2), `MASTER_TRADESMAN_ANY` (2), `CRAFTSMAN_ANY` (2), `FEARLESS_ANY` (2), `ARCANE_MAGIC_ANY` (1) |
+| `LANGUAGE_ANY` (41 careers), `MELEE_ANY` (29), `LORE_ANY` (18), `STEALTH_ANY` (12), `PLAY_ANY` (11), `ENTERTAIN_ANY` (11), `TRADE_ANY` (10), `RANGED_ANY` (10), `PERFORM_ANY` (4), `ART_ANY` (4), `SECRET_SIGNS_ANY` (3), `RIDE_ANY` (3), `ANIMAL_TRAINING_ANY` (3) | `ETIQUETTE_ANY` (15), `ACUTE_SENSE_ANY` (5), `STRIDER_ANY` (4), `HATRED_ANY` (4), `SAVANT_ANY` (3), `INVOKE_ANY` (3), `BLESS_ANY` (3), `RESISTANCE_ANY` (2), `MASTER_TRADESMAN_ANY` (2), `CRAFTSMAN_ANY` (2), `FEARLESS_ANY` (2) |
 
 None of these IDs exist in `TEW.DATABASE.COMPS.SET` or `TEW.DATABASE.TALENTS.SET`. The levelling mode currently
 drops them, so a career's `(Any)` entries grant nothing at all. 136 of the 256 career levels have no wildcard, 89 have
 one, and the rest have between two and six (`ENTERTAINER_4` has six).
+
+### Magic is not part of this
+
+`CHANNELLING_ANY` (12 careers) and `ARCANE_MAGIC_ANY` (1) look like wildcards but are **not** grouped skills, and
+this document does not cover them. Both are resolved on their own in `Game_Actor.refreshCareerCache()`, and the rules
+behind them live in .claude/spells.md:
+
+- **`CHANNELLING_ANY` resolves to the single `CHANNELLING` competence.** There is no group and no pick to make: one
+  ungrouped competence holds the advances for every caster, and `Game_BattlerBase.channellingName()` renames it after
+  the caster's wind — "Channelling" while untrained, "Channelling (Aqshy)" once they study that wind's lore. The nine
+  `CHANNELLING_<WIND>` entries have been removed from the database, since two competences for one skill would split
+  the advances at the moment the caster is attuned.
+- **`ARCANE_MAGIC_ANY` resolves to the bare `ARCANE_MAGIC` talent**, which is bought as it stands and transformed
+  into the wind's own `ARCANE_MAGIC_<WIND>` by `Game_Actor.addTalent()`. The wind is a property of the character, so
+  there is nothing for a picker to offer.
+
+Everything below therefore concerns the thirteen competence groups and eleven talent groups in the table above.
 
 ## Settled
 
@@ -23,10 +40,12 @@ Decided during review, and assumed by everything below:
 
 - the career history lives on `Game_Actor` (inside `$gameActors`), not on `$dataActors`;
 - the career data must be able to hold several instances of the same `Skill (Any)`;
-- the bare unspecialised entries are to be removed from the database, as they cannot be acquired — with one
-  exception found since, see *Removing the bare group entries*;
+- the bare unspecialised entries are to be removed from the database, as they cannot be acquired — see
+  *Removing the bare group entries*;
 - competences and talents gain an explicit `group` field rather than being matched by ID prefix;
-- magical and religious specialisations need their own limits;
+- Channelling and Arcane Magic are out of scope, being handled by the magic rules instead — see *Magic is not part
+  of this* above;
+- the religious specialisations need their own limits;
 - **breaking existing save files is acceptable.** No migration or conversion path needs writing for any of this. If
   repairing old saves becomes worth doing later, it will be its own feature.
 
@@ -76,28 +95,34 @@ Confirmed as unacquirable placeholders, and referenced nowhere outside their own
 
 | Competences | Talents |
 |-|-|
-| `ANIMAL_TRAINING`, `STEALTH` | `ARCANE_MAGIC`, `CRAFTSMAN`, `HATRED`, `MASTER_TRADESMAN`, `SAVANT`, `STRIDER` |
+| `ANIMAL_TRAINING`, `STEALTH` | `CRAFTSMAN`, `HATRED`, `MASTER_TRADESMAN`, `SAVANT`, `STRIDER` |
 
 `HATRED` and `SAVANT` carry `//TODO` and a placeholder description, which is what gave them away.
 
-### `Channelling` is the exception — and it is missing, not spurious
+`ARCANE_MAGIC` was on this list and has since been taken off it: it is neither a group heading nor a placeholder but
+the talent a caster actually buys, transformed into their wind's own on purchase. It must stay.
+
+### Channelling is already settled, and is not one of these
+
+The rulebook's wording is what put it here in the first place:
 
 > Channelling is a special skill in that it is both Grouped, allowing for Specialisations, and also ungrouped, for
 > those not properly trained to channel magic — *Channelling (WP), p.126*
 
-So an unspecialised `Channelling` is a real, usable skill for untrained characters, and the database has only the nine
-winds (`CHANNELLING_AQSHY` … `CHANNELLING_ULGU`). A bare `CHANNELLING` entry should be **added**. It must then be
-excluded from the `CHANNELLING_ANY` pool, since the career grants a wind rather than the untrained skill — which is a
-good argument for the `group` field carrying an explicit member list rather than being derived from the prefix.
+Rather than a group with an extra ungrouped member, this is now modelled as one competence with two names. The nine
+`CHANNELLING_<WIND>` entries are gone, a single `CHANNELLING` has replaced them, and the specialisation shows only in
+the displayed name. Nothing in this document applies to it. See *Magic is not part of this* above.
 
-### Removing two competences shifts every competence index
+### Removing competences shifts every competence index
 
 Talents are stored as `Record<string, number>`, so removing talent entries costs nothing.
 
-Competences are not. `_competences` is a positional array indexed by `TEW.DATABASE.COMPS.IDS`, of which there are
-currently 197. `ANIMAL_TRAINING` sits at index 1 and `STEALTH` at index 164, so removing them shifts 195 and 32
-entries respectively. A save written before the change loads with almost every competence value displaced by one
-position.
+Competences are not. `_competences` is a positional array indexed by `TEW.DATABASE.COMPS.IDS`. `ANIMAL_TRAINING`
+sits near the top of the list and `STEALTH` two thirds of the way down, so removing them displaces almost every
+competence that follows. A save written before the change loads with those values on the wrong skills.
+
+This has already happened once: collapsing the nine `CHANNELLING_<WIND>` entries into a single `CHANNELLING` shifted
+every competence after it, and the saves written before it are void.
 
 Breaking saves is allowed, so this is not a blocker and no conversion is needed. It is still worth keying
 `_competences` by ID — `Record<string, number>`, exactly like `_talents` — for a different reason: **the failure is
@@ -142,6 +167,8 @@ export type Career = {
     talents: string[];
     /** One entry per pick, same convention */
     anyTalents: string[];
+    /** Derived at load from the presence of Language (Magick) */
+    isMagical: boolean;
 };
 ```
 
@@ -149,16 +176,18 @@ This keeps `competences` and `talents` as plain `string[]`, so nothing downstrea
 compounding step simply concatenates the wildcard lists where it unions the concrete ones. `improvableComps()` keeps
 returning plain IDs.
 
-Splitting the existing data is mechanical — every `*_ANY` entry moves to the new field. The **counts** are the part
-that has to come from the rulebook, career level by career level, since the current data cannot tell one pick from two.
+Splitting the existing data is mechanical — every `*_ANY` entry moves to the new field, `CHANNELLING_ANY` and
+`ARCANE_MAGIC_ANY` excepted: those two are not picks, and stay in `competences` and `talents` where
+`refreshCareerCache()` already resolves them. The **counts** are the part that has to come from the rulebook, career
+level by career level, since the current data cannot tell one pick from two.
 
 ## Group membership should be data, not a prefix
 
 `Game_BattlerBase.prototype.anyCompOfCategory` already resolves a category by prefix, and it would be tempting to
 reuse that. It is not safe as the source of a picker's contents:
 
-- it sweeps in the bare entries above — and once `CHANNELLING` is added deliberately, prefix matching would put the
-  untrained skill into the `CHANNELLING_ANY` pool, which is wrong;
+- it sweeps in the bare entries above, and it would just as happily fold `ARCANE_MAGIC` into a group it heads rather
+  than belongs to;
 - any ID that merely shares a prefix joins the group silently;
 - the pools are open-ended in the book ("with GM permission, create a unique Specialisation"), and the data already
   diverges from it — `LORE_*` has 47 entries against the rulebook's ten samples. Which of those 47 to offer is a
@@ -218,40 +247,27 @@ export type SpecialisationGroup = {
 
 giving, for the talents:
 
-| Group | `maxKnown` | `excludes` |
+| Group or talent | `maxKnown` | `excludes` |
 |-|-|-|
-| `ARCANE_MAGIC` | 1 | `BLESS`, `INVOKE` |
-| `BLESS` | 1 | `ARCANE_MAGIC` |
-| `INVOKE` | 1 | `ARCANE_MAGIC`, `PETTY_MAGIC` |
+| `BLESS` (group) | 1 | `ARCANE_MAGIC` |
+| `INVOKE` (group) | 1 | `ARCANE_MAGIC`, `PETTY_MAGIC` |
+| `ARCANE_MAGIC` (single talent) | — | `BLESS`, `INVOKE` |
 | `PETTY_MAGIC` (single talent) | — | `INVOKE` |
 | `MAGIC_RESISTANCE` (single talent) | — | `ARCANE_MAGIC`, `BLESS`, `INVOKE`, `PETTY_MAGIC`, `WITCH` |
 
-Note the book states these asymmetrically — Invoke's entry names Petty Magic and Arcane Magic, Arcane Magic's names
+Only Bless and Invoke are groups. Arcane Magic is bought bare and transformed into the wind's own talent, so its
+"Max: 1" is enforced by the character having exactly one wind and is already handled in
+`Game_Actor.canBuyMagicTalent()`; it appears in the table for the exclusions alone.
+
+Note the book states those asymmetrically — Invoke's entry names Petty Magic and Arcane Magic, Arcane Magic's names
 Bless and Invoke, and Bless's entry names nobody. Taken literally, whether the rule bites depends on the order the
 player buys them in. They should be **normalised to a symmetric set at load**, so that `A excludes B` always implies
 `B excludes A`.
 
 `Game_Actor.canBuyTalent()` then also has to check that the group's `maxKnown` is not already reached and that no
 excluded talent is held. Both checks must count the talents pending in the current levelling session, or a player could
-buy Bless and Invoke in one go and have it accepted at confirmation.
-
-### Channelling is a skill, and its constraint is the wind
-
-Careers write `Channelling (Any Colour)`, not `Channelling (Any)`: the pick is a Wind of Magic, and in practice it is
-the wind of the lore the character studies. Nothing in the codebase models that yet — `SpellDomain` is a stub with
-`ARCANE`, `FIRE` and `PETTY`, and the `ARCANE_MAGIC_*` talents cover only Celestial, Hedgecraft and Witchery out of
-the book's eight lores plus the lesser ones.
-
-Two ways to constrain it:
-
-1. **Derive it** from the Arcane Magic talents the character holds, via a lore-to-wind map (Fire/Aqshy,
-   Heavens/Azyr, Metal/Chamon, Beasts/Ghur, Life/Ghyran, Light/Hysh, Death/Shyish, Shadow/Ulgu, and Dhar for dark
-   magic), falling back to the full list of nine when the character has no Arcane Magic talent. Eight pairs of data,
-   and the constraint falls out of what the character already has.
-2. **Store it** as an explicit field on the actor, set at character creation.
-
-Option 1 is recommended, but it is blocked on filling in the missing `ARCANE_MAGIC_*` entries — five of the eight
-lores are absent, so the map cannot be built yet. Until then `CHANNELLING_ANY` can simply offer all nine winds.
+buy Bless and Invoke in one go and have it accepted at confirmation. The magic side of that method already works this
+way, which is the pattern to follow.
 
 ## Plan
 
@@ -335,10 +351,9 @@ value in the picker would help the choice.
 
 ### Suggested order of work
 
-1. Key `_competences` by ID, then remove the bare group entries and add the ungrouped `CHANNELLING`. Existing saves
-   are discarded rather than converted.
+1. Key `_competences` by ID, then remove the bare group entries. Existing saves are discarded rather than converted.
 2. Add the `group` field and the `GROUPS` index to competences and talents, with `maxKnown` and `excludes` on the
-   magical and religious talent groups. Nothing else changes; the wildcards stay dropped, so the game keeps working.
+   Bless and Invoke groups. Nothing else changes; the wildcards stay dropped, so the game keeps working.
 3. Enforce `maxKnown` and `excludes` in `Game_Actor.canBuyTalent()` and in the levelling session. This is independent
    of the picker and already improves the talents window as it stands today.
 4. Split the career wildcards into `anyCompetences` / `anyTalents`, and fill in the counts from the rulebook.
@@ -347,7 +362,8 @@ value in the picker would help the choice.
    whole read path.
 6. Add the picker window and wire it into `Scene_Status` and `Game_Levelling`.
 7. Talents, reusing whatever step 6 produced.
-8. Fill in the missing `ARCANE_MAGIC_*` lores, then constrain `CHANNELLING_ANY` to the character's wind.
+
+The `CHANNELLING` and `ARCANE_MAGIC_*` work that used to bookend this list is done, and lives with the magic rules.
 
 ## Open questions
 
@@ -365,8 +381,11 @@ Unrelated to this feature, but they will bite whoever implements it:
 
 - `INVOKE_MYMIDIA` is missing an `R`; the display name `Invoke (Myrmidia)` is correct, and `BLESS_MYRMIDIA` is spelt
   properly, so it is the ID alone.
-- `ARCANE_MAGIC_*` holds only Celestial, Hedgecraft and Witchery. The book's eight Arcane Lores are Beasts, Death,
-  Fire, Heavens, Metal, Shadow, Light and Life, plus lesser lores such as Hedgecraft and Necromancy.
-- There is no ungrouped `CHANNELLING` competence, although the rules define one.
 - `FEARLESS_EVERYTHING` ("Fearless (Everything)") shares the generic Fearless description; worth checking it is a real
   specialisation and not a placeholder.
+
+Two more have since been fixed by the magic rules: `ARCANE_MAGIC_*` now covers the eight Arcane Lores keyed by their
+wind, and the ungrouped `CHANNELLING` competence exists.
+
+`MYSTIC_4` (Seer) still looks off: it grants `ARCANE_MAGIC_AZYR` and `CHANNELLING` outright, so it only makes sense
+for a character tied to Azyr, yet it lists no `LANGUAGE_MAGICK` and so is not flagged as a magical career.

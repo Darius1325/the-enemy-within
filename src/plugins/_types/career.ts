@@ -26,4 +26,5 @@ export type Career = {
     improvableStats: Stat[];
     competences: string[];
     talents: string[];
+    isMagical: boolean;
 };

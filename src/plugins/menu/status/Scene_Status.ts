@@ -24,7 +24,6 @@ import Window_StatusCompetenceDetails from "./competences/Window_StatusCompetenc
 import TEW from "../../_types/tew";
 import Game_Levelling from "./Game_Levelling";
 import Window_StatusLevellingSummary from "./Window_StatusLevellingSummary";
-import Window_StatusLevellingConfirm from "./Window_StatusLevellingConfirm";
 
 // ----------------------
 // $StartCompilation
@@ -67,7 +66,7 @@ Scene_Status.prototype.create = function() {
     // Levelling confirmation, created last so it is drawn above every other window
     this.createLevellingWindows();
 
-    this.activateStatusStats(); // Desactivate all the windows, except the stats one
+    this._commandWindow.activate();
     this.refreshActor();
 };
 
@@ -173,7 +172,7 @@ Scene_Status.prototype.onPreviousActor = function() {
 // Leaving the menu is treated as leaving levelling mode
 Scene_Status.prototype.onStatusCancel = function() {
     if (this.isLevellingMode()) {
-        this.requestLevellingExit(true);
+        this.requestLevellingExit();
     } else {
         this.popScene();
     }
@@ -337,6 +336,11 @@ Scene_Status.prototype.createSpellsWindow = function() {
     this._spellsWindow.setHandler('ok', () => {
         this.activateCommandWindowSpells();
     });
+    this._spellsWindow.setHandler('levelling_change', () => {
+        this._commandWindow.refresh();
+        this._spellsWindow.refresh();
+    });
+    this._spellsWindow.setLevelling(this._levelling);
     this._spellsWindow.hide();
     this.addWindow(this._spellsWindow);
 };
@@ -413,7 +417,6 @@ Scene_Status.prototype.activateCommandWindowSpells = function() {
 Scene_Status.prototype.createLevelling = function() {
     this._levelling = new Game_Levelling();
     this._levellingMode = false;
-    this._levellingPopOnResolve = false;
     this._levellingReturnWindow = null;
 };
 
@@ -421,18 +424,13 @@ Scene_Status.prototype.createLevelling = function() {
 Scene_Status.prototype.createLevellingWindows = function() {
     this._levellingSummaryWindow = new Window_StatusLevellingSummary();
     this._levellingSummaryWindow.setLevelling(this._levelling);
+    this._levellingSummaryWindow.setHandler('levelling_confirm', this.onLevellingConfirm.bind(this));
+    this._levellingSummaryWindow.setHandler('levelling_discard', this.onLevellingDiscard.bind(this));
+    this._levellingSummaryWindow.setHandler('levelling_back', this.onLevellingBack.bind(this));
+    this._levellingSummaryWindow.setHandler('cancel', this.onLevellingBack.bind(this));
+    this._levellingSummaryWindow.deactivate();
     this._levellingSummaryWindow.hide();
     this.addWindow(this._levellingSummaryWindow);
-
-    this._levellingConfirmWindow = new Window_StatusLevellingConfirm();
-    this._levellingConfirmWindow.setSummaryWindow(this._levellingSummaryWindow);
-    this._levellingConfirmWindow.setHandler('levelling_confirm', this.onLevellingConfirm.bind(this));
-    this._levellingConfirmWindow.setHandler('levelling_discard', this.onLevellingDiscard.bind(this));
-    this._levellingConfirmWindow.setHandler('levelling_back', this.onLevellingBack.bind(this));
-    this._levellingConfirmWindow.setHandler('cancel', this.onLevellingBack.bind(this));
-    this._levellingConfirmWindow.deactivate();
-    this._levellingConfirmWindow.hide();
-    this.addWindow(this._levellingConfirmWindow);
 };
 
 Scene_Status.prototype.isLevellingMode = function() {
@@ -441,7 +439,7 @@ Scene_Status.prototype.isLevellingMode = function() {
 
 // Whether the confirmation prompt is currently displayed
 Scene_Status.prototype.isLevellingPrompt = function() {
-    return this._levellingConfirmWindow && this._levellingConfirmWindow.visible;
+    return this._levellingSummaryWindow && this._levellingSummaryWindow.visible;
 };
 
 // Toggling levelling mode with the dedicated input key
@@ -451,7 +449,7 @@ Scene_Status.prototype.updateLevellingToggle = function() {
     }
     if (Input.isTriggered(TEW.MENU.LEVEL_UP_KEY)) {
         if (this.isLevellingMode()) {
-            this.requestLevellingExit(false);
+            this.requestLevellingExit();
         } else {
             this.enterLevellingMode();
         }
@@ -480,21 +478,19 @@ Scene_Status.prototype.refreshLevellingWindows = function() {
     this._statsWindow.refresh();
     this._talentsWindow.setLevellingMode(this._levellingMode);
     this._talentsWindow.refresh();
+    this._spellsWindow.setLevellingMode(this._levellingMode);
+    this._spellsWindow.refresh();
 };
 
 /**
  * Leaving levelling mode. Exit is instantaneous with nothing spent, and prompts otherwise.
  * @param popOnResolve whether the whole menu should be left once the prompt is resolved
  */
-Scene_Status.prototype.requestLevellingExit = function(popOnResolve: boolean) {
+Scene_Status.prototype.requestLevellingExit = function() {
     if (!this._levelling.hasAdvances()) {
         this.exitLevellingMode();
-        if (popOnResolve) {
-            this.popScene();
-        }
         return;
     }
-    this._levellingPopOnResolve = popOnResolve;
     this.openLevellingPrompt();
 };
 
@@ -518,14 +514,12 @@ Scene_Status.prototype.openLevellingPrompt = function() {
     }
     this._levellingSummaryWindow.refreshAdvances();
     this._levellingSummaryWindow.show();
-    this._levellingConfirmWindow.show();
-    this._levellingConfirmWindow.select(0);
-    this._levellingConfirmWindow.activate();
+    this._levellingSummaryWindow.selectSymbol('levelling_back'); // defaulting to Back avoids misclicks confirming/discarding
+    this._levellingSummaryWindow.activate();
 };
 
 Scene_Status.prototype.closeLevellingPrompt = function() {
-    this._levellingConfirmWindow.deactivate();
-    this._levellingConfirmWindow.hide();
+    this._levellingSummaryWindow.deactivate();
     this._levellingSummaryWindow.hide();
 };
 
@@ -539,13 +533,7 @@ Scene_Status.prototype.restoreLevellingFocus = function() {
 // Leaving levelling mode once the prompt is resolved, and the menu if it was being left
 Scene_Status.prototype.finishLevellingExit = function() {
     this.exitLevellingMode();
-    if (this._levellingPopOnResolve) {
-        this._levellingPopOnResolve = false;
-        this._levellingReturnWindow = null;
-        this.popScene();
-    } else {
-        this.restoreLevellingFocus();
-    }
+    this.restoreLevellingFocus();
 };
 
 Scene_Status.prototype.onLevellingConfirm = function() {
@@ -561,7 +549,6 @@ Scene_Status.prototype.onLevellingDiscard = function() {
 
 // Going back to levelling mode, keeping every pending advance
 Scene_Status.prototype.onLevellingBack = function() {
-    this._levellingPopOnResolve = false;
     this.closeLevellingPrompt();
     this.restoreLevellingFocus();
 };

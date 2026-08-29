@@ -486,6 +486,77 @@ Game_Actor.prototype.applyCompAdvances = function (compId, advances) {
     this.addComp(compId, advances);
 };
 // #endregion =========================== Levelling ============================== //
+// #region ============================== Magic ============================== //
+/**
+ * Acquiring a talent.
+ * The bare Arcane Magic talent stands for whichever Arcane Lore the actor's wind draws on, and
+ * is transformed into it on purchase. Channelling follows along on its own, as its name is
+ * derived from the talents held rather than stored.
+ */
+Game_Actor.prototype.addTalent = function (talentId) {
+    const acquiredId = talentId === TEW.MAGIC.ARCANE_TALENT && this.arcaneTalent()
+        ? this.arcaneTalent()
+        : talentId;
+    Game_Battler.prototype.addTalent.call(this, acquiredId);
+    if (acquiredId === TEW.MAGIC.PETTY_TALENT) {
+        this.grantFreePettySpells();
+    }
+};
+/**
+ * Petty Magic manifests a number of spells equal to the actor's Willpower bonus. Which ones is
+ * the player's choice, so the allowance is stored and spent one spell at a time in levelling
+ * mode rather than picked here.
+ */
+Game_Actor.prototype.grantFreePettySpells = function () {
+    this._freePettySpells = this.freePettySpells() + this.paramBonus("WILL" /* Stat.WILL */);
+};
+// Petty spells granted by Petty Magic and not picked yet
+Game_Actor.prototype.freePettySpells = function () {
+    return this._freePettySpells || 0;
+};
+// Characteristic bonus setting the width of a pool's cost bracket
+Game_Actor.prototype.spellPoolBonus = function (pool) {
+    return pool === TEW.MAGIC.PETTY_POOL
+        ? this.paramBonus("WILL" /* Stat.WILL */)
+        : this.paramBonus("INTL" /* Stat.INTL */);
+};
+// XP cost of one bracket of the pool
+Game_Actor.prototype.spellPoolCost = function (pool) {
+    return pool === TEW.MAGIC.PETTY_POOL
+        ? TEW.LEVELLING.PETTY_SPELL_COST
+        : TEW.LEVELLING.ARCANE_SPELL_COST;
+};
+/**
+ * Cost of one more spell in a pool
+ * @param pool the spell's cost pool
+ * @param known number of spells already known in that pool
+ * @param free petty spells still granted by Petty Magic, which cost nothing
+ */
+Game_Actor.prototype.spellCost = function (pool, known, free) {
+    if (pool === TEW.MAGIC.PETTY_POOL && free > 0) {
+        return 0;
+    }
+    return TEW.LEVELLING.spellCost(known, this.spellPoolBonus(pool), this.spellPoolCost(pool));
+};
+// IDs of the spells the actor's talents open and which are not memorised yet
+Game_Actor.prototype.buyableSpells = function () {
+    return TEW.DATABASE.SPELLS.IDS.filter(spellId => !this.hasSpell(spellId) && this.canCastDomain(TEW.DATABASE.SPELLS.SET[spellId].domain));
+};
+/**
+ * Memorising a spell, spending one of the free petty spells if the actor still holds any
+ * @param spellId ID of the spell to memorise
+ * @param free whether the spell is paid for by the Petty Magic allowance
+ */
+Game_Actor.prototype.learnSpell = function (spellId, free = false) {
+    if (this.hasSpell(spellId)) {
+        return;
+    }
+    this.addSpell(spellId);
+    if (free && this.freePettySpells() > 0) {
+        this._freePettySpells = this.freePettySpells() - 1;
+    }
+};
+// #endregion =========================== Magic ============================== //
 // #region ============================== Career ============================== //
 // Career data of the actor. Every playable character is expected to have one
 Game_Actor.prototype.career = function () {
@@ -497,7 +568,9 @@ Game_Actor.prototype.careerName = function () {
 /**
  * Rebuilding the lists of what the career allows to improve. They only change with the career,
  * and are cached rather than filtered on every draw.
- * Wildcard entries (MELEE_ANY and the like) are not resolved yet and are left out.
+ * Wildcard entries (MELEE_ANY and the like) are not resolved yet and are left out, with the
+ * two magical ones excepted: Channelling is a single ungrouped competence rather than a group,
+ * and Arcane Magic is bought bare and transformed into the wind's own talent on purchase.
  */
 Game_Actor.prototype.refreshCareerCache = function () {
     const career = this.career();
@@ -505,8 +578,12 @@ Game_Actor.prototype.refreshCareerCache = function () {
     this._improvableStats = career.improvableStats
         .map(stat => TEW.CHARACTERS.STATS[stat.toLowerCase()])
         .filter(paramId => paramId !== undefined);
-    this._improvableComps = career.competences.filter(compId => !!TEW.DATABASE.COMPS.SET[compId]);
-    this._careerTalents = career.talents.filter(talentId => !!TEW.DATABASE.TALENTS.SET[talentId]);
+    this._improvableComps = career.competences
+        .map(compId => compId === TEW.MAGIC.CHANNELLING_ANY ? TEW.MAGIC.CHANNELLING_COMP : compId)
+        .filter(compId => !!TEW.DATABASE.COMPS.SET[compId]);
+    this._careerTalents = career.talents
+        .map(talentId => talentId === TEW.MAGIC.ARCANE_MAGIC_ANY ? TEW.MAGIC.ARCANE_TALENT : talentId)
+        .filter(talentId => !!TEW.DATABASE.TALENTS.SET[talentId]);
 };
 // The cache is keyed on the career ID, so that assigning a career directly is enough to drop it
 Game_Actor.prototype.checkCareerCache = function () {
@@ -540,7 +617,36 @@ Game_Actor.prototype.canImproveComp = function (compId) {
     return this.improvableComps().includes(compId);
 };
 Game_Actor.prototype.canBuyTalent = function (talentId) {
-    return this.careerTalents().includes(talentId) && !this.hasTalent(talentId);
+    return this.careerTalents().includes(talentId)
+        && !this.hasTalent(talentId)
+        && this.canBuyMagicTalent(talentId);
+};
+/**
+ * Extra condition carried by the magical talents: they need a wind of magic on top of the
+ * career granting them. Arcane Magic further needs that wind to draw on an Arcane Lore, which
+ * rules out Dhar, and a career handing out one lore outright only serves the wind it belongs
+ * to. The lesser lores are tied to no wind, and every other talent passes.
+ */
+Game_Actor.prototype.canBuyMagicTalent = function (talentId) {
+    if (talentId === TEW.MAGIC.PETTY_TALENT) {
+        return this.hasWind();
+    }
+    if (talentId === TEW.MAGIC.ARCANE_TALENT) {
+        return this.hasWind() && !!this.arcaneTalent() && !this.hasTalent(this.arcaneTalent());
+    }
+    if (TEW.MAGIC.isWindArcaneTalent(talentId)) {
+        return talentId === this.arcaneTalent();
+    }
+    return true;
+};
+// Whether the actor's career opens the way to magic
+Game_Actor.prototype.isMagicalCareer = function () {
+    return !!this.career() && this.career().isMagical;
+};
+// A character with no wind has no spark to train, and cannot start a magical career
+Game_Actor.prototype.canEnterCareer = function (careerId) {
+    const career = TEW.DATABASE.CAREERS.SET[careerId];
+    return !!career && (!career.isMagical || this.hasWind());
 };
 // #endregion =========================== Career ============================== //
 Game_Actor.prototype.initTEW = function (actorId) {
@@ -692,8 +798,6 @@ Game_Actor.prototype.initCheplu = function () {
     this.addTalent('NIMBLE_FINGERED');
     this.addTalent('COOL_HEADED');
     // spells
-    // Test data
-    this.addSpell("BOLT");
     // items
     this.addItem('CLOTHING', 1);
     this.addItem('BOOTS', 1);
@@ -706,6 +810,8 @@ Game_Actor.prototype.initCheplu = function () {
     // ammo
     // conditions
     this.addCondition("FATIGUED" /* ConditionId.FATIGUED */);
+    // XP
+    this._exp = 500;
 };
 // Initialization function for Ciara
 Game_Actor.prototype.initCiara = function () {
@@ -731,6 +837,8 @@ Game_Actor.prototype.initCiara = function () {
     this._resolve = 2;
     // Career
     this._career = 'WIZARD_1';
+    // Wind of magic, which decides the lore she may study and names her Channelling skill
+    this.setWind('AQSHY');
     // competences
     this.addComp('LANGUAGE_BRETONNIAN', 3);
     this.addComp('LANGUAGE_WASTELANDER', 3);
@@ -738,7 +846,7 @@ Game_Actor.prototype.initCiara = function () {
     this.addComp('CHARM', 5);
     this.addComp('COOL', 5);
     this.addComp('MELEE_BASIC', 10);
-    this.addComp('CHANNELLING_AQSHY', 5);
+    this.addComp('CHANNELLING', 5);
     this.addComp('DODGE', 5);
     this.addComp('INTUITION', 5);
     this.addComp('LANGUAGE_MAGICK', 5);
@@ -752,13 +860,10 @@ Game_Actor.prototype.initCiara = function () {
     this.addTalent('WARRIOR_BORN');
     this.addTalent('PETTY_MAGIC');
     // spells
-    this.addSpell("WARNING");
-    this.addSpell("PURIFY_WATER");
-    this.addSpell("DART");
-    this.addSpell("DRAIN");
-    // TODO debug
-    this.addSpell("WARD");
-    this.addSpell("BLAST");
+    // The first three stand for the ones Petty Magic manifested, and spend that allowance
+    this.learnSpell("WARNING", true);
+    this.learnSpell("PURIFY_WATER", true);
+    this.learnSpell("DART", true);
     // items
     this.addItem('CLOTHING', 1);
     this.addItem('WRITING_KIT', 1);
@@ -770,6 +875,8 @@ Game_Actor.prototype.initCiara = function () {
     this.equipMainHand(1);
     // armors
     // ammo
+    // XP
+    this._exp = 500;
 };
 // Initialization function for Galaandril
 Game_Actor.prototype.initGalaandril = function () {
@@ -873,6 +980,8 @@ Game_BattlerBase.prototype.initialize = function () {
     this._ammo = {}; // ID: quantity
     this._conditions = {}; // ID: data
     this._career = undefined;
+    this._wind = 'NONE'; // Wind of magic the battler is tied to, if any
+    this._freePettySpells = 0; // Petty spells granted by the Petty Magic talent and not picked yet
     this._exp = 0;
     this._fate = 0;
     this._fortune = 0;
@@ -1004,6 +1113,88 @@ Game_BattlerBase.prototype.addSpell = function (spellId) {
     if (!this.hasSpell(spellId)) {
         this._spells.push(spellId);
     }
+};
+Game_BattlerBase.prototype.knownSpells = function () {
+    return this._spells;
+};
+/**
+ * Spells known in a cost pool
+ * The Arcane Magic talent covers the generic arcane spells and the caster's lore at once, so
+ * both count towards the same bracket. Petty magic keeps its own pool.
+ */
+Game_BattlerBase.prototype.spellsInPool = function (pool) {
+    return this._spells.filter((spellId) => TEW.MAGIC.spellPool(TEW.DATABASE.SPELLS.SET[spellId].domain) === pool);
+};
+// Magic
+// Wind of magic the battler is tied to, 'NONE' for those with no spark at all
+Game_BattlerBase.prototype.wind = function () {
+    return this._wind || 'NONE';
+};
+Game_BattlerBase.prototype.hasWind = function () {
+    return this.wind() !== 'NONE';
+};
+// Display name of the wind, e.g. "Aqshy"
+Game_BattlerBase.prototype.windName = function () {
+    return TEW.MAGIC.WIND_NAMES[this.wind()];
+};
+Game_BattlerBase.prototype.setWind = function (wind) {
+    this._wind = wind;
+};
+/**
+ * Arcane Magic talent the battler's wind gives access to
+ * Dhar draws on no Arcane Lore, so a battler tied to it has none
+ */
+Game_BattlerBase.prototype.arcaneTalent = function () {
+    return TEW.MAGIC.ARCANE_TALENTS[this.wind()];
+};
+Game_BattlerBase.prototype.hasPettyMagic = function () {
+    return this.hasTalent(TEW.MAGIC.PETTY_TALENT);
+};
+// Whether the battler studies the lore of their own wind, which is what specialises Channelling
+Game_BattlerBase.prototype.hasWindMagic = function () {
+    return !!this.arcaneTalent() && this.hasTalent(this.arcaneTalent());
+};
+/**
+ * Whether the battler may cast arcane spells at all
+ * The lesser lores are granted outright by a career rather than by a wind, and open the generic
+ * arcane spells just like the eight Arcane Lores do
+ */
+Game_BattlerBase.prototype.hasArcaneMagic = function () {
+    return this.hasWindMagic()
+        || TEW.MAGIC.LESSER_ARCANE_TALENTS.some((talentId) => this.hasTalent(talentId));
+};
+/**
+ * Whether the battler's talents open a spell domain
+ * Lore spells need the Arcane Magic talent of the very wind they are drawn from, so the lesser
+ * lores and the other winds give no access to them
+ */
+Game_BattlerBase.prototype.canCastDomain = function (domain) {
+    if (domain === "Petty" /* SpellDomain.PETTY */) {
+        return this.hasPettyMagic();
+    }
+    if (domain === "Arcane" /* SpellDomain.ARCANE */) {
+        return this.hasArcaneMagic();
+    }
+    return this.hasWindMagic() && TEW.MAGIC.WIND_DOMAINS[this.wind()] === domain;
+};
+/**
+ * Name of the Channelling competence, which is both grouped and ungrouped.
+ * It is specialised into the battler's wind once they study that wind's lore, and stays the
+ * untrained skill until then.
+ */
+Game_BattlerBase.prototype.channellingName = function () {
+    const name = TEW.DATABASE.COMPS.SET[TEW.MAGIC.CHANNELLING_COMP].name;
+    if (!this.hasWindMagic()) {
+        return name;
+    }
+    return `${name} (${this.windName()})`;
+};
+// Name a competence goes by for this battler, which only Channelling changes
+Game_BattlerBase.prototype.compName = function (compId) {
+    if (compId === TEW.MAGIC.CHANNELLING_COMP) {
+        return this.channellingName();
+    }
+    return TEW.DATABASE.COMPS.SET[compId].name;
 };
 // Items
 Game_BattlerBase.prototype.item = function (itemId) {

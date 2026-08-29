@@ -15,7 +15,7 @@ import { CareerClass, CareerStatusTier, Stat } from "../_types/enum";
 import TEW from "../_types/tew";
 
 /** A career as written below: its path is linked on load */
-type RawCareer = Omit<Career, "path">;
+type RawCareer = Omit<Career, "path" | "isMagical">;
 
 // ----------------------
 // $StartCompilation
@@ -2077,9 +2077,9 @@ TEW.DATABASE.CAREERS.SET = {
             "CHARM", "ENTERTAIN_FORTUNE_TELLING", "DODGE", "GOSSIP", "HAGGLE", "INTUITION", "PERCEPTION",
             "SLEIGHT_OF_HAND", "BRIBERY", "COOL", "ENTERTAIN_PROPHECY", "EVALUATE", "INTIMIDATE", "LORE_ASTROLOGY",
             "ART_WRITING", "CHARM_ANIMAL", "ENTERTAIN_STORYTELLING", "LANGUAGE_ANY", "LORE_PROPHECY",
-            "CHANNELLING_AZYR"
+            "CHANNELLING"
         ],
-        talents: ["ARCANE_MAGIC_CELESTIAL", "MAGICAL_SENSE", "MENACING", "STRONG_MINDED"]
+        talents: ["ARCANE_MAGIC_AZYR", "MAGICAL_SENSE", "MENACING", "STRONG_MINDED"]
     },
     // Scout
     SCOUT_1: {
@@ -3678,6 +3678,16 @@ Object.keys(TEW.DATABASE.CAREERS.PATHS).forEach((pathId) => {
     });
 });
 // #endregion === CAREER PATH LINKING === //
+// === //
+// #region ====== MAGICAL CAREERS === //
+// A career opens the way to magic when it teaches the language spells are cast in
+Object.keys(TEW.DATABASE.CAREERS.SET).forEach((careerId) => {
+    const career = TEW.DATABASE.CAREERS.SET[careerId];
+    career.isMagical = career.competences.indexOf(TEW.MAGIC.MAGICK_COMP) >= 0;
+});
+TEW.DATABASE.CAREERS.MAGICAL_IDS = Object.keys(TEW.DATABASE.CAREERS.SET)
+    .filter((careerId) => TEW.DATABASE.CAREERS.SET[careerId].isMagical);
+// #endregion === MAGICAL CAREERS === //
 // === //
 // #region ====== CAREER IDS === //
 // The path IDs are the keys of the PATHS object, the career IDs those of the SET object

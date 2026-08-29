@@ -97,3 +97,8 @@ These are determined by the character's career. Buyable talents should appear in
 Each talent costs 100 experience points.
 
 Per the rules, some talents can be bought several times for an increasing cost, but this will be implemented later. Only new talents should show up for now.
+
+### Spells
+
+In `Window_StatusSpells`, levelling mode should change the list to include buyable spells that have not been acquired. Buyable spells should appear in blue (`textColor(1)`) and at the top of the list. Unlike the other levelling windows, a spell should be bought using the confirmation key (C or Enter) rather than an arrow key (because spells have no level).
+These are determined by the character's magical talents (`PETTY_MAGIC` and `ARCANE_MAGIC_<WIND>`). The EXP cost of spells is computed from the number of already known spells of that domain, and the Willpower (for petty spells) or Intelligence (for arcane) bonus. See the wfrp4e.pdf rules for details.
