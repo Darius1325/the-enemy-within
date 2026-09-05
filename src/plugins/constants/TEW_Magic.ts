@@ -90,11 +90,14 @@ TEW.MAGIC.isWindArcaneTalent = function(talentId: string) {
 // Channelling is a single ungrouped competence, renamed after the caster's wind once attuned
 TEW.MAGIC.CHANNELLING_COMP = 'CHANNELLING';
 
-// Competence marking a career as magical
-TEW.MAGIC.MAGICK_COMP = 'LANGUAGE_MAGICK';
+/**
+ * Competence marking a career as magical
+ * It is displayed as Language (Magick) but is no Language specialisation: a Language (Any) pick
+ * cannot buy the tongue spells are cast in, so it stands outside the group under its own ID
+ */
+TEW.MAGIC.MAGIC_COMP = 'CASTING_MAGICK';
 
-// Career entries picking a specialisation, resolved to the entries above rather than to a group
-TEW.MAGIC.CHANNELLING_ANY = 'CHANNELLING_ANY';
+// Career talent entry resolved to the bare Arcane Magic talent rather than to a group
 TEW.MAGIC.ARCANE_MAGIC_ANY = 'ARCANE_MAGIC_ANY';
 // #endregion === TALENTS AND COMPETENCES === //
 // === //

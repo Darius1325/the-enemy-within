@@ -15,7 +15,7 @@ export type ActorWeapon = {
 
 export interface Game_BattlerBase {
     _paramBase: [number, number, number, number, number, number, number, number, number, number, number];
-    _competences: number[];
+    _competences: Record<string, number>;
     _spells: string[];
     _talents: Record<string, number>;
     _items: Record<string, number>;
@@ -160,7 +160,7 @@ TEW.MEMORY.battlerBaseInit = Game_BattlerBase.prototype.initialize;
 Game_BattlerBase.prototype.initialize = function() {
     TEW.MEMORY.battlerBaseInit.call(this);
     this._paramBase = [1,0,0,0,0,0,0,0,0,0,0];
-    this._competences = TEW.CHARACTERS.BASE_COMP_VALUES.slice();
+    this._competences = Object.assign({}, TEW.CHARACTERS.BASE_COMP_VALUES);
     this._spells = [];
     this._talents = {}; // ID: level
     this._items = {}; // ID: quantity
@@ -237,9 +237,14 @@ Game_BattlerBase.prototype.paramBonus = function(paramName: StatName) {
 
 // Competences
 
+/**
+ * Advances bought on a competence.
+ * An advanced competence which has not been learnt yet holds no entry at all, and is worth no
+ * advance until it is: absence and a learnt competence sitting at 0 advances read the same here,
+ * and are told apart by hasComp.
+ */
 Game_BattlerBase.prototype.compPlus = function(compId: string) {
-    const compValue = this._competences[TEW.DATABASE.COMPS.IDS.indexOf(compId)];
-    return compValue === -1 ? 0 : compValue;
+    return this._competences[compId] || 0;
 };
 
 Game_BattlerBase.prototype.comp = function(compId: string) {
@@ -272,31 +277,33 @@ Game_BattlerBase.prototype.anyCompOfCategory = function(compCategory: string) {
     return null;
 };
 
+// Base competences are known by everyone, advanced ones only once they hold an entry
 Game_BattlerBase.prototype.hasComp = function(compId: string) {
     if (TEW.DATABASE.COMPS.SET[compId].isBase) {
         return true;
     }
-    return this._competences[TEW.DATABASE.COMPS.IDS.indexOf(compId)] !== -1;
+    return this._competences[compId] !== undefined;
 };
 
 Game_BattlerBase.prototype.hasAnyCompOfCategory = function(compCategory: string) {
     return this.anyCompOfCategory(compCategory) !== null;
 };
 
+// Adding advances to a competence, learning it along the way if it was not known yet
 Game_BattlerBase.prototype.addComp = function(compId: string, value: number) {
-    this._competences[TEW.DATABASE.COMPS.IDS.indexOf(compId)] += value;
+    this._competences[compId] = this.compPlus(compId) + value;
     // this.refresh();
 };
 
 /**
- * Unlocking an advanced competence, which is stored as -1 until it is learnt.
+ * Unlocking an advanced competence, which holds no entry until it is learnt.
  * Learning it only brings it to 0 advances: the advances themselves are bought separately.
  */
 Game_BattlerBase.prototype.learnComp = function(compId: string) {
-    if (this.hasComp(compId)) {
+    if (this._competences[compId] !== undefined) {
         return;
     }
-    this._competences[TEW.DATABASE.COMPS.IDS.indexOf(compId)] = 0;
+    this._competences[compId] = 0;
 };
 
 // Talents

@@ -30,6 +30,7 @@ import { JournalDocument } from "./journalDocument";
 import { Critical } from "./critical";
 import { Condition } from "./condition";
 import { Career, CareerPath } from "./career";
+import { SpecialisationGroup, SpecialisationPick } from "./specialisation";
 
 /** Storage object for all TEW plugins */
 const TEW: {
@@ -88,6 +89,14 @@ const TEW: {
             BASE_ARRAY?: [string, Competence][];
             /** Decoupled map of advanced skills (unavailable if not unlocked) */
             ADVANCED_ARRAY?: [string, Competence][];
+            /** Grouped skills by group ID, derived at load from the skills' own `group` fields */
+            GROUPS?: Record<string, SpecialisationGroup>;
+            /**
+             * Wildcard entries the careers may list, by wildcard ID
+             * Holds one entry per group (MELEE_ANY) plus the picks drawn from a narrower pool,
+             * such as LORE_LOCAL_ANY and STEALTH_RURAL_OR_URBAN
+             */
+            PICKS?: Record<string, SpecialisationPick>;
         };
 
         /** Carriable items */
@@ -115,6 +124,14 @@ const TEW: {
             IDS?: string[];
             /** Decoupled map of talents */
             ARRAY?: [string, Talent][];
+            /** Grouped talents by group ID, derived at load from the talents' own `group` fields */
+            GROUPS?: Record<string, SpecialisationGroup>;
+            /**
+             * Wildcard entries the careers may list, by wildcard ID
+             * Holds one entry per group (STRIDER_ANY) plus the picks drawn from a narrower pool,
+             * such as SAVANT_LOCAL_ANY and ACUTE_SENSE_TASTE_OR_TOUCH
+             */
+            PICKS?: Record<string, SpecialisationPick>;
         };
 
         /** Pursuable careers */
@@ -272,9 +289,7 @@ const TEW: {
         /** ID of the ungrouped Channelling competence, renamed after the caster's wind */
         CHANNELLING_COMP?: string;
         /** ID of the competence marking a career as magical */
-        MAGICK_COMP?: string;
-        /** Career competence entry resolved to CHANNELLING_COMP */
-        CHANNELLING_ANY?: string;
+        MAGIC_COMP?: string;
         /** Career talent entry resolved to ARCANE_TALENT */
         ARCANE_MAGIC_ANY?: string;
 
@@ -340,9 +355,9 @@ const TEW: {
         STATS_VERBOSE?: string[];
         /**
          * Skill values for a new character
-         * Array of 0 (for base skills) and -1 (for advanced)
+         * Base skills start at 0 advances, advanced ones hold no entry until they are learnt
          */
-        BASE_COMP_VALUES?: number[];
+        BASE_COMP_VALUES?: Record<string, number>;
     };
 
     /** Dice utilities */

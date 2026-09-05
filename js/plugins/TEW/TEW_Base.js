@@ -56,11 +56,16 @@ TEW.CHARACTERS.STATS_VERBOSE = [
     'Willpower',
     'Fellowship'
 ];
-// 0 for base skills, -1 for acquired
+/**
+ * Competence values a new character starts with
+ * Base skills start at 0 advances, advanced ones are simply absent until they are learnt
+ */
 TEW.CHARACTERS.BASE_COMP_VALUES = TEW.DATABASE.COMPS.IDS.reduce((acc, compId) => {
-    acc.push(TEW.DATABASE.COMPS.SET[compId].isBase ? 0 : -1);
+    if (TEW.DATABASE.COMPS.SET[compId].isBase) {
+        acc[compId] = 0;
+    }
     return acc;
-}, []);
+}, {});
 // #endregion =========================== properties ============================== //
 // ============================== //
 // #region ============================== Input ============================== //
@@ -407,6 +412,7 @@ Game_Actor.prototype.setup = function (actorId) {
     this._name = actor.name;
     this._nickname = actor.nickname;
     this._career = undefined; // TODO add to actors JSON
+    this._anySlots = []; // Picks the careers entered so far have granted
     this._exp = actor.exp || 0; // TODO ?
     // this._profile = actor.profile;
     // this._classId = actor.classId;
@@ -568,9 +574,9 @@ Game_Actor.prototype.careerName = function () {
 /**
  * Rebuilding the lists of what the career allows to improve. They only change with the career,
  * and are cached rather than filtered on every draw.
- * Wildcard entries (MELEE_ANY and the like) are not resolved yet and are left out, with the
- * two magical ones excepted: Channelling is a single ungrouped competence rather than a group,
- * and Arcane Magic is bought bare and transformed into the wind's own talent on purchase.
+ * Wildcard entries live in the career's own pick lists and are resolved by the slots instead;
+ * the one exception left here is Arcane Magic, which is bought bare and transformed into the
+ * wind's own talent on purchase.
  */
 Game_Actor.prototype.refreshCareerCache = function () {
     const career = this.career();
@@ -579,7 +585,6 @@ Game_Actor.prototype.refreshCareerCache = function () {
         .map(stat => TEW.CHARACTERS.STATS[stat.toLowerCase()])
         .filter(paramId => paramId !== undefined);
     this._improvableComps = career.competences
-        .map(compId => compId === TEW.MAGIC.CHANNELLING_ANY ? TEW.MAGIC.CHANNELLING_COMP : compId)
         .filter(compId => !!TEW.DATABASE.COMPS.SET[compId]);
     this._careerTalents = career.talents
         .map(talentId => talentId === TEW.MAGIC.ARCANE_MAGIC_ANY ? TEW.MAGIC.ARCANE_TALENT : talentId)
@@ -596,15 +601,19 @@ Game_Actor.prototype.improvableStats = function () {
     this.checkCareerCache();
     return this._improvableStats;
 };
-// IDs of the competences the career allows to improve, learnt or not
+/**
+ * IDs of the competences the career allows to improve, learnt or not
+ * The specialisations bound to a grouped skill pick are improvable exactly like the concrete
+ * entries of the career, and are folded in here rather than stored twice
+ */
 Game_Actor.prototype.improvableComps = function () {
     this.checkCareerCache();
-    return this._improvableComps;
+    return this._improvableComps.concat(this.boundSpecialisations('comp'));
 };
-// IDs of every talent belonging to the career, acquired or not
+// IDs of every talent belonging to the career, acquired or not, bound picks included
 Game_Actor.prototype.careerTalents = function () {
     this.checkCareerCache();
-    return this._careerTalents;
+    return this._careerTalents.concat(this.boundSpecialisations('talent'));
 };
 // IDs of the career talents which have not been acquired yet
 Game_Actor.prototype.buyableTalents = function () {
@@ -649,6 +658,131 @@ Game_Actor.prototype.canEnterCareer = function (careerId) {
     return !!career && (!career.isMagical || this.hasWind());
 };
 // #endregion =========================== Career ============================== //
+// #region ============================== Grouped skill picks ============================== //
+/**
+ * Picks the actor's careers have granted, filled or not.
+ * Careers list some entries as `Skill (Any)`, which grant one specialisation of a group without
+ * naming it. Each of those entries opens a slot the player fills once, and a career granting the
+ * same group twice opens two.
+ * Career change is not implemented yet, so the list is reconciled lazily against the current
+ * career rather than written when the career is entered: slots already held are left alone, and
+ * the missing ones are appended. That keeps working once career change starts adding to it.
+ */
+Game_Actor.prototype.anySlots = function () {
+    this._anySlots = this._anySlots || [];
+    const career = this.career();
+    if (!career) {
+        return this._anySlots;
+    }
+    this.reconcileAnySlots('comp', career.groupCompetences);
+    this.reconcileAnySlots('talent', career.groupTalents);
+    return this._anySlots;
+};
+/**
+ * Appending the slots the current career grants and which are missing from the list
+ * @param kind whether the entries are competences or talents
+ * @param wildcards the career's wildcard entries, repeats meaning several picks
+ */
+Game_Actor.prototype.reconcileAnySlots = function (kind, wildcards) {
+    const held = {};
+    this._anySlots
+        .filter((slot) => slot.kind === kind && slot.career === this._career)
+        .forEach((slot) => {
+        held[slot.wildcard] = (held[slot.wildcard] || 0) + 1;
+    });
+    wildcards.forEach(wildcard => {
+        if (held[wildcard] > 0) {
+            held[wildcard] -= 1;
+            return;
+        }
+        this._anySlots.push({
+            kind: kind,
+            career: this._career,
+            wildcard: wildcard,
+            chosen: null
+        });
+    });
+};
+// Slots which have not been filled yet, the only ones a picker has anything to offer for
+Game_Actor.prototype.openAnySlots = function () {
+    return this.anySlots().filter((slot) => !slot.chosen);
+};
+// Index of a slot in the actor's list, which is how the levelling session refers to it
+Game_Actor.prototype.anySlotIndex = function (slot) {
+    return this.anySlots().indexOf(slot);
+};
+// IDs of the specialisations already bound by a pick of the given kind
+Game_Actor.prototype.boundSpecialisations = function (kind) {
+    return this.anySlots()
+        .filter((slot) => slot.kind === kind && !!slot.chosen)
+        .map((slot) => slot.chosen);
+};
+// Database the slot's specialisations are drawn from
+Game_Actor.prototype.anySlotDatabase = function (slot) {
+    return slot.kind === 'comp' ? TEW.DATABASE.COMPS : TEW.DATABASE.TALENTS;
+};
+// The wildcard entry the slot came from, which carries its pool and its name
+Game_Actor.prototype.anySlotPick = function (slot) {
+    return this.anySlotDatabase(slot).PICKS[slot.wildcard];
+};
+// ID of the group a slot picks from, even when it only offers part of that group
+Game_Actor.prototype.anySlotGroup = function (slot) {
+    const pick = this.anySlotPick(slot);
+    return pick ? pick.group : undefined;
+};
+/**
+ * Name the slot goes by while it is unfilled.
+ * A pick offering a whole group is named after it — "Melee (Any)" — while the narrower ones
+ * carry a name of their own, such as "Stealth (Rural or Urban)".
+ */
+Game_Actor.prototype.anySlotName = function (slot) {
+    const pick = this.anySlotPick(slot);
+    if (!pick) {
+        return slot.wildcard;
+    }
+    if (pick.name) {
+        return pick.name;
+    }
+    const group = this.anySlotDatabase(slot).GROUPS[pick.group];
+    return `${group.name} (${TextManager.statusAnySpecialisation})`;
+};
+/**
+ * Specialisations a slot may be filled with.
+ * The pick's pool is offered whole, minus the specialisations the same career already grants
+ * outright — spending a pick on one of those would buy nothing — and minus those another slot
+ * has already bound, as two picks of one group are two different specialisations.
+ * Specialisations the actor already has advances in are deliberately left in: a character may
+ * well want their career to further a skill their species or background gave them.
+ */
+Game_Actor.prototype.anySlotPool = function (slot) {
+    const pick = this.anySlotPick(slot);
+    if (!pick) {
+        return [];
+    }
+    const career = TEW.DATABASE.CAREERS.SET[slot.career];
+    const granted = career
+        ? (slot.kind === 'comp' ? career.competences : career.talents)
+        : [];
+    const bound = this.boundSpecialisations(slot.kind);
+    return pick.members.filter((memberId) => granted.indexOf(memberId) < 0
+        && bound.indexOf(memberId) < 0
+        // A talent cannot be bought twice yet, so binding one already held would waste the pick
+        && !(slot.kind === 'talent' && this.hasTalent(memberId)));
+};
+/**
+ * Filling a slot, which the rules make permanent: the choice belongs to the career level, and
+ * there is no way back from it
+ * @param slotIndex index of the slot in the actor's list
+ * @param specialisationId ID of the chosen specialisation
+ */
+Game_Actor.prototype.bindAnySlot = function (slotIndex, specialisationId) {
+    const slot = this.anySlots()[slotIndex];
+    if (!slot || slot.chosen) {
+        return;
+    }
+    slot.chosen = specialisationId;
+};
+// #endregion =========================== Grouped skill picks ============================== //
 Game_Actor.prototype.initTEW = function (actorId) {
     switch (actorId) {
         case 1: // Cecile
@@ -702,7 +836,7 @@ Game_Actor.prototype.initCecile = function () {
     this._resilience = 3;
     this._resolve = 3;
     // Career
-    this._career = 'DUELLIST_1';
+    this._career = 'DUELLIST_2';
     // competences
     this.addComp('CHARM', 3);
     this.addComp('LEADERSHIP', 3);
@@ -849,7 +983,7 @@ Game_Actor.prototype.initCiara = function () {
     this.addComp('CHANNELLING', 5);
     this.addComp('DODGE', 5);
     this.addComp('INTUITION', 5);
-    this.addComp('LANGUAGE_MAGICK', 5);
+    this.addComp('CASTING_MAGICK', 5);
     this.addComp('LORE_MAGIC', 5);
     this.addComp('MELEE_POLE_ARM', 5);
     this.addComp('PERCEPTION', 5);
@@ -970,7 +1104,7 @@ TEW.MEMORY.battlerBaseInit = Game_BattlerBase.prototype.initialize;
 Game_BattlerBase.prototype.initialize = function () {
     TEW.MEMORY.battlerBaseInit.call(this);
     this._paramBase = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    this._competences = TEW.CHARACTERS.BASE_COMP_VALUES.slice();
+    this._competences = Object.assign({}, TEW.CHARACTERS.BASE_COMP_VALUES);
     this._spells = [];
     this._talents = {}; // ID: level
     this._items = {}; // ID: quantity
@@ -1037,9 +1171,14 @@ Game_BattlerBase.prototype.paramBonus = function (paramName) {
     return Math.floor(this.param(TEW.CHARACTERS.STATS[paramName.toLowerCase()]) / 10);
 };
 // Competences
+/**
+ * Advances bought on a competence.
+ * An advanced competence which has not been learnt yet holds no entry at all, and is worth no
+ * advance until it is: absence and a learnt competence sitting at 0 advances read the same here,
+ * and are told apart by hasComp.
+ */
 Game_BattlerBase.prototype.compPlus = function (compId) {
-    const compValue = this._competences[TEW.DATABASE.COMPS.IDS.indexOf(compId)];
-    return compValue === -1 ? 0 : compValue;
+    return this._competences[compId] || 0;
 };
 Game_BattlerBase.prototype.comp = function (compId) {
     const associatedStat = TEW.DATABASE.COMPS.SET[compId].stat;
@@ -1069,28 +1208,30 @@ Game_BattlerBase.prototype.anyCompOfCategory = function (compCategory) {
     }
     return null;
 };
+// Base competences are known by everyone, advanced ones only once they hold an entry
 Game_BattlerBase.prototype.hasComp = function (compId) {
     if (TEW.DATABASE.COMPS.SET[compId].isBase) {
         return true;
     }
-    return this._competences[TEW.DATABASE.COMPS.IDS.indexOf(compId)] !== -1;
+    return this._competences[compId] !== undefined;
 };
 Game_BattlerBase.prototype.hasAnyCompOfCategory = function (compCategory) {
     return this.anyCompOfCategory(compCategory) !== null;
 };
+// Adding advances to a competence, learning it along the way if it was not known yet
 Game_BattlerBase.prototype.addComp = function (compId, value) {
-    this._competences[TEW.DATABASE.COMPS.IDS.indexOf(compId)] += value;
+    this._competences[compId] = this.compPlus(compId) + value;
     // this.refresh();
 };
 /**
- * Unlocking an advanced competence, which is stored as -1 until it is learnt.
+ * Unlocking an advanced competence, which holds no entry until it is learnt.
  * Learning it only brings it to 0 advances: the advances themselves are bought separately.
  */
 Game_BattlerBase.prototype.learnComp = function (compId) {
-    if (this.hasComp(compId)) {
+    if (this._competences[compId] !== undefined) {
         return;
     }
-    this._competences[TEW.DATABASE.COMPS.IDS.indexOf(compId)] = 0;
+    this._competences[compId] = 0;
 };
 // Talents
 Game_BattlerBase.prototype.talent = function (talentId) {

@@ -48,9 +48,11 @@ Window_StatusTalentDetails.prototype.empty = function() {
 
 /**
  * Draws the description of the selected talent.
+ * A grouped talent pick which has not been made yet stands for a whole group and has no talent
+ * behind it, so the row explains what the confirmation key does instead.
  */
 Window_StatusTalentDetails.prototype.drawDetails = function(talent: [string, Talent]) {
-    this.setText(talent[1].description);
+    this.setText(talent[1] ? talent[1].description : TextManager.statusAnyHint);
     this.drawAllItems();
 
     // this.drawWrappedTextManually(

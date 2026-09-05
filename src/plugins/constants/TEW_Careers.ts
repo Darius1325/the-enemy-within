@@ -14,8 +14,12 @@ import { Career } from "../_types/career";
 import { CareerClass, CareerStatusTier, Stat } from "../_types/enum";
 import TEW from "../_types/tew";
 
-/** A career as written below: its path is linked on load */
-type RawCareer = Omit<Career, "path" | "isMagical">;
+/**
+ * A career as written below: its path is linked on load, and the wildcard lists are only
+ * written down for the careers which grant a pick at all
+ */
+type RawCareer = Omit<Career, "path" | "isMagical" | "groupCompetences" | "groupTalents">
+    & Partial<Pick<Career, "groupCompetences" | "groupTalents">>;
 
 // ----------------------
 // $StartCompilation
@@ -34,7 +38,8 @@ TEW.DATABASE.CAREERS.PATHS = {
             { career: "APOTHECARY_2", level: 2 },
             { career: "APOTHECARY_3", level: 3 },
             { career: "APOTHECARY_4", level: 4 }
-        ]
+        ],
+        isMagical: false
     },
     ENGINEER: {
         name: "Engineer",
@@ -44,7 +49,8 @@ TEW.DATABASE.CAREERS.PATHS = {
             { career: "ENGINEER_2", level: 2 },
             { career: "ENGINEER_3", level: 3 },
             { career: "ENGINEER_4", level: 4 }
-        ]
+        ],
+        isMagical: false
     },
     LAWYER: {
         name: "Lawyer",
@@ -54,7 +60,8 @@ TEW.DATABASE.CAREERS.PATHS = {
             { career: "LAWYER_2", level: 2 },
             { career: "LAWYER_3", level: 3 },
             { career: "LAWYER_4", level: 4 }
-        ]
+        ],
+        isMagical: false
     },
     NUN: {
         name: "Nun",
@@ -64,7 +71,8 @@ TEW.DATABASE.CAREERS.PATHS = {
             { career: "NUN_2", level: 2 },
             { career: "NUN_3", level: 3 },
             { career: "NUN_4", level: 4 }
-        ]
+        ],
+        isMagical: true
     },
     PHYSICIAN: {
         name: "Physician",
@@ -74,7 +82,8 @@ TEW.DATABASE.CAREERS.PATHS = {
             { career: "PHYSICIAN_2", level: 2 },
             { career: "PHYSICIAN_3", level: 3 },
             { career: "PHYSICIAN_4", level: 4 }
-        ]
+        ],
+        isMagical: false
     },
     PRIEST: {
         name: "Priest",
@@ -84,7 +93,8 @@ TEW.DATABASE.CAREERS.PATHS = {
             { career: "PRIEST_2", level: 2 },
             { career: "PRIEST_3", level: 3 },
             { career: "PRIEST_4", level: 4 }
-        ]
+        ],
+        isMagical: true
     },
     SCHOLAR: {
         name: "Scholar",
@@ -94,7 +104,8 @@ TEW.DATABASE.CAREERS.PATHS = {
             { career: "SCHOLAR_2", level: 2 },
             { career: "SCHOLAR_3", level: 3 },
             { career: "SCHOLAR_4", level: 4 }
-        ]
+        ],
+        isMagical: false
     },
     WIZARD: {
         name: "Wizard",
@@ -104,7 +115,8 @@ TEW.DATABASE.CAREERS.PATHS = {
             { career: "WIZARD_2", level: 2 },
             { career: "WIZARD_3", level: 3 },
             { career: "WIZARD_4", level: 4 }
-        ]
+        ],
+        isMagical: true
     },
 
     // --- BURGHER --- //
@@ -116,7 +128,8 @@ TEW.DATABASE.CAREERS.PATHS = {
             { career: "AGITATOR_2", level: 2 },
             { career: "AGITATOR_3", level: 3 },
             { career: "AGITATOR_4", level: 4 }
-        ]
+        ],
+        isMagical: false
     },
     ARTISAN: {
         name: "Artisan",
@@ -126,7 +139,8 @@ TEW.DATABASE.CAREERS.PATHS = {
             { career: "ARTISAN_2", level: 2 },
             { career: "ARTISAN_3", level: 3 },
             { career: "ARTISAN_4", level: 4 }
-        ]
+        ],
+        isMagical: false
     },
     BEGGAR: {
         name: "Beggar",
@@ -136,7 +150,8 @@ TEW.DATABASE.CAREERS.PATHS = {
             { career: "BEGGAR_2", level: 2 },
             { career: "BEGGAR_3", level: 3 },
             { career: "BEGGAR_4", level: 4 }
-        ]
+        ],
+        isMagical: false
     },
     INVESTIGATOR: {
         name: "Investigator",
@@ -146,7 +161,8 @@ TEW.DATABASE.CAREERS.PATHS = {
             { career: "INVESTIGATOR_2", level: 2 },
             { career: "INVESTIGATOR_3", level: 3 },
             { career: "INVESTIGATOR_4", level: 4 }
-        ]
+        ],
+        isMagical: false
     },
     MERCHANT: {
         name: "Merchant",
@@ -156,7 +172,8 @@ TEW.DATABASE.CAREERS.PATHS = {
             { career: "MERCHANT_2", level: 2 },
             { career: "MERCHANT_3", level: 3 },
             { career: "MERCHANT_4", level: 4 }
-        ]
+        ],
+        isMagical: false
     },
     RAT_CATCHER: {
         name: "Rat Catcher",
@@ -166,7 +183,8 @@ TEW.DATABASE.CAREERS.PATHS = {
             { career: "RAT_CATCHER_2", level: 2 },
             { career: "RAT_CATCHER_3", level: 3 },
             { career: "RAT_CATCHER_4", level: 4 }
-        ]
+        ],
+        isMagical: false
     },
     TOWNSMAN: {
         name: "Townsman",
@@ -176,7 +194,8 @@ TEW.DATABASE.CAREERS.PATHS = {
             { career: "TOWNSMAN_2", level: 2 },
             { career: "TOWNSMAN_3", level: 3 },
             { career: "TOWNSMAN_4", level: 4 }
-        ]
+        ],
+        isMagical: false
     },
     WATCHMAN: {
         name: "Watchman",
@@ -186,7 +205,8 @@ TEW.DATABASE.CAREERS.PATHS = {
             { career: "WATCHMAN_2", level: 2 },
             { career: "WATCHMAN_3", level: 3 },
             { career: "WATCHMAN_4", level: 4 }
-        ]
+        ],
+        isMagical: false
     },
 
     // --- COURTIER --- //
@@ -198,7 +218,8 @@ TEW.DATABASE.CAREERS.PATHS = {
             { career: "ADVISOR_2", level: 2 },
             { career: "ADVISOR_3", level: 3 },
             { career: "ADVISOR_4", level: 4 }
-        ]
+        ],
+        isMagical: false
     },
     ARTIST: {
         name: "Artist",
@@ -208,7 +229,8 @@ TEW.DATABASE.CAREERS.PATHS = {
             { career: "ARTIST_2", level: 2 },
             { career: "ARTIST_3", level: 3 },
             { career: "ARTIST_4", level: 4 }
-        ]
+        ],
+        isMagical: false
     },
     DUELLIST: {
         name: "Duellist",
@@ -218,7 +240,8 @@ TEW.DATABASE.CAREERS.PATHS = {
             { career: "DUELLIST_2", level: 2 },
             { career: "DUELLIST_3", level: 3 },
             { career: "DUELLIST_4", level: 4 }
-        ]
+        ],
+        isMagical: false
     },
     ENVOY: {
         name: "Envoy",
@@ -228,7 +251,8 @@ TEW.DATABASE.CAREERS.PATHS = {
             { career: "ENVOY_2", level: 2 },
             { career: "ENVOY_3", level: 3 },
             { career: "ENVOY_4", level: 4 }
-        ]
+        ],
+        isMagical: false
     },
     NOBLE: {
         name: "Noble",
@@ -238,7 +262,8 @@ TEW.DATABASE.CAREERS.PATHS = {
             { career: "NOBLE_2", level: 2 },
             { career: "NOBLE_3", level: 3 },
             { career: "NOBLE_4", level: 4 }
-        ]
+        ],
+        isMagical: false
     },
     SERVANT: {
         name: "Servant",
@@ -248,7 +273,8 @@ TEW.DATABASE.CAREERS.PATHS = {
             { career: "SERVANT_2", level: 2 },
             { career: "SERVANT_3", level: 3 },
             { career: "SERVANT_4", level: 4 }
-        ]
+        ],
+        isMagical: false
     },
     SPY: {
         name: "Spy",
@@ -258,7 +284,8 @@ TEW.DATABASE.CAREERS.PATHS = {
             { career: "SPY_2", level: 2 },
             { career: "SPY_3", level: 3 },
             { career: "SPY_4", level: 4 }
-        ]
+        ],
+        isMagical: false
     },
     WARDEN: {
         name: "Warden",
@@ -268,7 +295,8 @@ TEW.DATABASE.CAREERS.PATHS = {
             { career: "WARDEN_2", level: 2 },
             { career: "WARDEN_3", level: 3 },
             { career: "WARDEN_4", level: 4 }
-        ]
+        ],
+        isMagical: false
     },
 
     // --- PEASANT --- //
@@ -280,7 +308,8 @@ TEW.DATABASE.CAREERS.PATHS = {
             { career: "BAILIFF_2", level: 2 },
             { career: "BAILIFF_3", level: 3 },
             { career: "BAILIFF_4", level: 4 }
-        ]
+        ],
+        isMagical: false
     },
     HEDGE_WITCH: {
         name: "Hedge Witch",
@@ -290,7 +319,8 @@ TEW.DATABASE.CAREERS.PATHS = {
             { career: "HEDGE_WITCH_2", level: 2 },
             { career: "HEDGE_WITCH_3", level: 3 },
             { career: "HEDGE_WITCH_4", level: 4 }
-        ]
+        ],
+        isMagical: true
     },
     HERBALIST: {
         name: "Herbalist",
@@ -300,7 +330,8 @@ TEW.DATABASE.CAREERS.PATHS = {
             { career: "HERBALIST_2", level: 2 },
             { career: "HERBALIST_3", level: 3 },
             { career: "HERBALIST_4", level: 4 }
-        ]
+        ],
+        isMagical: false
     },
     HUNTER: {
         name: "Hunter",
@@ -310,7 +341,8 @@ TEW.DATABASE.CAREERS.PATHS = {
             { career: "HUNTER_2", level: 2 },
             { career: "HUNTER_3", level: 3 },
             { career: "HUNTER_4", level: 4 }
-        ]
+        ],
+        isMagical: false
     },
     MINER: {
         name: "Miner",
@@ -320,7 +352,8 @@ TEW.DATABASE.CAREERS.PATHS = {
             { career: "MINER_2", level: 2 },
             { career: "MINER_3", level: 3 },
             { career: "MINER_4", level: 4 }
-        ]
+        ],
+        isMagical: false
     },
     MYSTIC: {
         name: "Mystic",
@@ -330,7 +363,8 @@ TEW.DATABASE.CAREERS.PATHS = {
             { career: "MYSTIC_2", level: 2 },
             { career: "MYSTIC_3", level: 3 },
             { career: "MYSTIC_4", level: 4 }
-        ]
+        ],
+        isMagical: true
     },
     SCOUT: {
         name: "Scout",
@@ -340,7 +374,8 @@ TEW.DATABASE.CAREERS.PATHS = {
             { career: "SCOUT_2", level: 2 },
             { career: "SCOUT_3", level: 3 },
             { career: "SCOUT_4", level: 4 }
-        ]
+        ],
+        isMagical: false
     },
     VILLAGER: {
         name: "Villager",
@@ -350,7 +385,8 @@ TEW.DATABASE.CAREERS.PATHS = {
             { career: "VILLAGER_2", level: 2 },
             { career: "VILLAGER_3", level: 3 },
             { career: "VILLAGER_4", level: 4 }
-        ]
+        ],
+        isMagical: false
     },
 
     // --- RANGER --- //
@@ -362,7 +398,8 @@ TEW.DATABASE.CAREERS.PATHS = {
             { career: "BOUNTY_HUNTER_2", level: 2 },
             { career: "BOUNTY_HUNTER_3", level: 3 },
             { career: "BOUNTY_HUNTER_4", level: 4 }
-        ]
+        ],
+        isMagical: false
     },
     COACHMAN: {
         name: "Coachman",
@@ -372,7 +409,8 @@ TEW.DATABASE.CAREERS.PATHS = {
             { career: "COACHMAN_2", level: 2 },
             { career: "COACHMAN_3", level: 3 },
             { career: "COACHMAN_4", level: 4 }
-        ]
+        ],
+        isMagical: false
     },
     ENTERTAINER: {
         name: "Entertainer",
@@ -382,7 +420,8 @@ TEW.DATABASE.CAREERS.PATHS = {
             { career: "ENTERTAINER_2", level: 2 },
             { career: "ENTERTAINER_3", level: 3 },
             { career: "ENTERTAINER_4", level: 4 }
-        ]
+        ],
+        isMagical: false
     },
     FLAGELLANT: {
         name: "Flagellant",
@@ -392,7 +431,8 @@ TEW.DATABASE.CAREERS.PATHS = {
             { career: "FLAGELLANT_2", level: 2 },
             { career: "FLAGELLANT_3", level: 3 },
             { career: "FLAGELLANT_4", level: 4 }
-        ]
+        ],
+        isMagical: false
     },
     MESSENGER: {
         name: "Messenger",
@@ -402,7 +442,8 @@ TEW.DATABASE.CAREERS.PATHS = {
             { career: "MESSENGER_2", level: 2 },
             { career: "MESSENGER_3", level: 3 },
             { career: "MESSENGER_4", level: 4 }
-        ]
+        ],
+        isMagical: false
     },
     PEDLAR: {
         name: "Pedlar",
@@ -412,7 +453,8 @@ TEW.DATABASE.CAREERS.PATHS = {
             { career: "PEDLAR_2", level: 2 },
             { career: "PEDLAR_3", level: 3 },
             { career: "PEDLAR_4", level: 4 }
-        ]
+        ],
+        isMagical: false
     },
     ROAD_WARDEN: {
         name: "Road Warden",
@@ -422,7 +464,8 @@ TEW.DATABASE.CAREERS.PATHS = {
             { career: "ROAD_WARDEN_2", level: 2 },
             { career: "ROAD_WARDEN_3", level: 3 },
             { career: "ROAD_WARDEN_4", level: 4 }
-        ]
+        ],
+        isMagical: false
     },
     WITCH_HUNTER: {
         name: "Witch Hunter",
@@ -432,7 +475,8 @@ TEW.DATABASE.CAREERS.PATHS = {
             { career: "WITCH_HUNTER_2", level: 2 },
             { career: "WITCH_HUNTER_3", level: 3 },
             { career: "WITCH_HUNTER_4", level: 4 }
-        ]
+        ],
+        isMagical: false
     },
 
     // --- Riverfolk --- //
@@ -444,7 +488,8 @@ TEW.DATABASE.CAREERS.PATHS = {
             { career: "BOATMAN_2", level: 2 },
             { career: "BOATMAN_3", level: 3 },
             { career: "BOATMAN_4", level: 4 }
-        ]
+        ],
+        isMagical: false
     },
     HUFFER: {
         name: "Huffer",
@@ -454,7 +499,8 @@ TEW.DATABASE.CAREERS.PATHS = {
             { career: "HUFFER_2", level: 2 },
             { career: "HUFFER_3", level: 3 },
             { career: "HUFFER_4", level: 4 }
-        ]
+        ],
+        isMagical: false
     },
     RIVERWARDEN: {
         name: "Riverwarden",
@@ -464,7 +510,8 @@ TEW.DATABASE.CAREERS.PATHS = {
             { career: "RIVERWARDEN_2", level: 2 },
             { career: "RIVERWARDEN_3", level: 3 },
             { career: "RIVERWARDEN_4", level: 4 }
-        ]
+        ],
+        isMagical: false
     },
     RIVERWOMAN: {
         name: "Riverwoman",
@@ -474,7 +521,8 @@ TEW.DATABASE.CAREERS.PATHS = {
             { career: "RIVERWOMAN_2", level: 2 },
             { career: "RIVERWOMAN_3", level: 3 },
             { career: "RIVERWOMAN_4", level: 4 }
-        ]
+        ],
+        isMagical: false
     },
     SEAMAN: {
         name: "Seaman",
@@ -484,7 +532,8 @@ TEW.DATABASE.CAREERS.PATHS = {
             { career: "SEAMAN_2", level: 2 },
             { career: "SEAMAN_3", level: 3 },
             { career: "SEAMAN_4", level: 4 }
-        ]
+        ],
+        isMagical: false
     },
     SMUGGLER: {
         name: "Smuggler",
@@ -494,7 +543,8 @@ TEW.DATABASE.CAREERS.PATHS = {
             { career: "SMUGGLER_2", level: 2 },
             { career: "SMUGGLER_3", level: 3 },
             { career: "SMUGGLER_4", level: 4 }
-        ]
+        ],
+        isMagical: false
     },
     STEVEDORE: {
         name: "Stevedore",
@@ -504,7 +554,8 @@ TEW.DATABASE.CAREERS.PATHS = {
             { career: "STEVEDORE_2", level: 2 },
             { career: "STEVEDORE_3", level: 3 },
             { career: "STEVEDORE_4", level: 4 }
-        ]
+        ],
+        isMagical: false
     },
     WRECKER: {
         name: "Wrecker",
@@ -514,7 +565,8 @@ TEW.DATABASE.CAREERS.PATHS = {
             { career: "WRECKER_2", level: 2 },
             { career: "WRECKER_3", level: 3 },
             { career: "WRECKER_4", level: 4 }
-        ]
+        ],
+        isMagical: false
     },
 
     // --- ROGUE --- //
@@ -526,7 +578,8 @@ TEW.DATABASE.CAREERS.PATHS = {
             { career: "BAWD_2", level: 2 },
             { career: "BAWD_3", level: 3 },
             { career: "BAWD_4", level: 4 }
-        ]
+        ],
+        isMagical: false
     },
     CHARLATAN: {
         name: "Charlatan",
@@ -536,7 +589,8 @@ TEW.DATABASE.CAREERS.PATHS = {
             { career: "CHARLATAN_2", level: 2 },
             { career: "CHARLATAN_3", level: 3 },
             { career: "CHARLATAN_4", level: 4 }
-        ]
+        ],
+        isMagical: false
     },
     FENCE: {
         name: "Fence",
@@ -546,7 +600,8 @@ TEW.DATABASE.CAREERS.PATHS = {
             { career: "FENCE_2", level: 2 },
             { career: "FENCE_3", level: 3 },
             { career: "FENCE_4", level: 4 }
-        ]
+        ],
+        isMagical: false
     },
     GRAVE_ROBBER: {
         name: "Grave Robber",
@@ -556,7 +611,8 @@ TEW.DATABASE.CAREERS.PATHS = {
             { career: "GRAVE_ROBBER_2", level: 2 },
             { career: "GRAVE_ROBBER_3", level: 3 },
             { career: "GRAVE_ROBBER_4", level: 4 }
-        ]
+        ],
+        isMagical: false
     },
     OUTLAW: {
         name: "Outlaw",
@@ -566,7 +622,8 @@ TEW.DATABASE.CAREERS.PATHS = {
             { career: "OUTLAW_2", level: 2 },
             { career: "OUTLAW_3", level: 3 },
             { career: "OUTLAW_4", level: 4 }
-        ]
+        ],
+        isMagical: false
     },
     RACKETEER: {
         name: "Racketeer",
@@ -576,7 +633,8 @@ TEW.DATABASE.CAREERS.PATHS = {
             { career: "RACKETEER_2", level: 2 },
             { career: "RACKETEER_3", level: 3 },
             { career: "RACKETEER_4", level: 4 }
-        ]
+        ],
+        isMagical: false
     },
     THIEF: {
         name: "Thief",
@@ -586,7 +644,8 @@ TEW.DATABASE.CAREERS.PATHS = {
             { career: "THIEF_2", level: 2 },
             { career: "THIEF_3", level: 3 },
             { career: "THIEF_4", level: 4 }
-        ]
+        ],
+        isMagical: false
     },
     WITCH: {
         name: "Witch",
@@ -596,7 +655,8 @@ TEW.DATABASE.CAREERS.PATHS = {
             { career: "WITCH_2", level: 2 },
             { career: "WITCH_3", level: 3 },
             { career: "WITCH_4", level: 4 }
-        ]
+        ],
+        isMagical: true
     },
 
     // --- WARRIOR --- //
@@ -608,7 +668,8 @@ TEW.DATABASE.CAREERS.PATHS = {
             { career: "CAVALRYMAN_2", level: 2 },
             { career: "CAVALRYMAN_3", level: 3 },
             { career: "CAVALRYMAN_4", level: 4 }
-        ]
+        ],
+        isMagical: false
     },
     GUARD: {
         name: "Guard",
@@ -618,7 +679,8 @@ TEW.DATABASE.CAREERS.PATHS = {
             { career: "GUARD_2", level: 2 },
             { career: "GUARD_3", level: 3 },
             { career: "GUARD_4", level: 4 }
-        ]
+        ],
+        isMagical: false
     },
     KNIGHT: {
         name: "Knight",
@@ -628,7 +690,8 @@ TEW.DATABASE.CAREERS.PATHS = {
             { career: "KNIGHT_2", level: 2 },
             { career: "KNIGHT_3", level: 3 },
             { career: "KNIGHT_4", level: 4 }
-        ]
+        ],
+        isMagical: false
     },
     PIT_FIGHTER: {
         name: "Pit Fighter",
@@ -638,7 +701,8 @@ TEW.DATABASE.CAREERS.PATHS = {
             { career: "PIT_FIGHTER_2", level: 2 },
             { career: "PIT_FIGHTER_3", level: 3 },
             { career: "PIT_FIGHTER_4", level: 4 }
-        ]
+        ],
+        isMagical: false
     },
     PROTAGONIST: {
         name: "Protagonist",
@@ -648,7 +712,8 @@ TEW.DATABASE.CAREERS.PATHS = {
             { career: "PROTAGONIST_2", level: 2 },
             { career: "PROTAGONIST_3", level: 3 },
             { career: "PROTAGONIST_4", level: 4 }
-        ]
+        ],
+        isMagical: false
     },
     SLAYER: {
         name: "Slayer",
@@ -658,7 +723,8 @@ TEW.DATABASE.CAREERS.PATHS = {
             { career: "SLAYER_2", level: 2 },
             { career: "SLAYER_3", level: 3 },
             { career: "SLAYER_4", level: 4 }
-        ]
+        ],
+        isMagical: false
     },
     SOLDIER: {
         name: "Soldier",
@@ -668,7 +734,8 @@ TEW.DATABASE.CAREERS.PATHS = {
             { career: "SOLDIER_2", level: 2 },
             { career: "SOLDIER_3", level: 3 },
             { career: "SOLDIER_4", level: 4 }
-        ]
+        ],
+        isMagical: false
     },
     WARRIOR_PRIEST: {
         name: "Warrior Priest",
@@ -678,7 +745,8 @@ TEW.DATABASE.CAREERS.PATHS = {
             { career: "WARRIOR_PRIEST_2", level: 2 },
             { career: "WARRIOR_PRIEST_3", level: 3 },
             { career: "WARRIOR_PRIEST_4", level: 4 }
-        ]
+        ],
+        isMagical: true
     },
 };
 // #endregion === CAREER PATHS === //
@@ -778,9 +846,9 @@ TEW.DATABASE.CAREERS.SET = {
         competences: [
             "CONSUME_ALCOHOL", "COOL", "ENDURANCE", "LANGUAGE_CLASSICAL", "LORE_ENGINEERING", "PERCEPTION",
             "RANGED_BLACKPOWDER", "TRADE_ENGINEER", "DRIVE", "DODGE", "NAVIGATION", "RANGED_ENGINEERING",
-            "RESEARCH", "LANGUAGE_GUILDER", "LANGUAGE_KHAZALID", "LEADERSHIP", "RIDE_HORSE", "SECRET_SIGNS_GUILD",
-            "LANGUAGE_ANY", "LORE_ANY"
+            "RESEARCH", "LANGUAGE_GUILDER", "LANGUAGE_KHAZALID", "LEADERSHIP", "RIDE_HORSE", "SECRET_SIGNS_GUILD"
         ],
+        groupCompetences: ["LANGUAGE_ANY", "LORE_ANY"],
         talents: ["MAGNUM_OPUS", "RAPID_RELOAD", "SAVANT_ENGINEERING", "UNSHAKABLE"]
     },
     // Lawyer
@@ -815,8 +883,9 @@ TEW.DATABASE.CAREERS.SET = {
         competences: [
             "CONSUME_ALCOHOL", "ENDURANCE", "HAGGLE", "LANGUAGE_CLASSICAL", "LORE_LAW", "LORE_THEOLOGY",
             "PERCEPTION", "RESEARCH", "BRIBERY", "CHARM", "GOSSIP", "INTUITION", "LANGUAGE_GUILDER",
-            "SECRET_SIGNS_GUILD", "ART_WRITING", "ENTERTAIN_SPEECHES", "INTIMIDATE", "LORE_ANY"
+            "SECRET_SIGNS_GUILD", "ART_WRITING", "ENTERTAIN_SPEECHES", "INTIMIDATE"
         ],
+        groupCompetences: ["LORE_ANY"],
         talents: ["BOOKISH", "CAT_TONGUED", "IMPASSIONED_ZEAL", "SAVVY"]
     },
     LAWYER_4: {
@@ -827,8 +896,9 @@ TEW.DATABASE.CAREERS.SET = {
         competences: [
             "CONSUME_ALCOHOL", "ENDURANCE", "HAGGLE", "LANGUAGE_CLASSICAL", "LORE_LAW", "LORE_THEOLOGY",
             "PERCEPTION", "RESEARCH", "BRIBERY", "CHARM", "GOSSIP", "INTUITION", "LANGUAGE_GUILDER",
-            "SECRET_SIGNS_GUILD", "ART_WRITING", "ENTERTAIN_SPEECHES", "INTIMIDATE", "LORE_ANY", "COOL"
+            "SECRET_SIGNS_GUILD", "ART_WRITING", "ENTERTAIN_SPEECHES", "INTIMIDATE", "COOL"
         ],
+        groupCompetences: ["LORE_ANY", "LORE_ANY"],
         talents: ["COMMANDING_PRESENCE", "KINGPIN", "SAVANT_LAW", "WEALTHY"]
     },
     // Nun
@@ -850,8 +920,9 @@ TEW.DATABASE.CAREERS.SET = {
         improvableStats: [Stat.DEXT, Stat.INTL, Stat.FELW, Stat.WILL],
         competences: [
             "ART_CALLIGRAPHY", "COOL", "ENDURANCE", "ENTERTAIN_STORYTELLING", "GOSSIP", "HEAL", "LORE_THEOLOGY",
-            "PRAY", "CHARM", "MELEE_ANY", "RESEARCH", "TRADE_BREWING", "TRADE_HERBALIST", "TRADE_VINTNER"
+            "PRAY", "CHARM", "RESEARCH", "TRADE_BREWING", "TRADE_HERBALIST", "TRADE_VINTNER"
         ],
+        groupCompetences: ["MELEE_ANY"],
         talents: ["ETIQUETTE_CULTISTS", "FIELD_DRESSING", "HOLY_VISIONS", "INVOKE_ANY"]
     },
     NUN_3: {
@@ -861,10 +932,12 @@ TEW.DATABASE.CAREERS.SET = {
         improvableStats: [Stat.DEXT, Stat.INTL, Stat.FELW, Stat.WILL, Stat.INIT],
         competences: [
             "ART_CALLIGRAPHY", "COOL", "ENDURANCE", "ENTERTAIN_STORYTELLING", "GOSSIP", "HEAL", "LORE_THEOLOGY",
-            "PRAY", "CHARM", "MELEE_ANY", "RESEARCH", "TRADE_BREWING", "TRADE_HERBALIST", "TRADE_VINTNER",
-            "LEADERSHIP", "LORE_LOCAL", "LORE_POLITICS", "PERCEPTION"
+            "PRAY", "CHARM", "RESEARCH", "TRADE_BREWING", "TRADE_HERBALIST", "TRADE_VINTNER", "LEADERSHIP",
+            "LORE_POLITICS", "PERCEPTION"
         ],
-        talents: ["RESISTANCE_ANY", "ROBUST", "SAVANT_THEOLOGY", "STOUT_HEARTED"]
+        groupCompetences: ["MELEE_ANY", "LORE_LOCAL_ANY"],
+        talents: ["ROBUST", "SAVANT_THEOLOGY", "STOUT_HEARTED"],
+        groupTalents: ["RESISTANCE_ANY"]
     },
     NUN_4: {
         name: "Prioress General",
@@ -873,9 +946,10 @@ TEW.DATABASE.CAREERS.SET = {
         improvableStats: [Stat.DEXT, Stat.INTL, Stat.FELW, Stat.WILL, Stat.INIT, Stat.TOUG],
         competences: [
             "ART_CALLIGRAPHY", "COOL", "ENDURANCE", "ENTERTAIN_STORYTELLING", "GOSSIP", "HEAL", "LORE_THEOLOGY",
-            "PRAY", "CHARM", "MELEE_ANY", "RESEARCH", "TRADE_BREWING", "TRADE_HERBALIST", "TRADE_VINTNER",
-            "LEADERSHIP", "LORE_LOCAL", "LORE_POLITICS", "PERCEPTION", "LANGUAGE_ANY", "LORE_ANY"
+            "PRAY", "CHARM", "RESEARCH", "TRADE_BREWING", "TRADE_HERBALIST", "TRADE_VINTNER", "LEADERSHIP",
+            "LORE_POLITICS", "PERCEPTION"
         ],
+        groupCompetences: ["MELEE_ANY", "LORE_LOCAL_ANY", "LANGUAGE_ANY", "LORE_ANY"],
         talents: ["COMMANDING_PRESENCE", "IRON_WILL", "PURE_SOUL", "STRONG_MINDED"]
     },
     // Physician
@@ -954,7 +1028,8 @@ TEW.DATABASE.CAREERS.SET = {
             "CHARM", "ENTERTAIN_STORYTELLING", "GOSSIP", "HEAL", "INTIMIDATE", "MELEE_BASIC", "ART_WRITING",
             "ENTERTAIN_SPEECHES", "LEADERSHIP", "LORE_HERALDRY"
         ],
-        talents: ["ACUTE_SENSE_ANY", "HATRED_ANY", "IMPASSIONED_ZEAL", "STRONG_MINDED"]
+        talents: ["IMPASSIONED_ZEAL", "STRONG_MINDED"],
+        groupTalents: ["ACUTE_SENSE_ANY", "HATRED_ANY"]
     },
     PRIEST_4: {
         name: "Lector",
@@ -964,9 +1039,11 @@ TEW.DATABASE.CAREERS.SET = {
         competences: [
             "ATHLETICS", "COOL", "ENDURANCE", "INTUITION", "LORE_THEOLOGY", "PERCEPTION", "PRAY", "RESEARCH",
             "CHARM", "ENTERTAIN_STORYTELLING", "GOSSIP", "HEAL", "INTIMIDATE", "MELEE_BASIC", "ART_WRITING",
-            "ENTERTAIN_SPEECHES", "LEADERSHIP", "LORE_HERALDRY", "LANGUAGE_ANY", "LORE_POLITICS"
+            "ENTERTAIN_SPEECHES", "LEADERSHIP", "LORE_HERALDRY", "LORE_POLITICS"
         ],
-        talents: ["MASTER_ORATOR", "PURE_SOUL", "RESISTANCE_ANY", "SAVANT_THEOLOGY"]
+        groupCompetences: ["LANGUAGE_ANY"],
+        talents: ["MASTER_ORATOR", "PURE_SOUL", "SAVANT_THEOLOGY"],
+        groupTalents: ["RESISTANCE_ANY"]
     },
     // Scholar
     SCHOLAR_1: {
@@ -976,8 +1053,9 @@ TEW.DATABASE.CAREERS.SET = {
         improvableStats: [Stat.TOUG, Stat.INTL, Stat.WILL],
         competences: [
             "CONSUME_ALCOHOL", "ENTERTAIN_STORYTELLING", "GAMBLE", "GOSSIP", "HAGGLE", "LANGUAGE_CLASSICAL",
-            "LORE_ANY", "RESEARCH"
+            "RESEARCH"
         ],
+        groupCompetences: ["LORE_ANY"],
         talents: ["CAROUSER", "READ_WRITE", "SAVVY", "SUPER_NUMERATE"]
     },
     SCHOLAR_2: {
@@ -987,8 +1065,9 @@ TEW.DATABASE.CAREERS.SET = {
         improvableStats: [Stat.TOUG, Stat.INTL, Stat.WILL, Stat.INIT],
         competences: [
             "CONSUME_ALCOHOL", "ENTERTAIN_STORYTELLING", "GAMBLE", "GOSSIP", "HAGGLE", "LANGUAGE_CLASSICAL",
-            "LORE_ANY", "RESEARCH", "ART_WRITING", "INTUITION", "LANGUAGE_ANY", "PERCEPTION", "TRADE_ANY"
+            "RESEARCH", "ART_WRITING", "INTUITION", "PERCEPTION"
         ],
+        groupCompetences: ["LORE_ANY", "LORE_ANY", "LANGUAGE_ANY", "TRADE_ANY"],
         talents: ["BOOKISH", "ETIQUETTE_SCHOLARS", "SPEED_READER", "SUAVE"]
     },
     SCHOLAR_3: {
@@ -998,10 +1077,11 @@ TEW.DATABASE.CAREERS.SET = {
         improvableStats: [Stat.TOUG, Stat.INTL, Stat.WILL, Stat.INIT, Stat.FELW],
         competences: [
             "CONSUME_ALCOHOL", "ENTERTAIN_STORYTELLING", "GAMBLE", "GOSSIP", "HAGGLE", "LANGUAGE_CLASSICAL",
-            "LORE_ANY", "RESEARCH", "ART_WRITING", "INTUITION", "LANGUAGE_ANY", "PERCEPTION", "TRADE_ANY",
-            "ENTERTAIN_LECTURE", "INTIMIDATE"
+            "RESEARCH", "ART_WRITING", "INTUITION", "PERCEPTION", "ENTERTAIN_LECTURE", "INTIMIDATE"
         ],
-        talents: ["LINGUISTICS", "PUBLIC_SPEAKER", "SAVANT_ANY", "TOWER_OF_MEMORIES"]
+        groupCompetences: ["LORE_ANY", "LORE_ANY", "LORE_ANY", "LANGUAGE_ANY", "LANGUAGE_ANY", "TRADE_ANY"],
+        talents: ["LINGUISTICS", "PUBLIC_SPEAKER", "TOWER_OF_MEMORIES"],
+        groupTalents: ["SAVANT_ANY"]
     },
     SCHOLAR_4: {
         name: "Professor",
@@ -1010,10 +1090,14 @@ TEW.DATABASE.CAREERS.SET = {
         improvableStats: [Stat.TOUG, Stat.INTL, Stat.WILL, Stat.INIT, Stat.FELW, Stat.DEXT],
         competences: [
             "CONSUME_ALCOHOL", "ENTERTAIN_STORYTELLING", "GAMBLE", "GOSSIP", "HAGGLE", "LANGUAGE_CLASSICAL",
-            "LORE_ANY", "RESEARCH", "ART_WRITING", "INTUITION", "LANGUAGE_ANY", "PERCEPTION", "TRADE_ANY",
-            "ENTERTAIN_LECTURE", "INTIMIDATE", "ENTERTAIN_RHETORIC"
+            "RESEARCH", "ART_WRITING", "INTUITION", "PERCEPTION", "ENTERTAIN_LECTURE", "INTIMIDATE",
+            "ENTERTAIN_RHETORIC"
         ],
-        talents: ["MAGNUM_OPUS", "MASTER_ORATOR", "SAVANT_ANY", "SHARP"]
+        groupCompetences: [
+            "LORE_ANY", "LORE_ANY", "LORE_ANY", "LORE_ANY", "LANGUAGE_ANY", "LANGUAGE_ANY", "TRADE_ANY"
+        ],
+        talents: ["MAGNUM_OPUS", "MASTER_ORATOR", "SHARP"],
+        groupTalents: ["SAVANT_ANY"]
     },
     // Wizard
     WIZARD_1: {
@@ -1022,8 +1106,8 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.BRASS, level: 3 },
         improvableStats: [Stat.WEAS, Stat.INTL, Stat.WILL],
         competences: [
-            "CHANNELLING_ANY", "DODGE", "INTUITION", "LANGUAGE_MAGICK", "LORE_MAGIC", "MELEE_BASIC",
-            "MELEE_POLE_ARM", "PERCEPTION"
+            "CHANNELLING", "DODGE", "INTUITION", "CASTING_MAGICK", "LORE_MAGIC", "MELEE_BASIC", "MELEE_POLE_ARM",
+            "PERCEPTION"
         ],
         talents: ["AETHYRIC_ATTUNEMENT", "PETTY_MAGIC", "READ_WRITE", "SECOND_SIGHT"]
     },
@@ -1033,10 +1117,10 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.SILVER, level: 3 },
         improvableStats: [Stat.WEAS, Stat.INTL, Stat.WILL, Stat.AGIL],
         competences: [
-            "CHANNELLING_ANY", "DODGE", "INTUITION", "LANGUAGE_MAGICK", "LORE_MAGIC", "MELEE_BASIC",
-            "MELEE_POLE_ARM", "PERCEPTION", "CHARM", "COOL", "GOSSIP", "INTIMIDATE", "LANGUAGE_BATTLE",
-            "LANGUAGE_ANY"
+            "CHANNELLING", "DODGE", "INTUITION", "CASTING_MAGICK", "LORE_MAGIC", "MELEE_BASIC", "MELEE_POLE_ARM",
+            "PERCEPTION", "CHARM", "COOL", "GOSSIP", "INTIMIDATE", "LANGUAGE_BATTLE"
         ],
+        groupCompetences: ["LANGUAGE_ANY"],
         talents: ["ARCANE_MAGIC_ANY", "DETECT_ARTEFACT", "FAST_HANDS", "SIXTH_SENSE"]
     },
     WIZARD_3: {
@@ -1045,10 +1129,11 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.GOLD, level: 1 },
         improvableStats: [Stat.WEAS, Stat.INTL, Stat.WILL, Stat.AGIL, Stat.INIT],
         competences: [
-            "CHANNELLING_ANY", "DODGE", "INTUITION", "LANGUAGE_MAGICK", "LORE_MAGIC", "MELEE_BASIC",
-            "MELEE_POLE_ARM", "PERCEPTION", "CHARM", "COOL", "GOSSIP", "INTIMIDATE", "LANGUAGE_BATTLE",
-            "LANGUAGE_ANY", "ANIMAL_CARE", "EVALUATE", "LORE_WAR", "RIDE_HORSE"
+            "CHANNELLING", "DODGE", "INTUITION", "CASTING_MAGICK", "LORE_MAGIC", "MELEE_BASIC", "MELEE_POLE_ARM",
+            "PERCEPTION", "CHARM", "COOL", "GOSSIP", "INTIMIDATE", "LANGUAGE_BATTLE", "ANIMAL_CARE", "EVALUATE",
+            "LORE_WAR", "RIDE_HORSE"
         ],
+        groupCompetences: ["LANGUAGE_ANY"],
         talents: ["DUAL_WIELDER", "INSTINCTIVE_DICTION", "MAGICAL_SENSE", "MENACING"]
     },
     WIZARD_4: {
@@ -1057,10 +1142,11 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.GOLD, level: 2 },
         improvableStats: [Stat.WEAS, Stat.INTL, Stat.WILL, Stat.AGIL, Stat.INIT, Stat.FELW],
         competences: [
-            "CHANNELLING_ANY", "DODGE", "INTUITION", "LANGUAGE_MAGICK", "LORE_MAGIC", "MELEE_BASIC",
-            "MELEE_POLE_ARM", "PERCEPTION", "CHARM", "COOL", "GOSSIP", "INTIMIDATE", "LANGUAGE_BATTLE",
-            "LANGUAGE_ANY", "ANIMAL_CARE", "EVALUATE", "LORE_WAR", "RIDE_HORSE", "LORE_ANY"
+            "CHANNELLING", "DODGE", "INTUITION", "CASTING_MAGICK", "LORE_MAGIC", "MELEE_BASIC", "MELEE_POLE_ARM",
+            "PERCEPTION", "CHARM", "COOL", "GOSSIP", "INTIMIDATE", "LANGUAGE_BATTLE", "ANIMAL_CARE", "EVALUATE",
+            "LORE_WAR", "RIDE_HORSE"
         ],
+        groupCompetences: ["LANGUAGE_ANY", "LANGUAGE_ANY", "LORE_ANY"],
         talents: ["COMBAT_AWARE", "FRIGHTENING", "IRON_WILL", "WAR_WIZARD"]
     },
 
@@ -1110,7 +1196,8 @@ TEW.DATABASE.CAREERS.SET = {
             "TRADE_PRINTING", "COOL", "DODGE", "ENTERTAIN_STORYTELLING", "GAMBLE", "INTUITION", "LEADERSHIP",
             "ATHLETICS", "INTIMIDATE", "MELEE_BRAWLING", "PERCEPTION", "LORE_HERALDRY", "RIDE_HORSE"
         ],
-        talents: ["ETIQUETTE_ANY", "MASTER_ORATOR", "SCHEMER", "SUAVE"]
+        talents: ["MASTER_ORATOR", "SCHEMER", "SUAVE"],
+        groupTalents: ["ETIQUETTE_ANY"]
     },
     // Artisan
     ARTISAN_1: {
@@ -1118,10 +1205,10 @@ TEW.DATABASE.CAREERS.SET = {
         level: 1,
         status: { tier: CareerStatusTier.BRASS, level: 2 },
         improvableStats: [Stat.STRG, Stat.TOUG, Stat.DEXT],
-        competences: [
-            "ATHLETICS", "COOL", "CONSUME_ALCOHOL", "DODGE", "ENDURANCE", "EVALUATE", "STEALTH_URBAN", "TRADE_ANY"
-        ],
-        talents: ["ARTISTIC", "CRAFTSMAN_ANY", "STRONG_BACK", "VERY_STRONG"]
+        competences: ["ATHLETICS", "COOL", "CONSUME_ALCOHOL", "DODGE", "ENDURANCE", "EVALUATE", "STEALTH_URBAN"],
+        groupCompetences: ["TRADE_ANY"],
+        talents: ["ARTISTIC", "STRONG_BACK", "VERY_STRONG"],
+        groupTalents: ["CRAFTSMAN_ANY"]
     },
     ARTISAN_2: {
         name: "Artisan",
@@ -1129,9 +1216,10 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.SILVER, level: 1 },
         improvableStats: [Stat.STRG, Stat.TOUG, Stat.DEXT, Stat.FELW],
         competences: [
-            "ATHLETICS", "COOL", "CONSUME_ALCOHOL", "DODGE", "ENDURANCE", "EVALUATE", "STEALTH_URBAN", "TRADE_ANY",
-            "CHARM", "HAGGLE", "LORE_LOCAL", "GOSSIP", "LANGUAGE_GUILDER", "PERCEPTION"
+            "ATHLETICS", "COOL", "CONSUME_ALCOHOL", "DODGE", "ENDURANCE", "EVALUATE", "STEALTH_URBAN", "CHARM",
+            "HAGGLE", "GOSSIP", "LANGUAGE_GUILDER", "PERCEPTION"
         ],
+        groupCompetences: ["TRADE_ANY", "LORE_LOCAL_ANY"],
         talents: ["DEALMAKER", "ETIQUETTE_GUILDERS", "NIMBLE_FINGERED", "STURDY"]
     },
     ARTISAN_3: {
@@ -1140,11 +1228,13 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.SILVER, level: 3 },
         improvableStats: [Stat.STRG, Stat.TOUG, Stat.DEXT, Stat.FELW, Stat.WILL],
         competences: [
-            "ATHLETICS", "COOL", "CONSUME_ALCOHOL", "DODGE", "ENDURANCE", "EVALUATE", "STEALTH_URBAN", "TRADE_ANY",
-            "CHARM", "HAGGLE", "LORE_LOCAL", "GOSSIP", "LANGUAGE_GUILDER", "PERCEPTION", "INTUITION", "LEADERSHIP",
-            "RESEARCH", "SECRET_SIGNS_GUILD"
+            "ATHLETICS", "COOL", "CONSUME_ALCOHOL", "DODGE", "ENDURANCE", "EVALUATE", "STEALTH_URBAN", "CHARM",
+            "HAGGLE", "GOSSIP", "LANGUAGE_GUILDER", "PERCEPTION", "INTUITION", "LEADERSHIP", "RESEARCH",
+            "SECRET_SIGNS_GUILD"
         ],
-        talents: ["ACUTE_SENSE_TASTE", "ACUTE_SENSE_TOUCH", "MASTER_TRADESMAN_ANY", "READ_WRITE", "TINKER"]
+        groupCompetences: ["TRADE_ANY", "LORE_LOCAL_ANY"],
+        talents: ["READ_WRITE", "TINKER"],
+        groupTalents: ["MASTER_TRADESMAN_ANY", "ACUTE_SENSE_TASTE_OR_TOUCH"]
     },
     ARTISAN_4: {
         name: "Guildmaster",
@@ -1152,10 +1242,11 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.GOLD, level: 1 },
         improvableStats: [Stat.STRG, Stat.TOUG, Stat.DEXT, Stat.FELW, Stat.WILL, Stat.INTL],
         competences: [
-            "ATHLETICS", "COOL", "CONSUME_ALCOHOL", "DODGE", "ENDURANCE", "EVALUATE", "STEALTH_URBAN", "TRADE_ANY",
-            "CHARM", "HAGGLE", "LORE_LOCAL", "GOSSIP", "LANGUAGE_GUILDER", "PERCEPTION", "INTUITION", "LEADERSHIP",
-            "RESEARCH", "SECRET_SIGNS_GUILD", "BRIBERY", "INTIMIDATE"
+            "ATHLETICS", "COOL", "CONSUME_ALCOHOL", "DODGE", "ENDURANCE", "EVALUATE", "STEALTH_URBAN", "CHARM",
+            "HAGGLE", "GOSSIP", "LANGUAGE_GUILDER", "PERCEPTION", "INTUITION", "LEADERSHIP", "RESEARCH",
+            "SECRET_SIGNS_GUILD", "BRIBERY", "INTIMIDATE"
         ],
+        groupCompetences: ["TRADE_ANY", "LORE_LOCAL_ANY"],
         talents: ["BRIBER", "MAGNUM_OPUS", "PUBLIC_SPEAKER", "SCHEMER"]
     },
     // Beggar
@@ -1176,8 +1267,9 @@ TEW.DATABASE.CAREERS.SET = {
         improvableStats: [Stat.TOUG, Stat.AGIL, Stat.FELW, Stat.WILL],
         competences: [
             "ATHLETICS", "CHARM", "CONSUME_ALCOHOL", "COOL", "DODGE", "ENDURANCE", "INTUITION", "STEALTH_URBAN",
-            "ENTERTAIN_ACTING", "ENTERTAIN_ANY", "GOSSIP", "HAGGLE", "PERCEPTION", "SLEIGHT_OF_HAND"
+            "ENTERTAIN_ACTING", "GOSSIP", "HAGGLE", "PERCEPTION", "SLEIGHT_OF_HAND"
         ],
+        groupCompetences: ["ENTERTAIN_ANY"],
         talents: ["ALLEY_CAT", "BENEATH_NOTICE", "CRIMINAL", "ETIQUETTE_CRIMINALS"]
     },
     BEGGAR_3: {
@@ -1187,9 +1279,10 @@ TEW.DATABASE.CAREERS.SET = {
         improvableStats: [Stat.TOUG, Stat.AGIL, Stat.FELW, Stat.WILL, Stat.WEAS],
         competences: [
             "ATHLETICS", "CHARM", "CONSUME_ALCOHOL", "COOL", "DODGE", "ENDURANCE", "INTUITION", "STEALTH_URBAN",
-            "ENTERTAIN_ACTING", "ENTERTAIN_ANY", "GOSSIP", "HAGGLE", "PERCEPTION", "SLEIGHT_OF_HAND",
-            "CHARM_ANIMAL", "LEADERSHIP", "LORE_LOCAL", "SECRET_SIGNS_VAGABOND"
+            "ENTERTAIN_ACTING", "GOSSIP", "HAGGLE", "PERCEPTION", "SLEIGHT_OF_HAND", "CHARM_ANIMAL", "LEADERSHIP",
+            "SECRET_SIGNS_VAGABOND"
         ],
+        groupCompetences: ["ENTERTAIN_ANY", "LORE_LOCAL_ANY"],
         talents: ["BLATHER", "DIRTY_FIGHTING", "HARDY", "STEP_ASIDE"]
     },
     BEGGAR_4: {
@@ -1199,9 +1292,10 @@ TEW.DATABASE.CAREERS.SET = {
         improvableStats: [Stat.TOUG, Stat.AGIL, Stat.FELW, Stat.WILL, Stat.WEAS, Stat.INIT],
         competences: [
             "ATHLETICS", "CHARM", "CONSUME_ALCOHOL", "COOL", "DODGE", "ENDURANCE", "INTUITION", "STEALTH_URBAN",
-            "ENTERTAIN_ACTING", "ENTERTAIN_ANY", "GOSSIP", "HAGGLE", "PERCEPTION", "SLEIGHT_OF_HAND",
-            "CHARM_ANIMAL", "LEADERSHIP", "LORE_LOCAL", "SECRET_SIGNS_VAGABOND", "BRIBERY", "INTIMIDATE"
+            "ENTERTAIN_ACTING", "GOSSIP", "HAGGLE", "PERCEPTION", "SLEIGHT_OF_HAND", "CHARM_ANIMAL", "LEADERSHIP",
+            "SECRET_SIGNS_VAGABOND", "BRIBERY", "INTIMIDATE"
         ],
+        groupCompetences: ["ENTERTAIN_ANY", "LORE_LOCAL_ANY"],
         talents: ["CAT_TONGUED", "FEARLESS_WATCHMEN", "KINGPIN", "SUAVE"]
     },
     // Investigator
@@ -1222,7 +1316,8 @@ TEW.DATABASE.CAREERS.SET = {
             "CHARM", "CLIMB", "COOL", "GOSSIP", "INTUITION", "PERCEPTION", "STEALTH_URBAN", "TRACK",
             "CONSUME_ALCOHOL", "DODGE", "LORE_LAW", "MELEE_BRAWLING", "PICK_LOCK", "SLEIGHT_OF_HAND"
         ],
-        talents: ["ETIQUETTE_ANY", "SAVVY", "SHADOW", "TENACIOUS"]
+        talents: ["SAVVY", "SHADOW", "TENACIOUS"],
+        groupTalents: ["ETIQUETTE_ANY"]
     },
     INVESTIGATOR_3: {
         name: "Master Investigator",
@@ -1232,8 +1327,9 @@ TEW.DATABASE.CAREERS.SET = {
         competences: [
             "CHARM", "CLIMB", "COOL", "GOSSIP", "INTUITION", "PERCEPTION", "STEALTH_URBAN", "TRACK",
             "CONSUME_ALCOHOL", "DODGE", "LORE_LAW", "MELEE_BRAWLING", "PICK_LOCK", "SLEIGHT_OF_HAND", "BRIBERY",
-            "EVALUATE", "LEADERSHIP", "LORE_ANY"
+            "EVALUATE", "LEADERSHIP"
         ],
+        groupCompetences: ["LORE_ANY"],
         talents: ["BOOKISH", "BREAK_AND_ENTER", "SIXTH_SENSE", "SUAVE"]
     },
     INVESTIGATOR_4: {
@@ -1244,9 +1340,11 @@ TEW.DATABASE.CAREERS.SET = {
         competences: [
             "CHARM", "CLIMB", "COOL", "GOSSIP", "INTUITION", "PERCEPTION", "STEALTH_URBAN", "TRACK",
             "CONSUME_ALCOHOL", "DODGE", "LORE_LAW", "MELEE_BRAWLING", "PICK_LOCK", "SLEIGHT_OF_HAND", "BRIBERY",
-            "EVALUATE", "LEADERSHIP", "LORE_ANY", "INTIMIDATE"
+            "EVALUATE", "LEADERSHIP", "INTIMIDATE"
         ],
-        talents: ["ACUTE_SENSE_ANY", "SAVANT_ANY", "SPEED_READER", "TOWER_OF_MEMORIES"]
+        groupCompetences: ["LORE_ANY", "LORE_ANY"],
+        talents: ["SPEED_READER", "TOWER_OF_MEMORIES"],
+        groupTalents: ["ACUTE_SENSE_ANY", "SAVANT_ANY"]
     },
     // Merchant
     MERCHANT_1: {
@@ -1263,9 +1361,10 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.SILVER, level: 5 },
         improvableStats: [Stat.AGIL, Stat.WILL, Stat.FELW, Stat.INTL],
         competences: [
-            "ANIMAL_CARE", "BRIBERY", "CHARM", "CONSUME_ALCOHOL", "DRIVE", "GAMBLE", "GOSSIP", "HAGGLE", "EVALUATE",
-            "INTUITION", "LANGUAGE_ANY", "LANGUAGE_GUILDER", "LORE_LOCAL", "PERCEPTION"
+            "ANIMAL_CARE", "BRIBERY", "CHARM", "CONSUME_ALCOHOL", "DRIVE", "GAMBLE", "GOSSIP", "HAGGLE",
+            "EVALUATE", "INTUITION", "LANGUAGE_GUILDER", "PERCEPTION"
         ],
+        groupCompetences: ["LANGUAGE_ANY", "LORE_LOCAL_ANY"],
         talents: ["BRIBER", "EMBEZZLE", "ETIQUETTE_GUILDERS", "SAVVY"]
     },
     MERCHANT_3: {
@@ -1274,11 +1373,13 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.GOLD, level: 1 },
         improvableStats: [Stat.AGIL, Stat.WILL, Stat.FELW, Stat.INTL, Stat.INIT],
         competences: [
-            "ANIMAL_CARE", "BRIBERY", "CHARM", "CONSUME_ALCOHOL", "DRIVE", "GAMBLE", "GOSSIP", "HAGGLE", "EVALUATE",
-            "INTUITION", "LANGUAGE_ANY", "LANGUAGE_GUILDER", "LORE_LOCAL", "PERCEPTION", "COOL",
-            "LANGUAGE_CLASSICAL", "NAVIGATION", "SECRET_SIGNS_GUILD"
+            "ANIMAL_CARE", "BRIBERY", "CHARM", "CONSUME_ALCOHOL", "DRIVE", "GAMBLE", "GOSSIP", "HAGGLE",
+            "EVALUATE", "INTUITION", "LANGUAGE_GUILDER", "PERCEPTION", "COOL", "LANGUAGE_CLASSICAL", "NAVIGATION",
+            "SECRET_SIGNS_GUILD"
         ],
-        talents: ["CAT_TONGUED", "ETIQUETTE_ANY", "NUMISMATICS", "SHARP"]
+        groupCompetences: ["LANGUAGE_ANY", "LORE_LOCAL_ANY"],
+        talents: ["CAT_TONGUED", "NUMISMATICS", "SHARP"],
+        groupTalents: ["ETIQUETTE_ANY"]
     },
     MERCHANT_4: {
         name: "Merchant Prince",
@@ -1286,10 +1387,11 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.GOLD, level: 3 },
         improvableStats: [Stat.AGIL, Stat.WILL, Stat.FELW, Stat.INTL, Stat.INIT, Stat.WEAS],
         competences: [
-            "ANIMAL_CARE", "BRIBERY", "CHARM", "CONSUME_ALCOHOL", "DRIVE", "GAMBLE", "GOSSIP", "HAGGLE", "EVALUATE",
-            "INTUITION", "LANGUAGE_ANY", "LANGUAGE_GUILDER", "LORE_LOCAL", "PERCEPTION", "COOL",
-            "LANGUAGE_CLASSICAL", "NAVIGATION", "SECRET_SIGNS_GUILD", "LORE_ANY", "INTIMIDATE"
+            "ANIMAL_CARE", "BRIBERY", "CHARM", "CONSUME_ALCOHOL", "DRIVE", "GAMBLE", "GOSSIP", "HAGGLE",
+            "EVALUATE", "INTUITION", "LANGUAGE_GUILDER", "PERCEPTION", "COOL", "LANGUAGE_CLASSICAL", "NAVIGATION",
+            "SECRET_SIGNS_GUILD", "INTIMIDATE"
         ],
+        groupCompetences: ["LANGUAGE_ANY", "LORE_LOCAL_ANY", "LORE_ANY"],
         talents: ["IRON_WILL", "LUCK", "SCHEMER", "WEALTHY"]
     },
     // Rat Catcher
@@ -1300,8 +1402,9 @@ TEW.DATABASE.CAREERS.SET = {
         improvableStats: [Stat.WEAS, Stat.BALS, Stat.WILL],
         competences: [
             "ATHLETICS", "ANIMAL_TRAINING_DOG", "CHARM_ANIMAL", "CONSUME_ALCOHOL", "ENDURANCE", "MELEE_BASIC",
-            "RANGED_SLING", "STEALTH_UNDERGROUND", "STEALTH_URBAN"
+            "RANGED_SLING"
         ],
+        groupCompetences: ["STEALTH_UNDERGROUND_OR_URBAN"],
         talents: ["NIGHT_VISION", "RESISTANCE_DISEASE", "STRIKE_MIGHTY_BLOW", "STRIKE_TO_STUN"]
     },
     RAT_CATCHER_2: {
@@ -1311,9 +1414,9 @@ TEW.DATABASE.CAREERS.SET = {
         improvableStats: [Stat.WEAS, Stat.BALS, Stat.WILL, Stat.TOUG],
         competences: [
             "ATHLETICS", "ANIMAL_TRAINING_DOG", "CHARM_ANIMAL", "CONSUME_ALCOHOL", "ENDURANCE", "MELEE_BASIC",
-            "RANGED_SLING", "STEALTH_UNDERGROUND", "STEALTH_URBAN", "ANIMAL_CARE", "GOSSIP", "HAGGLE",
-            "LORE_POISON", "PERCEPTION", "SET_TRAP"
+            "RANGED_SLING", "ANIMAL_CARE", "GOSSIP", "HAGGLE", "LORE_POISON", "PERCEPTION", "SET_TRAP"
         ],
+        groupCompetences: ["STEALTH_UNDERGROUND_OR_URBAN"],
         talents: ["ENCLOSED_FIGHTER", "ETIQUETTE_GUILDERS", "FEARLESS_RATS", "VERY_RESILIENT"]
     },
     RAT_CATCHER_3: {
@@ -1323,9 +1426,10 @@ TEW.DATABASE.CAREERS.SET = {
         improvableStats: [Stat.WEAS, Stat.BALS, Stat.WILL, Stat.TOUG, Stat.INIT],
         competences: [
             "ATHLETICS", "ANIMAL_TRAINING_DOG", "CHARM_ANIMAL", "CONSUME_ALCOHOL", "ENDURANCE", "MELEE_BASIC",
-            "RANGED_SLING", "STEALTH_UNDERGROUND", "STEALTH_URBAN", "ANIMAL_CARE", "GOSSIP", "HAGGLE",
-            "LORE_POISON", "PERCEPTION", "SET_TRAP", "CLIMB", "COOL", "DODGE", "RANGED_CROSSBOW"
+            "RANGED_SLING", "ANIMAL_CARE", "GOSSIP", "HAGGLE", "LORE_POISON", "PERCEPTION", "SET_TRAP", "CLIMB",
+            "COOL", "DODGE", "RANGED_CROSSBOW"
         ],
+        groupCompetences: ["STEALTH_UNDERGROUND_OR_URBAN"],
         talents: ["HARDY", "STOUT_HEARTED", "STRONG_LEGS", "TUNNEL_RAT"]
     },
     RAT_CATCHER_4: {
@@ -1335,10 +1439,10 @@ TEW.DATABASE.CAREERS.SET = {
         improvableStats: [Stat.WEAS, Stat.BALS, Stat.WILL, Stat.TOUG, Stat.INIT, Stat.STRG],
         competences: [
             "ATHLETICS", "ANIMAL_TRAINING_DOG", "CHARM_ANIMAL", "CONSUME_ALCOHOL", "ENDURANCE", "MELEE_BASIC",
-            "RANGED_SLING", "STEALTH_UNDERGROUND", "STEALTH_URBAN", "ANIMAL_CARE", "GOSSIP", "HAGGLE",
-            "LORE_POISON", "PERCEPTION", "SET_TRAP", "CLIMB", "COOL", "DODGE", "RANGED_CROSSBOW", "LEADERSHIP",
-            "TRACK"
+            "RANGED_SLING", "ANIMAL_CARE", "GOSSIP", "HAGGLE", "LORE_POISON", "PERCEPTION", "SET_TRAP", "CLIMB",
+            "COOL", "DODGE", "RANGED_CROSSBOW", "LEADERSHIP", "TRACK"
         ],
+        groupCompetences: ["STEALTH_UNDERGROUND_OR_URBAN"],
         talents: ["FEARLESS_SKAVEN", "MENACING", "ROBUST", "STRONG_MINDED"]
     },
     // Townsman
@@ -1357,9 +1461,11 @@ TEW.DATABASE.CAREERS.SET = {
         improvableStats: [Stat.AGIL, Stat.INTL, Stat.FELW, Stat.INIT],
         competences: [
             "CHARM", "CLIMB", "CONSUME_ALCOHOL", "DRIVE", "DODGE", "GAMBLE", "GOSSIP", "HAGGLE", "BRIBERY",
-            "EVALUATE", "INTUITION", "LORE_LOCAL", "MELEE_BRAWLING", "PLAY_ANY"
+            "EVALUATE", "INTUITION", "MELEE_BRAWLING"
         ],
-        talents: ["DEALMAKER", "EMBEZZLE", "ETIQUETTE_ANY", "GREGARIOUS"]
+        groupCompetences: ["LORE_LOCAL_ANY", "PLAY_ANY"],
+        talents: ["DEALMAKER", "EMBEZZLE", "GREGARIOUS"],
+        groupTalents: ["ETIQUETTE_ANY"]
     },
     TOWNSMAN_3: {
         name: "Town Councillor",
@@ -1368,9 +1474,9 @@ TEW.DATABASE.CAREERS.SET = {
         improvableStats: [Stat.AGIL, Stat.INTL, Stat.FELW, Stat.INIT, Stat.DEXT],
         competences: [
             "CHARM", "CLIMB", "CONSUME_ALCOHOL", "DRIVE", "DODGE", "GAMBLE", "GOSSIP", "HAGGLE", "BRIBERY",
-            "EVALUATE", "INTUITION", "LORE_LOCAL", "MELEE_BRAWLING", "PLAY_ANY", "COOL", "LORE_LAW", "PERCEPTION",
-            "RESEARCH"
+            "EVALUATE", "INTUITION", "MELEE_BRAWLING", "COOL", "LORE_LAW", "PERCEPTION", "RESEARCH"
         ],
+        groupCompetences: ["LORE_LOCAL_ANY", "PLAY_ANY"],
         talents: ["BRIBER", "PUBLIC_SPEAKER", "READ_WRITE", "SUPPORTIVE"]
     },
     TOWNSMAN_4: {
@@ -1380,9 +1486,10 @@ TEW.DATABASE.CAREERS.SET = {
         improvableStats: [Stat.AGIL, Stat.INTL, Stat.FELW, Stat.INIT, Stat.DEXT, Stat.WILL],
         competences: [
             "CHARM", "CLIMB", "CONSUME_ALCOHOL", "DRIVE", "DODGE", "GAMBLE", "GOSSIP", "HAGGLE", "BRIBERY",
-            "EVALUATE", "INTUITION", "LORE_LOCAL", "MELEE_BRAWLING", "PLAY_ANY", "COOL", "LORE_LAW", "PERCEPTION",
-            "RESEARCH", "LORE_POLITICS", "INTIMIDATE"
+            "EVALUATE", "INTUITION", "MELEE_BRAWLING", "COOL", "LORE_LAW", "PERCEPTION", "RESEARCH",
+            "LORE_POLITICS", "INTIMIDATE"
         ],
+        groupCompetences: ["LORE_LOCAL_ANY", "PLAY_ANY"],
         talents: ["COMMANDING_PRESENCE", "MASTER_ORATOR", "SCHEMER", "SUAVE"]
     },
     // Watchman
@@ -1391,9 +1498,8 @@ TEW.DATABASE.CAREERS.SET = {
         level: 1,
         status: { tier: CareerStatusTier.BRASS, level: 3 },
         improvableStats: [Stat.WEAS, Stat.STRG, Stat.FELW],
-        competences: [
-            "ATHLETICS", "CLIMB", "CONSUME_ALCOHOL", "DODGE", "ENDURANCE", "GAMBLE", "MELEE_ANY", "PERCEPTION"
-        ],
+        competences: ["ATHLETICS", "CLIMB", "CONSUME_ALCOHOL", "DODGE", "ENDURANCE", "GAMBLE", "PERCEPTION"],
+        groupCompetences: ["MELEE_ANY"],
         talents: ["DRILLED", "HARDY", "STRIKE_TO_STUN", "TENACIOUS"]
     },
     WATCHMAN_2: {
@@ -1402,9 +1508,10 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.SILVER, level: 1 },
         improvableStats: [Stat.WEAS, Stat.STRG, Stat.FELW, Stat.WILL],
         competences: [
-            "ATHLETICS", "CLIMB", "CONSUME_ALCOHOL", "DODGE", "ENDURANCE", "GAMBLE", "MELEE_ANY", "PERCEPTION",
-            "CHARM", "COOL", "GOSSIP", "INTIMIDATE", "INTUITION", "LORE_LOCAL"
+            "ATHLETICS", "CLIMB", "CONSUME_ALCOHOL", "DODGE", "ENDURANCE", "GAMBLE", "PERCEPTION", "CHARM", "COOL",
+            "GOSSIP", "INTIMIDATE", "INTUITION"
         ],
+        groupCompetences: ["MELEE_ANY", "LORE_LOCAL_ANY"],
         talents: ["BREAK_AND_ENTER", "CRIMINAL", "NIGHT_VISION", "SPRINTER"]
     },
     WATCHMAN_3: {
@@ -1413,10 +1520,10 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.SILVER, level: 3 },
         improvableStats: [Stat.WEAS, Stat.STRG, Stat.FELW, Stat.WILL, Stat.INIT],
         competences: [
-            "ATHLETICS", "CLIMB", "CONSUME_ALCOHOL", "DODGE", "ENDURANCE", "GAMBLE", "MELEE_ANY", "PERCEPTION",
-            "CHARM", "COOL", "GOSSIP", "INTIMIDATE", "INTUITION", "LORE_LOCAL", "ENTERTAIN_STORYTELLING", "HAGGLE",
-            "LEADERSHIP", "LORE_LAW"
+            "ATHLETICS", "CLIMB", "CONSUME_ALCOHOL", "DODGE", "ENDURANCE", "GAMBLE", "PERCEPTION", "CHARM", "COOL",
+            "GOSSIP", "INTIMIDATE", "INTUITION", "ENTERTAIN_STORYTELLING", "HAGGLE", "LEADERSHIP", "LORE_LAW"
         ],
+        groupCompetences: ["MELEE_ANY", "LORE_LOCAL_ANY"],
         talents: ["DISARM", "ETIQUETTE_SOLDIERS", "FEARLESS_CRIMINALS", "NOSE_FOR_TROUBLE"]
     },
     WATCHMAN_4: {
@@ -1425,10 +1532,11 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.GOLD, level: 1 },
         improvableStats: [Stat.WEAS, Stat.STRG, Stat.FELW, Stat.WILL, Stat.INIT, Stat.INTL],
         competences: [
-            "ATHLETICS", "CLIMB", "CONSUME_ALCOHOL", "DODGE", "ENDURANCE", "GAMBLE", "MELEE_ANY", "PERCEPTION",
-            "CHARM", "COOL", "GOSSIP", "INTIMIDATE", "INTUITION", "LORE_LOCAL", "ENTERTAIN_STORYTELLING", "HAGGLE",
-            "LEADERSHIP", "LORE_LAW", "LORE_POLITICS", "RIDE_HORSE"
+            "ATHLETICS", "CLIMB", "CONSUME_ALCOHOL", "DODGE", "ENDURANCE", "GAMBLE", "PERCEPTION", "CHARM", "COOL",
+            "GOSSIP", "INTIMIDATE", "INTUITION", "ENTERTAIN_STORYTELLING", "HAGGLE", "LEADERSHIP", "LORE_LAW",
+            "LORE_POLITICS", "RIDE_HORSE"
         ],
+        groupCompetences: ["MELEE_ANY", "LORE_LOCAL_ANY"],
         talents: ["PUBLIC_SPEAKER", "ROBUST", "KINGPIN", "SCHEMER"]
     },
 
@@ -1443,7 +1551,8 @@ TEW.DATABASE.CAREERS.SET = {
             "BRIBERY", "CONSUME_ALCOHOL", "ENDURANCE", "GOSSIP", "HAGGLE", "LANGUAGE_CLASSICAL", "LORE_POLITICS",
             "PERCEPTION"
         ],
-        talents: ["BENEATH_NOTICE", "ETIQUETTE_ANY", "GREGARIOUS", "READ_WRITE"]
+        talents: ["BENEATH_NOTICE", "GREGARIOUS", "READ_WRITE"],
+        groupTalents: ["ETIQUETTE_ANY"]
     },
     ADVISOR_2: {
         name: "Advisor",
@@ -1452,8 +1561,9 @@ TEW.DATABASE.CAREERS.SET = {
         improvableStats: [Stat.TOUG, Stat.INIT, Stat.AGIL, Stat.FELW],
         competences: [
             "BRIBERY", "CONSUME_ALCOHOL", "ENDURANCE", "GOSSIP", "HAGGLE", "LANGUAGE_CLASSICAL", "LORE_POLITICS",
-            "PERCEPTION", "CHARM", "COOL", "EVALUATE", "GAMBLE", "INTUITION", "LORE_LOCAL"
+            "PERCEPTION", "CHARM", "COOL", "EVALUATE", "GAMBLE", "INTUITION"
         ],
+        groupCompetences: ["LORE_LOCAL_ANY"],
         talents: ["BLATHER", "CRIMINAL", "SCHEMER", "SUPPORTIVE"]
     },
     ADVISOR_3: {
@@ -1463,9 +1573,10 @@ TEW.DATABASE.CAREERS.SET = {
         improvableStats: [Stat.TOUG, Stat.INIT, Stat.AGIL, Stat.FELW, Stat.INTL],
         competences: [
             "BRIBERY", "CONSUME_ALCOHOL", "ENDURANCE", "GOSSIP", "HAGGLE", "LANGUAGE_CLASSICAL", "LORE_POLITICS",
-            "PERCEPTION", "CHARM", "COOL", "EVALUATE", "GAMBLE", "INTUITION", "LORE_LOCAL",
-            "ENTERTAIN_STORYTELLING", "LEADERSHIP", "LANGUAGE_ANY", "LORE_ANY"
+            "PERCEPTION", "CHARM", "COOL", "EVALUATE", "GAMBLE", "INTUITION", "ENTERTAIN_STORYTELLING",
+            "LEADERSHIP"
         ],
+        groupCompetences: ["LORE_LOCAL_ANY", "LANGUAGE_ANY", "LORE_ANY"],
         talents: ["ARGUMENTATIVE", "BRIBER", "CAROUSER", "CAT_TONGUED"]
     },
     ADVISOR_4: {
@@ -1475,9 +1586,10 @@ TEW.DATABASE.CAREERS.SET = {
         improvableStats: [Stat.TOUG, Stat.INIT, Stat.AGIL, Stat.FELW, Stat.INTL, Stat.WILL],
         competences: [
             "BRIBERY", "CONSUME_ALCOHOL", "ENDURANCE", "GOSSIP", "HAGGLE", "LANGUAGE_CLASSICAL", "LORE_POLITICS",
-            "PERCEPTION", "CHARM", "COOL", "EVALUATE", "GAMBLE", "INTUITION", "LORE_LOCAL",
-            "ENTERTAIN_STORYTELLING", "LEADERSHIP", "LANGUAGE_ANY", "LORE_ANY", "LORE_HERALDRY", "RIDE_HORSE"
+            "PERCEPTION", "CHARM", "COOL", "EVALUATE", "GAMBLE", "INTUITION", "ENTERTAIN_STORYTELLING",
+            "LEADERSHIP", "LORE_HERALDRY", "RIDE_HORSE"
         ],
+        groupCompetences: ["LORE_LOCAL_ANY", "LANGUAGE_ANY", "LORE_ANY"],
         talents: ["COMMANDING_PRESENCE", "EMBEZZLE", "KINGPIN", "SUAVE"]
     },
     // Artist
@@ -1486,9 +1598,8 @@ TEW.DATABASE.CAREERS.SET = {
         level: 1,
         status: { tier: CareerStatusTier.SILVER, level: 1 },
         improvableStats: [Stat.STRG, Stat.INIT, Stat.DEXT],
-        competences: [
-            "ART_ANY", "COOL", "CONSUME_ALCOHOL", "EVALUATE", "ENDURANCE", "GOSSIP", "PERCEPTION", "STEALTH_URBAN"
-        ],
+        competences: ["COOL", "CONSUME_ALCOHOL", "EVALUATE", "ENDURANCE", "GOSSIP", "PERCEPTION", "STEALTH_URBAN"],
+        groupCompetences: ["ART_ANY"],
         talents: ["ARTISTIC", "SHARP", "STRONG_BACK", "TENACIOUS"]
     },
     ARTIST_2: {
@@ -1497,9 +1608,10 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.SILVER, level: 3 },
         improvableStats: [Stat.STRG, Stat.INIT, Stat.DEXT, Stat.FELW],
         competences: [
-            "ART_ANY", "COOL", "CONSUME_ALCOHOL", "EVALUATE", "ENDURANCE", "GOSSIP", "PERCEPTION", "STEALTH_URBAN",
-            "CLIMB", "GAMBLE", "HAGGLE", "INTUITION", "LANGUAGE_CLASSICAL", "TRADE_ART_SUPPLIES"
+            "COOL", "CONSUME_ALCOHOL", "EVALUATE", "ENDURANCE", "GOSSIP", "PERCEPTION", "STEALTH_URBAN", "CLIMB",
+            "GAMBLE", "HAGGLE", "INTUITION", "LANGUAGE_CLASSICAL", "TRADE_ART_SUPPLIES"
         ],
+        groupCompetences: ["ART_ANY"],
         talents: ["CAROUSER", "CRIMINAL", "GREGARIOUS", "NIMBLE_FINGERED"]
     },
     ARTIST_3: {
@@ -1508,11 +1620,13 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.SILVER, level: 5 },
         improvableStats: [Stat.STRG, Stat.INIT, Stat.DEXT, Stat.FELW, Stat.WILL],
         competences: [
-            "ART_ANY", "COOL", "CONSUME_ALCOHOL", "EVALUATE", "ENDURANCE", "GOSSIP", "PERCEPTION", "STEALTH_URBAN",
-            "CLIMB", "GAMBLE", "HAGGLE", "INTUITION", "LANGUAGE_CLASSICAL", "TRADE_ART_SUPPLIES", "CHARM",
-            "LEADERSHIP", "LORE_ART", "LORE_HERALDRY"
+            "COOL", "CONSUME_ALCOHOL", "EVALUATE", "ENDURANCE", "GOSSIP", "PERCEPTION", "STEALTH_URBAN", "CLIMB",
+            "GAMBLE", "HAGGLE", "INTUITION", "LANGUAGE_CLASSICAL", "TRADE_ART_SUPPLIES", "CHARM", "LEADERSHIP",
+            "LORE_ART", "LORE_HERALDRY"
         ],
-        talents: ["ACUTE_SENSE_ANY", "DEALMAKER", "ETIQUETTE_ANY", "NOSE_FOR_TROUBLE"]
+        groupCompetences: ["ART_ANY"],
+        talents: ["DEALMAKER", "NOSE_FOR_TROUBLE"],
+        groupTalents: ["ACUTE_SENSE_ANY", "ETIQUETTE_ANY"]
     },
     ARTIST_4: {
         name: "Maestro",
@@ -1520,10 +1634,11 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.GOLD, level: 2 },
         improvableStats: [Stat.STRG, Stat.INIT, Stat.DEXT, Stat.FELW, Stat.WILL, Stat.INTL],
         competences: [
-            "ART_ANY", "COOL", "CONSUME_ALCOHOL", "EVALUATE", "ENDURANCE", "GOSSIP", "PERCEPTION", "STEALTH_URBAN",
-            "CLIMB", "GAMBLE", "HAGGLE", "INTUITION", "LANGUAGE_CLASSICAL", "TRADE_ART_SUPPLIES", "CHARM",
-            "LEADERSHIP", "LORE_ART", "LORE_HERALDRY", "RESEARCH", "RIDE_HORSE"
+            "COOL", "CONSUME_ALCOHOL", "EVALUATE", "ENDURANCE", "GOSSIP", "PERCEPTION", "STEALTH_URBAN", "CLIMB",
+            "GAMBLE", "HAGGLE", "INTUITION", "LANGUAGE_CLASSICAL", "TRADE_ART_SUPPLIES", "CHARM", "LEADERSHIP",
+            "LORE_ART", "LORE_HERALDRY", "RESEARCH", "RIDE_HORSE"
         ],
+        groupCompetences: ["ART_ANY"],
         talents: ["AMBIDEXTROUS", "KINGPIN", "MAGNUM_OPUS", "READ_WRITE"]
     },
     // Duellist
@@ -1532,9 +1647,8 @@ TEW.DATABASE.CAREERS.SET = {
         level: 1,
         status: { tier: CareerStatusTier.SILVER, level: 3 },
         improvableStats: [Stat.WEAS, Stat.INIT, Stat.AGIL],
-        competences: [
-            "ATHLETICS", "DODGE", "ENDURANCE", "HEAL", "INTUITION", "LANGUAGE_CLASSICAL", "MELEE_ANY", "PERCEPTION"
-        ],
+        competences: ["ATHLETICS", "DODGE", "ENDURANCE", "HEAL", "INTUITION", "LANGUAGE_CLASSICAL", "PERCEPTION"],
+        groupCompetences: ["MELEE_ANY"],
         talents: ["BEAT_BLADE", "DISTRACT", "FEINT", "STEP_ASIDE"]
     },
     DUELLIST_2: {
@@ -1543,10 +1657,12 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.SILVER, level: 5 },
         improvableStats: [Stat.WEAS, Stat.INIT, Stat.AGIL, Stat.BALS],
         competences: [
-            "ATHLETICS", "DODGE", "ENDURANCE", "HEAL", "INTUITION", "LANGUAGE_CLASSICAL", "MELEE_ANY", "PERCEPTION",
-            "CHARM", "COOL", "GAMBLE", "MELEE_PARRY", "RANGED_BLACKPOWDER", "TRADE_GUNSMITH"
+            "ATHLETICS", "DODGE", "ENDURANCE", "HEAL", "INTUITION", "LANGUAGE_CLASSICAL", "PERCEPTION", "CHARM",
+            "COOL", "GAMBLE", "MELEE_PARRY", "RANGED_BLACKPOWDER", "TRADE_GUNSMITH"
         ],
-        talents: ["COMBAT_REFLEXES", "ETIQUETTE_ANY", "FAST_SHOT", "REVERSAL"]
+        groupCompetences: ["MELEE_ANY"],
+        talents: ["COMBAT_REFLEXES", "FAST_SHOT", "REVERSAL"],
+        groupTalents: ["ETIQUETTE_ANY"]
     },
     DUELLIST_3: {
         name: "Duelmaster",
@@ -1554,10 +1670,11 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.GOLD, level: 1 },
         improvableStats: [Stat.WEAS, Stat.INIT, Stat.AGIL, Stat.BALS, Stat.STRG],
         competences: [
-            "ATHLETICS", "DODGE", "ENDURANCE", "HEAL", "INTUITION", "LANGUAGE_CLASSICAL", "MELEE_ANY", "PERCEPTION",
-            "CHARM", "COOL", "GAMBLE", "MELEE_PARRY", "RANGED_BLACKPOWDER", "TRADE_GUNSMITH", "INTIMIDATE",
-            "LEADERSHIP", "MELEE_BASIC", "PERFORM_ACROBATICS"
+            "ATHLETICS", "DODGE", "ENDURANCE", "HEAL", "INTUITION", "LANGUAGE_CLASSICAL", "PERCEPTION", "CHARM",
+            "COOL", "GAMBLE", "MELEE_PARRY", "RANGED_BLACKPOWDER", "TRADE_GUNSMITH", "INTIMIDATE", "LEADERSHIP",
+            "MELEE_BASIC", "PERFORM_ACROBATICS"
         ],
+        groupCompetences: ["MELEE_ANY"],
         talents: ["AMBIDEXTROUS", "DISARM", "DUAL_WIELDER", "RIPOSTE"]
     },
     DUELLIST_4: {
@@ -1566,10 +1683,11 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.GOLD, level: 3 },
         improvableStats: [Stat.WEAS, Stat.INIT, Stat.AGIL, Stat.BALS, Stat.STRG, Stat.WILL],
         competences: [
-            "ATHLETICS", "DODGE", "ENDURANCE", "HEAL", "INTUITION", "LANGUAGE_CLASSICAL", "MELEE_ANY", "PERCEPTION",
-            "CHARM", "COOL", "GAMBLE", "MELEE_PARRY", "RANGED_BLACKPOWDER", "TRADE_GUNSMITH", "INTIMIDATE",
-            "LEADERSHIP", "MELEE_BASIC", "PERFORM_ACROBATICS", "LORE_LAW"
+            "ATHLETICS", "DODGE", "ENDURANCE", "HEAL", "INTUITION", "LANGUAGE_CLASSICAL", "PERCEPTION", "CHARM",
+            "COOL", "GAMBLE", "MELEE_PARRY", "RANGED_BLACKPOWDER", "TRADE_GUNSMITH", "INTIMIDATE", "LEADERSHIP",
+            "MELEE_BASIC", "PERFORM_ACROBATICS", "LORE_LAW"
         ],
+        groupCompetences: ["MELEE_ANY", "MELEE_ANY"],
         talents: ["COMBAT_MASTER", "MENACING", "REACTION_STRIKE", "STRIKE_TO_INJURE"]
     },
     // Envoy
@@ -1590,7 +1708,8 @@ TEW.DATABASE.CAREERS.SET = {
             "ATHLETICS", "CHARM", "DRIVE", "DODGE", "ENDURANCE", "INTUITION", "RIDE_HORSE", "ROW", "ART_WRITING",
             "BRIBERY", "COOL", "GOSSIP", "HAGGLE", "LORE_POLITICS"
         ],
-        talents: ["ATTRACTIVE", "CAT_TONGUED", "ETIQUETTE_ANY", "SEASONED_TRAVELLER"]
+        talents: ["ATTRACTIVE", "CAT_TONGUED", "SEASONED_TRAVELLER"],
+        groupTalents: ["ETIQUETTE_ANY"]
     },
     ENVOY_3: {
         name: "Diplomat",
@@ -1599,9 +1718,9 @@ TEW.DATABASE.CAREERS.SET = {
         improvableStats: [Stat.TOUG, Stat.AGIL, Stat.FELW, Stat.INTL, Stat.INIT],
         competences: [
             "ATHLETICS", "CHARM", "DRIVE", "DODGE", "ENDURANCE", "INTUITION", "RIDE_HORSE", "ROW", "ART_WRITING",
-            "BRIBERY", "COOL", "GOSSIP", "HAGGLE", "LORE_POLITICS", "INTIMIDATE", "LANGUAGE_ANY", "LEADERSHIP",
-            "NAVIGATION"
+            "BRIBERY", "COOL", "GOSSIP", "HAGGLE", "LORE_POLITICS", "INTIMIDATE", "LEADERSHIP", "NAVIGATION"
         ],
+        groupCompetences: ["LANGUAGE_ANY"],
         talents: ["CAROUSER", "DEALMAKER", "GREGARIOUS", "SCHEMER"]
     },
     ENVOY_4: {
@@ -1611,9 +1730,9 @@ TEW.DATABASE.CAREERS.SET = {
         improvableStats: [Stat.TOUG, Stat.AGIL, Stat.FELW, Stat.INTL, Stat.INIT, Stat.WILL],
         competences: [
             "ATHLETICS", "CHARM", "DRIVE", "DODGE", "ENDURANCE", "INTUITION", "RIDE_HORSE", "ROW", "ART_WRITING",
-            "BRIBERY", "COOL", "GOSSIP", "HAGGLE", "LORE_POLITICS", "INTIMIDATE", "LANGUAGE_ANY", "LEADERSHIP",
-            "NAVIGATION", "LORE_ANY"
+            "BRIBERY", "COOL", "GOSSIP", "HAGGLE", "LORE_POLITICS", "INTIMIDATE", "LEADERSHIP", "NAVIGATION"
         ],
+        groupCompetences: ["LANGUAGE_ANY", "LANGUAGE_ANY", "LORE_ANY"],
         talents: ["BRIBER", "COMMANDING_PRESENCE", "NOBLE_BLOOD", "SAVVY"]
     },
     // Noble
@@ -1623,9 +1742,9 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.GOLD, level: 1 },
         improvableStats: [Stat.WEAS, Stat.INIT, Stat.DEXT],
         competences: [
-            "BRIBERY", "CONSUME_ALCOHOL", "GAMBLE", "INTIMIDATE", "LEADERSHIP", "LORE_HERALDRY", "MELEE_FENCING",
-            "PLAY_ANY"
+            "BRIBERY", "CONSUME_ALCOHOL", "GAMBLE", "INTIMIDATE", "LEADERSHIP", "LORE_HERALDRY", "MELEE_FENCING"
         ],
+        groupCompetences: ["PLAY_ANY"],
         talents: ["ETIQUETTE_NOBLES", "LUCK", "NOBLE_BLOOD", "READ_WRITE"]
     },
     NOBLE_2: {
@@ -1635,8 +1754,9 @@ TEW.DATABASE.CAREERS.SET = {
         improvableStats: [Stat.WEAS, Stat.INIT, Stat.DEXT, Stat.FELW],
         competences: [
             "BRIBERY", "CONSUME_ALCOHOL", "GAMBLE", "INTIMIDATE", "LEADERSHIP", "LORE_HERALDRY", "MELEE_FENCING",
-            "PLAY_ANY", "CHARM", "GOSSIP", "LANGUAGE_CLASSICAL", "LORE_LOCAL", "RIDE_HORSE", "MELEE_PARRY"
+            "CHARM", "GOSSIP", "LANGUAGE_CLASSICAL", "RIDE_HORSE", "MELEE_PARRY"
         ],
+        groupCompetences: ["PLAY_ANY", "LORE_LOCAL_ANY"],
         talents: ["ATTRACTIVE", "BRIBER", "CAROUSER", "SUAVE"]
     },
     NOBLE_3: {
@@ -1646,9 +1766,10 @@ TEW.DATABASE.CAREERS.SET = {
         improvableStats: [Stat.WEAS, Stat.INIT, Stat.DEXT, Stat.FELW, Stat.INTL],
         competences: [
             "BRIBERY", "CONSUME_ALCOHOL", "GAMBLE", "INTIMIDATE", "LEADERSHIP", "LORE_HERALDRY", "MELEE_FENCING",
-            "PLAY_ANY", "CHARM", "GOSSIP", "LANGUAGE_CLASSICAL", "LORE_LOCAL", "RIDE_HORSE", "MELEE_PARRY",
-            "LANGUAGE_ANY", "INTUITION", "LORE_POLITICS", "PERCEPTION"
+            "CHARM", "GOSSIP", "LANGUAGE_CLASSICAL", "RIDE_HORSE", "MELEE_PARRY", "INTUITION", "LORE_POLITICS",
+            "PERCEPTION"
         ],
+        groupCompetences: ["PLAY_ANY", "LORE_LOCAL_ANY", "LANGUAGE_ANY"],
         talents: ["COOL_HEADED", "DEALMAKER", "PUBLIC_SPEAKER", "SCHEMER"]
     },
     NOBLE_4: {
@@ -1658,9 +1779,10 @@ TEW.DATABASE.CAREERS.SET = {
         improvableStats: [Stat.WEAS, Stat.INIT, Stat.DEXT, Stat.FELW, Stat.INTL, Stat.WILL],
         competences: [
             "BRIBERY", "CONSUME_ALCOHOL", "GAMBLE", "INTIMIDATE", "LEADERSHIP", "LORE_HERALDRY", "MELEE_FENCING",
-            "PLAY_ANY", "CHARM", "GOSSIP", "LANGUAGE_CLASSICAL", "LORE_LOCAL", "RIDE_HORSE", "MELEE_PARRY",
-            "LANGUAGE_ANY", "INTUITION", "LORE_POLITICS", "PERCEPTION", "LORE_ANY", "TRACK"
+            "CHARM", "GOSSIP", "LANGUAGE_CLASSICAL", "RIDE_HORSE", "MELEE_PARRY", "INTUITION", "LORE_POLITICS",
+            "PERCEPTION", "TRACK"
         ],
+        groupCompetences: ["PLAY_ANY", "LORE_LOCAL_ANY", "LANGUAGE_ANY", "LORE_ANY"],
         talents: ["COMMANDING_PRESENCE", "IRON_WILL", "WAR_LEADER", "WEALTHY"]
     },
     // Servant
@@ -1669,7 +1791,8 @@ TEW.DATABASE.CAREERS.SET = {
         level: 1,
         status: { tier: CareerStatusTier.SILVER, level: 1 },
         improvableStats: [Stat.STRG, Stat.TOUG, Stat.AGIL],
-        competences: ["ATHLETICS", "CLIMB", "DRIVE", "DODGE", "ENDURANCE", "INTUITION", "PERCEPTION", "STEALTH_ANY"],
+        competences: ["ATHLETICS", "CLIMB", "DRIVE", "DODGE", "ENDURANCE", "INTUITION", "PERCEPTION"],
+        groupCompetences: ["STEALTH_ANY"],
         talents: ["BENEATH_NOTICE", "STRONG_BACK", "STRONG_MINDED", "STURDY"]
     },
     SERVANT_2: {
@@ -1678,9 +1801,10 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.SILVER, level: 3 },
         improvableStats: [Stat.STRG, Stat.TOUG, Stat.AGIL, Stat.INIT],
         competences: [
-            "ATHLETICS", "CLIMB", "DRIVE", "DODGE", "ENDURANCE", "INTUITION", "PERCEPTION", "STEALTH_ANY",
-            "ANIMAL_CARE", "CONSUME_ALCOHOL", "EVALUATE", "GAMBLE", "GOSSIP", "HAGGLE"
+            "ATHLETICS", "CLIMB", "DRIVE", "DODGE", "ENDURANCE", "INTUITION", "PERCEPTION", "ANIMAL_CARE",
+            "CONSUME_ALCOHOL", "EVALUATE", "GAMBLE", "GOSSIP", "HAGGLE"
         ],
+        groupCompetences: ["STEALTH_ANY"],
         talents: ["ETIQUETTE_SERVANTS", "SHADOW", "TENACIOUS", "WELL_PREPARED"]
     },
     SERVANT_3: {
@@ -1689,10 +1813,10 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.SILVER, level: 5 },
         improvableStats: [Stat.STRG, Stat.TOUG, Stat.AGIL, Stat.INIT, Stat.INTL],
         competences: [
-            "ATHLETICS", "CLIMB", "DRIVE", "DODGE", "ENDURANCE", "INTUITION", "PERCEPTION", "STEALTH_ANY",
-            "ANIMAL_CARE", "CONSUME_ALCOHOL", "EVALUATE", "GAMBLE", "GOSSIP", "HAGGLE", "CHARM", "COOL",
-            "INTIMIDATE", "LORE_LOCAL"
+            "ATHLETICS", "CLIMB", "DRIVE", "DODGE", "ENDURANCE", "INTUITION", "PERCEPTION", "ANIMAL_CARE",
+            "CONSUME_ALCOHOL", "EVALUATE", "GAMBLE", "GOSSIP", "HAGGLE", "CHARM", "COOL", "INTIMIDATE"
         ],
+        groupCompetences: ["STEALTH_ANY", "LORE_LOCAL_ANY"],
         talents: ["EMBEZZLE", "RESISTANCE_POISON", "SUAVE", "SUPPORTIVE"]
     },
     SERVANT_4: {
@@ -1701,11 +1825,13 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.GOLD, level: 1 },
         improvableStats: [Stat.STRG, Stat.TOUG, Stat.AGIL, Stat.INIT, Stat.INTL, Stat.FELW],
         competences: [
-            "ATHLETICS", "CLIMB", "DRIVE", "DODGE", "ENDURANCE", "INTUITION", "PERCEPTION", "STEALTH_ANY",
-            "ANIMAL_CARE", "CONSUME_ALCOHOL", "EVALUATE", "GAMBLE", "GOSSIP", "HAGGLE", "CHARM", "COOL",
-            "INTIMIDATE", "LORE_LOCAL", "LEADERSHIP", "MELEE_BASIC"
+            "ATHLETICS", "CLIMB", "DRIVE", "DODGE", "ENDURANCE", "INTUITION", "PERCEPTION", "ANIMAL_CARE",
+            "CONSUME_ALCOHOL", "EVALUATE", "GAMBLE", "GOSSIP", "HAGGLE", "CHARM", "COOL", "INTIMIDATE",
+            "LEADERSHIP", "MELEE_BASIC"
         ],
-        talents: ["ETIQUETTE_ANY", "NUMISMATICS", "READ_WRITE", "SAVVY"]
+        groupCompetences: ["STEALTH_ANY", "LORE_LOCAL_ANY"],
+        talents: ["NUMISMATICS", "READ_WRITE", "SAVVY"],
+        groupTalents: ["ETIQUETTE_ANY"]
     },
     // Spy
     SPY_1: {
@@ -1713,7 +1839,8 @@ TEW.DATABASE.CAREERS.SET = {
         level: 1,
         status: { tier: CareerStatusTier.BRASS, level: 3 },
         improvableStats: [Stat.AGIL, Stat.WILL, Stat.FELW],
-        competences: ["BRIBERY", "CHARM", "COOL", "GAMBLE", "GOSSIP", "HAGGLE", "PERCEPTION", "STEALTH_ANY"],
+        competences: ["BRIBERY", "CHARM", "COOL", "GAMBLE", "GOSSIP", "HAGGLE", "PERCEPTION"],
+        groupCompetences: ["STEALTH_ANY"],
         talents: ["BLATHER", "CAROUSER", "GREGARIOUS", "SHADOW"]
     },
     SPY_2: {
@@ -1722,10 +1849,12 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.SILVER, level: 3 },
         improvableStats: [Stat.AGIL, Stat.WILL, Stat.FELW, Stat.WEAS],
         competences: [
-            "BRIBERY", "CHARM", "COOL", "GAMBLE", "GOSSIP", "HAGGLE", "PERCEPTION", "STEALTH_ANY", "CLIMB",
-            "ENTERTAIN_ACTING", "INTUITION", "MELEE_BASIC", "SECRET_SIGNS_ANY", "SLEIGHT_OF_HAND"
+            "BRIBERY", "CHARM", "COOL", "GAMBLE", "GOSSIP", "HAGGLE", "PERCEPTION", "CLIMB", "ENTERTAIN_ACTING",
+            "INTUITION", "MELEE_BASIC", "SLEIGHT_OF_HAND"
         ],
-        talents: ["ETIQUETTE_ANY", "LIP_READING", "READ_WRITE", "SECRET_IDENTITY"]
+        groupCompetences: ["STEALTH_ANY", "SECRET_SIGNS_ANY"],
+        talents: ["LIP_READING", "READ_WRITE", "SECRET_IDENTITY"],
+        groupTalents: ["ETIQUETTE_ANY"]
     },
     SPY_3: {
         name: "Agent",
@@ -1733,10 +1862,10 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.GOLD, level: 1 },
         improvableStats: [Stat.AGIL, Stat.WILL, Stat.FELW, Stat.WEAS, Stat.INIT],
         competences: [
-            "BRIBERY", "CHARM", "COOL", "GAMBLE", "GOSSIP", "HAGGLE", "PERCEPTION", "STEALTH_ANY", "CLIMB",
-            "ENTERTAIN_ACTING", "INTUITION", "MELEE_BASIC", "SECRET_SIGNS_ANY", "SLEIGHT_OF_HAND", "ANIMAL_CARE",
-            "ANIMAL_TRAINING_PIGEON", "LANGUAGE_ANY", "LEADERSHIP"
+            "BRIBERY", "CHARM", "COOL", "GAMBLE", "GOSSIP", "HAGGLE", "PERCEPTION", "CLIMB", "ENTERTAIN_ACTING",
+            "INTUITION", "MELEE_BASIC", "SLEIGHT_OF_HAND", "ANIMAL_CARE", "ANIMAL_TRAINING_PIGEON", "LEADERSHIP"
         ],
+        groupCompetences: ["STEALTH_ANY", "SECRET_SIGNS_ANY", "LANGUAGE_ANY"],
         talents: ["ATTRACTIVE", "CAT_TONGUED", "MASTER_OF_DISGUISE", "MIMIC"]
     },
     SPY_4: {
@@ -1745,10 +1874,11 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.GOLD, level: 4 },
         improvableStats: [Stat.AGIL, Stat.WILL, Stat.FELW, Stat.WEAS, Stat.INIT, Stat.INTL],
         competences: [
-            "BRIBERY", "CHARM", "COOL", "GAMBLE", "GOSSIP", "HAGGLE", "PERCEPTION", "STEALTH_ANY", "CLIMB",
-            "ENTERTAIN_ACTING", "INTUITION", "MELEE_BASIC", "SECRET_SIGNS_ANY", "SLEIGHT_OF_HAND", "ANIMAL_CARE",
-            "ANIMAL_TRAINING_PIGEON", "LANGUAGE_ANY", "LEADERSHIP", "LORE_ANY", "RESEARCH"
+            "BRIBERY", "CHARM", "COOL", "GAMBLE", "GOSSIP", "HAGGLE", "PERCEPTION", "CLIMB", "ENTERTAIN_ACTING",
+            "INTUITION", "MELEE_BASIC", "SLEIGHT_OF_HAND", "ANIMAL_CARE", "ANIMAL_TRAINING_PIGEON", "LEADERSHIP",
+            "RESEARCH"
         ],
+        groupCompetences: ["STEALTH_ANY", "SECRET_SIGNS_ANY", "LANGUAGE_ANY", "LORE_ANY"],
         talents: ["BRIBER", "SCHEMER", "SUAVE", "TOWER_OF_MEMORIES"]
     },
     // Warden
@@ -1758,9 +1888,9 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.SILVER, level: 1 },
         improvableStats: [Stat.STRG, Stat.TOUG, Stat.WILL],
         competences: [
-            "ATHLETICS", "CHARM_ANIMAL", "CONSUME_ALCOHOL", "COOL", "ENDURANCE", "INTUITION", "LORE_LOCAL",
-            "PERCEPTION"
+            "ATHLETICS", "CHARM_ANIMAL", "CONSUME_ALCOHOL", "COOL", "ENDURANCE", "INTUITION", "PERCEPTION"
         ],
+        groupCompetences: ["LORE_LOCAL_ANY"],
         talents: ["MENACING", "NIGHT_VISION", "SHARP", "STRIKE_TO_STUN"]
     },
     WARDEN_2: {
@@ -1769,10 +1899,12 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.SILVER, level: 3 },
         improvableStats: [Stat.STRG, Stat.TOUG, Stat.WILL, Stat.WEAS],
         competences: [
-            "ATHLETICS", "CHARM_ANIMAL", "CONSUME_ALCOHOL", "COOL", "ENDURANCE", "INTUITION", "LORE_LOCAL",
-            "PERCEPTION", "ANIMAL_CARE", "MELEE_BASIC", "OUTDOOR_SURVIVAL", "RANGED_BOW", "RIDE_HORSE", "SWIM"
+            "ATHLETICS", "CHARM_ANIMAL", "CONSUME_ALCOHOL", "COOL", "ENDURANCE", "INTUITION", "PERCEPTION",
+            "ANIMAL_CARE", "MELEE_BASIC", "OUTDOOR_SURVIVAL", "RANGED_BOW", "RIDE_HORSE", "SWIM"
         ],
-        talents: ["ANIMAL_AFFINITY", "ETIQUETTE_SERVANTS", "STRIDER_ANY", "ROVER"]
+        groupCompetences: ["LORE_LOCAL_ANY"],
+        talents: ["ANIMAL_AFFINITY", "ETIQUETTE_SERVANTS", "ROVER"],
+        groupTalents: ["STRIDER_ANY"]
     },
     WARDEN_3: {
         name: "Seneschal",
@@ -1780,10 +1912,11 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.GOLD, level: 1 },
         improvableStats: [Stat.STRG, Stat.TOUG, Stat.WILL, Stat.WEAS, Stat.FELW],
         competences: [
-            "ATHLETICS", "CHARM_ANIMAL", "CONSUME_ALCOHOL", "COOL", "ENDURANCE", "INTUITION", "LORE_LOCAL",
-            "PERCEPTION", "ANIMAL_CARE", "MELEE_BASIC", "OUTDOOR_SURVIVAL", "RANGED_BOW", "RIDE_HORSE", "SWIM",
-            "BRIBERY", "CHARM", "GOSSIP", "LEADERSHIP"
+            "ATHLETICS", "CHARM_ANIMAL", "CONSUME_ALCOHOL", "COOL", "ENDURANCE", "INTUITION", "PERCEPTION",
+            "ANIMAL_CARE", "MELEE_BASIC", "OUTDOOR_SURVIVAL", "RANGED_BOW", "RIDE_HORSE", "SWIM", "BRIBERY",
+            "CHARM", "GOSSIP", "LEADERSHIP"
         ],
+        groupCompetences: ["LORE_LOCAL_ANY"],
         talents: ["EMBEZZLE", "NUMISMATICS", "READ_WRITE", "SUPPORTIVE"]
     },
     WARDEN_4: {
@@ -1792,11 +1925,13 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.GOLD, level: 3 },
         improvableStats: [Stat.STRG, Stat.TOUG, Stat.WILL, Stat.WEAS, Stat.FELW, Stat.INTL],
         competences: [
-            "ATHLETICS", "CHARM_ANIMAL", "CONSUME_ALCOHOL", "COOL", "ENDURANCE", "INTUITION", "LORE_LOCAL",
-            "PERCEPTION", "ANIMAL_CARE", "MELEE_BASIC", "OUTDOOR_SURVIVAL", "RANGED_BOW", "RIDE_HORSE", "SWIM",
-            "BRIBERY", "CHARM", "GOSSIP", "LEADERSHIP", "EVALUATE", "LANGUAGE_ANY"
+            "ATHLETICS", "CHARM_ANIMAL", "CONSUME_ALCOHOL", "COOL", "ENDURANCE", "INTUITION", "PERCEPTION",
+            "ANIMAL_CARE", "MELEE_BASIC", "OUTDOOR_SURVIVAL", "RANGED_BOW", "RIDE_HORSE", "SWIM", "BRIBERY",
+            "CHARM", "GOSSIP", "LEADERSHIP", "EVALUATE"
         ],
-        talents: ["COMMANDING_PRESENCE", "ETIQUETTE_ANY", "SAVANT_LOCAL", "SUAVE"]
+        groupCompetences: ["LORE_LOCAL_ANY", "LANGUAGE_ANY"],
+        talents: ["COMMANDING_PRESENCE", "SUAVE"],
+        groupTalents: ["ETIQUETTE_ANY", "SAVANT_LOCAL_ANY"]
     },
 
     // --- PEASANT --- //
@@ -1816,8 +1951,9 @@ TEW.DATABASE.CAREERS.SET = {
         improvableStats: [Stat.WEAS, Stat.INIT, Stat.WILL, Stat.FELW],
         competences: [
             "COOL", "DODGE", "ENDURANCE", "GOSSIP", "HAGGLE", "INTIMIDATE", "MELEE_BASIC", "PERCEPTION", "BRIBERY",
-            "CHARM", "EVALUATE", "INTUITION", "LEADERSHIP", "LORE_LOCAL"
+            "CHARM", "EVALUATE", "INTUITION", "LEADERSHIP"
         ],
+        groupCompetences: ["LORE_LOCAL_ANY"],
         talents: ["BREAK_AND_ENTER", "CRIMINAL", "PUBLIC_SPEAKER", "STRIKE_TO_STUN"]
     },
     BAILIFF_3: {
@@ -1827,9 +1963,10 @@ TEW.DATABASE.CAREERS.SET = {
         improvableStats: [Stat.WEAS, Stat.INIT, Stat.WILL, Stat.FELW, Stat.AGIL],
         competences: [
             "COOL", "DODGE", "ENDURANCE", "GOSSIP", "HAGGLE", "INTIMIDATE", "MELEE_BASIC", "PERCEPTION", "BRIBERY",
-            "CHARM", "EVALUATE", "INTUITION", "LEADERSHIP", "LORE_LOCAL", "ANIMAL_CARE", "LORE_HERALDRY",
-            "NAVIGATION", "RIDE_HORSE"
+            "CHARM", "EVALUATE", "INTUITION", "LEADERSHIP", "ANIMAL_CARE", "LORE_HERALDRY", "NAVIGATION",
+            "RIDE_HORSE"
         ],
+        groupCompetences: ["LORE_LOCAL_ANY"],
         talents: ["KINGPIN", "MENACING", "NOSE_FOR_TROUBLE", "READ_WRITE"]
     },
     BAILIFF_4: {
@@ -1839,9 +1976,10 @@ TEW.DATABASE.CAREERS.SET = {
         improvableStats: [Stat.WEAS, Stat.INIT, Stat.WILL, Stat.FELW, Stat.AGIL, Stat.INTL],
         competences: [
             "COOL", "DODGE", "ENDURANCE", "GOSSIP", "HAGGLE", "INTIMIDATE", "MELEE_BASIC", "PERCEPTION", "BRIBERY",
-            "CHARM", "EVALUATE", "INTUITION", "LEADERSHIP", "LORE_LOCAL", "ANIMAL_CARE", "LORE_HERALDRY",
-            "NAVIGATION", "RIDE_HORSE", "LANGUAGE_CLASSICAL", "LORE_LAW"
+            "CHARM", "EVALUATE", "INTUITION", "LEADERSHIP", "ANIMAL_CARE", "LORE_HERALDRY", "NAVIGATION",
+            "RIDE_HORSE", "LANGUAGE_CLASSICAL", "LORE_LAW"
         ],
+        groupCompetences: ["LORE_LOCAL_ANY"],
         talents: ["COMMANDING_PRESENCE", "IRON_WILL", "SAVVY", "SCHEMER"]
     },
     // Hedge Witch
@@ -1851,7 +1989,7 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.BRASS, level: 1 },
         improvableStats: [Stat.TOUG, Stat.INIT, Stat.DEXT],
         competences: [
-            "CHANNELLING_ANY", "ENDURANCE", "INTUITION", "LANGUAGE_MAGICK", "LORE_FOLKLORE", "LORE_HERBS",
+            "CHANNELLING", "ENDURANCE", "INTUITION", "CASTING_MAGICK", "LORE_FOLKLORE", "LORE_HERBS",
             "OUTDOOR_SURVIVAL", "PERCEPTION"
         ],
         talents: ["FAST_HANDS", "PETTY_MAGIC", "ROVER", "STRIDER_WOODLANDS"]
@@ -1862,10 +2000,10 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.BRASS, level: 2 },
         improvableStats: [Stat.TOUG, Stat.INIT, Stat.DEXT, Stat.INTL],
         competences: [
-            "CHANNELLING_ANY", "ENDURANCE", "INTUITION", "LANGUAGE_MAGICK", "LORE_FOLKLORE", "LORE_HERBS",
-            "OUTDOOR_SURVIVAL", "PERCEPTION", "COOL", "GOSSIP", "HEAL", "LORE_LOCAL", "TRADE_CHARMS",
-            "TRADE_HERBALIST"
+            "CHANNELLING", "ENDURANCE", "INTUITION", "CASTING_MAGICK", "LORE_FOLKLORE", "LORE_HERBS",
+            "OUTDOOR_SURVIVAL", "PERCEPTION", "COOL", "GOSSIP", "HEAL", "TRADE_CHARMS", "TRADE_HERBALIST"
         ],
+        groupCompetences: ["LORE_LOCAL_ANY"],
         talents: ["AETHYRIC_ATTUNEMENT", "ANIMAL_AFFINITY", "ARCANE_MAGIC_HEDGECRAFT", "SIXTH_SENSE"]
     },
     HEDGE_WITCH_3: {
@@ -1874,10 +2012,11 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.BRASS, level: 3 },
         improvableStats: [Stat.TOUG, Stat.INIT, Stat.DEXT, Stat.INTL, Stat.FELW],
         competences: [
-            "CHANNELLING_ANY", "ENDURANCE", "INTUITION", "LANGUAGE_MAGICK", "LORE_FOLKLORE", "LORE_HERBS",
-            "OUTDOOR_SURVIVAL", "PERCEPTION", "COOL", "GOSSIP", "HEAL", "LORE_LOCAL", "TRADE_CHARMS",
-            "TRADE_HERBALIST", "HAGGLE", "LORE_GENEALOGY", "LORE_MAGIC", "LORE_SPIRITS"
+            "CHANNELLING", "ENDURANCE", "INTUITION", "CASTING_MAGICK", "LORE_FOLKLORE", "LORE_HERBS",
+            "OUTDOOR_SURVIVAL", "PERCEPTION", "COOL", "GOSSIP", "HEAL", "TRADE_CHARMS", "TRADE_HERBALIST",
+            "HAGGLE", "LORE_GENEALOGY", "LORE_MAGIC", "LORE_SPIRITS"
         ],
+        groupCompetences: ["LORE_LOCAL_ANY"],
         talents: ["CRAFTSMAN_HERBALIST", "MAGICAL_SENSE", "PURE_SOUL", "RESISTANCE_DISEASE"]
     },
     HEDGE_WITCH_4: {
@@ -1886,11 +2025,13 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.BRASS, level: 5 },
         improvableStats: [Stat.TOUG, Stat.INIT, Stat.DEXT, Stat.INTL, Stat.FELW, Stat.WILL],
         competences: [
-            "CHANNELLING_ANY", "ENDURANCE", "INTUITION", "LANGUAGE_MAGICK", "LORE_FOLKLORE", "LORE_HERBS",
-            "OUTDOOR_SURVIVAL", "PERCEPTION", "COOL", "GOSSIP", "HEAL", "LORE_LOCAL", "TRADE_CHARMS",
-            "TRADE_HERBALIST", "HAGGLE", "LORE_GENEALOGY", "LORE_MAGIC", "LORE_SPIRITS", "INTIMIDATE", "PRAY"
+            "CHANNELLING", "ENDURANCE", "INTUITION", "CASTING_MAGICK", "LORE_FOLKLORE", "LORE_HERBS",
+            "OUTDOOR_SURVIVAL", "PERCEPTION", "COOL", "GOSSIP", "HEAL", "TRADE_CHARMS", "TRADE_HERBALIST",
+            "HAGGLE", "LORE_GENEALOGY", "LORE_MAGIC", "LORE_SPIRITS", "INTIMIDATE", "PRAY"
         ],
-        talents: ["ACUTE_SENSE_ANY", "MASTER_TRADESMAN_HERBALIST", "NIGHT_VISION", "STRONG_MINDED"]
+        groupCompetences: ["LORE_LOCAL_ANY"],
+        talents: ["MASTER_TRADESMAN_HERBALIST", "NIGHT_VISION", "STRONG_MINDED"],
+        groupTalents: ["ACUTE_SENSE_ANY"]
     },
     // Herbalist
     HERBALIST_1: {
@@ -1902,7 +2043,8 @@ TEW.DATABASE.CAREERS.SET = {
             "CHARM_ANIMAL", "CLIMB", "ENDURANCE", "LORE_HERBS", "OUTDOOR_SURVIVAL", "PERCEPTION", "SWIM",
             "TRADE_HERBALIST"
         ],
-        talents: ["ACUTE_SENSE_TASTE", "ORIENTATION", "ROVER", "STRIDER_ANY"]
+        talents: ["ACUTE_SENSE_TASTE", "ORIENTATION", "ROVER"],
+        groupTalents: ["STRIDER_ANY"]
     },
     HERBALIST_2: {
         name: "Herbalist",
@@ -1911,8 +2053,9 @@ TEW.DATABASE.CAREERS.SET = {
         improvableStats: [Stat.TOUG, Stat.INIT, Stat.AGIL, Stat.DEXT],
         competences: [
             "CHARM_ANIMAL", "CLIMB", "ENDURANCE", "LORE_HERBS", "OUTDOOR_SURVIVAL", "PERCEPTION", "SWIM",
-            "TRADE_HERBALIST", "CONSUME_ALCOHOL", "COOL", "GOSSIP", "HAGGLE", "HEAL", "LORE_LOCAL"
+            "TRADE_HERBALIST", "CONSUME_ALCOHOL", "COOL", "GOSSIP", "HAGGLE", "HEAL"
         ],
+        groupCompetences: ["LORE_LOCAL_ANY"],
         talents: ["DEALMAKER", "NIMBLE_FINGERED", "SHARP", "STURDY"]
     },
     HERBALIST_3: {
@@ -1922,9 +2065,10 @@ TEW.DATABASE.CAREERS.SET = {
         improvableStats: [Stat.TOUG, Stat.INIT, Stat.AGIL, Stat.DEXT, Stat.FELW],
         competences: [
             "CHARM_ANIMAL", "CLIMB", "ENDURANCE", "LORE_HERBS", "OUTDOOR_SURVIVAL", "PERCEPTION", "SWIM",
-            "TRADE_HERBALIST", "CONSUME_ALCOHOL", "COOL", "GOSSIP", "HAGGLE", "HEAL", "LORE_LOCAL", "INTUITION",
-            "LEADERSHIP", "LORE_MEDICINE", "TRADE_POISONER"
+            "TRADE_HERBALIST", "CONSUME_ALCOHOL", "COOL", "GOSSIP", "HAGGLE", "HEAL", "INTUITION", "LEADERSHIP",
+            "LORE_MEDICINE", "TRADE_POISONER"
         ],
+        groupCompetences: ["LORE_LOCAL_ANY"],
         talents: ["CRAFTSMAN_HERBALIST", "FIELD_DRESSING", "HARDY", "SAVVY"]
     },
     HERBALIST_4: {
@@ -1934,9 +2078,10 @@ TEW.DATABASE.CAREERS.SET = {
         improvableStats: [Stat.TOUG, Stat.INIT, Stat.AGIL, Stat.DEXT, Stat.FELW, Stat.INTL],
         competences: [
             "CHARM_ANIMAL", "CLIMB", "ENDURANCE", "LORE_HERBS", "OUTDOOR_SURVIVAL", "PERCEPTION", "SWIM",
-            "TRADE_HERBALIST", "CONSUME_ALCOHOL", "COOL", "GOSSIP", "HAGGLE", "HEAL", "LORE_LOCAL", "INTUITION",
-            "LEADERSHIP", "LORE_MEDICINE", "TRADE_POISONER", "DRIVE", "NAVIGATION"
+            "TRADE_HERBALIST", "CONSUME_ALCOHOL", "COOL", "GOSSIP", "HAGGLE", "HEAL", "INTUITION", "LEADERSHIP",
+            "LORE_MEDICINE", "TRADE_POISONER", "DRIVE", "NAVIGATION"
         ],
+        groupCompetences: ["LORE_LOCAL_ANY"],
         talents: ["CONCOCT", "MASTER_TRADESMAN_HERBALIST", "RESISTANCE_POISON", "SAVANT_HERBS"]
     },
     // Hunter
@@ -1949,7 +2094,8 @@ TEW.DATABASE.CAREERS.SET = {
             "CHARM_ANIMAL", "CLIMB", "ENDURANCE", "LORE_BEASTS", "OUTDOOR_SURVIVAL", "PERCEPTION", "RANGED_SLING",
             "SET_TRAP"
         ],
-        talents: ["HARDY", "ROVER", "STRIDER_ANY", "TRAPPER"]
+        talents: ["HARDY", "ROVER", "TRAPPER"],
+        groupTalents: ["STRIDER_ANY"]
     },
     HUNTER_2: {
         name: "Hunter",
@@ -1972,7 +2118,8 @@ TEW.DATABASE.CAREERS.SET = {
             "SET_TRAP", "COOL", "INTUITION", "MELEE_BASIC", "RANGED_BOW", "SECRET_SIGNS_HUNTER", "STEALTH_RURAL",
             "NAVIGATION", "RIDE_HORSE", "SWIM", "TRACK"
         ],
-        talents: ["ACUTE_SENSE_ANY", "DEADEYE_SHOT", "FEARLESS_ANIMALS", "SHARPSHOOTER"]
+        talents: ["DEADEYE_SHOT", "FEARLESS_ANIMALS", "SHARPSHOOTER"],
+        groupTalents: ["ACUTE_SENSE_ANY"]
     },
     HUNTER_4: {
         name: "Huntsmaster",
@@ -1982,8 +2129,9 @@ TEW.DATABASE.CAREERS.SET = {
         competences: [
             "CHARM_ANIMAL", "CLIMB", "ENDURANCE", "LORE_BEASTS", "OUTDOOR_SURVIVAL", "PERCEPTION", "RANGED_SLING",
             "SET_TRAP", "COOL", "INTUITION", "MELEE_BASIC", "RANGED_BOW", "SECRET_SIGNS_HUNTER", "STEALTH_RURAL",
-            "NAVIGATION", "RIDE_HORSE", "SWIM", "TRACK", "ANIMAL_CARE", "ANIMAL_TRAINING_ANY"
+            "NAVIGATION", "RIDE_HORSE", "SWIM", "TRACK", "ANIMAL_CARE"
         ],
+        groupCompetences: ["ANIMAL_TRAINING_ANY"],
         talents: ["FEARLESS_MONSTERS", "ROBUST", "SNIPER", "SURE_SHOT"]
     },
     // Miner
@@ -1993,9 +2141,9 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.BRASS, level: 2 },
         improvableStats: [Stat.STRG, Stat.TOUG, Stat.WILL],
         competences: [
-            "COOL", "ENDURANCE", "INTUITION", "LORE_LOCAL", "MELEE_TWO_HANDED", "OUTDOOR_SURVIVAL", "PERCEPTION",
-            "SWIM"
+            "COOL", "ENDURANCE", "INTUITION", "MELEE_TWO_HANDED", "OUTDOOR_SURVIVAL", "PERCEPTION", "SWIM"
         ],
+        groupCompetences: ["LORE_LOCAL_ANY"],
         talents: ["ROVER", "STRIDER_ROCKY", "STURDY", "TENACIOUS"]
     },
     MINER_2: {
@@ -2004,9 +2152,10 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.BRASS, level: 4 },
         improvableStats: [Stat.STRG, Stat.TOUG, Stat.WILL, Stat.WEAS],
         competences: [
-            "COOL", "ENDURANCE", "INTUITION", "LORE_LOCAL", "MELEE_TWO_HANDED", "OUTDOOR_SURVIVAL", "PERCEPTION",
-            "SWIM", "CLIMB", "CONSUME_ALCOHOL", "EVALUATE", "MELEE_BASIC", "SECRET_SIGNS_MINER", "TRADE_EXPLOSIVES"
+            "COOL", "ENDURANCE", "INTUITION", "MELEE_TWO_HANDED", "OUTDOOR_SURVIVAL", "PERCEPTION", "SWIM",
+            "CLIMB", "CONSUME_ALCOHOL", "EVALUATE", "MELEE_BASIC", "SECRET_SIGNS_MINER", "TRADE_EXPLOSIVES"
         ],
+        groupCompetences: ["LORE_LOCAL_ANY"],
         talents: ["NIGHT_VISION", "STRIKE_MIGHTY_BLOW", "STRONG_BACK", "VERY_STRONG"]
     },
     MINER_3: {
@@ -2015,10 +2164,11 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.BRASS, level: 5 },
         improvableStats: [Stat.STRG, Stat.TOUG, Stat.WILL, Stat.WEAS, Stat.INIT],
         competences: [
-            "COOL", "ENDURANCE", "INTUITION", "LORE_LOCAL", "MELEE_TWO_HANDED", "OUTDOOR_SURVIVAL", "PERCEPTION",
-            "SWIM", "CLIMB", "CONSUME_ALCOHOL", "EVALUATE", "MELEE_BASIC", "SECRET_SIGNS_MINER", "TRADE_EXPLOSIVES",
+            "COOL", "ENDURANCE", "INTUITION", "MELEE_TWO_HANDED", "OUTDOOR_SURVIVAL", "PERCEPTION", "SWIM",
+            "CLIMB", "CONSUME_ALCOHOL", "EVALUATE", "MELEE_BASIC", "SECRET_SIGNS_MINER", "TRADE_EXPLOSIVES",
             "GOSSIP", "LORE_GEOLOGY", "STEALTH_UNDERGROUND", "TRADE_ENGINEER"
         ],
+        groupCompetences: ["LORE_LOCAL_ANY"],
         talents: ["CAREFUL_STRIKE", "CRAFTSMAN_EXPLOSIVES", "TINKER", "TUNNEL_RAT"]
     },
     MINER_4: {
@@ -2027,10 +2177,11 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.SILVER, level: 4 },
         improvableStats: [Stat.STRG, Stat.TOUG, Stat.WILL, Stat.WEAS, Stat.INIT, Stat.FELW],
         competences: [
-            "COOL", "ENDURANCE", "INTUITION", "LORE_LOCAL", "MELEE_TWO_HANDED", "OUTDOOR_SURVIVAL", "PERCEPTION",
-            "SWIM", "CLIMB", "CONSUME_ALCOHOL", "EVALUATE", "MELEE_BASIC", "SECRET_SIGNS_MINER", "TRADE_EXPLOSIVES",
+            "COOL", "ENDURANCE", "INTUITION", "MELEE_TWO_HANDED", "OUTDOOR_SURVIVAL", "PERCEPTION", "SWIM",
+            "CLIMB", "CONSUME_ALCOHOL", "EVALUATE", "MELEE_BASIC", "SECRET_SIGNS_MINER", "TRADE_EXPLOSIVES",
             "GOSSIP", "LORE_GEOLOGY", "STEALTH_UNDERGROUND", "TRADE_ENGINEER", "CHARM", "LEADERSHIP"
         ],
+        groupCompetences: ["LORE_LOCAL_ANY"],
         talents: ["ARGUMENTATIVE", "STRONG_MINDED", "EMBEZZLE", "READ_WRITE"]
     },
     // Mystic
@@ -2064,7 +2215,7 @@ TEW.DATABASE.CAREERS.SET = {
         competences: [
             "CHARM", "ENTERTAIN_FORTUNE_TELLING", "DODGE", "GOSSIP", "HAGGLE", "INTUITION", "PERCEPTION",
             "SLEIGHT_OF_HAND", "BRIBERY", "COOL", "ENTERTAIN_PROPHECY", "EVALUATE", "INTIMIDATE", "LORE_ASTROLOGY",
-            "ART_WRITING", "CHARM_ANIMAL", "ENTERTAIN_STORYTELLING", "LANGUAGE_ANY"
+            "ART_WRITING", "CHARM_ANIMAL", "ENTERTAIN_STORYTELLING", "CASTING_MAGICK"
         ],
         talents: ["NOSE_FOR_TROUBLE", "PETTY_MAGIC", "READ_WRITE", "WITCH"]
     },
@@ -2076,8 +2227,7 @@ TEW.DATABASE.CAREERS.SET = {
         competences: [
             "CHARM", "ENTERTAIN_FORTUNE_TELLING", "DODGE", "GOSSIP", "HAGGLE", "INTUITION", "PERCEPTION",
             "SLEIGHT_OF_HAND", "BRIBERY", "COOL", "ENTERTAIN_PROPHECY", "EVALUATE", "INTIMIDATE", "LORE_ASTROLOGY",
-            "ART_WRITING", "CHARM_ANIMAL", "ENTERTAIN_STORYTELLING", "LANGUAGE_ANY", "LORE_PROPHECY",
-            "CHANNELLING"
+            "ART_WRITING", "CHARM_ANIMAL", "ENTERTAIN_STORYTELLING", "CASTING_MAGICK", "LORE_PROPHECY", "CHANNELLING"
         ],
         talents: ["ARCANE_MAGIC_AZYR", "MAGICAL_SENSE", "MENACING", "STRONG_MINDED"]
     },
@@ -2088,10 +2238,11 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.BRASS, level: 3 },
         improvableStats: [Stat.TOUG, Stat.INIT, Stat.AGIL],
         competences: [
-            "CHARM_ANIMAL", "CLIMB", "ENDURANCE", "GOSSIP", "LORE_LOCAL", "MELEE_BASIC", "OUTDOOR_SURVIVAL",
-            "PERCEPTION"
+            "CHARM_ANIMAL", "CLIMB", "ENDURANCE", "GOSSIP", "MELEE_BASIC", "OUTDOOR_SURVIVAL", "PERCEPTION"
         ],
-        talents: ["ORIENTATION", "ROVER", "SHARP", "STRIDER_ANY"]
+        groupCompetences: ["LORE_LOCAL_ANY"],
+        talents: ["ORIENTATION", "ROVER", "SHARP"],
+        groupTalents: ["STRIDER_ANY"]
     },
     SCOUT_2: {
         name: "Scout",
@@ -2099,9 +2250,10 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.BRASS, level: 5 },
         improvableStats: [Stat.TOUG, Stat.INIT, Stat.AGIL, Stat.BALS],
         competences: [
-            "CHARM_ANIMAL", "CLIMB", "ENDURANCE", "GOSSIP", "LORE_LOCAL", "MELEE_BASIC", "OUTDOOR_SURVIVAL",
-            "PERCEPTION", "ATHLETICS", "NAVIGATION", "RANGED_BOW", "RIDE_HORSE", "STEALTH_RURAL", "TRACK"
+            "CHARM_ANIMAL", "CLIMB", "ENDURANCE", "GOSSIP", "MELEE_BASIC", "OUTDOOR_SURVIVAL", "PERCEPTION",
+            "ATHLETICS", "NAVIGATION", "RANGED_BOW", "RIDE_HORSE", "STEALTH_RURAL", "TRACK"
         ],
+        groupCompetences: ["LORE_LOCAL_ANY"],
         talents: ["COMBAT_AWARE", "NIGHT_VISION", "NOSE_FOR_TROUBLE", "SEASONED_TRAVELLER"]
     },
     SCOUT_3: {
@@ -2110,10 +2262,11 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.SILVER, level: 1 },
         improvableStats: [Stat.TOUG, Stat.INIT, Stat.AGIL, Stat.BALS, Stat.INTL],
         competences: [
-            "CHARM_ANIMAL", "CLIMB", "ENDURANCE", "GOSSIP", "LORE_LOCAL", "MELEE_BASIC", "OUTDOOR_SURVIVAL",
-            "PERCEPTION", "ATHLETICS", "NAVIGATION", "RANGED_BOW", "RIDE_HORSE", "STEALTH_RURAL", "TRACK",
-            "ANIMAL_CARE", "HAGGLE", "SECRET_SIGNS_HUNTER", "SWIM"
+            "CHARM_ANIMAL", "CLIMB", "ENDURANCE", "GOSSIP", "MELEE_BASIC", "OUTDOOR_SURVIVAL", "PERCEPTION",
+            "ATHLETICS", "NAVIGATION", "RANGED_BOW", "RIDE_HORSE", "STEALTH_RURAL", "TRACK", "ANIMAL_CARE",
+            "HAGGLE", "SECRET_SIGNS_HUNTER", "SWIM"
         ],
+        groupCompetences: ["LORE_LOCAL_ANY"],
         talents: ["ACUTE_SENSE_SIGHT", "SIXTH_SENSE", "STRONG_LEGS", "VERY_RESILIENT"]
     },
     SCOUT_4: {
@@ -2122,11 +2275,13 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.SILVER, level: 5 },
         improvableStats: [Stat.TOUG, Stat.INIT, Stat.AGIL, Stat.BALS, Stat.INTL, Stat.DEXT],
         competences: [
-            "CHARM_ANIMAL", "CLIMB", "ENDURANCE", "GOSSIP", "LORE_LOCAL", "MELEE_BASIC", "OUTDOOR_SURVIVAL",
-            "PERCEPTION", "ATHLETICS", "NAVIGATION", "RANGED_BOW", "RIDE_HORSE", "STEALTH_RURAL", "TRACK",
-            "ANIMAL_CARE", "HAGGLE", "SECRET_SIGNS_HUNTER", "SWIM", "LANGUAGE_ANY", "TRADE_CARTOGRAPHER"
+            "CHARM_ANIMAL", "CLIMB", "ENDURANCE", "GOSSIP", "MELEE_BASIC", "OUTDOOR_SURVIVAL", "PERCEPTION",
+            "ATHLETICS", "NAVIGATION", "RANGED_BOW", "RIDE_HORSE", "STEALTH_RURAL", "TRACK", "ANIMAL_CARE",
+            "HAGGLE", "SECRET_SIGNS_HUNTER", "SWIM", "TRADE_CARTOGRAPHER"
         ],
-        talents: ["HARDY", "LINGUISTICS", "SAVANT_LOCAL", "TENACIOUS"]
+        groupCompetences: ["LORE_LOCAL_ANY", "LANGUAGE_ANY"],
+        talents: ["HARDY", "LINGUISTICS", "TENACIOUS"],
+        groupTalents: ["SAVANT_LOCAL_ANY"]
     },
     // Villager
     VILLAGER_1: {
@@ -2135,9 +2290,10 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.BRASS, level: 2 },
         improvableStats: [Stat.STRG, Stat.TOUG, Stat.AGIL],
         competences: [
-            "ANIMAL_CARE", "ATHLETICS", "CONSUME_ALCOHOL", "ENDURANCE", "GOSSIP", "MELEE_BRAWLING", "LORE_LOCAL",
+            "ANIMAL_CARE", "ATHLETICS", "CONSUME_ALCOHOL", "ENDURANCE", "GOSSIP", "MELEE_BRAWLING",
             "OUTDOOR_SURVIVAL"
         ],
+        groupCompetences: ["LORE_LOCAL_ANY"],
         talents: ["ROVER", "STRONG_BACK", "STRONG_MINDED", "STONE_SOUP"]
     },
     VILLAGER_2: {
@@ -2146,9 +2302,10 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.BRASS, level: 3 },
         improvableStats: [Stat.STRG, Stat.TOUG, Stat.AGIL, Stat.WEAS],
         competences: [
-            "ANIMAL_CARE", "ATHLETICS", "CONSUME_ALCOHOL", "ENDURANCE", "GOSSIP", "MELEE_BRAWLING", "LORE_LOCAL",
-            "OUTDOOR_SURVIVAL", "DODGE", "DRIVE", "ENTERTAIN_STORYTELLING", "HAGGLE", "MELEE_BASIC", "TRADE_ANY"
+            "ANIMAL_CARE", "ATHLETICS", "CONSUME_ALCOHOL", "ENDURANCE", "GOSSIP", "MELEE_BRAWLING",
+            "OUTDOOR_SURVIVAL", "DODGE", "DRIVE", "ENTERTAIN_STORYTELLING", "HAGGLE", "MELEE_BASIC"
         ],
+        groupCompetences: ["LORE_LOCAL_ANY", "TRADE_ANY"],
         talents: ["ANIMAL_AFFINITY", "HARDY", "TENACIOUS", "VERY_STRONG"]
     },
     VILLAGER_3: {
@@ -2157,11 +2314,13 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.BRASS, level: 4 },
         improvableStats: [Stat.STRG, Stat.TOUG, Stat.AGIL, Stat.WEAS, Stat.FELW],
         competences: [
-            "ANIMAL_CARE", "ATHLETICS", "CONSUME_ALCOHOL", "ENDURANCE", "GOSSIP", "MELEE_BRAWLING", "LORE_LOCAL",
-            "OUTDOOR_SURVIVAL", "DODGE", "DRIVE", "ENTERTAIN_STORYTELLING", "HAGGLE", "MELEE_BASIC", "TRADE_ANY",
-            "BRIBERY", "CHARM", "INTIMIDATE", "LEADERSHIP"
+            "ANIMAL_CARE", "ATHLETICS", "CONSUME_ALCOHOL", "ENDURANCE", "GOSSIP", "MELEE_BRAWLING",
+            "OUTDOOR_SURVIVAL", "DODGE", "DRIVE", "ENTERTAIN_STORYTELLING", "HAGGLE", "MELEE_BASIC", "BRIBERY",
+            "CHARM", "INTIMIDATE", "LEADERSHIP"
         ],
-        talents: ["CRAFTSMAN_ANY", "DEALMAKER", "STOUT_HEARTED", "VERY_RESILIENT"]
+        groupCompetences: ["LORE_LOCAL_ANY", "TRADE_ANY"],
+        talents: ["DEALMAKER", "STOUT_HEARTED", "VERY_RESILIENT"],
+        groupTalents: ["CRAFTSMAN_ANY"]
     },
     VILLAGER_4: {
         name: "Village Elder",
@@ -2169,11 +2328,13 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.SILVER, level: 2 },
         improvableStats: [Stat.STRG, Stat.TOUG, Stat.AGIL, Stat.WEAS, Stat.FELW, Stat.INTL],
         competences: [
-            "ANIMAL_CARE", "ATHLETICS", "CONSUME_ALCOHOL", "ENDURANCE", "GOSSIP", "MELEE_BRAWLING", "LORE_LOCAL",
-            "OUTDOOR_SURVIVAL", "DODGE", "DRIVE", "ENTERTAIN_STORYTELLING", "HAGGLE", "MELEE_BASIC", "TRADE_ANY",
-            "BRIBERY", "CHARM", "INTIMIDATE", "LEADERSHIP", "INTUITION", "LORE_HISTORY"
+            "ANIMAL_CARE", "ATHLETICS", "CONSUME_ALCOHOL", "ENDURANCE", "GOSSIP", "MELEE_BRAWLING",
+            "OUTDOOR_SURVIVAL", "DODGE", "DRIVE", "ENTERTAIN_STORYTELLING", "HAGGLE", "MELEE_BASIC", "BRIBERY",
+            "CHARM", "INTIMIDATE", "LEADERSHIP", "INTUITION", "LORE_HISTORY"
         ],
-        talents: ["MASTER_TRADESMAN_ANY", "NIMBLE_FINGERED", "PUBLIC_SPEAKER", "SAVANT_LOCAL"]
+        groupCompetences: ["LORE_LOCAL_ANY", "TRADE_ANY"],
+        talents: ["NIMBLE_FINGERED", "PUBLIC_SPEAKER"],
+        groupTalents: ["MASTER_TRADESMAN_ANY", "SAVANT_LOCAL_ANY"]
     },
 
     // --- RANGER --- //
@@ -2242,8 +2403,9 @@ TEW.DATABASE.CAREERS.SET = {
         improvableStats: [Stat.BALS, Stat.TOUG, Stat.WILL, Stat.AGIL],
         competences: [
             "ANIMAL_CARE", "CHARM_ANIMAL", "CLIMB", "DRIVE", "ENDURANCE", "PERCEPTION", "RANGED_ENTANGLING",
-            "RIDE_HORSE", "CONSUME_ALCOHOL", "GOSSIP", "INTUITION", "LORE_LOCAL", "NAVIGATION", "RANGED_BLACKPOWDER"
+            "RIDE_HORSE", "CONSUME_ALCOHOL", "GOSSIP", "INTUITION", "NAVIGATION", "RANGED_BLACKPOWDER"
         ],
+        groupCompetences: ["LORE_LOCAL_ANY"],
         talents: ["COOL_HEADED", "CRACK_THE_WHIP", "GUNNER", "STRONG_MINDED"]
     },
     COACHMAN_3: {
@@ -2253,9 +2415,10 @@ TEW.DATABASE.CAREERS.SET = {
         improvableStats: [Stat.BALS, Stat.TOUG, Stat.WILL, Stat.AGIL, Stat.WEAS],
         competences: [
             "ANIMAL_CARE", "CHARM_ANIMAL", "CLIMB", "DRIVE", "ENDURANCE", "PERCEPTION", "RANGED_ENTANGLING",
-            "RIDE_HORSE", "CONSUME_ALCOHOL", "GOSSIP", "INTUITION", "LORE_LOCAL", "NAVIGATION",
-            "RANGED_BLACKPOWDER", "ANIMAL_TRAINING_HORSE", "INTIMIDATE", "LANGUAGE_ANY", "LORE_ROUTES"
+            "RIDE_HORSE", "CONSUME_ALCOHOL", "GOSSIP", "INTUITION", "NAVIGATION", "RANGED_BLACKPOWDER",
+            "ANIMAL_TRAINING_HORSE", "INTIMIDATE", "LORE_ROUTES"
         ],
+        groupCompetences: ["LORE_LOCAL_ANY", "LANGUAGE_ANY"],
         talents: ["ACCURATE_SHOT", "DEALMAKER", "FEARLESS_OUTLAWS", "NOSE_FOR_TROUBLE"]
     },
     COACHMAN_4: {
@@ -2265,10 +2428,10 @@ TEW.DATABASE.CAREERS.SET = {
         improvableStats: [Stat.BALS, Stat.TOUG, Stat.WILL, Stat.AGIL, Stat.WEAS, Stat.INIT],
         competences: [
             "ANIMAL_CARE", "CHARM_ANIMAL", "CLIMB", "DRIVE", "ENDURANCE", "PERCEPTION", "RANGED_ENTANGLING",
-            "RIDE_HORSE", "CONSUME_ALCOHOL", "GOSSIP", "INTUITION", "LORE_LOCAL", "NAVIGATION",
-            "RANGED_BLACKPOWDER", "ANIMAL_TRAINING_HORSE", "INTIMIDATE", "LANGUAGE_ANY", "LORE_ROUTES", "CHARM",
-            "LEADERSHIP"
+            "RIDE_HORSE", "CONSUME_ALCOHOL", "GOSSIP", "INTUITION", "NAVIGATION", "RANGED_BLACKPOWDER",
+            "ANIMAL_TRAINING_HORSE", "INTIMIDATE", "LORE_ROUTES", "CHARM", "LEADERSHIP"
         ],
+        groupCompetences: ["LORE_LOCAL_ANY", "LANGUAGE_ANY"],
         talents: ["FEARLESS_BEASTMEN", "MARKSMAN", "ORIENTATION", "RAPID_RELOAD"]
     },
     // Entertainer
@@ -2277,9 +2440,8 @@ TEW.DATABASE.CAREERS.SET = {
         level: 1,
         status: { tier: CareerStatusTier.BRASS, level: 3 },
         improvableStats: [Stat.AGIL, Stat.DEXT, Stat.FELW],
-        competences: [
-            "ATHLETICS", "CHARM", "ENTERTAIN_ANY", "GOSSIP", "HAGGLE", "PERFORM_ANY", "PLAY_ANY", "SLEIGHT_OF_HAND"
-        ],
+        competences: ["ATHLETICS", "CHARM", "GOSSIP", "HAGGLE", "SLEIGHT_OF_HAND"],
+        groupCompetences: ["ENTERTAIN_ANY", "PERFORM_ANY", "PLAY_ANY"],
         talents: ["ATTRACTIVE", "MIMIC", "PUBLIC_SPEAKER", "SUAVE"]
     },
     ENTERTAINER_2: {
@@ -2288,8 +2450,10 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.BRASS, level: 5 },
         improvableStats: [Stat.AGIL, Stat.DEXT, Stat.FELW, Stat.WEAS],
         competences: [
-            "ATHLETICS", "CHARM", "ENTERTAIN_ANY", "GOSSIP", "HAGGLE", "PERFORM_ANY", "PLAY_ANY", "SLEIGHT_OF_HAND",
-            "RIDE_ANY", "MELEE_BASIC", "RANGED_THROWING"
+            "ATHLETICS", "CHARM", "GOSSIP", "HAGGLE", "SLEIGHT_OF_HAND", "MELEE_BASIC", "RANGED_THROWING"
+        ],
+        groupCompetences: [
+            "ENTERTAIN_ANY", "ENTERTAIN_ANY", "PERFORM_ANY", "PERFORM_ANY", "PLAY_ANY", "PLAY_ANY", "RIDE_ANY"
         ],
         talents: ["CONTORTIONIST", "JUMP_UP", "SHARPSHOOTER", "TRICK_RIDING"]
     },
@@ -2299,9 +2463,12 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.SILVER, level: 3 },
         improvableStats: [Stat.AGIL, Stat.DEXT, Stat.FELW, Stat.WEAS, Stat.BALS],
         competences: [
-            "ATHLETICS", "CHARM", "ENTERTAIN_ANY", "GOSSIP", "HAGGLE", "PERFORM_ANY", "PLAY_ANY", "SLEIGHT_OF_HAND",
-            "RIDE_ANY", "MELEE_BASIC", "RANGED_THROWING", "ANIMAL_CARE", "ANIMAL_TRAINING_ANY", "ART_WRITING",
-            "LANGUAGE_ANY"
+            "ATHLETICS", "CHARM", "GOSSIP", "HAGGLE", "SLEIGHT_OF_HAND", "MELEE_BASIC", "RANGED_THROWING",
+            "ANIMAL_CARE", "ART_WRITING"
+        ],
+        groupCompetences: [
+            "ENTERTAIN_ANY", "ENTERTAIN_ANY", "PERFORM_ANY", "PERFORM_ANY", "PLAY_ANY", "PLAY_ANY", "RIDE_ANY",
+            "ANIMAL_TRAINING_ANY", "LANGUAGE_ANY"
         ],
         talents: ["BLATHER", "MASTER_OF_DISGUISE", "PERFECT_PITCH", "READ_WRITE"]
     },
@@ -2311,11 +2478,15 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.GOLD, level: 1 },
         improvableStats: [Stat.AGIL, Stat.DEXT, Stat.FELW, Stat.WEAS, Stat.BALS, Stat.TOUG],
         competences: [
-            "ATHLETICS", "CHARM", "ENTERTAIN_ANY", "GOSSIP", "HAGGLE", "PERFORM_ANY", "PLAY_ANY", "SLEIGHT_OF_HAND",
-            "RIDE_ANY", "MELEE_BASIC", "RANGED_THROWING", "ANIMAL_CARE", "ANIMAL_TRAINING_ANY", "ART_WRITING",
-            "LANGUAGE_ANY", "DRIVE", "LEADERSHIP"
+            "ATHLETICS", "CHARM", "GOSSIP", "HAGGLE", "SLEIGHT_OF_HAND", "MELEE_BASIC", "RANGED_THROWING",
+            "ANIMAL_CARE", "ART_WRITING", "DRIVE", "LEADERSHIP"
         ],
-        talents: ["DEALMAKER", "ETIQUETTE_ANY", "SEASONED_TRAVELLER", "SHARP"]
+        groupCompetences: [
+            "ENTERTAIN_ANY", "ENTERTAIN_ANY", "PERFORM_ANY", "PERFORM_ANY", "PLAY_ANY", "PLAY_ANY", "RIDE_ANY",
+            "ANIMAL_TRAINING_ANY", "LANGUAGE_ANY"
+        ],
+        talents: ["DEALMAKER", "SEASONED_TRAVELLER", "SHARP"],
+        groupTalents: ["ETIQUETTE_ANY"]
     },
     // Flagellant
     FLAGELLANT_1: {
@@ -2349,8 +2520,9 @@ TEW.DATABASE.CAREERS.SET = {
         competences: [
             "DODGE", "ENDURANCE", "HEAL", "INTIMIDATE", "INTUITION", "LORE_SIGMAR", "MELEE_FLAIL",
             "OUTDOOR_SURVIVAL", "ART_ICONS", "ATHLETICS", "COOL", "LANGUAGE_CLASSICAL", "LORE_EMPIRE",
-            "RANGED_SLING", "CHARM", "LANGUAGE_ANY", "LORE_THEOLOGY", "PERCEPTION"
+            "RANGED_SLING", "CHARM", "LORE_THEOLOGY", "PERCEPTION"
         ],
+        groupCompetences: ["LANGUAGE_ANY"],
         talents: ["FIELD_DRESSING", "FURIOUS_ASSAULT", "MENACING", "SEASONED_TRAVELLER"]
     },
     FLAGELLANT_4: {
@@ -2361,9 +2533,9 @@ TEW.DATABASE.CAREERS.SET = {
         competences: [
             "DODGE", "ENDURANCE", "HEAL", "INTIMIDATE", "INTUITION", "LORE_SIGMAR", "MELEE_FLAIL",
             "OUTDOOR_SURVIVAL", "ART_ICONS", "ATHLETICS", "COOL", "LANGUAGE_CLASSICAL", "LORE_EMPIRE",
-            "RANGED_SLING", "CHARM", "LANGUAGE_ANY", "LORE_THEOLOGY", "PERCEPTION", "ENTERTAIN_SPEECHES",
-            "LEADERSHIP"
+            "RANGED_SLING", "CHARM", "LORE_THEOLOGY", "PERCEPTION", "ENTERTAIN_SPEECHES", "LEADERSHIP"
         ],
+        groupCompetences: ["LANGUAGE_ANY"],
         talents: ["BATTLE_RAGE", "FEARLESS_HERETICS", "FRIGHTENING", "IMPASSIONED_ZEAL"]
     },
     // Messenger
@@ -2384,8 +2556,9 @@ TEW.DATABASE.CAREERS.SET = {
         improvableStats: [Stat.TOUG, Stat.INIT, Stat.AGIL, Stat.WEAS],
         competences: [
             "ATHLETICS", "CLIMB", "DODGE", "ENDURANCE", "GOSSIP", "NAVIGATION", "PERCEPTION", "MELEE_BRAWLING",
-            "ANIMAL_CARE", "CHARM", "COOL", "LORE_LOCAL", "MELEE_BASIC", "RIDE_HORSE"
+            "ANIMAL_CARE", "CHARM", "COOL", "MELEE_BASIC", "RIDE_HORSE"
         ],
+        groupCompetences: ["LORE_LOCAL_ANY"],
         talents: ["CRACK_THE_WHIP", "CRIMINAL", "ORIENTATION", "SEASONED_TRAVELLER"]
     },
     MESSENGER_3: {
@@ -2395,9 +2568,10 @@ TEW.DATABASE.CAREERS.SET = {
         improvableStats: [Stat.TOUG, Stat.INIT, Stat.AGIL, Stat.WEAS, Stat.WILL],
         competences: [
             "ATHLETICS", "CLIMB", "DODGE", "ENDURANCE", "GOSSIP", "NAVIGATION", "PERCEPTION", "MELEE_BRAWLING",
-            "ANIMAL_CARE", "CHARM", "COOL", "LORE_LOCAL", "MELEE_BASIC", "RIDE_HORSE", "CHARM_ANIMAL", "BRIBERY",
+            "ANIMAL_CARE", "CHARM", "COOL", "MELEE_BASIC", "RIDE_HORSE", "CHARM_ANIMAL", "BRIBERY",
             "CONSUME_ALCOHOL", "OUTDOOR_SURVIVAL"
         ],
+        groupCompetences: ["LORE_LOCAL_ANY"],
         talents: ["NOSE_FOR_TROUBLE", "RELENTLESS", "TENACIOUS", "TRICK_RIDING"]
     },
     MESSENGER_4: {
@@ -2407,9 +2581,10 @@ TEW.DATABASE.CAREERS.SET = {
         improvableStats: [Stat.TOUG, Stat.INIT, Stat.AGIL, Stat.WEAS, Stat.WILL, Stat.FELW],
         competences: [
             "ATHLETICS", "CLIMB", "DODGE", "ENDURANCE", "GOSSIP", "NAVIGATION", "PERCEPTION", "MELEE_BRAWLING",
-            "ANIMAL_CARE", "CHARM", "COOL", "LORE_LOCAL", "MELEE_BASIC", "RIDE_HORSE", "CHARM_ANIMAL", "BRIBERY",
+            "ANIMAL_CARE", "CHARM", "COOL", "MELEE_BASIC", "RIDE_HORSE", "CHARM_ANIMAL", "BRIBERY",
             "CONSUME_ALCOHOL", "OUTDOOR_SURVIVAL", "INTIMIDATE", "LEADERSHIP"
         ],
+        groupCompetences: ["LORE_LOCAL_ANY"],
         talents: ["DEALMAKER", "HATRED_OUTLAWS", "KINGPIN", "VERY_RESILIENT"]
     },
     // Pedlar
@@ -2419,9 +2594,9 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.BRASS, level: 1 },
         improvableStats: [Stat.TOUG, Stat.DEXT, Stat.WILL],
         competences: [
-            "CHARM", "ENDURANCE", "ENTERTAIN_STORYTELLING", "GOSSIP", "HAGGLE", "INTUITION", "OUTDOOR_SURVIVAL",
-            "STEALTH_RURAL", "STEALTH_URBAN"
+            "CHARM", "ENDURANCE", "ENTERTAIN_STORYTELLING", "GOSSIP", "HAGGLE", "INTUITION", "OUTDOOR_SURVIVAL"
         ],
+        groupCompetences: ["STEALTH_RURAL_OR_URBAN"],
         talents: ["FISHERMAN", "FLEE", "ROVER", "TINKER"]
     },
     PEDLAR_2: {
@@ -2431,9 +2606,9 @@ TEW.DATABASE.CAREERS.SET = {
         improvableStats: [Stat.TOUG, Stat.DEXT, Stat.WILL, Stat.FELW],
         competences: [
             "CHARM", "ENDURANCE", "ENTERTAIN_STORYTELLING", "GOSSIP", "HAGGLE", "INTUITION", "OUTDOOR_SURVIVAL",
-            "STEALTH_RURAL", "STEALTH_URBAN", "ANIMAL_CARE", "CHARM_ANIMAL", "CONSUME_ALCOHOL", "EVALUATE",
-            "RIDE_HORSE", "TRADE_TINKER"
+            "ANIMAL_CARE", "CHARM_ANIMAL", "CONSUME_ALCOHOL", "EVALUATE", "RIDE_HORSE", "TRADE_TINKER"
         ],
+        groupCompetences: ["STEALTH_RURAL_OR_URBAN"],
         talents: ["DEALMAKER", "ORIENTATION", "SEASONED_TRAVELLER", "STRONG_BACK"]
     },
     PEDLAR_3: {
@@ -2443,9 +2618,10 @@ TEW.DATABASE.CAREERS.SET = {
         improvableStats: [Stat.TOUG, Stat.DEXT, Stat.WILL, Stat.FELW, Stat.INIT],
         competences: [
             "CHARM", "ENDURANCE", "ENTERTAIN_STORYTELLING", "GOSSIP", "HAGGLE", "INTUITION", "OUTDOOR_SURVIVAL",
-            "STEALTH_RURAL", "STEALTH_URBAN", "ANIMAL_CARE", "CHARM_ANIMAL", "CONSUME_ALCOHOL", "EVALUATE",
-            "RIDE_HORSE", "TRADE_TINKER", "DRIVE", "INTIMIDATE", "LANGUAGE_ANY", "PERCEPTION"
+            "ANIMAL_CARE", "CHARM_ANIMAL", "CONSUME_ALCOHOL", "EVALUATE", "RIDE_HORSE", "TRADE_TINKER", "DRIVE",
+            "INTIMIDATE", "PERCEPTION"
         ],
+        groupCompetences: ["LANGUAGE_ANY", "STEALTH_RURAL_OR_URBAN"],
         talents: ["NUMISMATICS", "STURDY", "WELL_PREPARED", "VERY_RESILIENT"]
     },
     PEDLAR_4: {
@@ -2455,10 +2631,10 @@ TEW.DATABASE.CAREERS.SET = {
         improvableStats: [Stat.TOUG, Stat.DEXT, Stat.WILL, Stat.FELW, Stat.INIT, Stat.INTL],
         competences: [
             "CHARM", "ENDURANCE", "ENTERTAIN_STORYTELLING", "GOSSIP", "HAGGLE", "INTUITION", "OUTDOOR_SURVIVAL",
-            "STEALTH_RURAL", "STEALTH_URBAN", "ANIMAL_CARE", "CHARM_ANIMAL", "CONSUME_ALCOHOL", "EVALUATE",
-            "RIDE_HORSE", "TRADE_TINKER", "DRIVE", "INTIMIDATE", "LANGUAGE_ANY", "PERCEPTION", "LORE_LOCAL",
-            "LORE_GEOGRAPHY"
+            "ANIMAL_CARE", "CHARM_ANIMAL", "CONSUME_ALCOHOL", "EVALUATE", "RIDE_HORSE", "TRADE_TINKER", "DRIVE",
+            "INTIMIDATE", "PERCEPTION", "LORE_GEOGRAPHY"
         ],
+        groupCompetences: ["LANGUAGE_ANY", "LORE_LOCAL_ANY", "STEALTH_RURAL_OR_URBAN"],
         talents: ["CAT_TONGUED", "STRONG_MINDED", "SUAVE", "TENACIOUS"]
     },
     // Road Warden
@@ -2495,7 +2671,8 @@ TEW.DATABASE.CAREERS.SET = {
             "RANGED_CROSSBOW", "ANIMAL_CARE", "ENDURANCE", "INTIMIDATE", "INTUITION", "OUTDOOR_SURVIVAL",
             "RIDE_HORSE", "ATHLETICS", "CHARM", "LEADERSHIP", "RANGED_BLACKPOWDER"
         ],
-        talents: ["ETIQUETTE_SOLDIERS", "FEARLESS_OUTLAWS", "HATRED_ANY", "NOSE_FOR_TROUBLE"]
+        talents: ["ETIQUETTE_SOLDIERS", "FEARLESS_OUTLAWS", "NOSE_FOR_TROUBLE"],
+        groupTalents: ["HATRED_ANY"]
     },
     ROAD_WARDEN_4: {
         name: "Road Captain",
@@ -2528,8 +2705,9 @@ TEW.DATABASE.CAREERS.SET = {
         improvableStats: [Stat.WEAS, Stat.TOUG, Stat.WILL, Stat.BALS],
         competences: [
             "CHARM", "CONSUME_ALCOHOL", "HEAL", "INTIMIDATE", "INTUITION", "LORE_TORTURE", "MELEE_BRAWLING",
-            "PERCEPTION", "COOL", "GOSSIP", "MELEE_BASIC", "LORE_WITCHES", "RANGED_ANY", "RIDE_HORSE"
+            "PERCEPTION", "COOL", "GOSSIP", "MELEE_BASIC", "LORE_WITCHES", "RIDE_HORSE"
         ],
+        groupCompetences: ["RANGED_ANY"],
         talents: ["DUAL_WIELDER", "MARKSMAN", "SEASONED_TRAVELLER", "SHADOW"]
     },
     WITCH_HUNTER_3: {
@@ -2539,9 +2717,10 @@ TEW.DATABASE.CAREERS.SET = {
         improvableStats: [Stat.WEAS, Stat.TOUG, Stat.WILL, Stat.BALS, Stat.FELW],
         competences: [
             "CHARM", "CONSUME_ALCOHOL", "HEAL", "INTIMIDATE", "INTUITION", "LORE_TORTURE", "MELEE_BRAWLING",
-            "PERCEPTION", "COOL", "GOSSIP", "MELEE_BASIC", "LORE_WITCHES", "RANGED_ANY", "RIDE_HORSE", "ENDURANCE",
-            "LEADERSHIP", "LORE_LAW", "LORE_LOCAL"
+            "PERCEPTION", "COOL", "GOSSIP", "MELEE_BASIC", "LORE_WITCHES", "RIDE_HORSE", "ENDURANCE", "LEADERSHIP",
+            "LORE_LAW"
         ],
+        groupCompetences: ["RANGED_ANY", "LORE_LOCAL_ANY"],
         talents: ["FEARLESS_WITCHES", "NOSE_FOR_TROUBLE", "RELENTLESS", "STRONG_MINDED"]
     },
     WITCH_HUNTER_4: {
@@ -2551,9 +2730,10 @@ TEW.DATABASE.CAREERS.SET = {
         improvableStats: [Stat.WEAS, Stat.TOUG, Stat.WILL, Stat.BALS, Stat.FELW, Stat.INTL],
         competences: [
             "CHARM", "CONSUME_ALCOHOL", "HEAL", "INTIMIDATE", "INTUITION", "LORE_TORTURE", "MELEE_BRAWLING",
-            "PERCEPTION", "COOL", "GOSSIP", "MELEE_BASIC", "LORE_WITCHES", "RANGED_ANY", "RIDE_HORSE", "ENDURANCE",
-            "LEADERSHIP", "LORE_LAW", "LORE_LOCAL", "LORE_CHAOS", "LORE_POLITICS"
+            "PERCEPTION", "COOL", "GOSSIP", "MELEE_BASIC", "LORE_WITCHES", "RIDE_HORSE", "ENDURANCE", "LEADERSHIP",
+            "LORE_LAW", "LORE_CHAOS", "LORE_POLITICS"
         ],
+        groupCompetences: ["RANGED_ANY", "LORE_LOCAL_ANY"],
         talents: ["FRIGHTENING", "IRON_WILL", "MAGICAL_SENSE", "PURE_SOUL"]
     },
 
@@ -2573,8 +2753,8 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.SILVER, level: 2 },
         improvableStats: [Stat.STRG, Stat.TOUG, Stat.AGIL, Stat.INIT],
         competences: [
-            "CONSUME_ALCOHOL", "DODGE", "ENDURANCE", "GOSSIP", "MELEE_BRAWLING", "ROW", "SAIL", "SWIM", "ATHLETICS",
-            "ENTERTAIN_STORYTELLING", "HAGGLE", "INTUITION", "LORE_RIVERWAYS", "PERCEPTION"
+            "CONSUME_ALCOHOL", "DODGE", "ENDURANCE", "GOSSIP", "MELEE_BRAWLING", "ROW", "SAIL", "SWIM",
+            "ATHLETICS", "ENTERTAIN_STORYTELLING", "HAGGLE", "INTUITION", "LORE_RIVERWAYS", "PERCEPTION"
         ],
         talents: ["ETIQUETTE_GUILDERS", "SEASONED_TRAVELLER", "VERY_STRONG", "WATERMAN"]
     },
@@ -2584,8 +2764,8 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.SILVER, level: 3 },
         improvableStats: [Stat.STRG, Stat.TOUG, Stat.AGIL, Stat.INIT, Stat.DEXT],
         competences: [
-            "CONSUME_ALCOHOL", "DODGE", "ENDURANCE", "GOSSIP", "MELEE_BRAWLING", "ROW", "SAIL", "SWIM", "ATHLETICS",
-            "ENTERTAIN_STORYTELLING", "HAGGLE", "INTUITION", "LORE_RIVERWAYS", "PERCEPTION", "CLIMB",
+            "CONSUME_ALCOHOL", "DODGE", "ENDURANCE", "GOSSIP", "MELEE_BRAWLING", "ROW", "SAIL", "SWIM",
+            "ATHLETICS", "ENTERTAIN_STORYTELLING", "HAGGLE", "INTUITION", "LORE_RIVERWAYS", "PERCEPTION", "CLIMB",
             "ENTERTAIN_SINGING", "HEAL", "TRADE_BOATBUILDING"
         ],
         talents: ["DEALMAKER", "EMBEZZLE", "NOSE_FOR_TROUBLE", "STRIKE_MIGHTY_BLOW"]
@@ -2596,8 +2776,8 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.SILVER, level: 5 },
         improvableStats: [Stat.STRG, Stat.TOUG, Stat.AGIL, Stat.INIT, Stat.DEXT, Stat.INTL],
         competences: [
-            "CONSUME_ALCOHOL", "DODGE", "ENDURANCE", "GOSSIP", "MELEE_BRAWLING", "ROW", "SAIL", "SWIM", "ATHLETICS",
-            "ENTERTAIN_STORYTELLING", "HAGGLE", "INTUITION", "LORE_RIVERWAYS", "PERCEPTION", "CLIMB",
+            "CONSUME_ALCOHOL", "DODGE", "ENDURANCE", "GOSSIP", "MELEE_BRAWLING", "ROW", "SAIL", "SWIM",
+            "ATHLETICS", "ENTERTAIN_STORYTELLING", "HAGGLE", "INTUITION", "LORE_RIVERWAYS", "PERCEPTION", "CLIMB",
             "ENTERTAIN_SINGING", "HEAL", "TRADE_BOATBUILDING", "LEADERSHIP", "NAVIGATION"
         ],
         talents: ["MENACING", "ORIENTATION", "PILOT", "PUBLIC_SPEAKER"]
@@ -2608,9 +2788,8 @@ TEW.DATABASE.CAREERS.SET = {
         level: 1,
         status: { tier: CareerStatusTier.BRASS, level: 4 },
         improvableStats: [Stat.WEAS, Stat.TOUG, Stat.INIT],
-        competences: [
-            "CONSUME_ALCOHOL", "GOSSIP", "INTUITION", "LORE_LOCAL", "LORE_RIVERWAYS", "PERCEPTION", "ROW", "SWIM"
-        ],
+        competences: ["CONSUME_ALCOHOL", "GOSSIP", "INTUITION", "LORE_RIVERWAYS", "PERCEPTION", "ROW", "SWIM"],
+        groupCompetences: ["LORE_LOCAL_ANY"],
         talents: ["FISHERMAN", "NIGHT_VISION", "ORIENTATION", "WATERMAN"]
     },
     HUFFER_2: {
@@ -2619,9 +2798,10 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.SILVER, level: 1 },
         improvableStats: [Stat.WEAS, Stat.TOUG, Stat.INIT, Stat.WILL],
         competences: [
-            "CONSUME_ALCOHOL", "GOSSIP", "INTUITION", "LORE_LOCAL", "LORE_RIVERWAYS", "PERCEPTION", "ROW", "SWIM",
-            "CHARM", "COOL", "ENTERTAIN_STORYTELLING", "LANGUAGE_ANY", "MELEE_BASIC", "NAVIGATION"
+            "CONSUME_ALCOHOL", "GOSSIP", "INTUITION", "LORE_RIVERWAYS", "PERCEPTION", "ROW", "SWIM", "CHARM",
+            "COOL", "ENTERTAIN_STORYTELLING", "MELEE_BASIC", "NAVIGATION"
         ],
+        groupCompetences: ["LORE_LOCAL_ANY", "LANGUAGE_ANY"],
         talents: ["DEALMAKER", "ETIQUETTE_GUILDERS", "NOSE_FOR_TROUBLE", "RIVER_GUIDE"]
     },
     HUFFER_3: {
@@ -2630,10 +2810,10 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.SILVER, level: 3 },
         improvableStats: [Stat.WEAS, Stat.TOUG, Stat.INIT, Stat.WILL, Stat.INTL],
         competences: [
-            "CONSUME_ALCOHOL", "GOSSIP", "INTUITION", "LORE_LOCAL", "LORE_RIVERWAYS", "PERCEPTION", "ROW", "SWIM",
-            "CHARM", "COOL", "ENTERTAIN_STORYTELLING", "LANGUAGE_ANY", "MELEE_BASIC", "NAVIGATION", "HAGGLE",
-            "INTIMIDATE", "LORE_WRECKS"
+            "CONSUME_ALCOHOL", "GOSSIP", "INTUITION", "LORE_RIVERWAYS", "PERCEPTION", "ROW", "SWIM", "CHARM",
+            "COOL", "ENTERTAIN_STORYTELLING", "MELEE_BASIC", "NAVIGATION", "HAGGLE", "INTIMIDATE", "LORE_WRECKS"
         ],
+        groupCompetences: ["LORE_LOCAL_ANY", "LORE_LOCAL_ANY", "LANGUAGE_ANY"],
         talents: ["ACUTE_SENSE_SIGHT", "PILOT", "SEA_LEGS", "VERY_STRONG"]
     },
     HUFFER_4: {
@@ -2642,10 +2822,11 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.SILVER, level: 5 },
         improvableStats: [Stat.WEAS, Stat.TOUG, Stat.INIT, Stat.WILL, Stat.INTL, Stat.FELW],
         competences: [
-            "CONSUME_ALCOHOL", "GOSSIP", "INTUITION", "LORE_LOCAL", "LORE_RIVERWAYS", "PERCEPTION", "ROW", "SWIM",
-            "CHARM", "COOL", "ENTERTAIN_STORYTELLING", "LANGUAGE_ANY", "MELEE_BASIC", "NAVIGATION", "HAGGLE",
-            "INTIMIDATE", "LORE_WRECKS", "LEADERSHIP", "SAIL"
+            "CONSUME_ALCOHOL", "GOSSIP", "INTUITION", "LORE_RIVERWAYS", "PERCEPTION", "ROW", "SWIM", "CHARM",
+            "COOL", "ENTERTAIN_STORYTELLING", "MELEE_BASIC", "NAVIGATION", "HAGGLE", "INTIMIDATE", "LORE_WRECKS",
+            "LEADERSHIP", "SAIL"
         ],
+        groupCompetences: ["LORE_LOCAL_ANY", "LORE_LOCAL_ANY", "LANGUAGE_ANY"],
         talents: ["SIXTH_SENSE", "SHARP", "STRONG_SWIMMER", "TENACIOUS"]
     },
     // Riverwarden
@@ -2678,7 +2859,8 @@ TEW.DATABASE.CAREERS.SET = {
             "CHARM", "INTIMIDATE", "GOSSIP", "LORE_RIVERWAYS", "RANGED_BLACKPOWDER", "CLIMB", "COOL", "INTUITION",
             "LEADERSHIP"
         ],
-        talents: ["FEARLESS_WRECKERS", "HATRED_ANY", "PILOT", "SEA_LEGS"]
+        talents: ["FEARLESS_WRECKERS", "PILOT", "SEA_LEGS"],
+        groupTalents: ["HATRED_ANY"]
     },
     RIVERWARDEN_4: {
         name: "Shipsword Master",
@@ -2710,8 +2892,9 @@ TEW.DATABASE.CAREERS.SET = {
         improvableStats: [Stat.TOUG, Stat.AGIL, Stat.DEXT, Stat.WEAS],
         competences: [
             "ATHLETICS", "CONSUME_ALCOHOL", "DODGE", "ENDURANCE", "GOSSIP", "OUTDOOR_SURVIVAL", "ROW", "SWIM",
-            "GAMBLE", "LORE_LOCAL", "LORE_RIVERWAYS", "RANGED_ENTANGLING", "RANGED_THROWING", "SET_TRAP"
+            "GAMBLE", "LORE_RIVERWAYS", "RANGED_ENTANGLING", "RANGED_THROWING", "SET_TRAP"
         ],
+        groupCompetences: ["LORE_LOCAL_ANY"],
         talents: ["CRAFTSMAN_BOATBUILDER", "ROVER", "STRONG_BACK", "WATERMAN"]
     },
     RIVERWOMAN_3: {
@@ -2721,9 +2904,10 @@ TEW.DATABASE.CAREERS.SET = {
         improvableStats: [Stat.TOUG, Stat.AGIL, Stat.DEXT, Stat.WEAS, Stat.INIT],
         competences: [
             "ATHLETICS", "CONSUME_ALCOHOL", "DODGE", "ENDURANCE", "GOSSIP", "OUTDOOR_SURVIVAL", "ROW", "SWIM",
-            "GAMBLE", "LORE_LOCAL", "LORE_RIVERWAYS", "RANGED_ENTANGLING", "RANGED_THROWING", "SET_TRAP", "CHARM",
-            "INTUITION", "MELEE_POLE_ARM", "PERCEPTION"
+            "GAMBLE", "LORE_RIVERWAYS", "RANGED_ENTANGLING", "RANGED_THROWING", "SET_TRAP", "CHARM", "INTUITION",
+            "MELEE_POLE_ARM", "PERCEPTION"
         ],
+        groupCompetences: ["LORE_LOCAL_ANY"],
         talents: ["SAVANT_RIVERWAYS", "STOUT_HEARTED", "TENACIOUS", "VERY_STRONG"]
     },
     RIVERWOMAN_4: {
@@ -2733,9 +2917,10 @@ TEW.DATABASE.CAREERS.SET = {
         improvableStats: [Stat.TOUG, Stat.AGIL, Stat.DEXT, Stat.WEAS, Stat.INIT, Stat.FELW],
         competences: [
             "ATHLETICS", "CONSUME_ALCOHOL", "DODGE", "ENDURANCE", "GOSSIP", "OUTDOOR_SURVIVAL", "ROW", "SWIM",
-            "GAMBLE", "LORE_LOCAL", "LORE_RIVERWAYS", "RANGED_ENTANGLING", "RANGED_THROWING", "SET_TRAP", "CHARM",
-            "INTUITION", "MELEE_POLE_ARM", "PERCEPTION", "ENTERTAIN_STORYTELLING", "LORE_FOLKLORE"
+            "GAMBLE", "LORE_RIVERWAYS", "RANGED_ENTANGLING", "RANGED_THROWING", "SET_TRAP", "CHARM", "INTUITION",
+            "MELEE_POLE_ARM", "PERCEPTION", "ENTERTAIN_STORYTELLING", "LORE_FOLKLORE"
         ],
+        groupCompetences: ["LORE_LOCAL_ANY"],
         talents: ["MASTER_TRADESMAN_BOATBUILDER", "PUBLIC_SPEAKER", "SHARP", "STRONG_MINDED"]
     },
     // Seaman
@@ -2754,8 +2939,9 @@ TEW.DATABASE.CAREERS.SET = {
         improvableStats: [Stat.AGIL, Stat.DEXT, Stat.FELW, Stat.WEAS],
         competences: [
             "CLIMB", "CONSUME_ALCOHOL", "GAMBLE", "GOSSIP", "ROW", "MELEE_BRAWLING", "SAIL", "SWIM", "ATHLETICS",
-            "DODGE", "ENDURANCE", "ENTERTAIN_SINGING", "LANGUAGE_ANY", "MELEE_BASIC"
+            "DODGE", "ENDURANCE", "ENTERTAIN_SINGING", "MELEE_BASIC"
         ],
+        groupCompetences: ["LANGUAGE_ANY"],
         talents: ["CATFALL", "SEA_LEGS", "SEASONED_TRAVELLER", "STRONG_LEGS"]
     },
     SEAMAN_3: {
@@ -2765,9 +2951,10 @@ TEW.DATABASE.CAREERS.SET = {
         improvableStats: [Stat.AGIL, Stat.DEXT, Stat.FELW, Stat.WEAS, Stat.INIT],
         competences: [
             "CLIMB", "CONSUME_ALCOHOL", "GAMBLE", "GOSSIP", "ROW", "MELEE_BRAWLING", "SAIL", "SWIM", "ATHLETICS",
-            "DODGE", "ENDURANCE", "ENTERTAIN_SINGING", "LANGUAGE_ANY", "MELEE_BASIC", "COOL", "LEADERSHIP",
-            "PERCEPTION", "TRADE_CARPENTER"
+            "DODGE", "ENDURANCE", "ENTERTAIN_SINGING", "MELEE_BASIC", "COOL", "LEADERSHIP", "PERCEPTION",
+            "TRADE_CARPENTER"
         ],
+        groupCompetences: ["LANGUAGE_ANY"],
         talents: ["OLD_SALT", "STRIKE_MIGHTY_BLOW", "TENACIOUS", "VERY_STRONG"]
     },
     SEAMAN_4: {
@@ -2777,9 +2964,10 @@ TEW.DATABASE.CAREERS.SET = {
         improvableStats: [Stat.AGIL, Stat.DEXT, Stat.FELW, Stat.WEAS, Stat.INIT, Stat.INTL],
         competences: [
             "CLIMB", "CONSUME_ALCOHOL", "GAMBLE", "GOSSIP", "ROW", "MELEE_BRAWLING", "SAIL", "SWIM", "ATHLETICS",
-            "DODGE", "ENDURANCE", "ENTERTAIN_SINGING", "LANGUAGE_ANY", "MELEE_BASIC", "COOL", "LEADERSHIP",
-            "PERCEPTION", "TRADE_CARPENTER", "CHARM", "NAVIGATION"
+            "DODGE", "ENDURANCE", "ENTERTAIN_SINGING", "MELEE_BASIC", "COOL", "LEADERSHIP", "PERCEPTION",
+            "TRADE_CARPENTER", "CHARM", "NAVIGATION"
         ],
+        groupCompetences: ["LANGUAGE_ANY"],
         talents: ["ORIENTATION", "PILOT", "PUBLIC_SPEAKER", "SAVVY"]
     },
     // Smuggler
@@ -2788,10 +2976,8 @@ TEW.DATABASE.CAREERS.SET = {
         level: 1,
         status: { tier: CareerStatusTier.BRASS, level: 2 },
         improvableStats: [Stat.AGIL, Stat.DEXT, Stat.WILL],
-        competences: [
-            "ATHLETICS", "BRIBERY", "COOL", "CONSUME_ALCOHOL", "ROW", "SAIL", "STEALTH_RURAL", "STEALTH_URBAN",
-            "SWIM"
-        ],
+        competences: ["ATHLETICS", "BRIBERY", "COOL", "CONSUME_ALCOHOL", "ROW", "SAIL", "SWIM"],
+        groupCompetences: ["STEALTH_RURAL_OR_URBAN"],
         talents: ["CRIMINAL", "FISHERMAN", "STRIDER_MARSHES", "STRONG_BACK"]
     },
     SMUGGLER_2: {
@@ -2800,9 +2986,10 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.BRASS, level: 3 },
         improvableStats: [Stat.AGIL, Stat.DEXT, Stat.WILL, Stat.INIT],
         competences: [
-            "ATHLETICS", "BRIBERY", "COOL", "CONSUME_ALCOHOL", "ROW", "SAIL", "STEALTH_RURAL", "STEALTH_URBAN",
-            "SWIM", "HAGGLE", "GOSSIP", "LORE_LOCAL", "MELEE_BASIC", "PERCEPTION", "SECRET_SIGNS_SMUGGLER"
+            "ATHLETICS", "BRIBERY", "COOL", "CONSUME_ALCOHOL", "ROW", "SAIL", "SWIM", "HAGGLE", "GOSSIP",
+            "MELEE_BASIC", "PERCEPTION", "SECRET_SIGNS_SMUGGLER"
         ],
+        groupCompetences: ["LORE_LOCAL_ANY", "STEALTH_RURAL_OR_URBAN"],
         talents: ["DEALMAKER", "ETIQUETTE_CRIMINALS", "WATERMAN", "VERY_STRONG"]
     },
     SMUGGLER_3: {
@@ -2811,10 +2998,11 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.BRASS, level: 5 },
         improvableStats: [Stat.AGIL, Stat.DEXT, Stat.WILL, Stat.INIT, Stat.INTL],
         competences: [
-            "ATHLETICS", "BRIBERY", "COOL", "CONSUME_ALCOHOL", "ROW", "SAIL", "STEALTH_RURAL", "STEALTH_URBAN",
-            "SWIM", "HAGGLE", "GOSSIP", "LORE_LOCAL", "MELEE_BASIC", "PERCEPTION", "SECRET_SIGNS_SMUGGLER",
-            "EVALUATE", "INTIMIDATE", "INTUITION", "LORE_RIVERWAYS"
+            "ATHLETICS", "BRIBERY", "COOL", "CONSUME_ALCOHOL", "ROW", "SAIL", "SWIM", "HAGGLE", "GOSSIP",
+            "MELEE_BASIC", "PERCEPTION", "SECRET_SIGNS_SMUGGLER", "EVALUATE", "INTIMIDATE", "INTUITION",
+            "LORE_RIVERWAYS"
         ],
+        groupCompetences: ["LORE_LOCAL_ANY", "STEALTH_RURAL_OR_URBAN"],
         talents: ["BRIBER", "FEARLESS_RIVERWARDENS", "PILOT", "STRONG_SWIMMER"]
     },
     SMUGGLER_4: {
@@ -2823,10 +3011,11 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.SILVER, level: 2 },
         improvableStats: [Stat.AGIL, Stat.DEXT, Stat.WILL, Stat.INIT, Stat.INTL, Stat.FELW],
         competences: [
-            "ATHLETICS", "BRIBERY", "COOL", "CONSUME_ALCOHOL", "ROW", "SAIL", "STEALTH_RURAL", "STEALTH_URBAN",
-            "SWIM", "HAGGLE", "GOSSIP", "LORE_LOCAL", "MELEE_BASIC", "PERCEPTION", "SECRET_SIGNS_SMUGGLER",
-            "EVALUATE", "INTIMIDATE", "INTUITION", "LORE_RIVERWAYS", "LANGUAGE_ANY", "LEADERSHIP"
+            "ATHLETICS", "BRIBERY", "COOL", "CONSUME_ALCOHOL", "ROW", "SAIL", "SWIM", "HAGGLE", "GOSSIP",
+            "MELEE_BASIC", "PERCEPTION", "SECRET_SIGNS_SMUGGLER", "EVALUATE", "INTIMIDATE", "INTUITION",
+            "LORE_RIVERWAYS", "LEADERSHIP"
         ],
+        groupCompetences: ["LORE_LOCAL_ANY", "LANGUAGE_ANY", "STEALTH_RURAL_OR_URBAN"],
         talents: ["KINGPIN", "SAVVY", "STRIDER_COASTAL", "SEA_LEGS"]
     },
     // Stevedore
@@ -2929,9 +3118,8 @@ TEW.DATABASE.CAREERS.SET = {
         level: 1,
         status: { tier: CareerStatusTier.BRASS, level: 1 },
         improvableStats: [Stat.AGIL, Stat.DEXT, Stat.FELW],
-        competences: [
-            "BRIBERY", "CHARM", "CONSUME_ALCOHOL", "ENTERTAIN_ANY", "GAMBLE", "GOSSIP", "HAGGLE", "INTIMIDATE"
-        ],
+        competences: ["BRIBERY", "CHARM", "CONSUME_ALCOHOL", "GAMBLE", "GOSSIP", "HAGGLE", "INTIMIDATE"],
+        groupCompetences: ["ENTERTAIN_ANY"],
         talents: ["ATTRACTIVE", "ALLEY_CAT", "BLATHER", "GREGARIOUS"]
     },
     BAWD_2: {
@@ -2940,9 +3128,10 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.BRASS, level: 3 },
         improvableStats: [Stat.AGIL, Stat.DEXT, Stat.FELW, Stat.INIT],
         competences: [
-            "BRIBERY", "CHARM", "CONSUME_ALCOHOL", "ENTERTAIN_ANY", "GAMBLE", "GOSSIP", "HAGGLE", "INTIMIDATE",
-            "DODGE", "ENDURANCE", "INTUITION", "LORE_LOCAL", "MELEE_BASIC", "PERCEPTION"
+            "BRIBERY", "CHARM", "CONSUME_ALCOHOL", "GAMBLE", "GOSSIP", "HAGGLE", "INTIMIDATE", "DODGE",
+            "ENDURANCE", "INTUITION", "MELEE_BASIC", "PERCEPTION"
         ],
+        groupCompetences: ["ENTERTAIN_ANY", "LORE_LOCAL_ANY"],
         talents: ["AMBIDEXTROUS", "CAROUSER", "CRIMINAL", "RESISTANCE_DISEASE"]
     },
     BAWD_3: {
@@ -2951,11 +3140,12 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.SILVER, level: 1 },
         improvableStats: [Stat.AGIL, Stat.DEXT, Stat.FELW, Stat.INIT, Stat.WILL],
         competences: [
-            "BRIBERY", "CHARM", "CONSUME_ALCOHOL", "ENTERTAIN_ANY", "GAMBLE", "GOSSIP", "HAGGLE", "INTIMIDATE",
-            "DODGE", "ENDURANCE", "INTUITION", "LORE_LOCAL", "MELEE_BASIC", "PERCEPTION", "COOL", "EVALUATE",
-            "LANGUAGE_ANY", "LORE_LAW"
+            "BRIBERY", "CHARM", "CONSUME_ALCOHOL", "GAMBLE", "GOSSIP", "HAGGLE", "INTIMIDATE", "DODGE",
+            "ENDURANCE", "INTUITION", "MELEE_BASIC", "PERCEPTION", "COOL", "EVALUATE", "LORE_LAW"
         ],
-        talents: ["DEALMAKER", "EMBEZZLE", "ETIQUETTE_ANY", "SUAVE"]
+        groupCompetences: ["ENTERTAIN_ANY", "LORE_LOCAL_ANY", "LANGUAGE_ANY"],
+        talents: ["DEALMAKER", "EMBEZZLE", "SUAVE"],
+        groupTalents: ["ETIQUETTE_ANY"]
     },
     BAWD_4: {
         name: "Ringleader",
@@ -2963,10 +3153,11 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.SILVER, level: 3 },
         improvableStats: [Stat.AGIL, Stat.DEXT, Stat.FELW, Stat.INIT, Stat.WILL, Stat.INTL],
         competences: [
-            "BRIBERY", "CHARM", "CONSUME_ALCOHOL", "ENTERTAIN_ANY", "GAMBLE", "GOSSIP", "HAGGLE", "INTIMIDATE",
-            "DODGE", "ENDURANCE", "INTUITION", "LORE_LOCAL", "MELEE_BASIC", "PERCEPTION", "COOL", "EVALUATE",
-            "LANGUAGE_ANY", "LORE_LAW", "LEADERSHIP", "LORE_HERALDRY"
+            "BRIBERY", "CHARM", "CONSUME_ALCOHOL", "GAMBLE", "GOSSIP", "HAGGLE", "INTIMIDATE", "DODGE",
+            "ENDURANCE", "INTUITION", "MELEE_BASIC", "PERCEPTION", "COOL", "EVALUATE", "LORE_LAW", "LEADERSHIP",
+            "LORE_HERALDRY"
         ],
+        groupCompetences: ["ENTERTAIN_ANY", "LORE_LOCAL_ANY", "LANGUAGE_ANY"],
         talents: ["BRIBER", "KINGPIN", "NUMISMATICS", "SAVVY"]
     },
     // Charlatan
@@ -2979,7 +3170,8 @@ TEW.DATABASE.CAREERS.SET = {
             "BRIBERY", "CONSUME_ALCOHOL", "CHARM", "ENTERTAIN_STORYTELLING", "GAMBLE", "GOSSIP", "HAGGLE",
             "SLEIGHT_OF_HAND"
         ],
-        talents: ["CARDSHARP", "DICEMAN", "ETIQUETTE_ANY", "LUCK"]
+        talents: ["CARDSHARP", "DICEMAN", "LUCK"],
+        groupTalents: ["ETIQUETTE_ANY"]
     },
     CHARLATAN_2: {
         name: "Charlatan",
@@ -3022,7 +3214,9 @@ TEW.DATABASE.CAREERS.SET = {
         level: 1,
         status: { tier: CareerStatusTier.SILVER, level: 1 },
         improvableStats: [Stat.INIT, Stat.AGIL, Stat.FELW],
-        competences: ["CHARM", "CONSUME_ALCOHOL", "DODGE", "EVALUATE", "GAMBLE", "GOSSIP", "HAGGLE", "MELEE_BASIC"],
+        competences: [
+            "CHARM", "CONSUME_ALCOHOL", "DODGE", "EVALUATE", "GAMBLE", "GOSSIP", "HAGGLE", "MELEE_BASIC"
+        ],
         talents: ["ALLEY_CAT", "CARDSHARP", "DEALMAKER", "GREGARIOUS"]
     },
     FENCE_2: {
@@ -3044,8 +3238,9 @@ TEW.DATABASE.CAREERS.SET = {
         competences: [
             "CHARM", "CONSUME_ALCOHOL", "DODGE", "EVALUATE", "GAMBLE", "GOSSIP", "HAGGLE", "MELEE_BASIC", "COOL",
             "INTIMIDATE", "INTUITION", "PERCEPTION", "SECRET_SIGNS_THIEF", "TRADE_ENGRAVER", "BRIBERY",
-            "ENTERTAIN_STORYTELLING", "LORE_ART", "LORE_LOCAL"
+            "ENTERTAIN_STORYTELLING", "LORE_ART"
         ],
+        groupCompetences: ["LORE_LOCAL_ANY"],
         talents: ["KINGPIN", "STRIKE_TO_STUN", "SUAVE", "SUPER_NUMERATE"]
     },
     FENCE_4: {
@@ -3056,8 +3251,9 @@ TEW.DATABASE.CAREERS.SET = {
         competences: [
             "CHARM", "CONSUME_ALCOHOL", "DODGE", "EVALUATE", "GAMBLE", "GOSSIP", "HAGGLE", "MELEE_BASIC", "COOL",
             "INTIMIDATE", "INTUITION", "PERCEPTION", "SECRET_SIGNS_THIEF", "TRADE_ENGRAVER", "BRIBERY",
-            "ENTERTAIN_STORYTELLING", "LORE_ART", "LORE_LOCAL", "LORE_HERALDRY", "RESEARCH"
+            "ENTERTAIN_STORYTELLING", "LORE_ART", "LORE_HERALDRY", "RESEARCH"
         ],
+        groupCompetences: ["LORE_LOCAL_ANY"],
         talents: ["DIRTY_FIGHTING", "IRON_WILL", "MENACING", "BRIBER"]
     },
     // Grave Robber
@@ -3066,7 +3262,8 @@ TEW.DATABASE.CAREERS.SET = {
         level: 1,
         status: { tier: CareerStatusTier.BRASS, level: 2 },
         improvableStats: [Stat.STRG, Stat.INIT, Stat.WILL],
-        competences: ["CLIMB", "COOL", "DODGE", "ENDURANCE", "GOSSIP", "INTUITION", "PERCEPTION", "STEALTH_ANY"],
+        competences: ["CLIMB", "COOL", "DODGE", "ENDURANCE", "GOSSIP", "INTUITION", "PERCEPTION"],
+        groupCompetences: ["STEALTH_ANY"],
         talents: ["ALLEY_CAT", "CRIMINAL", "FLEE", "STRONG_BACK"]
     },
     GRAVE_ROBBER_2: {
@@ -3075,9 +3272,10 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.BRASS, level: 3 },
         improvableStats: [Stat.STRG, Stat.INIT, Stat.WILL, Stat.WEAS],
         competences: [
-            "CLIMB", "COOL", "DODGE", "ENDURANCE", "GOSSIP", "INTUITION", "PERCEPTION", "STEALTH_ANY", "BRIBERY",
-            "DRIVE", "EVALUATE", "HAGGLE", "LORE_MEDICINE", "MELEE_BASIC"
+            "CLIMB", "COOL", "DODGE", "ENDURANCE", "GOSSIP", "INTUITION", "PERCEPTION", "BRIBERY", "DRIVE",
+            "EVALUATE", "HAGGLE", "LORE_MEDICINE", "MELEE_BASIC"
         ],
+        groupCompetences: ["STEALTH_ANY"],
         talents: ["BREAK_AND_ENTER", "NIGHT_VISION", "RESISTANCE_DISEASE", "VERY_STRONG"]
     },
     GRAVE_ROBBER_3: {
@@ -3086,10 +3284,11 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.SILVER, level: 1 },
         improvableStats: [Stat.STRG, Stat.INIT, Stat.WILL, Stat.WEAS, Stat.DEXT],
         competences: [
-            "CLIMB", "COOL", "DODGE", "ENDURANCE", "GOSSIP", "INTUITION", "PERCEPTION", "STEALTH_ANY", "BRIBERY",
-            "DRIVE", "EVALUATE", "HAGGLE", "LORE_MEDICINE", "MELEE_BASIC", "LORE_HISTORY", "PICK_LOCK", "RESEARCH",
+            "CLIMB", "COOL", "DODGE", "ENDURANCE", "GOSSIP", "INTUITION", "PERCEPTION", "BRIBERY", "DRIVE",
+            "EVALUATE", "HAGGLE", "LORE_MEDICINE", "MELEE_BASIC", "LORE_HISTORY", "PICK_LOCK", "RESEARCH",
             "SET_TRAP"
         ],
+        groupCompetences: ["STEALTH_ANY"],
         talents: ["READ_WRITE", "STRIKE_MIGHTY_BLOW", "TENACIOUS", "TUNNEL_RAT"]
     },
     GRAVE_ROBBER_4: {
@@ -3098,10 +3297,11 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.SILVER, level: 5 },
         improvableStats: [Stat.STRG, Stat.INIT, Stat.WILL, Stat.WEAS, Stat.DEXT, Stat.INTL],
         competences: [
-            "CLIMB", "COOL", "DODGE", "ENDURANCE", "GOSSIP", "INTUITION", "PERCEPTION", "STEALTH_ANY", "BRIBERY",
-            "DRIVE", "EVALUATE", "HAGGLE", "LORE_MEDICINE", "MELEE_BASIC", "LORE_HISTORY", "PICK_LOCK", "RESEARCH",
+            "CLIMB", "COOL", "DODGE", "ENDURANCE", "GOSSIP", "INTUITION", "PERCEPTION", "BRIBERY", "DRIVE",
+            "EVALUATE", "HAGGLE", "LORE_MEDICINE", "MELEE_BASIC", "LORE_HISTORY", "PICK_LOCK", "RESEARCH",
             "SET_TRAP", "NAVIGATION", "TRADE_ENGINEER"
         ],
+        groupCompetences: ["STEALTH_ANY"],
         talents: ["FEARLESS_UNDEAD", "SIXTH_SENSE", "STRONG_MINDED", "TRAPPER"]
     },
     // Outlaw
@@ -3123,8 +3323,9 @@ TEW.DATABASE.CAREERS.SET = {
         improvableStats: [Stat.WEAS, Stat.STRG, Stat.TOUG, Stat.BALS],
         competences: [
             "ATHLETICS", "CONSUME_ALCOHOL", "COOL", "ENDURANCE", "GAMBLE", "INTIMIDATE", "MELEE_BASIC",
-            "OUTDOOR_SURVIVAL", "DODGE", "HEAL", "LORE_LOCAL", "PERCEPTION", "RANGED_BOW", "STEALTH_RURAL"
+            "OUTDOOR_SURVIVAL", "DODGE", "HEAL", "PERCEPTION", "RANGED_BOW", "STEALTH_RURAL"
         ],
+        groupCompetences: ["LORE_LOCAL_ANY"],
         talents: ["DIRTY_FIGHTING", "MARKSMAN", "STRIKE_TO_STUN", "TRAPPER"]
     },
     OUTLAW_3: {
@@ -3134,9 +3335,10 @@ TEW.DATABASE.CAREERS.SET = {
         improvableStats: [Stat.WEAS, Stat.STRG, Stat.TOUG, Stat.BALS, Stat.INIT],
         competences: [
             "ATHLETICS", "CONSUME_ALCOHOL", "COOL", "ENDURANCE", "GAMBLE", "INTIMIDATE", "MELEE_BASIC",
-            "OUTDOOR_SURVIVAL", "DODGE", "HEAL", "LORE_LOCAL", "PERCEPTION", "RANGED_BOW", "STEALTH_RURAL",
-            "GOSSIP", "INTUITION", "LEADERSHIP", "RIDE_HORSE"
+            "OUTDOOR_SURVIVAL", "DODGE", "HEAL", "PERCEPTION", "RANGED_BOW", "STEALTH_RURAL", "GOSSIP",
+            "INTUITION", "LEADERSHIP", "RIDE_HORSE"
         ],
+        groupCompetences: ["LORE_LOCAL_ANY"],
         talents: ["RAPID_RELOAD", "ROUGHRIDER", "MENACING", "VERY_RESILIENT"]
     },
     OUTLAW_4: {
@@ -3146,9 +3348,10 @@ TEW.DATABASE.CAREERS.SET = {
         improvableStats: [Stat.WEAS, Stat.STRG, Stat.TOUG, Stat.BALS, Stat.INIT, Stat.FELW],
         competences: [
             "ATHLETICS", "CONSUME_ALCOHOL", "COOL", "ENDURANCE", "GAMBLE", "INTIMIDATE", "MELEE_BASIC",
-            "OUTDOOR_SURVIVAL", "DODGE", "HEAL", "LORE_LOCAL", "PERCEPTION", "RANGED_BOW", "STEALTH_RURAL",
-            "GOSSIP", "INTUITION", "LEADERSHIP", "RIDE_HORSE", "CHARM", "LORE_EMPIRE"
+            "OUTDOOR_SURVIVAL", "DODGE", "HEAL", "PERCEPTION", "RANGED_BOW", "STEALTH_RURAL", "GOSSIP",
+            "INTUITION", "LEADERSHIP", "RIDE_HORSE", "CHARM", "LORE_EMPIRE"
         ],
+        groupCompetences: ["LORE_LOCAL_ANY"],
         talents: ["DEADEYE_SHOT", "FEARLESS_ROAD_WARDENS", "IRON_WILL", "ROBUST"]
     },
     // Racketeer
@@ -3158,9 +3361,9 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.BRASS, level: 3 },
         improvableStats: [Stat.WEAS, Stat.STRG, Stat.TOUG],
         competences: [
-            "CONSUME_ALCOHOL", "COOL", "DODGE", "ENDURANCE", "INTIMIDATE", "LORE_LOCAL", "MELEE_BRAWLING",
-            "STEALTH_URBAN"
+            "CONSUME_ALCOHOL", "COOL", "DODGE", "ENDURANCE", "INTIMIDATE", "MELEE_BRAWLING", "STEALTH_URBAN"
         ],
+        groupCompetences: ["LORE_LOCAL_ANY"],
         talents: ["CRIMINAL", "ETIQUETTE_CRIMINALS", "MENACING", "STRIKE_MIGHTY_BLOW"]
     },
     RACKETEER_2: {
@@ -3169,10 +3372,10 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.BRASS, level: 5 },
         improvableStats: [Stat.WEAS, Stat.STRG, Stat.TOUG, Stat.FELW],
         competences: [
-            "CONSUME_ALCOHOL", "COOL", "DODGE", "ENDURANCE", "INTIMIDATE", "LORE_LOCAL", "MELEE_BRAWLING",
-            "STEALTH_URBAN", "BRIBERY", "CHARM", "EVALUATE", "GOSSIP", "LANGUAGE_ESTALIAN", "LANGUAGE_TILEAN",
-            "MELEE_BASIC"
+            "CONSUME_ALCOHOL", "COOL", "DODGE", "ENDURANCE", "INTIMIDATE", "MELEE_BRAWLING", "STEALTH_URBAN",
+            "BRIBERY", "CHARM", "EVALUATE", "GOSSIP", "MELEE_BASIC"
         ],
+        groupCompetences: ["LORE_LOCAL_ANY", "LANGUAGE_ESTALIAN_OR_TILEAN"],
         talents: ["DIRTY_FIGHTING", "EMBEZZLE", "STRIKE_TO_STUN", "WARRIOR_BORN"]
     },
     RACKETEER_3: {
@@ -3181,10 +3384,11 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.SILVER, level: 3 },
         improvableStats: [Stat.WEAS, Stat.STRG, Stat.TOUG, Stat.FELW, Stat.WILL],
         competences: [
-            "CONSUME_ALCOHOL", "COOL", "DODGE", "ENDURANCE", "INTIMIDATE", "LORE_LOCAL", "MELEE_BRAWLING",
-            "STEALTH_URBAN", "BRIBERY", "CHARM", "EVALUATE", "GOSSIP", "LANGUAGE_ESTALIAN", "LANGUAGE_TILEAN",
-            "MELEE_BASIC", "INTUITION", "LEADERSHIP", "PERCEPTION", "RANGED_CROSSBOW"
+            "CONSUME_ALCOHOL", "COOL", "DODGE", "ENDURANCE", "INTIMIDATE", "MELEE_BRAWLING", "STEALTH_URBAN",
+            "BRIBERY", "CHARM", "EVALUATE", "GOSSIP", "MELEE_BASIC", "INTUITION", "LEADERSHIP", "PERCEPTION",
+            "RANGED_CROSSBOW"
         ],
+        groupCompetences: ["LORE_LOCAL_ANY", "LANGUAGE_ESTALIAN_OR_TILEAN"],
         talents: ["FEARLESS_WATCHMEN", "IRON_WILL", "RESISTANCE_POISON", "ROBUST"]
     },
     RACKETEER_4: {
@@ -3193,10 +3397,11 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.SILVER, level: 5 },
         improvableStats: [Stat.WEAS, Stat.STRG, Stat.TOUG, Stat.FELW, Stat.WILL, Stat.INTL],
         competences: [
-            "CONSUME_ALCOHOL", "COOL", "DODGE", "ENDURANCE", "INTIMIDATE", "LORE_LOCAL", "MELEE_BRAWLING",
-            "STEALTH_URBAN", "BRIBERY", "CHARM", "EVALUATE", "GOSSIP", "LANGUAGE_ESTALIAN", "LANGUAGE_TILEAN",
-            "MELEE_BASIC", "INTUITION", "LEADERSHIP", "PERCEPTION", "RANGED_CROSSBOW", "LORE_LAW", "LORE_POLITICS"
+            "CONSUME_ALCOHOL", "COOL", "DODGE", "ENDURANCE", "INTIMIDATE", "MELEE_BRAWLING", "STEALTH_URBAN",
+            "BRIBERY", "CHARM", "EVALUATE", "GOSSIP", "MELEE_BASIC", "INTUITION", "LEADERSHIP", "PERCEPTION",
+            "RANGED_CROSSBOW", "LORE_LAW", "LORE_POLITICS"
         ],
+        groupCompetences: ["LORE_LOCAL_ANY", "LANGUAGE_ESTALIAN_OR_TILEAN"],
         talents: ["COMMANDING_PRESENCE", "KINGPIN", "FRIGHTENING", "WEALTHY"]
     },
     // Thief
@@ -3217,8 +3422,9 @@ TEW.DATABASE.CAREERS.SET = {
         improvableStats: [Stat.INIT, Stat.AGIL, Stat.WILL, Stat.DEXT],
         competences: [
             "ATHLETICS", "CLIMB", "COOL", "DODGE", "ENDURANCE", "INTUITION", "PERCEPTION", "STEALTH_URBAN",
-            "EVALUATE", "GOSSIP", "LORE_LOCAL", "PICK_LOCK", "SECRET_SIGNS_THIEF", "SLEIGHT_OF_HAND"
+            "EVALUATE", "GOSSIP", "PICK_LOCK", "SECRET_SIGNS_THIEF", "SLEIGHT_OF_HAND"
         ],
+        groupCompetences: ["LORE_LOCAL_ANY"],
         talents: ["BREAK_AND_ENTER", "ETIQUETTE_CRIMINALS", "FAST_HANDS", "SHADOW"]
     },
     THIEF_3: {
@@ -3228,9 +3434,10 @@ TEW.DATABASE.CAREERS.SET = {
         improvableStats: [Stat.INIT, Stat.AGIL, Stat.WILL, Stat.DEXT, Stat.STRG],
         competences: [
             "ATHLETICS", "CLIMB", "COOL", "DODGE", "ENDURANCE", "INTUITION", "PERCEPTION", "STEALTH_URBAN",
-            "EVALUATE", "GOSSIP", "LORE_LOCAL", "PICK_LOCK", "SECRET_SIGNS_THIEF", "SLEIGHT_OF_HAND", "BRIBERY",
-            "GAMBLE", "INTIMIDATE", "RANGED_CROSSBOW"
+            "EVALUATE", "GOSSIP", "PICK_LOCK", "SECRET_SIGNS_THIEF", "SLEIGHT_OF_HAND", "BRIBERY", "GAMBLE",
+            "INTIMIDATE", "RANGED_CROSSBOW"
         ],
+        groupCompetences: ["LORE_LOCAL_ANY"],
         talents: ["NIGHT_VISION", "NIMBLE_FINGERED", "STEP_ASIDE", "TRAPPER"]
     },
     THIEF_4: {
@@ -3240,9 +3447,10 @@ TEW.DATABASE.CAREERS.SET = {
         improvableStats: [Stat.INIT, Stat.AGIL, Stat.WILL, Stat.DEXT, Stat.STRG, Stat.FELW],
         competences: [
             "ATHLETICS", "CLIMB", "COOL", "DODGE", "ENDURANCE", "INTUITION", "PERCEPTION", "STEALTH_URBAN",
-            "EVALUATE", "GOSSIP", "LORE_LOCAL", "PICK_LOCK", "SECRET_SIGNS_THIEF", "SLEIGHT_OF_HAND", "BRIBERY",
-            "GAMBLE", "INTIMIDATE", "RANGED_CROSSBOW", "CHARM", "SET_TRAP"
+            "EVALUATE", "GOSSIP", "PICK_LOCK", "SECRET_SIGNS_THIEF", "SLEIGHT_OF_HAND", "BRIBERY", "GAMBLE",
+            "INTIMIDATE", "RANGED_CROSSBOW", "CHARM", "SET_TRAP"
         ],
+        groupCompetences: ["LORE_LOCAL_ANY"],
         talents: ["CATFALL", "SCLA_SHEER_SURFACE", "STRONG_LEGS", "WEALTHY"]
     },
     // Witch
@@ -3252,7 +3460,7 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.BRASS, level: 1 },
         improvableStats: [Stat.WEAS, Stat.TOUG, Stat.WILL],
         competences: [
-            "CHANNELLING_ANY", "COOL", "ENDURANCE", "GOSSIP", "INTIMIDATE", "LANGUAGE_MAGICK", "SLEIGHT_OF_HAND",
+            "CHANNELLING", "COOL", "ENDURANCE", "GOSSIP", "INTIMIDATE", "CASTING_MAGICK", "SLEIGHT_OF_HAND",
             "STEALTH_RURAL"
         ],
         talents: ["CRIMINAL", "INSTINCTIVE_DICTION", "MENACING", "PETTY_MAGIC"]
@@ -3263,8 +3471,9 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.BRASS, level: 2 },
         improvableStats: [Stat.WEAS, Stat.TOUG, Stat.WILL, Stat.INIT],
         competences: [
-            "CHANNELLING_ANY", "COOL", "ENDURANCE", "GOSSIP", "INTIMIDATE", "LANGUAGE_MAGICK", "SLEIGHT_OF_HAND",
-            "STEALTH_RURAL", "CHARM_ANIMAL", "DODGE", "INTUITION", "MELEE_POLE_ARM", "PERCEPTION", "TRADE_HERBALIST"
+            "CHANNELLING", "COOL", "ENDURANCE", "GOSSIP", "INTIMIDATE", "CASTING_MAGICK", "SLEIGHT_OF_HAND",
+            "STEALTH_RURAL", "CHARM_ANIMAL", "DODGE", "INTUITION", "MELEE_POLE_ARM", "PERCEPTION",
+            "TRADE_HERBALIST"
         ],
         talents: ["ARCANE_MAGIC_WITCHERY", "ATTRACTIVE", "SECOND_SIGHT", "WITCH"]
     },
@@ -3274,7 +3483,7 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.BRASS, level: 3 },
         improvableStats: [Stat.WEAS, Stat.TOUG, Stat.WILL, Stat.INIT, Stat.FELW],
         competences: [
-            "CHANNELLING_ANY", "COOL", "ENDURANCE", "GOSSIP", "INTIMIDATE", "LANGUAGE_MAGICK", "SLEIGHT_OF_HAND",
+            "CHANNELLING", "COOL", "ENDURANCE", "GOSSIP", "INTIMIDATE", "CASTING_MAGICK", "SLEIGHT_OF_HAND",
             "STEALTH_RURAL", "CHARM_ANIMAL", "DODGE", "INTUITION", "MELEE_POLE_ARM", "PERCEPTION",
             "TRADE_HERBALIST", "BRIBERY", "CHARM", "HAGGLE", "LORE_DARK_MAGIC"
         ],
@@ -3286,7 +3495,7 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.BRASS, level: 5 },
         improvableStats: [Stat.WEAS, Stat.TOUG, Stat.WILL, Stat.INIT, Stat.FELW, Stat.INTL],
         competences: [
-            "CHANNELLING_ANY", "COOL", "ENDURANCE", "GOSSIP", "INTIMIDATE", "LANGUAGE_MAGICK", "SLEIGHT_OF_HAND",
+            "CHANNELLING", "COOL", "ENDURANCE", "GOSSIP", "INTIMIDATE", "CASTING_MAGICK", "SLEIGHT_OF_HAND",
             "STEALTH_RURAL", "CHARM_ANIMAL", "DODGE", "INTUITION", "MELEE_POLE_ARM", "PERCEPTION",
             "TRADE_HERBALIST", "BRIBERY", "CHARM", "HAGGLE", "LORE_DARK_MAGIC", "LORE_DEMONOLOGY", "LORE_MAGIC"
         ],
@@ -3328,7 +3537,8 @@ TEW.DATABASE.CAREERS.SET = {
             "PERCEPTION", "RIDE_HORSE", "CHARM", "CONSUME_ALCOHOL", "COOL", "GOSSIP", "MELEE_CAVALRY",
             "RANGED_BLACKPOWDER", "INTIMIDATE", "INTUITION", "LEADERSHIP", "LORE_WAR"
         ],
-        talents: ["COMBAT_REFLEXES", "FAST_SHOT", "HATRED_ANY", "WAR_LEADER"]
+        talents: ["COMBAT_REFLEXES", "FAST_SHOT", "WAR_LEADER"],
+        groupTalents: ["HATRED_ANY"]
     },
     CAVALRYMAN_4: {
         name: "Cavalry Officer",
@@ -3372,8 +3582,8 @@ TEW.DATABASE.CAREERS.SET = {
         improvableStats: [Stat.WEAS, Stat.TOUG, Stat.AGIL, Stat.INIT, Stat.STRG],
         competences: [
             "CONSUME_ALCOHOL", "ENDURANCE", "ENTERTAIN_STORYTELLING", "GAMBLE", "GOSSIP", "INTUITION",
-            "MELEE_BASIC", "PERCEPTION", "ATHLETICS", "COOL", "DODGE", "INTIMIDATE", "MELEE_POLE_ARM", "RANGED_BOW",
-            "HEAL", "LANGUAGE_BATTLE", "LORE_ETIQUETTE", "MELEE_TWO_HANDED"
+            "MELEE_BASIC", "PERCEPTION", "ATHLETICS", "COOL", "DODGE", "INTIMIDATE", "MELEE_POLE_ARM",
+            "RANGED_BOW", "HEAL", "LANGUAGE_BATTLE", "LORE_ETIQUETTE", "MELEE_TWO_HANDED"
         ],
         talents: ["FEARLESS_INTRUDERS", "JUMP_UP", "STOUT_HEARTED", "UNSHAKABLE"]
     },
@@ -3384,8 +3594,8 @@ TEW.DATABASE.CAREERS.SET = {
         improvableStats: [Stat.WEAS, Stat.TOUG, Stat.AGIL, Stat.INIT, Stat.STRG, Stat.INTL],
         competences: [
             "CONSUME_ALCOHOL", "ENDURANCE", "ENTERTAIN_STORYTELLING", "GAMBLE", "GOSSIP", "INTUITION",
-            "MELEE_BASIC", "PERCEPTION", "ATHLETICS", "COOL", "DODGE", "INTIMIDATE", "MELEE_POLE_ARM", "RANGED_BOW",
-            "HEAL", "LANGUAGE_BATTLE", "LORE_ETIQUETTE", "MELEE_TWO_HANDED", "LEADERSHIP", "LORE_WAR"
+            "MELEE_BASIC", "PERCEPTION", "ATHLETICS", "COOL", "DODGE", "INTIMIDATE", "MELEE_POLE_ARM",
+            "RANGED_BOW", "HEAL", "LANGUAGE_BATTLE", "LORE_ETIQUETTE", "MELEE_TWO_HANDED", "LEADERSHIP", "LORE_WAR"
         ],
         talents: ["COMBAT_MASTER", "FURIOUS_ASSAULT", "IRON_WILL", "ROBUST"]
     },
@@ -3399,7 +3609,8 @@ TEW.DATABASE.CAREERS.SET = {
             "ATHLETICS", "ANIMAL_CARE", "CHARM_ANIMAL", "HEAL", "LORE_HERALDRY", "MELEE_CAVALRY", "RIDE_HORSE",
             "TRADE_FARRIER"
         ],
-        talents: ["ETIQUETTE_ANY", "ROUGHRIDER", "STURDY", "WARRIOR_BORN"]
+        talents: ["ROUGHRIDER", "STURDY", "WARRIOR_BORN"],
+        groupTalents: ["ETIQUETTE_ANY"]
     },
     KNIGHT_2: {
         name: "Knight",
@@ -3408,8 +3619,9 @@ TEW.DATABASE.CAREERS.SET = {
         improvableStats: [Stat.STRG, Stat.INIT, Stat.AGIL, Stat.WEAS],
         competences: [
             "ATHLETICS", "ANIMAL_CARE", "CHARM_ANIMAL", "HEAL", "LORE_HERALDRY", "MELEE_CAVALRY", "RIDE_HORSE",
-            "TRADE_FARRIER", "COOL", "DODGE", "ENDURANCE", "INTIMIDATE", "LANGUAGE_BATTLE", "MELEE_ANY"
+            "TRADE_FARRIER", "COOL", "DODGE", "ENDURANCE", "INTIMIDATE", "LANGUAGE_BATTLE"
         ],
+        groupCompetences: ["MELEE_ANY"],
         talents: ["MENACING", "SEASONED_TRAVELLER", "SHIELDSMAN", "STRIKE_MIGHTY_BLOW"]
     },
     KNIGHT_3: {
@@ -3419,10 +3631,12 @@ TEW.DATABASE.CAREERS.SET = {
         improvableStats: [Stat.STRG, Stat.INIT, Stat.AGIL, Stat.WEAS, Stat.WILL],
         competences: [
             "ATHLETICS", "ANIMAL_CARE", "CHARM_ANIMAL", "HEAL", "LORE_HERALDRY", "MELEE_CAVALRY", "RIDE_HORSE",
-            "TRADE_FARRIER", "COOL", "DODGE", "ENDURANCE", "INTIMIDATE", "LANGUAGE_BATTLE", "MELEE_ANY", "CHARM",
+            "TRADE_FARRIER", "COOL", "DODGE", "ENDURANCE", "INTIMIDATE", "LANGUAGE_BATTLE", "CHARM",
             "CONSUME_ALCOHOL", "LEADERSHIP", "LORE_WAR"
         ],
-        talents: ["FEARLESS_ANY", "STOUT_HEARTED", "UNSHAKABLE", "WAR_LEADER"]
+        groupCompetences: ["MELEE_ANY"],
+        talents: ["STOUT_HEARTED", "UNSHAKABLE", "WAR_LEADER"],
+        groupTalents: ["FEARLESS_ANY"]
     },
     KNIGHT_4: {
         name: "Knight of the Inner Circle",
@@ -3431,9 +3645,10 @@ TEW.DATABASE.CAREERS.SET = {
         improvableStats: [Stat.STRG, Stat.INIT, Stat.AGIL, Stat.WEAS, Stat.WILL, Stat.FELW],
         competences: [
             "ATHLETICS", "ANIMAL_CARE", "CHARM_ANIMAL", "HEAL", "LORE_HERALDRY", "MELEE_CAVALRY", "RIDE_HORSE",
-            "TRADE_FARRIER", "COOL", "DODGE", "ENDURANCE", "INTIMIDATE", "LANGUAGE_BATTLE", "MELEE_ANY", "CHARM",
-            "CONSUME_ALCOHOL", "LEADERSHIP", "LORE_WAR", "LORE_ANY", "SECRET_SIGNS_KNIGHTLY_ORDER"
+            "TRADE_FARRIER", "COOL", "DODGE", "ENDURANCE", "INTIMIDATE", "LANGUAGE_BATTLE", "CHARM",
+            "CONSUME_ALCOHOL", "LEADERSHIP", "LORE_WAR", "SECRET_SIGNS_KNIGHTLY_ORDER"
         ],
+        groupCompetences: ["MELEE_ANY", "LORE_ANY"],
         talents: ["DISARM", "INSPIRING", "IRON_WILL", "STRIKE_TO_INJURE"]
     },
     // Pit Fighter
@@ -3442,9 +3657,8 @@ TEW.DATABASE.CAREERS.SET = {
         level: 1,
         status: { tier: CareerStatusTier.BRASS, level: 4 },
         improvableStats: [Stat.WEAS, Stat.STRG, Stat.TOUG],
-        competences: [
-            "ATHLETICS", "COOL", "DODGE", "ENDURANCE", "GAMBLE", "INTIMIDATE", "MELEE_ANY", "MELEE_BRAWLING"
-        ],
+        competences: ["ATHLETICS", "COOL", "DODGE", "ENDURANCE", "GAMBLE", "INTIMIDATE", "MELEE_BRAWLING"],
+        groupCompetences: ["MELEE_ANY"],
         talents: ["DIRTY_FIGHTING", "IN_FIGHTER", "IRON_JAWS", "REVERSAL"]
     },
     PIT_FIGHTER_2: {
@@ -3453,10 +3667,10 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.SILVER, level: 2 },
         improvableStats: [Stat.WEAS, Stat.STRG, Stat.TOUG, Stat.INIT],
         competences: [
-            "ATHLETICS", "COOL", "DODGE", "ENDURANCE", "GAMBLE", "INTIMIDATE", "MELEE_ANY", "MELEE_BRAWLING",
-            "HAGGLE", "INTUITION", "MELEE_BASIC", "MELEE_FLAIL", "MELEE_TWO_HANDED", "PERCEPTION",
-            "RANGED_ENTANGLING"
+            "ATHLETICS", "COOL", "DODGE", "ENDURANCE", "GAMBLE", "INTIMIDATE", "MELEE_BRAWLING", "HAGGLE",
+            "INTUITION", "MELEE_BASIC", "PERCEPTION", "RANGED_ENTANGLING"
         ],
+        groupCompetences: ["MELEE_ANY", "MELEE_FLAIL_OR_TWO_HANDED"],
         talents: ["AMBIDEXTROUS", "COMBAT_REFLEXES", "DUAL_WIELDER", "SHIELDSMAN"]
     },
     PIT_FIGHTER_3: {
@@ -3465,10 +3679,11 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.SILVER, level: 5 },
         improvableStats: [Stat.WEAS, Stat.STRG, Stat.TOUG, Stat.INIT, Stat.AGIL],
         competences: [
-            "ATHLETICS", "COOL", "DODGE", "ENDURANCE", "GAMBLE", "INTIMIDATE", "MELEE_ANY", "MELEE_BRAWLING",
-            "HAGGLE", "INTUITION", "MELEE_BASIC", "MELEE_FLAIL", "MELEE_TWO_HANDED", "PERCEPTION",
-            "RANGED_ENTANGLING", "CONSUME_ALCOHOL", "GOSSIP", "LORE_ANATOMY", "PERFORM_FIGHT"
+            "ATHLETICS", "COOL", "DODGE", "ENDURANCE", "GAMBLE", "INTIMIDATE", "MELEE_BRAWLING", "HAGGLE",
+            "INTUITION", "MELEE_BASIC", "PERCEPTION", "RANGED_ENTANGLING", "CONSUME_ALCOHOL", "GOSSIP",
+            "LORE_ANATOMY", "PERFORM_FIGHT"
         ],
+        groupCompetences: ["MELEE_ANY", "MELEE_FLAIL_OR_TWO_HANDED"],
         talents: ["COMBAT_MASTER", "DISARM", "MENACING", "ROBUST"]
     },
     PIT_FIGHTER_4: {
@@ -3477,10 +3692,11 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.GOLD, level: 2 },
         improvableStats: [Stat.WEAS, Stat.STRG, Stat.TOUG, Stat.INIT, Stat.AGIL, Stat.FELW],
         competences: [
-            "ATHLETICS", "COOL", "DODGE", "ENDURANCE", "GAMBLE", "INTIMIDATE", "MELEE_ANY", "MELEE_BRAWLING",
-            "HAGGLE", "INTUITION", "MELEE_BASIC", "MELEE_FLAIL", "MELEE_TWO_HANDED", "PERCEPTION",
-            "RANGED_ENTANGLING", "CONSUME_ALCOHOL", "GOSSIP", "LORE_ANATOMY", "PERFORM_FIGHT", "CHARM", "RANGED_ANY"
+            "ATHLETICS", "COOL", "DODGE", "ENDURANCE", "GAMBLE", "INTIMIDATE", "MELEE_BRAWLING", "HAGGLE",
+            "INTUITION", "MELEE_BASIC", "PERCEPTION", "RANGED_ENTANGLING", "CONSUME_ALCOHOL", "GOSSIP",
+            "LORE_ANATOMY", "PERFORM_FIGHT", "CHARM"
         ],
+        groupCompetences: ["MELEE_ANY", "RANGED_ANY", "MELEE_FLAIL_OR_TWO_HANDED"],
         talents: ["FRIGHTENING", "FURIOUS_ASSAULT", "IMPLACABLE", "REACTION_STRIKE"]
     },
     // Protagonist
@@ -3489,9 +3705,8 @@ TEW.DATABASE.CAREERS.SET = {
         level: 1,
         status: { tier: CareerStatusTier.BRASS, level: 2 },
         improvableStats: [Stat.WEAS, Stat.TOUG, Stat.AGIL],
-        competences: [
-            "ATHLETICS", "DODGE", "ENDURANCE", "ENTERTAIN_TAUNT", "GOSSIP", "HAGGLE", "INTIMIDATE", "MELEE_ANY"
-        ],
+        competences: ["ATHLETICS", "DODGE", "ENDURANCE", "ENTERTAIN_TAUNT", "GOSSIP", "HAGGLE", "INTIMIDATE"],
+        groupCompetences: ["MELEE_ANY"],
         talents: ["IN_FIGHTER", "DIRTY_FIGHTING", "MENACING", "WARRIOR_BORN"]
     },
     PROTAGONIST_2: {
@@ -3500,9 +3715,10 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.SILVER, level: 1 },
         improvableStats: [Stat.WEAS, Stat.TOUG, Stat.AGIL, Stat.INIT],
         competences: [
-            "ATHLETICS", "DODGE", "ENDURANCE", "ENTERTAIN_TAUNT", "GOSSIP", "HAGGLE", "INTIMIDATE", "MELEE_ANY",
-            "BRIBERY", "CHARM", "INTUITION", "MELEE_BASIC", "PERCEPTION", "RIDE_HORSE"
+            "ATHLETICS", "DODGE", "ENDURANCE", "ENTERTAIN_TAUNT", "GOSSIP", "HAGGLE", "INTIMIDATE", "BRIBERY",
+            "CHARM", "INTUITION", "MELEE_BASIC", "PERCEPTION", "RIDE_HORSE"
         ],
+        groupCompetences: ["MELEE_ANY"],
         talents: ["COMBAT_REFLEXES", "CRIMINAL", "REVERSAL", "STRIKE_TO_STUN"]
     },
     PROTAGONIST_3: {
@@ -3511,10 +3727,11 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.SILVER, level: 4 },
         improvableStats: [Stat.WEAS, Stat.TOUG, Stat.AGIL, Stat.INIT, Stat.BALS],
         competences: [
-            "ATHLETICS", "DODGE", "ENDURANCE", "ENTERTAIN_TAUNT", "GOSSIP", "HAGGLE", "INTIMIDATE", "MELEE_ANY",
-            "BRIBERY", "CHARM", "INTUITION", "MELEE_BASIC", "PERCEPTION", "RIDE_HORSE", "CLIMB", "COOL",
-            "NAVIGATION", "RANGED_THROWING"
+            "ATHLETICS", "DODGE", "ENDURANCE", "ENTERTAIN_TAUNT", "GOSSIP", "HAGGLE", "INTIMIDATE", "BRIBERY",
+            "CHARM", "INTUITION", "MELEE_BASIC", "PERCEPTION", "RIDE_HORSE", "CLIMB", "COOL", "NAVIGATION",
+            "RANGED_THROWING"
         ],
+        groupCompetences: ["MELEE_ANY"],
         talents: ["CAREFUL_STRIKE", "DISARM", "MARKSMAN", "RELENTLESS"]
     },
     PROTAGONIST_4: {
@@ -3523,10 +3740,11 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.GOLD, level: 1 },
         improvableStats: [Stat.WEAS, Stat.TOUG, Stat.AGIL, Stat.INIT, Stat.BALS, Stat.FELW],
         competences: [
-            "ATHLETICS", "DODGE", "ENDURANCE", "ENTERTAIN_TAUNT", "GOSSIP", "HAGGLE", "INTIMIDATE", "MELEE_ANY",
-            "BRIBERY", "CHARM", "INTUITION", "MELEE_BASIC", "PERCEPTION", "RIDE_HORSE", "CLIMB", "COOL",
-            "NAVIGATION", "RANGED_THROWING", "ENTERTAIN_ACTING", "RANGED_CROSSBOW"
+            "ATHLETICS", "DODGE", "ENDURANCE", "ENTERTAIN_TAUNT", "GOSSIP", "HAGGLE", "INTIMIDATE", "BRIBERY",
+            "CHARM", "INTUITION", "MELEE_BASIC", "PERCEPTION", "RIDE_HORSE", "CLIMB", "COOL", "NAVIGATION",
+            "RANGED_THROWING", "ENTERTAIN_ACTING", "RANGED_CROSSBOW"
         ],
+        groupCompetences: ["MELEE_ANY"],
         talents: ["ACCURATE_SHOT", "AMBIDEXTROUS", "FURIOUS_ASSAULT", "STRIKE_TO_INJURE"]
     },
     // Slayer
@@ -3538,7 +3756,7 @@ TEW.DATABASE.CAREERS.SET = {
         competences: [
             "CONSUME_ALCOHOL", "COOL", "DODGE", "ENDURANCE", "GAMBLE", "HEAL", "LORE_TROLLS", "MELEE_BASIC"
         ],
-        talents: ["DUAL_WIELDER", "FEARLESS_EVERYTHING", "FRENZY", "SLAYER"]
+        talents: ["DUAL_WIELDER", "FEARLESS", "FRENZY", "SLAYER"]
     },
     SLAYER_2: {
         name: "Giant Slayer",
@@ -3581,10 +3799,8 @@ TEW.DATABASE.CAREERS.SET = {
         level: 1,
         status: { tier: CareerStatusTier.SILVER, level: 1 },
         improvableStats: [Stat.WEAS, Stat.TOUG, Stat.WILL],
-        competences: [
-            "ATHLETICS", "CLIMB", "COOL", "DODGE", "ENDURANCE", "LANGUAGE_BATTLE", "MELEE_BASIC", "PLAY_DRUM",
-            "PLAY_FIFE"
-        ],
+        competences: ["ATHLETICS", "CLIMB", "COOL", "DODGE", "ENDURANCE", "LANGUAGE_BATTLE", "MELEE_BASIC"],
+        groupCompetences: ["PLAY_DRUM_OR_FIFE"],
         talents: ["DICEMAN", "MARKSMAN", "STRONG_BACK", "WARRIOR_BORN"]
     },
     SOLDIER_2: {
@@ -3593,9 +3809,10 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.SILVER, level: 3 },
         improvableStats: [Stat.WEAS, Stat.TOUG, Stat.WILL, Stat.BALS],
         competences: [
-            "ATHLETICS", "CLIMB", "COOL", "DODGE", "ENDURANCE", "LANGUAGE_BATTLE", "MELEE_BASIC", "PLAY_DRUM",
-            "PLAY_FIFE", "CONSUME_ALCOHOL", "GAMBLE", "GOSSIP", "MELEE_ANY", "RANGED_ANY", "OUTDOOR_SURVIVAL"
+            "ATHLETICS", "CLIMB", "COOL", "DODGE", "ENDURANCE", "LANGUAGE_BATTLE", "MELEE_BASIC",
+            "CONSUME_ALCOHOL", "GAMBLE", "GOSSIP", "OUTDOOR_SURVIVAL"
         ],
+        groupCompetences: ["MELEE_ANY", "RANGED_ANY", "PLAY_DRUM_OR_FIFE"],
         talents: ["DRILLED", "ETIQUETTE_SOLDIERS", "RAPID_RELOAD", "SHIELDSMAN"]
     },
     SOLDIER_3: {
@@ -3604,10 +3821,11 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.SILVER, level: 5 },
         improvableStats: [Stat.WEAS, Stat.TOUG, Stat.WILL, Stat.BALS, Stat.INIT],
         competences: [
-            "ATHLETICS", "CLIMB", "COOL", "DODGE", "ENDURANCE", "LANGUAGE_BATTLE", "MELEE_BASIC", "PLAY_DRUM",
-            "PLAY_FIFE", "CONSUME_ALCOHOL", "GAMBLE", "GOSSIP", "MELEE_ANY", "RANGED_ANY", "OUTDOOR_SURVIVAL",
-            "HEAL", "INTUITION", "LEADERSHIP", "PERCEPTION"
+            "ATHLETICS", "CLIMB", "COOL", "DODGE", "ENDURANCE", "LANGUAGE_BATTLE", "MELEE_BASIC",
+            "CONSUME_ALCOHOL", "GAMBLE", "GOSSIP", "OUTDOOR_SURVIVAL", "HEAL", "INTUITION", "LEADERSHIP",
+            "PERCEPTION"
         ],
+        groupCompetences: ["MELEE_ANY", "RANGED_ANY", "PLAY_DRUM_OR_FIFE"],
         talents: ["COMBAT_AWARE", "ENCLOSED_FIGHTER", "UNSHAKABLE", "WAR_LEADER"]
     },
     SOLDIER_4: {
@@ -3616,10 +3834,11 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.GOLD, level: 1 },
         improvableStats: [Stat.WEAS, Stat.TOUG, Stat.WILL, Stat.BALS, Stat.INIT, Stat.FELW],
         competences: [
-            "ATHLETICS", "CLIMB", "COOL", "DODGE", "ENDURANCE", "LANGUAGE_BATTLE", "MELEE_BASIC", "PLAY_DRUM",
-            "PLAY_FIFE", "CONSUME_ALCOHOL", "GAMBLE", "GOSSIP", "MELEE_ANY", "RANGED_ANY", "OUTDOOR_SURVIVAL",
-            "HEAL", "INTUITION", "LEADERSHIP", "PERCEPTION", "LORE_WAR", "NAVIGATION"
+            "ATHLETICS", "CLIMB", "COOL", "DODGE", "ENDURANCE", "LANGUAGE_BATTLE", "MELEE_BASIC",
+            "CONSUME_ALCOHOL", "GAMBLE", "GOSSIP", "OUTDOOR_SURVIVAL", "HEAL", "INTUITION", "LEADERSHIP",
+            "PERCEPTION", "LORE_WAR", "NAVIGATION"
         ],
+        groupCompetences: ["MELEE_ANY", "RANGED_ANY", "PLAY_DRUM_OR_FIFE"],
         talents: ["INSPIRING", "PUBLIC_SPEAKER", "SEASONED_TRAVELLER", "STOUT_HEARTED"]
     },
     // Warrior Priest
@@ -3628,7 +3847,8 @@ TEW.DATABASE.CAREERS.SET = {
         level: 1,
         status: { tier: CareerStatusTier.BRASS, level: 2 },
         improvableStats: [Stat.WEAS, Stat.TOUG, Stat.WILL],
-        competences: ["COOL", "DODGE", "ENDURANCE", "HEAL", "LEADERSHIP", "LORE_THEOLOGY", "MELEE_ANY", "PRAY"],
+        competences: ["COOL", "DODGE", "ENDURANCE", "HEAL", "LEADERSHIP", "LORE_THEOLOGY", "PRAY"],
+        groupCompetences: ["MELEE_ANY"],
         talents: ["BLESS_ANY", "ETIQUETTE_CULTISTS", "READ_WRITE", "STRONG_MINDED"]
     },
     WARRIOR_PRIEST_2: {
@@ -3637,9 +3857,10 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.SILVER, level: 2 },
         improvableStats: [Stat.WEAS, Stat.TOUG, Stat.WILL, Stat.STRG],
         competences: [
-            "COOL", "DODGE", "ENDURANCE", "HEAL", "LEADERSHIP", "LORE_THEOLOGY", "MELEE_ANY", "PRAY", "CHARM",
-            "ENTERTAIN_SPEECHES", "INTIMIDATE", "LANGUAGE_BATTLE", "RANGED_ANY"
+            "COOL", "DODGE", "ENDURANCE", "HEAL", "LEADERSHIP", "LORE_THEOLOGY", "PRAY", "CHARM",
+            "ENTERTAIN_SPEECHES", "INTIMIDATE", "LANGUAGE_BATTLE"
         ],
+        groupCompetences: ["MELEE_ANY", "MELEE_ANY", "RANGED_ANY"],
         talents: ["DUAL_WIELDER", "INSPIRING", "INVOKE_ANY", "SEASONED_TRAVELLER"]
     },
     WARRIOR_PRIEST_3: {
@@ -3648,10 +3869,11 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.SILVER, level: 3 },
         improvableStats: [Stat.WEAS, Stat.TOUG, Stat.WILL, Stat.STRG, Stat.INIT],
         competences: [
-            "COOL", "DODGE", "ENDURANCE", "HEAL", "LEADERSHIP", "LORE_THEOLOGY", "MELEE_ANY", "PRAY", "CHARM",
-            "ENTERTAIN_SPEECHES", "INTIMIDATE", "LANGUAGE_BATTLE", "RANGED_ANY", "ANIMAL_CARE", "INTUITION",
-            "PERCEPTION", "RIDE_HORSE"
+            "COOL", "DODGE", "ENDURANCE", "HEAL", "LEADERSHIP", "LORE_THEOLOGY", "PRAY", "CHARM",
+            "ENTERTAIN_SPEECHES", "INTIMIDATE", "LANGUAGE_BATTLE", "ANIMAL_CARE", "INTUITION", "PERCEPTION",
+            "RIDE_HORSE"
         ],
+        groupCompetences: ["MELEE_ANY", "MELEE_ANY", "RANGED_ANY"],
         talents: ["COMBAT_AWARE", "HOLY_VISIONS", "PURE_SOUL", "STOUT_HEARTED"]
     },
     WARRIOR_PRIEST_4: {
@@ -3660,11 +3882,13 @@ TEW.DATABASE.CAREERS.SET = {
         status: { tier: CareerStatusTier.SILVER, level: 4 },
         improvableStats: [Stat.WEAS, Stat.TOUG, Stat.WILL, Stat.STRG, Stat.INIT, Stat.FELW],
         competences: [
-            "COOL", "DODGE", "ENDURANCE", "HEAL", "LEADERSHIP", "LORE_THEOLOGY", "MELEE_ANY", "PRAY", "CHARM",
-            "ENTERTAIN_SPEECHES", "INTIMIDATE", "LANGUAGE_BATTLE", "RANGED_ANY", "ANIMAL_CARE", "INTUITION",
-            "PERCEPTION", "RIDE_HORSE", "CONSUME_ALCOHOL", "LORE_WAR"
+            "COOL", "DODGE", "ENDURANCE", "HEAL", "LEADERSHIP", "LORE_THEOLOGY", "PRAY", "CHARM",
+            "ENTERTAIN_SPEECHES", "INTIMIDATE", "LANGUAGE_BATTLE", "ANIMAL_CARE", "INTUITION", "PERCEPTION",
+            "RIDE_HORSE", "CONSUME_ALCOHOL", "LORE_WAR"
         ],
-        talents: ["FEARLESS_ANY", "FURIOUS_ASSAULT", "HOLY_HATRED", "WAR_LEADER"]
+        groupCompetences: ["MELEE_ANY", "MELEE_ANY", "RANGED_ANY"],
+        talents: ["FURIOUS_ASSAULT", "HOLY_HATRED", "WAR_LEADER"],
+        groupTalents: ["FEARLESS_ANY"]
     },
 } as Record<string, RawCareer> as unknown as Record<string, Career>;
 // #endregion === CAREER SET === //
@@ -3679,18 +3903,23 @@ Object.keys(TEW.DATABASE.CAREERS.PATHS).forEach((pathId) => {
 });
 // #endregion === CAREER PATH LINKING === //
 // === //
-// #region ====== MAGICAL CAREERS === //
-// A career opens the way to magic when it teaches the language spells are cast in
+// #region ====== CAREER WILDCARD LISTS === //
+// Careers granting no pick leave their wildcard lists out, and are given empty ones here
 Object.keys(TEW.DATABASE.CAREERS.SET).forEach((careerId) => {
     const career = TEW.DATABASE.CAREERS.SET[careerId];
-    career.isMagical = career.competences.indexOf(TEW.MAGIC.MAGICK_COMP) >= 0;
+    career.groupCompetences = career.groupCompetences || [];
+    career.groupTalents = career.groupTalents || [];
 });
-TEW.DATABASE.CAREERS.MAGICAL_IDS = Object.keys(TEW.DATABASE.CAREERS.SET)
-    .filter((careerId) => TEW.DATABASE.CAREERS.SET[careerId].isMagical);
-// #endregion === MAGICAL CAREERS === //
+// #endregion === CAREER WILDCARD LISTS === //
 // === //
 // #region ====== CAREER IDS === //
 // The path IDs are the keys of the PATHS object, the career IDs those of the SET object
 TEW.DATABASE.CAREERS.PATH_IDS = Object.keys(TEW.DATABASE.CAREERS.PATHS);
 TEW.DATABASE.CAREERS.IDS = Object.keys(TEW.DATABASE.CAREERS.SET);
 // #endregion === CAREER IDS === //
+// === //
+// #region ====== MAGICAL CAREERS === //
+TEW.DATABASE.CAREERS.MAGICAL_IDS = TEW.DATABASE.CAREERS.IDS.filter(career =>
+    TEW.DATABASE.CAREERS.SET[career].path.isMagical
+);
+// #endregion === MAGICAL CAREERS === //

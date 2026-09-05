@@ -38,6 +38,10 @@ TEW.MENU.COMMAND_NAMES[61] = "Base";
 TEW.MENU.COMMAND_NAMES[62] = "Unlearned";
 TEW.MENU.COMMAND_NAMES[63] = "Learned";
 TEW.MENU.COMMAND_NAMES[64] = "Free";
+TEW.MENU.COMMAND_NAMES[65] = "Any";
+TEW.MENU.COMMAND_NAMES[66] = "Choose";
+TEW.MENU.COMMAND_NAMES[67] = "Grouped skill";
+TEW.MENU.COMMAND_NAMES[68] = "Pick a specialisation";
 
 // Inventory Menu
 TEW.MENU.COMMAND_NAMES[70] = "InventoryNextChar";
@@ -138,6 +142,10 @@ Object.defineProperties(TextManager, {
     statusCompUnlearned :       TextManager.getter('command', 62),
     statusSpellLearned :        TextManager.getter('command', 63),
     statusSpellFree :           TextManager.getter('command', 64),
+    statusAnySpecialisation :   TextManager.getter('command', 65),
+    statusAnyChoose :           TextManager.getter('command', 66),
+    statusAnyType :             TextManager.getter('command', 67),
+    statusAnyHint :             TextManager.getter('command', 68),
 
     // Inventory Menu
     inventoryNextChar :         TextManager.getter('command', 70),

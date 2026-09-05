@@ -449,7 +449,7 @@ Game_Action.prototype.applySpell = function(target) {
     // Roll dice
     if (!this._subjectAbilityRoll) {
         const womModifier = $gameVariables.getValue(15);
-        this._subjectAbilityRoll = TEW.DICE.skillTest(attacker, 'LANGUAGE_MAGICK', womModifier, false);
+        this._subjectAbilityRoll = TEW.DICE.skillTest(attacker, TEW.MAGIC.MAGIC_COMP, womModifier, false);
         
         // Add channelled SL
         this._subjectAbilityRoll.sl += attacker._channellingLevel;

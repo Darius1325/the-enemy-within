@@ -34,6 +34,12 @@ behind them live in .claude/spells.md:
 
 Everything below therefore concerns the thirteen competence groups and eleven talent groups in the table above.
 
+### Divine powers are not part of this
+
+`INVOKE_ANY` and `BLESS_ANY` look like wildcards but are **not** grouped skills, and
+this document does not cover them. They will be implemented later in a similar fashion to magic skills, and should
+remain hidden in levelling mode for now.
+
 ## Settled
 
 Decided during review, and assumed by everything below:
@@ -45,7 +51,8 @@ Decided during review, and assumed by everything below:
 - competences and talents gain an explicit `group` field rather than being matched by ID prefix;
 - Channelling and Arcane Magic are out of scope, being handled by the magic rules instead — see *Magic is not part
   of this* above;
-- the religious specialisations need their own limits;
+- Invoke and Bless are out of scope, they will be handled later separately, the religious specialisations need their 
+  own limits — see *Divine powers are not part of this* above;
 - **breaking existing save files is acceptable.** No migration or conversion path needs writing for any of this. If
   repairing old saves becomes worth doing later, it will be its own feature.
 
@@ -80,11 +87,7 @@ grants is pure waste, so the useful rule is:
 That is data-driven, needs no hardcoded exception list, and covers the `Melee (Basic)` case wherever it actually
 matters. A small explicit exclusion list can still be kept on top of it for house rules.
 
-### Career history cannot live in `$dataActors`
-
-`$dataActors` is the static database loaded from `data/Actors.json`. RMMV save files hold the `$game*` objects that
-`DataManager.makeSaveContents` collects — `$gameActors` among them — and this project does not override that method.
-Anything written to `$dataActors` would be shared by every save and lost on reload.
+### Career history lives in `$dataActors`
 
 The history belongs on `Game_Actor`, next to `_career`. Note also that `_competences` is a positional array indexed by
 `TEW.DATABASE.COMPS.IDS`: the history must store IDs, never indices.
@@ -144,6 +147,9 @@ learnt competence sitting at `0` advances. In a record, absence of the key is th
 which is clearer — but `hasComp`, `compPlus` and `learnComp` all depend on that distinction and must be moved over
 together.
 
+Conclusion: This change will be applied, to make `_competences` a record, and use `undefined` in place of `-1` to
+determine whether a skill is displayed / usable or not.
+
 ## Career data: several instances of the same `(Any)`
 
 `career.competences` is currently a flat array of unique IDs, already compounded across the levels of a path, and no
@@ -176,10 +182,12 @@ This keeps `competences` and `talents` as plain `string[]`, so nothing downstrea
 compounding step simply concatenates the wildcard lists where it unions the concrete ones. `improvableComps()` keeps
 returning plain IDs.
 
-Splitting the existing data is mechanical — every `*_ANY` entry moves to the new field, `CHANNELLING_ANY` and
-`ARCANE_MAGIC_ANY` excepted: those two are not picks, and stay in `competences` and `talents` where
-`refreshCareerCache()` already resolves them. The **counts** are the part that has to come from the rulebook, career
-level by career level, since the current data cannot tell one pick from two.
+Splitting the existing data is mechanical — every `*_ANY` entry moves to the new field, `CHANNELLING_ANY`,
+`ARCANE_MAGIC_ANY`, `INVOKE_ANY` and `BLESS_ANY` excepted: those four are not picks, and stay in `competences` and
+`talents` where `refreshCareerCache()` already resolves them. The **counts** are the part that has to come from the
+rulebook, career level by career level, since the current data cannot tell one pick from two.
+
+Conclusion: this change will be implemented, the new field storing group skills should be called 'groupCompetences'.
 
 ## Group membership should be data, not a prefix
 
@@ -209,6 +217,8 @@ with `TEW.DATABASE.COMPS.GROUPS: Record<string, SpecialisationGroup>` derived at
 same for talents. `MELEE_ANY` then resolves to `GROUPS.MELEE.members` by construction. The initial values can be
 generated from the prefixes and hand-corrected for the few odd entries — a mechanical migration of 197 competences and
 242 talents, done once.
+
+Conclusion: this will be implemented.
 
 ## Limiting magical and religious specialisations
 
@@ -268,6 +278,9 @@ player buys them in. They should be **normalised to a symmetric set at load**, s
 excluded talent is held. Both checks must count the talents pending in the current levelling session, or a player could
 buy Bless and Invoke in one go and have it accepted at confirmation. The magic side of that method already works this
 way, which is the pattern to follow.
+
+Conclusion: Ignore magic and divine skills, restrictions are in place for arcane magic, and will be implemented
+separately for invoke and bless. Do not implement this.
 
 ## Plan
 
@@ -374,6 +387,15 @@ The `CHANNELLING` and `ARCANE_MAGIC_*` work that used to bookend this list is do
   same mechanism as `(Any)`, only drawn from the local area. Leaving it concrete is fine, but it could reuse the slot
   model later, with the pool filtered by region.
 - Should a bound pick ever be re-bindable? The rules say no, and leaving it permanent is simpler.
+
+### Answers
+
+For now, treat Secret Signs (Guild (any one)) and (Local) with the same workings as (Any) skills. The entries should still be
+recorded as something like SECRET_SIGNS_GUILD_ANY or LORE_LOCAL_ANY, but their own mechanics will be decided later.
+
+Arcane magic and Invoke should not be affected by this feature, and their unlearning is a concern for later.
+
+Using an (Any) slot to pick a skill should be irreversible.
 
 ## Data bugs noticed while investigating
 

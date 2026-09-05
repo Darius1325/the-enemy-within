@@ -48,8 +48,13 @@ TEW.CHARACTERS.STATS_VERBOSE = [
     'Fellowship'
 ];
 
-// 0 for base skills, -1 for acquired
-TEW.CHARACTERS.BASE_COMP_VALUES = TEW.DATABASE.COMPS.IDS.reduce((acc: number[], compId) => {
-    acc.push(TEW.DATABASE.COMPS.SET[compId].isBase ? 0 : -1);
+/**
+ * Competence values a new character starts with
+ * Base skills start at 0 advances, advanced ones are simply absent until they are learnt
+ */
+TEW.CHARACTERS.BASE_COMP_VALUES = TEW.DATABASE.COMPS.IDS.reduce((acc: Record<string, number>, compId) => {
+    if (TEW.DATABASE.COMPS.SET[compId].isBase) {
+        acc[compId] = 0;
+    }
     return acc;
-}, []);
+}, {});

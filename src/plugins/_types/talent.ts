@@ -32,4 +32,12 @@ export type Talent = {
      * @example Stat.BALS
      */
     maxTaken : number | Stat;
+    /**
+     * Grouped talent this talent is a specialisation of, absent for ungrouped ones
+     * The magical and divine talents are tied to the character's wind or deity rather than
+     * picked, and are deliberately left out of the groups
+     * @see {@link ./specialisation.ts#SpecialisationGroup}
+     * @example "STRIDER" for Strider (Marshes)
+     */
+    group?: string;
 }

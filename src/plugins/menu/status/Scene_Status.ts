@@ -1,4 +1,4 @@
-// $PluginCompiler TEW_Menus.js
+// $PluginCompiler TEW_Menus.js 101
 
 // ----------------------
 
@@ -23,6 +23,7 @@ import Window_StatusTalentDetails from "./talents/Window_StatusTalentDetails";
 import Window_StatusCompetenceDetails from "./competences/Window_StatusCompetenceDetails";
 import TEW from "../../_types/tew";
 import Game_Levelling from "./Game_Levelling";
+import Window_StatusLevellingChoice from "./Window_StatusLevellingChoice";
 import Window_StatusLevellingSummary from "./Window_StatusLevellingSummary";
 
 // ----------------------
@@ -103,6 +104,12 @@ Scene_Status.prototype.hideAllWindows = function() {
     this._spellsCommandWindow.deactivate();
     this._spellsDetailsWindow.hide();
     this._spellsDetailsWindow.deactivate();
+
+    // Created after the others, so it is only there once the whole scene is built
+    if (this._levellingChoiceWindow) {
+        this._levellingChoiceWindow.hide();
+        this._levellingChoiceWindow.deactivate();
+    }
 };
 
 // Showing the corresponding window according to the current command window index
@@ -143,6 +150,7 @@ Scene_Status.prototype.refreshActor = function() {
     this._competencesWindow.setActor(actor);
     this._talentsWindow.setActor(actor);
     this._spellsWindow.setActor(actor);
+    this._levellingChoiceWindow.setActor(actor);
 };
 
 // Switching actor from the topbar
@@ -238,6 +246,9 @@ Scene_Status.prototype.createCompsWindow = function() {
         this._commandWindow.refresh();
         this.showCompetenceDetails();
     });
+    this._competencesWindow.setHandler('open_any_choice', () => {
+        this.openAnyChoice(this._competencesWindow);
+    });
     this._competencesWindow.setLevelling(this._levelling);
     this._competencesWindow.hide();
     this.addWindow(this._competencesWindow);
@@ -280,6 +291,9 @@ Scene_Status.prototype.createTalentsWindow = function() {
     });
     this._talentsWindow.setHandler('levelling_change', () => {
         this._commandWindow.refresh();
+    });
+    this._talentsWindow.setHandler('open_any_choice', () => {
+        this.openAnyChoice(this._talentsWindow);
     });
     this._talentsWindow.setLevelling(this._levelling);
     this._talentsWindow.hide();
@@ -431,6 +445,20 @@ Scene_Status.prototype.createLevellingWindows = function() {
     this._levellingSummaryWindow.deactivate();
     this._levellingSummaryWindow.hide();
     this.addWindow(this._levellingSummaryWindow);
+    this.createLevellingChoiceWindow();
+};
+
+/**
+ * Creating the picker opened on a grouped skill slot, hidden until one is spent.
+ * Competences and talents share it, as the only difference between them is where the pool comes
+ * from, and the window is given the slot to fill every time it is opened.
+ */
+Scene_Status.prototype.createLevellingChoiceWindow = function() {
+    this._levellingChoiceWindow = new Window_StatusLevellingChoice();
+    this._levellingChoiceWindow.setLevelling(this._levelling);
+    this._levellingChoiceWindow.setHandler('ok', this.onAnyChoiceMade.bind(this));
+    this._levellingChoiceWindow.setHandler('cancel', this.closeAnyChoice.bind(this));
+    this.addWindow(this._levellingChoiceWindow);
 };
 
 Scene_Status.prototype.isLevellingMode = function() {
@@ -442,9 +470,52 @@ Scene_Status.prototype.isLevellingPrompt = function() {
     return this._levellingSummaryWindow && this._levellingSummaryWindow.visible;
 };
 
+// Whether the grouped skill picker is currently displayed
+Scene_Status.prototype.isAnyChoice = function() {
+    return this._levellingChoiceWindow && this._levellingChoiceWindow.visible;
+};
+
+/**
+ * Opening the picker on the slot the given window has under its cursor.
+ * The window it was opened from keeps its selection and is given the focus back on close, as the
+ * row it points at is the one the pick fills.
+ */
+Scene_Status.prototype.openAnyChoice = function(window: any) {
+    this._anyChoiceReturnWindow = window;
+    window.deactivate();
+    this._levellingChoiceWindow.setSlot(window.selectedSlotIndex());
+    this._levellingChoiceWindow.show();
+    this._levellingChoiceWindow.activate();
+};
+
+// Closing the picker and giving the focus back, whether a pick was made or not
+Scene_Status.prototype.closeAnyChoice = function() {
+    const window = this._anyChoiceReturnWindow || this._commandWindow;
+    this._anyChoiceReturnWindow = null;
+    this._levellingChoiceWindow.deactivate();
+    this._levellingChoiceWindow.hide();
+    window.activate();
+};
+
+// A pick binds the slot for the session, so the list it came from is rebuilt around it
+Scene_Status.prototype.onAnyChoiceMade = function() {
+    const window = this._anyChoiceReturnWindow;
+    this.closeAnyChoice();
+    if (window === this._competencesWindow) {
+        this._competencesWindow.makeCompsList();
+        this._competencesWindow.refresh();
+        this.showCompetenceDetails();
+    } else if (window === this._talentsWindow) {
+        this._talentsWindow.makeTalentsList();
+        this._talentsWindow.refresh();
+        this.showTalentDetails();
+    }
+    this._commandWindow.refresh();
+};
+
 // Toggling levelling mode with the dedicated input key
 Scene_Status.prototype.updateLevellingToggle = function() {
-    if (this.isLevellingPrompt()) {
+    if (this.isLevellingPrompt() || this.isAnyChoice()) {
         return;
     }
     if (Input.isTriggered(TEW.MENU.LEVEL_UP_KEY)) {

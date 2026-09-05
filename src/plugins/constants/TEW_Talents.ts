@@ -12,6 +12,7 @@
 // ----------------------
 
 import { Stat } from "../_types/enum";
+import { SpecialisationGroup, SpecialisationPick } from "../_types/specialisation";
 import TEW from "../_types/tew";
 
 // ----------------------
@@ -29,27 +30,32 @@ TEW.DATABASE.TALENTS.SET = {
     ACUTE_SENSE_SIGHT: {
         name: "Acute Sense (Sight)",
         description: "One of your primary five senses is highly developed, allowing you to spot what others miss. You may take Perception Tests to detect normally imperceptible details with the associated sense, as dictated by the GM. This could include: seeing an eagle beyond everyone else's eyeshot, smelling an almost odourless poison, hearing the breath of an unmoving mouse within a wall, feeling a worn away letter in a carving, or tasting that two beers from the same brewer have been drawn from two different barrels.",
-        maxTaken: Stat.INIT
+        maxTaken: Stat.INIT,
+        group: "ACUTE_SENSE"
     },
     ACUTE_SENSE_TASTE: {
         name: "Acute Sense (Taste)",
         description: "One of your primary five senses is highly developed, allowing you to spot what others miss. You may take Perception Tests to detect normally imperceptible details with the associated sense, as dictated by the GM. This could include: seeing an eagle beyond everyone else's eyeshot, smelling an almost odourless poison, hearing the breath of an unmoving mouse within a wall, feeling a worn away letter in a carving, or tasting that two beers from the same brewer have been drawn from two different barrels.",
-        maxTaken: Stat.INIT
+        maxTaken: Stat.INIT,
+        group: "ACUTE_SENSE"
     },
     ACUTE_SENSE_SMELL: {
         name: "Acute Sense (Smell)",
         description: "One of your primary five senses is highly developed, allowing you to spot what others miss. You may take Perception Tests to detect normally imperceptible details with the associated sense, as dictated by the GM. This could include: seeing an eagle beyond everyone else's eyeshot, smelling an almost odourless poison, hearing the breath of an unmoving mouse within a wall, feeling a worn away letter in a carving, or tasting that two beers from the same brewer have been drawn from two different barrels.",
-        maxTaken: Stat.INIT
+        maxTaken: Stat.INIT,
+        group: "ACUTE_SENSE"
     },
     ACUTE_SENSE_HEARING: {
         name: "Acute Sense (Hearing)",
         description: "One of your primary five senses is highly developed, allowing you to spot what others miss. You may take Perception Tests to detect normally imperceptible details with the associated sense, as dictated by the GM. This could include: seeing an eagle beyond everyone else's eyeshot, smelling an almost odourless poison, hearing the breath of an unmoving mouse within a wall, feeling a worn away letter in a carving, or tasting that two beers from the same brewer have been drawn from two different barrels.",
-        maxTaken: Stat.INIT
+        maxTaken: Stat.INIT,
+        group: "ACUTE_SENSE"
     },
     ACUTE_SENSE_TOUCH: {
         name: "Acute Sense (Touch)",
         description: "One of your primary five senses is highly developed, allowing you to spot what others miss. You may take Perception Tests to detect normally imperceptible details with the associated sense, as dictated by the GM. This could include: seeing an eagle beyond everyone else's eyeshot, smelling an almost odourless poison, hearing the breath of an unmoving mouse within a wall, feeling a worn away letter in a carving, or tasting that two beers from the same brewer have been drawn from two different barrels.",
-        maxTaken: Stat.INIT
+        maxTaken: Stat.INIT,
+        group: "ACUTE_SENSE"
     },
     AETHYRIC_ATTUNEMENT: {
         name: "Aethyric Attunement",
@@ -298,35 +304,35 @@ TEW.DATABASE.TALENTS.SET = {
         description: "You know how to get the most out of your animals. When an animal you control is Fleeing or Running, it gains +1 Movement if you are using a whip.",
         maxTaken: Stat.DEXT
     },
-    CRAFTSMAN: {
-        name: "Craftsman",
-        description: "You have true creative talent. Add one Trade Skill to any Career you enter. If the Trade Skill is already in your Career, you may instead purchase the Skill for 5 XP fewer per Advance.",
-        maxTaken: Stat.DEXT
-    },
     CRAFTSMAN_APOTHECARY: {
         name: "Craftsman (Apothecary)",
         description: "You have true creative talent. Add one Trade Skill to any Career you enter. If the Trade Skill is already in your Career, you may instead purchase the Skill for 5 XP fewer per Advance.",
-        maxTaken: Stat.DEXT
+        maxTaken: Stat.DEXT,
+        group: "CRAFTSMAN"
     },
     CRAFTSMAN_BOATBUILDER: {
         name: "Craftsman (Boatbuilder)",
         description: "You have true creative talent. Add one Trade Skill to any Career you enter. If the Trade Skill is already in your Career, you may instead purchase the Skill for 5 XP fewer per Advance.",
-        maxTaken: Stat.DEXT
+        maxTaken: Stat.DEXT,
+        group: "CRAFTSMAN"
     },
     CRAFTSMAN_ENGINEER: {
         name: "Craftsman (Engineer)",
         description: "You have true creative talent. Add one Trade Skill to any Career you enter. If the Trade Skill is already in your Career, you may instead purchase the Skill for 5 XP fewer per Advance.",
-        maxTaken: Stat.DEXT
+        maxTaken: Stat.DEXT,
+        group: "CRAFTSMAN"
     },
     CRAFTSMAN_EXPLOSIVES: {
         name: "Craftsman (Explosives)",
         description: "You have true creative talent. Add one Trade Skill to any Career you enter. If the Trade Skill is already in your Career, you may instead purchase the Skill for 5 XP fewer per Advance.",
-        maxTaken: Stat.DEXT
+        maxTaken: Stat.DEXT,
+        group: "CRAFTSMAN"
     },
     CRAFTSMAN_HERBALIST: {
         name: "Craftsman (Herbalist)",
         description: "You have true creative talent. Add one Trade Skill to any Career you enter. If the Trade Skill is already in your Career, you may instead purchase the Skill for 5 XP fewer per Advance.",
-        maxTaken: Stat.DEXT
+        maxTaken: Stat.DEXT,
+        group: "CRAFTSMAN"
     },
     CRIMINAL: {//TODO
         name: "Criminal",
@@ -396,37 +402,44 @@ TEW.DATABASE.TALENTS.SET = {
     ETIQUETTE_CRIMINALS: {
         name: "Etiquette (Criminals)",
         description: "You can blend in socially with the chosen group so long as you are dressed and acting appropriately. If you do not have the Talent, those with it will note your discomfort in the unfamiliar environment. This is primarily a matter for roleplaying, but may confer a bonus to Fellowship Tests at the GM's discretion.",
-        maxTaken: Stat.FELW
+        maxTaken: Stat.FELW,
+        group: "ETIQUETTE"
     },
     ETIQUETTE_CULTISTS: {
         name: "Etiquette (Cultists)",
         description: "You can blend in socially with the chosen group so long as you are dressed and acting appropriately. If you do not have the Talent, those with it will note your discomfort in the unfamiliar environment. This is primarily a matter for roleplaying, but may confer a bonus to Fellowship Tests at the GM's discretion.",
-        maxTaken: Stat.FELW
+        maxTaken: Stat.FELW,
+        group: "ETIQUETTE"
     },
     ETIQUETTE_GUILDERS: {
         name: "Etiquette (Guilders)",
         description: "You can blend in socially with the chosen group so long as you are dressed and acting appropriately. If you do not have the Talent, those with it will note your discomfort in the unfamiliar environment. This is primarily a matter for roleplaying, but may confer a bonus to Fellowship Tests at the GM's discretion.",
-        maxTaken: Stat.FELW
+        maxTaken: Stat.FELW,
+        group: "ETIQUETTE"
     },
     ETIQUETTE_NOBLES: {
         name: "Etiquette (Nobles)",
         description: "You can blend in socially with the chosen group so long as you are dressed and acting appropriately. If you do not have the Talent, those with it will note your discomfort in the unfamiliar environment. This is primarily a matter for roleplaying, but may confer a bonus to Fellowship Tests at the GM's discretion.",
-        maxTaken: Stat.FELW
+        maxTaken: Stat.FELW,
+        group: "ETIQUETTE"
     },
     ETIQUETTE_SCHOLARS: {
         name: "Etiquette (Scholars)",
         description: "You can blend in socially with the chosen group so long as you are dressed and acting appropriately. If you do not have the Talent, those with it will note your discomfort in the unfamiliar environment. This is primarily a matter for roleplaying, but may confer a bonus to Fellowship Tests at the GM's discretion.",
-        maxTaken: Stat.FELW
+        maxTaken: Stat.FELW,
+        group: "ETIQUETTE"
     },
     ETIQUETTE_SERVANTS: {
         name: "Etiquette (Servants)",
         description: "You can blend in socially with the chosen group so long as you are dressed and acting appropriately. If you do not have the Talent, those with it will note your discomfort in the unfamiliar environment. This is primarily a matter for roleplaying, but may confer a bonus to Fellowship Tests at the GM's discretion.",
-        maxTaken: Stat.FELW
+        maxTaken: Stat.FELW,
+        group: "ETIQUETTE"
     },
     ETIQUETTE_SOLDIERS: {
         name: "Etiquette (Soldiers)",
         description: "You can blend in socially with the chosen group so long as you are dressed and acting appropriately. If you do not have the Talent, those with it will note your discomfort in the unfamiliar environment. This is primarily a matter for roleplaying, but may confer a bonus to Fellowship Tests at the GM's discretion.",
-        maxTaken: Stat.FELW
+        maxTaken: Stat.FELW,
+        group: "ETIQUETTE"
     },
     FAST_HANDS: {
         name: "Fast Hands",
@@ -438,100 +451,119 @@ TEW.DATABASE.TALENTS.SET = {
         description: "If you have a loaded ranged weapon, you can fire it outside the normal Initiative Order before any other combatant reacts in the following Round. You roll to hit using all the normal modifiers. Employing Fast Shot requires both your Action and Move for your upcoming turn, and these will count as having been spent when your next turn arrives. If two or more characters use Fast Shot, the character who has taken this Talent most goes first. If any characters have taken Fast Shot an equal number of times, both shots are fired simultaneously, and should both be handled at the same time.",
         maxTaken: Stat.WILL
     },
+    // Fearing nothing at all is not a specialisation of the group, and carries no `group` field
+    FEARLESS: {
+        name: "Fearless",
+        description: "You are either brave enough or crazy enough that fear has become a distant memory. With a single Average (+20%) Cool Test, you may ignore any Intimidate, Fear, or Terror effects, whoever they come from.",
+        maxTaken: Stat.WILL
+    },
     FEARLESS_ANIMALS: {
         name: "Fearless (Animals)",
         description: "You are either brave enough or crazy enough that fear of certain enemies has become a distant memory. With a single Average (+20%) Cool Test, you may ignore any Intimidate, Fear, or Terror effects from the specified enemy when encountered.",
-        maxTaken: Stat.WILL
+        maxTaken: Stat.WILL,
+        group: "FEARLESS"
     },
     FEARLESS_BEASTMEN: {
         name: "Fearless (Beastmen)",
         description: "You are either brave enough or crazy enough that fear of certain enemies has become a distant memory. With a single Average (+20%) Cool Test, you may ignore any Intimidate, Fear, or Terror effects from the specified enemy when encountered.",
-        maxTaken: Stat.WILL
+        maxTaken: Stat.WILL,
+        group: "FEARLESS"
     },
     FEARLESS_BOUNTIES: {
         name: "Fearless (Bounties)",
         description: "You are either brave enough or crazy enough that fear of certain enemies has become a distant memory. With a single Average (+20%) Cool Test, you may ignore any Intimidate, Fear, or Terror effects from the specified enemy when encountered.",
-        maxTaken: Stat.WILL
+        maxTaken: Stat.WILL,
+        group: "FEARLESS"
     },
     FEARLESS_CRIMINALS: {
         name: "Fearless (Criminals)",
         description: "You are either brave enough or crazy enough that fear of certain enemies has become a distant memory. With a single Average (+20%) Cool Test, you may ignore any Intimidate, Fear, or Terror effects from the specified enemy when encountered.",
-        maxTaken: Stat.WILL
-    },
-    FEARLESS_EVERYTHING: {
-        name: "Fearless (Everything)",
-        description: "You are either brave enough or crazy enough that fear of certain enemies has become a distant memory. With a single Average (+20%) Cool Test, you may ignore any Intimidate, Fear, or Terror effects from the specified enemy when encountered.",
-        maxTaken: Stat.WILL
+        maxTaken: Stat.WILL,
+        group: "FEARLESS"
     },
     FEARLESS_GREENSKINS: {
         name: "Fearless (Greenskins)",
         description: "You are either brave enough or crazy enough that fear of certain enemies has become a distant memory. With a single Average (+20%) Cool Test, you may ignore any Intimidate, Fear, or Terror effects from the specified enemy when encountered.",
-        maxTaken: Stat.WILL
+        maxTaken: Stat.WILL,
+        group: "FEARLESS"
     },
     FEARLESS_HERETICS: {
         name: "Fearless (Heretics)",
         description: "You are either brave enough or crazy enough that fear of certain enemies has become a distant memory. With a single Average (+20%) Cool Test, you may ignore any Intimidate, Fear, or Terror effects from the specified enemy when encountered.",
-        maxTaken: Stat.WILL
+        maxTaken: Stat.WILL,
+        group: "FEARLESS"
     },
     FEARLESS_INTRUDERS: {
         name: "Fearless (Intruders)",
         description: "You are either brave enough or crazy enough that fear of certain enemies has become a distant memory. With a single Average (+20%) Cool Test, you may ignore any Intimidate, Fear, or Terror effects from the specified enemy when encountered.",
-        maxTaken: Stat.WILL
+        maxTaken: Stat.WILL,
+        group: "FEARLESS"
     },
     FEARLESS_MONSTERS: {
         name: "Fearless (Monsters)",
         description: "You are either brave enough or crazy enough that fear of certain enemies has become a distant memory. With a single Average (+20%) Cool Test, you may ignore any Intimidate, Fear, or Terror effects from the specified enemy when encountered.",
-        maxTaken: Stat.WILL
+        maxTaken: Stat.WILL,
+        group: "FEARLESS"
     },
     FEARLESS_OUTLAWS: {
         name: "Fearless (Outlaws)",
         description: "You are either brave enough or crazy enough that fear of certain enemies has become a distant memory. With a single Average (+20%) Cool Test, you may ignore any Intimidate, Fear, or Terror effects from the specified enemy when encountered.",
-        maxTaken: Stat.WILL
+        maxTaken: Stat.WILL,
+        group: "FEARLESS"
     },
     FEARLESS_RATS: {
         name: "Fearless (Rats)",
         description: "You are either brave enough or crazy enough that fear of certain enemies has become a distant memory. With a single Average (+20%) Cool Test, you may ignore any Intimidate, Fear, or Terror effects from the specified enemy when encountered.",
-        maxTaken: Stat.WILL
+        maxTaken: Stat.WILL,
+        group: "FEARLESS"
     },
     FEARLESS_RIVERWARDENS: {
         name: "Fearless (Riverwardens)",
         description: "You are either brave enough or crazy enough that fear of certain enemies has become a distant memory. With a single Average (+20%) Cool Test, you may ignore any Intimidate, Fear, or Terror effects from the specified enemy when encountered.",
-        maxTaken: Stat.WILL
+        maxTaken: Stat.WILL,
+        group: "FEARLESS"
     },
     FEARLESS_ROAD_WARDENS: {
         name: "Fearless (Road Wardens)",
         description: "You are either brave enough or crazy enough that fear of certain enemies has become a distant memory. With a single Average (+20%) Cool Test, you may ignore any Intimidate, Fear, or Terror effects from the specified enemy when encountered.",
-        maxTaken: Stat.WILL
+        maxTaken: Stat.WILL,
+        group: "FEARLESS"
     },
     FEARLESS_SKAVEN: {
         name: "Fearless (Skaven)",
         description: "You are either brave enough or crazy enough that fear of certain enemies has become a distant memory. With a single Average (+20%) Cool Test, you may ignore any Intimidate, Fear, or Terror effects from the specified enemy when encountered.",
-        maxTaken: Stat.WILL
+        maxTaken: Stat.WILL,
+        group: "FEARLESS"
     },
     FEARLESS_UNDEAD: {
         name: "Fearless (Undead)",
         description: "You are either brave enough or crazy enough that fear of certain enemies has become a distant memory. With a single Average (+20%) Cool Test, you may ignore any Intimidate, Fear, or Terror effects from the specified enemy when encountered.",
-        maxTaken: Stat.WILL
+        maxTaken: Stat.WILL,
+        group: "FEARLESS"
     },
     FEARLESS_VAMPIRES: {
         name: "Fearless (Vampires)",
         description: "You are either brave enough or crazy enough that fear of certain enemies has become a distant memory. With a single Average (+20%) Cool Test, you may ignore any Intimidate, Fear, or Terror effects from the specified enemy when encountered.",
-        maxTaken: Stat.WILL
+        maxTaken: Stat.WILL,
+        group: "FEARLESS"
     },
     FEARLESS_WATCHMEN: {
         name: "Fearless (Watchmen)",
         description: "You are either brave enough or crazy enough that fear of certain enemies has become a distant memory. With a single Average (+20%) Cool Test, you may ignore any Intimidate, Fear, or Terror effects from the specified enemy when encountered.",
-        maxTaken: Stat.WILL
+        maxTaken: Stat.WILL,
+        group: "FEARLESS"
     },
     FEARLESS_WITCHES: {
         name: "Fearless (Witches)",
         description: "You are either brave enough or crazy enough that fear of certain enemies has become a distant memory. With a single Average (+20%) Cool Test, you may ignore any Intimidate, Fear, or Terror effects from the specified enemy when encountered.",
-        maxTaken: Stat.WILL
+        maxTaken: Stat.WILL,
+        group: "FEARLESS"
     },
     FEARLESS_WRECKERS: {
         name: "Fearless (Wreckers)",
         description: "You are either brave enough or crazy enough that fear of certain enemies has become a distant memory. With a single Average (+20%) Cool Test, you may ignore any Intimidate, Fear, or Terror effects from the specified enemy when encountered.",
-        maxTaken: Stat.WILL
+        maxTaken: Stat.WILL,
+        group: "FEARLESS"
     },
     FEINT: {
         name: "Feint",
@@ -593,20 +625,17 @@ TEW.DATABASE.TALENTS.SET = {
         description: "You gain a permanent addition to your Wounds, equal to your Toughness Bonus. If your Toughness Bonus should increase, then the number of Wounds Hardy provides also increases.",
         maxTaken: Stat.TOUG
     },
-    HATRED: {//TODO
-        name: "Hatred",
-        description: "TODO",
-        maxTaken: Stat.WILL
-    },
     HATRED_HERETICS: {
         name: "Hatred (Heretics)",
         description: "TODO",
-        maxTaken: Stat.WILL
+        maxTaken: Stat.WILL,
+        group: "HATRED"
     },
     HATRED_OUTLAWS: {
         name: "Hatred (Outlaws)",
         description: "TODO",
-        maxTaken: Stat.WILL
+        maxTaken: Stat.WILL,
+        group: "HATRED"
     },
     HOLY_HATRED: {
         name: "Holy Hatred",
@@ -658,7 +687,7 @@ TEW.DATABASE.TALENTS.SET = {
         description: "You are blessed by one of the Gods and can empower one of your Cult's Miracles. Further, you may purchase extra miracles for 100 XP per miracle you currently know. Under normal circumstances, you may not learn more than one Invoke (Divine Lore) Talent. Further, you may not learn the Petty Magic or Arcane Magic Talents when you have the Invoke Talent. You can unlearn this Talent for 100 XP, but will lose all of your miracles if you do so, and will also garner the extreme disfavour of your God.",
         maxTaken: 1
     },
-    INVOKE_MYMIDIA: {
+    INVOKE_MYRMIDIA: {
         name: "Invoke (Myrmidia)",
         description: "You are blessed by one of the Gods and can empower one of your Cult's Miracles. Further, you may purchase extra miracles for 100 XP per miracle you currently know. Under normal circumstances, you may not learn more than one Invoke (Divine Lore) Talent. Further, you may not learn the Petty Magic or Arcane Magic Talents when you have the Invoke Talent. You can unlearn this Talent for 100 XP, but will lose all of your miracles if you do so, and will also garner the extreme disfavour of your God.",
         maxTaken: 1
@@ -768,35 +797,35 @@ TEW.DATABASE.TALENTS.SET = {
         description: "You are skilled at firing up crowds. You gain a gain a SL bonus equal to your levels of Master Orator to any Charm Test when Public Speaking before a crowd.",
         maxTaken: Stat.FELW
     },
-    MASTER_TRADESMAN: {
-        name: "Master Tradesman",
-        description: "You are exceptionally skilled at your specified Trade skill. You reduce the required SL of any Extended Test using your Trade Skill by the level of your Master Tradesman Talent.",
-        maxTaken: Stat.DEXT
-    },
     MASTER_TRADESMAN_APOTHECARY: {
         name: "Master Tradesman (Apothecary)",
         description: "You are exceptionally skilled at your specified Trade skill. You reduce the required SL of any Extended Test using your Trade Skill by the level of your Master Tradesman Talent.",
-        maxTaken: Stat.DEXT
+        maxTaken: Stat.DEXT,
+        group: "MASTER_TRADESMAN"
     },
     MASTER_TRADESMAN_BOATBUILDER: {
         name: "Master Tradesman (Boatbuilder)",
         description: "You are exceptionally skilled at your specified Trade skill. You reduce the required SL of any Extended Test using your Trade Skill by the level of your Master Tradesman Talent.",
-        maxTaken: Stat.DEXT
+        maxTaken: Stat.DEXT,
+        group: "MASTER_TRADESMAN"
     },
     MASTER_TRADESMAN_ENGINEERING: {
         name: "Master Tradesman (Engineering)",
         description: "You are exceptionally skilled at your specified Trade skill. You reduce the required SL of any Extended Test using your Trade Skill by the level of your Master Tradesman Talent.",
-        maxTaken: Stat.DEXT
+        maxTaken: Stat.DEXT,
+        group: "MASTER_TRADESMAN"
     },
     MASTER_TRADESMAN_HERBALIST: {
         name: "Master Tradesman (Herbalist)",
         description: "You are exceptionally skilled at your specified Trade skill. You reduce the required SL of any Extended Test using your Trade Skill by the level of your Master Tradesman Talent.",
-        maxTaken: Stat.DEXT
+        maxTaken: Stat.DEXT,
+        group: "MASTER_TRADESMAN"
     },
     MASTER_TRADESMAN_POISONER: {
         name: "Master Tradesman (Poisoner)",
         description: "You are exceptionally skilled at your specified Trade skill. You reduce the required SL of any Extended Test using your Trade Skill by the level of your Master Tradesman Talent.",
-        maxTaken: Stat.DEXT
+        maxTaken: Stat.DEXT,
+        group: "MASTER_TRADESMAN"
     },
     MENACING: {
         name: "Menacing",
@@ -901,22 +930,26 @@ TEW.DATABASE.TALENTS.SET = {
     RESISTANCE_CHAOS: {
         name: "Resistance (Chaos)",
         description: "Your strong constitution allows you to more readily survive a specific threat. You may automatically pass the first Test to resist the specified threat every day. If SL is important, use your Toughness Bonus as SL for the Test.",
-        maxTaken: Stat.TOUG
+        maxTaken: Stat.TOUG,
+        group: "RESISTANCE"
     },
     RESISTANCE_DISEASE: {
         name: "Resistance (Disease)",
         description: "Your strong constitution allows you to more readily survive a specific threat. You may automatically pass the first Test to resist the specified threat every day. If SL is important, use your Toughness Bonus as SL for the Test.",
-        maxTaken: Stat.TOUG
+        maxTaken: Stat.TOUG,
+        group: "RESISTANCE"
     },
     RESISTANCE_MAGIC: {
         name: "Resistance (Magic)",
         description: "Your strong constitution allows you to more readily survive a specific threat. You may automatically pass the first Test to resist the specified threat every day. If SL is important, use your Toughness Bonus as SL for the Test.",
-        maxTaken: Stat.TOUG
+        maxTaken: Stat.TOUG,
+        group: "RESISTANCE"
     },
     RESISTANCE_POISON: {
         name: "Resistance (Poison)",
         description: "Your strong constitution allows you to more readily survive a specific threat. You may automatically pass the first Test to resist the specified threat every day. If SL is important, use your Toughness Bonus as SL for the Test.",
-        maxTaken: Stat.TOUG
+        maxTaken: Stat.TOUG,
+        group: "RESISTANCE"
     },
     RESOLUTE: {
         name: "Resolute",
@@ -953,50 +986,53 @@ TEW.DATABASE.TALENTS.SET = {
         description: "You are at home roaming the wild places. When using Stealth in a rural environment, bystanders do not get passive Perception Tests to detect you; they can only spot you if they are specifically on look-out, or watching for hidden spies.",
         maxTaken: Stat.AGIL
     },
-    SAVANT: {//TODO
-        name: "Savant",
-        description: "You are exceptionally learned, and have a significant degree of specialised knowledge in a single field of study. You automatically know a number of pieces of correct information equal to you Savant (Lore) level about a relevant issue without having to test your Lore Skill.",
-        maxTaken: Stat.INTL
-    },
     SAVANT_APOTHECARY: {
         name: "Savant (Apothecary)",
         description: "You are exceptionally learned, and have a significant degree of specialised knowledge in a single field of study. You automatically know a number of pieces of correct information equal to you Savant (Lore) level about a relevant issue without having to test your Lore Skill.",
-        maxTaken: Stat.INTL
+        maxTaken: Stat.INTL,
+        group: "SAVANT"
     },
     SAVANT_ENGINEERING: {
         name: "Savant (Engineering)",
         description: "You are exceptionally learned, and have a significant degree of specialised knowledge in a single field of study. You automatically know a number of pieces of correct information equal to you Savant (Lore) level about a relevant issue without having to test your Lore Skill.",
-        maxTaken: Stat.INTL
+        maxTaken: Stat.INTL,
+        group: "SAVANT"
     },
     SAVANT_HERBS: {
         name: "Savant (Herbs)",
         description: "You are exceptionally learned, and have a significant degree of specialised knowledge in a single field of study. You automatically know a number of pieces of correct information equal to you Savant (Lore) level about a relevant issue without having to test your Lore Skill.",
-        maxTaken: Stat.INTL
+        maxTaken: Stat.INTL,
+        group: "SAVANT"
     },
     SAVANT_LAW: {
         name: "Savant (Law)",
         description: "You are exceptionally learned, and have a significant degree of specialised knowledge in a single field of study. You automatically know a number of pieces of correct information equal to you Savant (Lore) level about a relevant issue without having to test your Lore Skill.",
-        maxTaken: Stat.INTL
+        maxTaken: Stat.INTL,
+        group: "SAVANT"
     },
     SAVANT_LOCAL: {
         name: "Savant (Local)",
         description: "You are exceptionally learned, and have a significant degree of specialised knowledge in a single field of study. You automatically know a number of pieces of correct information equal to you Savant (Lore) level about a relevant issue without having to test your Lore Skill.",
-        maxTaken: Stat.INTL
+        maxTaken: Stat.INTL,
+        group: "SAVANT"
     },
     SAVANT_MEDICINE: {
         name: "Savant (Medicine)",
         description: "You are exceptionally learned, and have a significant degree of specialised knowledge in a single field of study. You automatically know a number of pieces of correct information equal to you Savant (Lore) level about a relevant issue without having to test your Lore Skill.",
-        maxTaken: Stat.INTL
+        maxTaken: Stat.INTL,
+        group: "SAVANT"
     },
     SAVANT_RIVERWAYS: {
         name: "Savant (Riverways)",
         description: "You are exceptionally learned, and have a significant degree of specialised knowledge in a single field of study. You automatically know a number of pieces of correct information equal to you Savant (Lore) level about a relevant issue without having to test your Lore Skill.",
-        maxTaken: Stat.INTL
+        maxTaken: Stat.INTL,
+        group: "SAVANT"
     },
     SAVANT_THEOLOGY: {
         name: "Savant (Theology)",
         description: "You are exceptionally learned, and have a significant degree of specialised knowledge in a single field of study. You automatically know a number of pieces of correct information equal to you Savant (Lore) level about a relevant issue without having to test your Lore Skill.",
-        maxTaken: Stat.INTL
+        maxTaken: Stat.INTL,
+        group: "SAVANT"
     },
     SAVVY: {
         name: "Savvy",
@@ -1098,30 +1134,29 @@ TEW.DATABASE.TALENTS.SET = {
         description: "No matter how bad things get, you always seem to come back for more. You may attempt a Cool Test to remove a Broken Condition at the end of each of your Turns as well as at the end of the Round.",
         maxTaken: Stat.WILL
     },
-    STRIDER: {
-        name: "Strider",
-        description: "You are experienced in traversing difficult ground. You ignore all movement penalties when crossing over or through a specified terrain.",
-        maxTaken: Stat.AGIL
-    },
     STRIDER_COASTAL: {
         name: "Strider (Coastal)",
         description: "You are experienced in traversing difficult ground. You ignore all movement penalties when crossing over or through a specified terrain.",
-        maxTaken: Stat.AGIL
+        maxTaken: Stat.AGIL,
+        group: "STRIDER"
     },
     STRIDER_MARSHES: {
         name: "Strider (Marshes)",
         description: "You are experienced in traversing difficult ground. You ignore all movement penalties when crossing over or through a specified terrain.",
-        maxTaken: Stat.AGIL
+        maxTaken: Stat.AGIL,
+        group: "STRIDER"
     },
     STRIDER_ROCKY: {
         name: "Strider (Rocky)",
         description: "You are experienced in traversing difficult ground. You ignore all movement penalties when crossing over or through a specified terrain.",
-        maxTaken: Stat.AGIL
+        maxTaken: Stat.AGIL,
+        group: "STRIDER"
     },
     STRIDER_WOODLANDS: {
         name: "Strider (Woodlands)",
         description: "You are experienced in traversing difficult ground. You ignore all movement penalties when crossing over or through a specified terrain.",
-        maxTaken: Stat.AGIL
+        maxTaken: Stat.AGIL,
+        group: "STRIDER"
     },
     STRIKE_MIGHTY_BLOW: {
         name: "Strike Mighty Blow",
@@ -1281,3 +1316,62 @@ TEW.DATABASE.TALENTS.ARRAY = Object.keys(TEW.DATABASE.TALENTS.SET)
         .sort((a, b) => a.localeCompare(b))
         .map(talent => [talent, TEW.DATABASE.TALENTS.SET[talent]]);
 // #endregion === TALENTS ARRAY === //
+// === //
+// #region ====== TALENTS GROUPS === //
+/**
+ * Grouped talents, gathered from the `group` field the specialisations carry
+ * Arcane Magic, Bless and Invoke are named like groups but are not ones: the lore or the deity
+ * belongs to the character rather than to the pick, so their specialisations carry no group and
+ * never reach a picker
+ */
+TEW.DATABASE.TALENTS.GROUPS = TEW.DATABASE.TALENTS.IDS.reduce((groups: Record<string, SpecialisationGroup>, talentId) => {
+    const groupId = TEW.DATABASE.TALENTS.SET[talentId].group;
+    if (!groupId) {
+        return groups;
+    }
+    if (!groups[groupId]) {
+        groups[groupId] = {
+            id: groupId,
+            name: TEW.DATABASE.TALENTS.SET[talentId].name.split(' (')[0],
+            members: []
+        };
+    }
+    groups[groupId].members.push(talentId);
+    return groups;
+}, {});
+// #endregion === TALENTS GROUPS === //
+// === //
+// #region ====== TALENTS PICKS === //
+/**
+ * Career entries granting one specialisation of a group, picked by the player
+ * Every group has a plain `<GROUP>_ANY` wildcard offering the whole group
+ */
+TEW.DATABASE.TALENTS.PICKS = Object.keys(TEW.DATABASE.TALENTS.GROUPS)
+    .reduce((picks: Record<string, SpecialisationPick>, groupId) => {
+        picks[`${groupId}_ANY`] = {
+            id: `${groupId}_ANY`,
+            group: groupId,
+            members: TEW.DATABASE.TALENTS.GROUPS[groupId].members
+        };
+        return picks;
+    }, {});
+
+/**
+ * Savant (Local) is drawn from the character's own region rather than from the whole group, and
+ * is offered the whole group until locations are modelled, exactly like Lore (Local)
+ */
+TEW.DATABASE.TALENTS.PICKS.SAVANT_LOCAL_ANY = {
+    id: 'SAVANT_LOCAL_ANY',
+    group: 'SAVANT',
+    name: 'Savant (Local)',
+    members: TEW.DATABASE.TALENTS.GROUPS.SAVANT.members
+};
+
+// Careers offering a choice between two named specialisations rather than a whole group
+TEW.DATABASE.TALENTS.PICKS.ACUTE_SENSE_TASTE_OR_TOUCH = {
+    id: 'ACUTE_SENSE_TASTE_OR_TOUCH',
+    group: 'ACUTE_SENSE',
+    name: 'Acute Sense (Taste or Touch)',
+    members: ['ACUTE_SENSE_TASTE', 'ACUTE_SENSE_TOUCH']
+};
+// #endregion === TALENTS PICKS === //

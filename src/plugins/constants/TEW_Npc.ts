@@ -167,7 +167,7 @@ TEW.DATABASE.NPCS.SET = {
             INTIMIDATE: 5,
             INTUITION: 5,
             LANGUAGE_CLASSICAL: 10,
-            LANGUAGE_MAGICK: 15,
+            CASTING_MAGICK: 15,
             LORE_MAGICK: 9,
             PERCEPTION: 5
         },
