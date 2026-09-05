@@ -37,9 +37,18 @@ Window_StatusCompetenceDetails.prototype.empty = function() {
 };
 
 // Drawing item details
-Window_StatusCompetenceDetails.prototype.drawDetails = function(comp: Competence & { level: number, value: number }) {
+Window_StatusCompetenceDetails.prototype.drawDetails = function(comp: Competence & { level: number, value: number, isAnySlot?: boolean }) {
     // Name
     this.drawUnderlinedText(comp.name, 0, 0, this.contentsWidth(), "center");
+
+    // An unspent grouped skill pick stands for a whole group, and has no value of its own yet
+    if (comp.isAnySlot) {
+        this.drawTable2Columns(0, 80, this.contentsWidth(), 2, [
+            ["Type :", TextManager.statusAnyType],
+            ["Level :", TextManager.statusAnyHint]
+        ]);
+        return;
+    }
 
     // Table
     this.drawTable2Columns(0, 80, this.contentsWidth(), 4, [

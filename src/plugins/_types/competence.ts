@@ -30,4 +30,10 @@ export type Competence = {
      * Is competence a base competence ?
      */
     isBase: boolean;
+    /**
+     * Grouped skill this competence is a specialisation of, absent for ungrouped ones
+     * @see {@link ./specialisation.ts#SpecialisationGroup}
+     * @example "MELEE" for Melee (Fencing)
+     */
+    group?: string;
 };

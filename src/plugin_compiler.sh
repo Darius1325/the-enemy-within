@@ -13,7 +13,7 @@ mkdir -p dist/
 tsc --project ./tsconfig.json
 
 # Read the $PluginCompiler tag from the first line of each file
-for file in $(find dist/$1 -name "*.js"); do
+for file in $(find dist/plugins/$1 -name "*.js"); do
     read -r first_line < "$file"
     if [[ $first_line =~ $regex ]]; then
         output_file="${BASH_REMATCH[1]}"

@@ -18,7 +18,7 @@ import { Talent } from "./talent";
 import { MeleeWeapon } from "./meleeWeapon";
 import { RangedWeapon } from "./rangedWeapon";
 import { Ammunition } from "./ammunition";
-import { ArmorGroup, WeaponGroup, WeaponQuality } from "./enum";
+import { ArmorGroup, SpellDomain, WeaponGroup, WeaponQuality, Wind, WindName } from "./enum";
 import {Game_BattlerBase} from "../base/stats/Game_BattlerBase";
 import { Troop } from "./troop";
 import { BattlerAI } from "./battlerAI";
@@ -29,6 +29,8 @@ import { CharacterDescription } from "./characterDescription";
 import { JournalDocument } from "./journalDocument";
 import { Critical } from "./critical";
 import { Condition } from "./condition";
+import { Career, CareerPath } from "./career";
+import { SpecialisationGroup, SpecialisationPick } from "./specialisation";
 
 /** Storage object for all TEW plugins */
 const TEW: {
@@ -87,6 +89,14 @@ const TEW: {
             BASE_ARRAY?: [string, Competence][];
             /** Decoupled map of advanced skills (unavailable if not unlocked) */
             ADVANCED_ARRAY?: [string, Competence][];
+            /** Grouped skills by group ID, derived at load from the skills' own `group` fields */
+            GROUPS?: Record<string, SpecialisationGroup>;
+            /**
+             * Wildcard entries the careers may list, by wildcard ID
+             * Holds one entry per group (MELEE_ANY) plus the picks drawn from a narrower pool,
+             * such as LORE_LOCAL_ANY and STEALTH_RURAL_OR_URBAN
+             */
+            PICKS?: Record<string, SpecialisationPick>;
         };
 
         /** Carriable items */
@@ -114,7 +124,29 @@ const TEW: {
             IDS?: string[];
             /** Decoupled map of talents */
             ARRAY?: [string, Talent][];
+            /** Grouped talents by group ID, derived at load from the talents' own `group` fields */
+            GROUPS?: Record<string, SpecialisationGroup>;
+            /**
+             * Wildcard entries the careers may list, by wildcard ID
+             * Holds one entry per group (STRIDER_ANY) plus the picks drawn from a narrower pool,
+             * such as SAVANT_LOCAL_ANY and ACUTE_SENSE_TASTE_OR_TOUCH
+             */
+            PICKS?: Record<string, SpecialisationPick>;
         };
+
+        /** Pursuable careers */
+        CAREERS?: {
+            /** All career paths by ID, each holding its four levels in order */
+            PATHS?: Record<string, CareerPath>;
+            /** All careers by ID, an ID being a path ID and a level (APOTHECARY_1) */
+            SET?: Record<string, Career>;
+            /** Career path IDs */
+            PATH_IDS?: string[];
+            /** Career IDs */
+            IDS?: string[];
+            /** IDs of the careers giving access to magic, i.e. holding the Language (Magick) skill */
+            MAGICAL_IDS?: string[];
+        }
 
         /** Relevant data for NPCs */
         NPCS?: {
@@ -158,10 +190,136 @@ const TEW: {
         JOURNAL_DOCUMENTS?: JournalDocument[];
     };
 
+    /**
+     * Experience spending rules
+     * Costs are expressed per advance and increase with the number of advances already bought
+     */
+    LEVELLING?: {
+        /** Number of advances covered by a single cost bracket (past the first one) */
+        BRACKET_SIZE?: number;
+        /** Index of the last cost bracket (every advance past it costs the same) */
+        LAST_BRACKET?: number;
+        /** XP cost of one characteristic advance, indexed by cost bracket */
+        CHARACTERISTIC_COSTS?: number[];
+        /** XP cost of one competence advance, indexed by cost bracket */
+        COMPETENCE_COSTS?: number[];
+        /** XP cost of a talent which has not been acquired yet */
+        TALENT_COST?: number;
+        /** XP cost of one bracket of petty spells */
+        PETTY_SPELL_COST?: number;
+        /** XP cost of one bracket of arcane spells */
+        ARCANE_SPELL_COST?: number;
+
+        /**
+         * Find the cost bracket matching a number of advances
+         * @param advances number of advances already bought
+         * @returns an index in CHARACTERISTIC_COSTS / COMPETENCE_COSTS
+         */
+        bracket?: (advances: number) => number;
+        /**
+         * Cost of the next characteristic advance
+         * @param advances number of advances already bought
+         * @returns the XP cost of the following advance
+         */
+        characteristicCost?: (advances: number) => number;
+        /**
+         * Cost of the next competence advance
+         * @param advances number of advances already bought
+         * @returns the XP cost of the following advance
+         */
+        competenceCost?: (advances: number) => number;
+        /**
+         * Total cost of every characteristic advance between two advance counts
+         * @param fromAdvances number of advances already bought
+         * @param toAdvances targeted number of advances
+         * @returns the total XP cost
+         */
+        characteristicRangeCost?: (fromAdvances: number, toAdvances: number) => number;
+        /**
+         * Total cost of every competence advance between two advance counts
+         * @param fromAdvances number of advances already bought
+         * @param toAdvances targeted number of advances
+         * @returns the total XP cost
+         */
+        competenceRangeCost?: (fromAdvances: number, toAdvances: number) => number;
+        /**
+         * Cost of one more spell in a pool
+         * @param known number of spells already known in the pool
+         * @param bonus Willpower bonus for petty spells, Intelligence bonus for arcane ones
+         * @param cost XP cost of one bracket
+         * @returns the XP cost of the following spell
+         */
+        spellCost?: (known: number, bonus: number, cost: number) => number;
+        /**
+         * Total cost of every spell bought between two pool sizes
+         * @param fromKnown number of spells already known in the pool
+         * @param toKnown targeted number of spells
+         * @param bonus Willpower bonus for petty spells, Intelligence bonus for arcane ones
+         * @param cost XP cost of one bracket
+         * @returns the total XP cost
+         */
+        spellRangeCost?: (fromKnown: number, toKnown: number, bonus: number, cost: number) => number;
+    };
+
+    /**
+     * Winds of magic and the talents, competences and spell domains they are tied to
+     * Petty magic and the generic arcane spells belong to no wind, and neither do the lesser
+     * lores (Hedgecraft, Witchery) which specific careers grant outright
+     */
+    MAGIC?: {
+        /** Every wind a character may be tied to, NONE excluded */
+        WIND_IDS?: WindName[];
+        /** Display name of every wind, NONE included */
+        WIND_NAMES?: Record<string, Wind>;
+
+        /** ID of the Petty Magic talent */
+        PETTY_TALENT?: string;
+        /** ID of the bare Arcane Magic talent, transformed into the wind's own once acquired */
+        ARCANE_TALENT?: string;
+        /** Arcane Magic talent granted by each wind, Dhar excluded as it grants no Arcane Lore */
+        ARCANE_TALENTS?: Record<string, string>;
+        /** Arcane Magic talents belonging to a lesser lore, which no wind grants */
+        LESSER_ARCANE_TALENTS?: string[];
+        /**
+         * Whether a talent is one of the eight Arcane Lores keyed on a wind
+         * @param talentId ID of the talent
+         * @returns true for an ARCANE_TALENTS entry, false for a lesser lore or anything else
+         */
+        isWindArcaneTalent?: (talentId: string) => boolean;
+        /** ID of the ungrouped Channelling competence, renamed after the caster's wind */
+        CHANNELLING_COMP?: string;
+        /** ID of the competence marking a career as magical */
+        MAGIC_COMP?: string;
+        /** Career talent entry resolved to ARCANE_TALENT */
+        ARCANE_MAGIC_ANY?: string;
+
+        /** Lore spells each wind gives access to */
+        WIND_DOMAINS?: Record<string, SpellDomain>;
+
+        /** Pool holding the petty spells */
+        PETTY_POOL?: string;
+        /** Pool holding the generic arcane spells and every lore spell */
+        ARCANE_POOL?: string;
+        /**
+         * Pool a spell domain is priced in
+         * @param domain the spell's domain
+         * @returns PETTY_POOL or ARCANE_POOL
+         */
+        spellPool?: (domain: SpellDomain) => string;
+    };
+
     /** Constants used in menu plugins for readability */
     MENU?: {
         /** Links commands (used to control interactions with windows) to human-readable names */
         COMMAND_NAMES?: Record<number, string>;
+
+        /** Input key toggling levelling mode in the status menu */
+        LEVEL_UP_KEY?: string;
+        /** Human-readable name of LEVEL_UP_KEY, displayed in the status menu topbar */
+        LEVEL_UP_KEY_LABEL?: string;
+
+        /** Width left to the career name drawn next to an actor's name */
+        CAREER_LABEL_WIDTH?: number;
 
         /** Common line height for several menus */
         LINE_HEIGHT?: number;
@@ -197,9 +355,9 @@ const TEW: {
         STATS_VERBOSE?: string[];
         /**
          * Skill values for a new character
-         * Array of 0 (for base skills) and -1 (for advanced)
+         * Base skills start at 0 advances, advanced ones hold no entry until they are learnt
          */
-        BASE_COMP_VALUES?: number[];
+        BASE_COMP_VALUES?: Record<string, number>;
     };
 
     /** Dice utilities */

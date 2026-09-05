@@ -1,6 +1,6 @@
 // $PluginCompiler TEW_Base.js
 
-import {AmmunitionGroup, ArmorGroup, BodyLocation, ConditionId, ConditionRemoval, Stat, StatName, WeaponGroup} from "../../_types/enum";
+import {AmmunitionGroup, ArmorGroup, BodyLocation, ConditionId, ConditionRemoval, SpellDomain, Stat, StatName, WeaponGroup, Wind, WindName} from "../../_types/enum";
 import TEW from "../../_types/tew";
 import {Armor} from "../../_types/armor";
 
@@ -15,7 +15,7 @@ export type ActorWeapon = {
 
 export interface Game_BattlerBase {
     _paramBase: [number, number, number, number, number, number, number, number, number, number, number];
-    _competences: number[];
+    _competences: Record<string, number>;
     _spells: string[];
     _talents: Record<string, number>;
     _items: Record<string, number>;
@@ -24,6 +24,8 @@ export interface Game_BattlerBase {
     _equippedArmors: string[];
     _ammo: Record<string, number>;
     _conditions: Record<ConditionId, { stacks: number; entangledStrength?: number }>;
+    _wind: WindName;
+    _freePettySpells: number;
 
     mhp: number;
     weas: number;
@@ -48,6 +50,7 @@ export interface Game_BattlerBase {
     hasComp: (compId: string) => boolean;
     hasAnyCompOfCategory: (compCategory: string) => boolean;
     addComp: (compId: string, value: number) => void;
+    learnComp: (compId: string) => void;
 
     talent: (talentId: string) => number;
     allTalents: () => string[];
@@ -56,6 +59,20 @@ export interface Game_BattlerBase {
 
     hasSpell: (spellId: string) => boolean;
     addSpell: (spellId: string) => void;
+    knownSpells: () => string[];
+    spellsInPool: (pool: string) => string[];
+
+    wind: () => WindName;
+    hasWind: () => boolean;
+    windName: () => Wind;
+    setWind: (wind: WindName) => void;
+    arcaneTalent: () => string;
+    hasPettyMagic: () => boolean;
+    hasWindMagic: () => boolean;
+    hasArcaneMagic: () => boolean;
+    canCastDomain: (domain: SpellDomain) => boolean;
+    channellingName: () => string;
+    compName: (compId: string) => string;
 
     item: (itemId: string) => number;
     hasItem: (itemId: string) => boolean;
@@ -143,7 +160,7 @@ TEW.MEMORY.battlerBaseInit = Game_BattlerBase.prototype.initialize;
 Game_BattlerBase.prototype.initialize = function() {
     TEW.MEMORY.battlerBaseInit.call(this);
     this._paramBase = [1,0,0,0,0,0,0,0,0,0,0];
-    this._competences = TEW.CHARACTERS.BASE_COMP_VALUES.slice();
+    this._competences = Object.assign({}, TEW.CHARACTERS.BASE_COMP_VALUES);
     this._spells = [];
     this._talents = {}; // ID: level
     this._items = {}; // ID: quantity
@@ -152,6 +169,9 @@ Game_BattlerBase.prototype.initialize = function() {
     this._equippedArmors = [];
     this._ammo = {}; // ID: quantity
     this._conditions = {}; // ID: data
+    this._career = undefined;
+    this._wind = 'NONE'; // Wind of magic the battler is tied to, if any
+    this._freePettySpells = 0; // Petty spells granted by the Petty Magic talent and not picked yet
     this._exp = 0;
     this._fate = 0;
     this._fortune = 0;
@@ -217,9 +237,14 @@ Game_BattlerBase.prototype.paramBonus = function(paramName: StatName) {
 
 // Competences
 
+/**
+ * Advances bought on a competence.
+ * An advanced competence which has not been learnt yet holds no entry at all, and is worth no
+ * advance until it is: absence and a learnt competence sitting at 0 advances read the same here,
+ * and are told apart by hasComp.
+ */
 Game_BattlerBase.prototype.compPlus = function(compId: string) {
-    const compValue = this._competences[TEW.DATABASE.COMPS.IDS.indexOf(compId)];
-    return compValue === -1 ? 0 : compValue;
+    return this._competences[compId] || 0;
 };
 
 Game_BattlerBase.prototype.comp = function(compId: string) {
@@ -252,20 +277,33 @@ Game_BattlerBase.prototype.anyCompOfCategory = function(compCategory: string) {
     return null;
 };
 
+// Base competences are known by everyone, advanced ones only once they hold an entry
 Game_BattlerBase.prototype.hasComp = function(compId: string) {
     if (TEW.DATABASE.COMPS.SET[compId].isBase) {
         return true;
     }
-    return this._competences[TEW.DATABASE.COMPS.IDS.indexOf(compId)] !== -1;
+    return this._competences[compId] !== undefined;
 };
 
 Game_BattlerBase.prototype.hasAnyCompOfCategory = function(compCategory: string) {
     return this.anyCompOfCategory(compCategory) !== null;
 };
 
+// Adding advances to a competence, learning it along the way if it was not known yet
 Game_BattlerBase.prototype.addComp = function(compId: string, value: number) {
-    this._competences[TEW.DATABASE.COMPS.IDS.indexOf(compId)] += value;
+    this._competences[compId] = this.compPlus(compId) + value;
     // this.refresh();
+};
+
+/**
+ * Unlocking an advanced competence, which holds no entry until it is learnt.
+ * Learning it only brings it to 0 advances: the advances themselves are bought separately.
+ */
+Game_BattlerBase.prototype.learnComp = function(compId: string) {
+    if (this._competences[compId] !== undefined) {
+        return;
+    }
+    this._competences[compId] = 0;
 };
 
 // Talents
@@ -296,6 +334,103 @@ Game_BattlerBase.prototype.addSpell = function(spellId: string) {
     if (!this.hasSpell(spellId)) {
         this._spells.push(spellId);
     }
+};
+
+Game_BattlerBase.prototype.knownSpells = function() {
+    return this._spells;
+};
+
+/**
+ * Spells known in a cost pool
+ * The Arcane Magic talent covers the generic arcane spells and the caster's lore at once, so
+ * both count towards the same bracket. Petty magic keeps its own pool.
+ */
+Game_BattlerBase.prototype.spellsInPool = function(pool: string) {
+    return this._spells.filter((spellId: string) =>
+        TEW.MAGIC.spellPool(TEW.DATABASE.SPELLS.SET[spellId].domain) === pool);
+};
+
+// Magic
+
+// Wind of magic the battler is tied to, 'NONE' for those with no spark at all
+Game_BattlerBase.prototype.wind = function() {
+    return this._wind || 'NONE';
+};
+
+Game_BattlerBase.prototype.hasWind = function() {
+    return this.wind() !== 'NONE';
+};
+
+// Display name of the wind, e.g. "Aqshy"
+Game_BattlerBase.prototype.windName = function() {
+    return TEW.MAGIC.WIND_NAMES[this.wind()];
+};
+
+Game_BattlerBase.prototype.setWind = function(wind: WindName) {
+    this._wind = wind;
+};
+
+/**
+ * Arcane Magic talent the battler's wind gives access to
+ * Dhar draws on no Arcane Lore, so a battler tied to it has none
+ */
+Game_BattlerBase.prototype.arcaneTalent = function() {
+    return TEW.MAGIC.ARCANE_TALENTS[this.wind()];
+};
+
+Game_BattlerBase.prototype.hasPettyMagic = function() {
+    return this.hasTalent(TEW.MAGIC.PETTY_TALENT);
+};
+
+// Whether the battler studies the lore of their own wind, which is what specialises Channelling
+Game_BattlerBase.prototype.hasWindMagic = function() {
+    return !!this.arcaneTalent() && this.hasTalent(this.arcaneTalent());
+};
+
+/**
+ * Whether the battler may cast arcane spells at all
+ * The lesser lores are granted outright by a career rather than by a wind, and open the generic
+ * arcane spells just like the eight Arcane Lores do
+ */
+Game_BattlerBase.prototype.hasArcaneMagic = function() {
+    return this.hasWindMagic()
+        || TEW.MAGIC.LESSER_ARCANE_TALENTS.some((talentId: string) => this.hasTalent(talentId));
+};
+
+/**
+ * Whether the battler's talents open a spell domain
+ * Lore spells need the Arcane Magic talent of the very wind they are drawn from, so the lesser
+ * lores and the other winds give no access to them
+ */
+Game_BattlerBase.prototype.canCastDomain = function(domain: SpellDomain) {
+    if (domain === SpellDomain.PETTY) {
+        return this.hasPettyMagic();
+    }
+    if (domain === SpellDomain.ARCANE) {
+        return this.hasArcaneMagic();
+    }
+    return this.hasWindMagic() && TEW.MAGIC.WIND_DOMAINS[this.wind()] === domain;
+};
+
+/**
+ * Name of the Channelling competence, which is both grouped and ungrouped.
+ * It is specialised into the battler's wind once they study that wind's lore, and stays the
+ * untrained skill until then.
+ */
+Game_BattlerBase.prototype.channellingName = function() {
+    const name = TEW.DATABASE.COMPS.SET[TEW.MAGIC.CHANNELLING_COMP].name;
+    if (!this.hasWindMagic()) {
+        return name;
+    }
+    return `${name} (${this.windName()})`;
+};
+
+// Name a competence goes by for this battler, which only Channelling changes
+Game_BattlerBase.prototype.compName = function(compId: string) {
+    if (compId === TEW.MAGIC.CHANNELLING_COMP) {
+        return this.channellingName();
+    }
+    return TEW.DATABASE.COMPS.SET[compId].name;
 };
 
 // Items

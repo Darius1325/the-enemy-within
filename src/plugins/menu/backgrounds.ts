@@ -10,7 +10,9 @@ import Window_InventoryTransferSpinner from "./inventory/Window_InventoryTransfe
 import Window_InventoryInfo from "./inventory/info/Window_InventoryInfo";
 import Window_Journals from "./journals/Window_Journals";
 import Window_StatusCommand from "./status/Window_StatusCommand";
-import Window_StatusStats from "./status/Window_StatusStats";
+import Window_StatusLevellingChoice from "./status/Window_StatusLevellingChoice";
+import Window_StatusLevellingSummary from "./status/Window_StatusLevellingSummary";
+import Window_StatusStats from "./status/stats/Window_StatusStats";
 import Window_StatusTalentDetails from "./status/talents/Window_StatusTalentDetails";
 import Window_StatusTalents from "./status/talents/Window_StatusTalents";
 
@@ -65,6 +67,20 @@ Window_StatusStats.prototype.windowWidth = function() {
 };
 Window_StatusStats.prototype.windowHeight = function() {
     return Graphics.boxHeight - TEW.MENU.STATUS_WINDOW_TOPBAR_HEIGHT;
+};
+
+Window_StatusLevellingSummary.prototype.windowWidth = function() {
+    return Graphics.boxWidth / 2; // TODO: adjust once the background is redrawn
+};
+Window_StatusLevellingSummary.prototype.windowHeight = function() {
+    return 650;
+};
+
+Window_StatusLevellingChoice.prototype.windowWidth = function() {
+    return Graphics.boxWidth / 2; // TODO: adjust once the background is redrawn
+};
+Window_StatusLevellingChoice.prototype.windowHeight = function() {
+    return 650;
 };
 
 Window_StatusTalents.prototype.backgroundImageName = function() {

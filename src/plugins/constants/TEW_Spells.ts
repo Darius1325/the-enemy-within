@@ -740,7 +740,7 @@ TEW.DATABASE.SPELLS.SET = {
     AQSHYS_AEGIS: {
         name: "Aqshy's Aegis",
         type: SpellType.SPELL,
-        domain: SpellDomain.FIRE,
+        domain: SpellDomain.AQSHY,
         cn: 5,
         target: {
             type: SpellTarget.SELF
@@ -757,7 +757,7 @@ TEW.DATABASE.SPELLS.SET = {
     CAUTERISE: {
         name: "Cauterise",
         type: SpellType.SPELL,
-        domain: SpellDomain.FIRE,
+        domain: SpellDomain.AQSHY,
         cn: 4,
         range: {
             type: SpellRange.TOUCH
@@ -777,7 +777,7 @@ TEW.DATABASE.SPELLS.SET = {
     CROWN_OF_FLAME: {
         name: "Crown of Flame",
         type: SpellType.SPELL,
-        domain: SpellDomain.FIRE,
+        domain: SpellDomain.AQSHY,
         cn: 8,
         target: {
             type: SpellTarget.SELF
@@ -794,7 +794,7 @@ TEW.DATABASE.SPELLS.SET = {
     FLAMING_HEARTS: {
         name: "Flaming Hearts",
         type: SpellType.SPELL,
-        domain: SpellDomain.FIRE,
+        domain: SpellDomain.AQSHY,
         cn: 8,
         range: {
             type: SpellRange.WILL
@@ -815,7 +815,7 @@ TEW.DATABASE.SPELLS.SET = {
     FIREWALL: {
         name: "Firewall",
         type: SpellType.SPELL,
-        domain: SpellDomain.FIRE,
+        domain: SpellDomain.AQSHY,
         cn: 6,
         range: {
             type: SpellRange.WILL
@@ -836,7 +836,7 @@ TEW.DATABASE.SPELLS.SET = {
     GREAT_FIRES_OF_UZHUL: {
         name: "Great Fires of U'Zhul",
         type: SpellType.SPELL,
-        domain: SpellDomain.FIRE,
+        domain: SpellDomain.AQSHY,
         cn: 10,
         range: {
             type: SpellRange.WILL
@@ -857,7 +857,7 @@ TEW.DATABASE.SPELLS.SET = {
     FLAMING_SWORD_OF_RHUIN: {
         name: "Flaming Sword of Rhuin",
         type: SpellType.SPELL,
-        domain: SpellDomain.FIRE,
+        domain: SpellDomain.AQSHY,
         cn: 8,
         range: {
             type: SpellRange.WILL
@@ -877,7 +877,7 @@ TEW.DATABASE.SPELLS.SET = {
     PURGE: {
         name: "Purge",
         type: SpellType.SPELL,
-        domain: SpellDomain.FIRE,
+        domain: SpellDomain.AQSHY,
         cn: 10,
         range: {
             type: SpellRange.WILL
