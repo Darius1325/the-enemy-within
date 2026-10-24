@@ -18,10 +18,9 @@ import { Talent } from "./talent";
 import { MeleeWeapon } from "./meleeWeapon";
 import { RangedWeapon } from "./rangedWeapon";
 import { Ammunition } from "./ammunition";
-import { ArmorGroup, SpellDomain, WeaponGroup, WeaponQuality, Wind, WindName } from "./enum";
+import { ArmorGroup, BattlerAIType, SpellDomain, WeaponGroup, WeaponQuality, Wind, WindName } from "./enum";
 import {Game_BattlerBase} from "../base/stats/Game_BattlerBase";
 import { Troop } from "./troop";
-import { BattlerAI } from "./battlerAI";
 import { Quest } from "./quest";
 import { Glossary } from "./glossary";
 import { TutorialCategory } from "./tutorial";
@@ -31,6 +30,8 @@ import { Critical } from "./critical";
 import { Condition } from "./condition";
 import { Career, CareerPath } from "./career";
 import { SpecialisationGroup, SpecialisationPick } from "./specialisation";
+import { BattlerAI } from "./battlerAI";
+import { Combat } from "./combat";
 
 /** Storage object for all TEW plugins */
 const TEW: {
@@ -155,7 +156,9 @@ const TEW: {
 
             TROOPS?: Record<string, Troop>;
 
-            AI?: Record<string, BattlerAI>;
+            AI?: Record<keyof typeof BattlerAIType, BattlerAI>;
+
+            UTILITIES?: {[key: string]: any};
         };
 
         CONDITIONS?: Record<string, Condition>;
@@ -188,6 +191,9 @@ const TEW: {
 
         /** Documents, displayed in gathered evidence and controlled by an id list: */
         JOURNAL_DOCUMENTS?: JournalDocument[];
+
+        /**Combats*/
+        COMBATS?: Record<string, Combat>;
     };
 
     /**

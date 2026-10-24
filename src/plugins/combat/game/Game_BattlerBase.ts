@@ -1,6 +1,8 @@
 // $PluginCompiler TEW_Combat.js
 
-export default interface Game_BattlerBase {}
+export default interface Game_BattlerBase {
+    move: () => number;
+}
 // $StartCompilation
 
 //-----------------------------------------------------------------------------

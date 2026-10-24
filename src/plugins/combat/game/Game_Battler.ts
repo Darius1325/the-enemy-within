@@ -3,6 +3,7 @@
 import TEW from "../../_types/tew";
 import { Point } from "../../_types/point";
 import Game_BattlerBase from "./Game_BattlerBase";
+import { Game_CharacterBase } from "../../../rmmv/objects/Game_CharacterBase";
 
 export default interface Game_Battler extends Game_BattlerBase {
     x: number;
@@ -11,11 +12,16 @@ export default interface Game_Battler extends Game_BattlerBase {
     tx: number;
     ty: number;
 
+    _actionCount: number;
+    _moveCount: number;
+
     isAlive: () => boolean;
     isActor: () => boolean;
     isEnemy: () => boolean;
     
     onTurnStart: () => void;
+
+    event: () => Game_CharacterBase;
 }
 
 // $StartCompilation

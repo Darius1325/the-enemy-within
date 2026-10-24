@@ -11,11 +11,23 @@ import { StatArray } from "../import";
 // The game object class for an enemy.
 
 
-// TODO turn 99 into a TEW battle system constant
+// TODO we do'nt gaf
 Object.defineProperties(Game_Enemy.prototype, {
     // AGGressivity
     agg: { get: function() { return this.tparam('Aggro') || 99; }, configurable: true }
 });
+
+Game_Enemy.prototype.initialize = function(enemyId: string, x: number, y: number, ai: string) {
+    Game_Battler.prototype.initialize.call(this);
+    this.setup(enemyId, x, y);
+    this._ai = ai;
+
+    const data = TEW.DATABASE.NPCS.SET[enemyId];
+
+    for (let weapon of data.weapons) {
+        this.addWeapon(weapon);
+    }
+};
 
 Game_Enemy.prototype.currentBattler = function() {
     return this.enemy();
@@ -41,18 +53,8 @@ Game_Enemy.prototype.makeMoves = function() {
     Game_Battler.prototype.makeMoves.call(this);
 };
 
-// TODO make 'DEFAULT' a constant
 Game_Enemy.prototype.makeActions = function() {
-    Game_Battler.prototype.makeActions.call(this);
-    if (this.numActions() > 0) {
-        var actionList = this.getAI().actions.filter(function(a) {
-            return this.isActionValid(a);
-        }, this);
-        if (actionList.length > 0) {
-            this.selectAllActions(actionList);
-        }
-    }
-    this.setActionState('waiting');
+    // Override
 };
 
 Game_Enemy.prototype.findMoves = function() {
@@ -106,7 +108,7 @@ Game_Enemy.prototype.paramBase = function(paramId: number) {
     if (paramId === 0) {
         return TEW.DATABASE.NPCS.SET[this._enemyId].wounds;
     }
-    return TEW.DATABASE.NPCS.SET[this._enemyId].stats[this.statName(paramId)];
+    return TEW.DATABASE.NPCS.SET[this._enemyId].stats[paramId];
 }
 
 // MHP is handled separately
@@ -119,8 +121,7 @@ Game_Enemy.prototype.enemy = function() {
 }
 
 Game_Enemy.prototype.getAI = function() {
-    const aiId = this.tparam('AI') || 'DEFAULT';
-    return TEW.DATABASE.NPCS.AI[aiId];
+    return TEW.DATABASE.NPCS.AI[this._ai];
 }
 
 Game_Enemy.prototype.refresh = function() {

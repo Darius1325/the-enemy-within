@@ -595,7 +595,7 @@ Game_Actor.prototype.initCecile = function() {
     this.addAmmo('BOLT', 20);
 
     // conditions
-    this.addCondition("ABLAZE", 3);
+    // this.addCondition("ABLAZE", 3);
 
     // XP
     this._exp = 500;

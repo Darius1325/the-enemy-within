@@ -25,11 +25,14 @@ Game_TroopTs.prototype.clear = function() {
     this._enemies = [];
 };
 
-Game_TroopTs.prototype.addEnemy = function(enemyId, event) {
-    var enemy = new Game_Enemy(enemyId);
+Game_TroopTs.prototype.addEnemy = function(enemyId, event, ai = "DEFAULT") {
+    var enemy = new Game_Enemy(enemyId, 0, 0, ai);
     var eventId = event.eventId();
     this._enemies.push(enemy);
     enemy.setupEvent(eventId);
+    // temp
+    enemy.equipMainHand(1);
+    // temp
 };
 
 Game_TroopTs.prototype.addTroop = function(index, event) {

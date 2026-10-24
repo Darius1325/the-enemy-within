@@ -4,20 +4,7 @@ import TEW from "../../_types/tew";
 import Game_Battler from "./Game_Battler";
 import Game_Actor from "./Game_Actor";
 import { $gameSelfSwitches } from "../../../rmmv/variables";
-
-interface BattleManager {
-    _phase: Phase;
-    _battlePhase: BattlePhase;
-    
-    _battlerIndex: number;
-    
-    _troopId: number;
-    _canLose: boolean;
-    _canEscape: boolean;
-    
-    _preemptive: boolean; // TODO Obsolete
-    _surprise: boolean; // TODO Obsolete
-}
+import { BattleOption } from "../../_types/enum";
 
 // $StartCompilation
 
@@ -84,15 +71,16 @@ BattleManager.spendAction = function() {
     }
 }
 
-BattleManager.setup = function(troopId: number, canEscape: boolean, canLose: boolean) {
+BattleManager.setup = function(battleId: string, canEscape: boolean, canLose: boolean) {
     this.initMembers();
     this._canEscape = canEscape;
     this._canLose = canLose;
-    this.makeEscapeRatio();
-    $gameTroop.setup(troopId);
+    console.log("Setup battle processing")
+    $gameTroop.setup(battleId);
     $gameSwitches.update();
     $gameVariables.update();
     $gameSelector.performTransfer($gamePlayer.x, $gamePlayer.y);
+    console.log("Battle start")
     this._phase = Phase.Start;
 };
 
@@ -150,7 +138,8 @@ BattleManager.addGameParty = function(event) {
 
 BattleManager.addGameEnemy = function(event) {
     const npcId : string = event.tparam('NPC');
-    $gameTroopTs.addEnemy(npcId, event);
+    const ai: string = event.tparam('AI') || TEW.DATABASE.NPCS.SET[npcId].ai || "DEFAULT";
+    $gameTroopTs.addEnemy(npcId, event, ai);
 };
 
 BattleManager.addGameTroop = function(event) {
@@ -174,19 +163,6 @@ BattleManager.setInfoWindow = function(infoWindow) {
     this._infoWindow = infoWindow;
 };
 
-BattleManager.onEncounter = function() {
-    this._preemptive = (Math.random() < this.ratePreemptive());
-    this._surprise = (Math.random() < this.rateSurprise() && !this._preemptive);
-};
-
-BattleManager.ratePreemptive = function() {
-    return $gameParty.ratePreemptive($gameTroop.agility());
-};
-
-BattleManager.rateSurprise = function() {
-    return $gameParty.rateSurprise($gameTroop.agility());
-};
-
 BattleManager.startBattle = function() {
     $gamePartyTs.onBattleStart();
     $gameTroopTs.onBattleStart();
@@ -205,11 +181,6 @@ BattleManager.isActive = function() {
         }
     }
     return false;
-};
-
-// TODO remove
-BattleManager.makeEscapeRatio = function() {
-    this._escapeRatio = 0.5 * $gameParty.agility() / $gameTroop.agility();
 };
 
 BattleManager.update = function() {
@@ -323,13 +294,9 @@ BattleManager.battlePhase = function() {
     return this._battlePhase;
 };
 
-// BattleManager.isPlayerPhase = function() {
-//     return this._phase === Phase.Battlers;
-// };
-
-// BattleManager.isEnemyPhase = function() {
-//     return this._phase === Phase.Battlers;
-// };
+BattleManager.setBattlePhase = function(battlePhase: BattlePhase) {
+    this._battlePhase = battlePhase;
+};
 
 BattleManager.isBattleEnd = function() {
     return this._phase === Phase.BattleEnd;
@@ -381,11 +348,6 @@ BattleManager.battler = function() {
     return null;
 };
 
- // TODO remove when managing enemies
-BattleManager.makeEnemyOrders = function() {
-    this._enemiesOrder = $gameTroopTs.battleMembers();
-};
-
 // TODO call once when battle starts
 BattleManager.makeTurnOrder = function() {
     const playerInitRolls = $gamePartyTs.members()
@@ -417,8 +379,6 @@ BattleManager.turnIndex = function() {
 
 BattleManager.updateStartPhase = function() {
     $gameTroop.increaseTurn(); // useless ?
-
-    this.makeEnemyOrders(); // TODO remove when managing enemies
 
     this.makeTurnOrder();
 
@@ -662,23 +622,32 @@ BattleManager.updateStartPlayer = function() {
 
 BattleManager.updateStartEnemy = function() {
     $gameSelector.setTransparent(false);
+    this._subject.onTurnStart();
     this.updateEnemyPhase();
     // this._battlePhase = BattlePhase.TurnEnd;
 };
 
 BattleManager.updateEnemyPhase = function() {
     this._battlePhase = BattlePhase.ProcessMove;
-    this._subject = $gameTroopTs.members()[this._battlerIndex];
-    $gameTroop.setupTactics([this._subject]);
-    this._subject.makeMoves();
-    this._subject.findMoves();
-    this._subject.makeActions();
+    $gameTroop.setupTactics([this._subject]); // TODO optimization
+    
+    // Call custom decision algorithm
+    const decisionAlgorithm = this._subject.getAI();
+    console.log("Battler AI: ", this._subject._ai);
+    const actionParameters = decisionAlgorithm(this._subject, $gameTroopTs.members(), $gamePartyTs.members());
+    console.log("Decision: ", actionParameters);
+    
+    this.supplementActionParameters(actionParameters);
+
+    const action = new Game_Action(
+        this._subject,
+        false,
+        actionParameters
+    );
+
+    action.apply();
+
     $gameMap.clearTiles();
-    if (this._subject.isPattern()) {
-        var x = this._subject.tx;
-        var y = this._subject.ty;
-        $gameSelector.performTransfer(x, y);
-    }
 };
 
 BattleManager.updateMove = function(forceAttackAfterMove = false) {
@@ -688,26 +657,38 @@ BattleManager.updateMove = function(forceAttackAfterMove = false) {
             action.applyMove();
             this._subject.nextMove();
         }
+        // TODO dead cases
         if (!action || !action.isMove()) {
-            console.log(action);
             if (forceAttackAfterMove) {
+                console.log("Should be a charge:", action);
                 // TODO better handling with processAction ?
-                // TODO constant
-                const action = new Game_Action(this._subject, false, { attackRoll: 10 });
-                action.setAttack();
-                const target = $gameSelector.select();
+                // TODO constant/function
+                const attack = Game_Action.chargeAttack(this._subject, $gameSelector.select(), true); // TODO find charge roll
 
                 // TODO melee weapon or hit unarmed
                 if (this._subject.isAdjacentTo($gameSelector)) {
-                    action.apply(target);
+                    attack.apply();
                 }
                 this.endAction();
             } else if (this.canInput() && this._subject.canInput() && this._subject.isActor()) {
                 this._battlePhase = BattlePhase.InputCommand;
             } else {
-                this.setupAction();
+                this.endAction();
+                // this.setupAction();
             }
         }
+    }
+};
+
+BattleManager.supplementActionParameters = function(parameters) {
+    const option = parameters.option;
+    if (option === BattleOption.MELEE_ATTACK || option === BattleOption.RANGED_ATTACK || option === BattleOption.RELOAD) {
+        const weaponId = this._subject.mainHand().id;
+        parameters.weapon = TEW.DATABASE.WEAPONS.MELEE_SET[weaponId] || TEW.DATABASE.WEAPONS.RANGED_SET[weaponId]; // TODO second hand
+    } else if (option === BattleOption.USE_ITEM) {
+        // TODO
+    } else if (option === BattleOption.USE_SPELL) {
+        // TODO
     }
 };
 
@@ -763,11 +744,10 @@ BattleManager.endAction = function() {
     $gameSelector.updateSelect();
     $gameMap.clearTiles();
     $gameTemp.setCancel(true);
-    var subject = this._subject;
-    subject.onAllActionsEnd();
-    this._logWindow.displayAutoAffectedStatus(subject);
-    this._logWindow.displayCurrentState(subject);
-    this._logWindow.displayRegeneration(subject);
+    this._subject.onAllActionsEnd();
+    this._logWindow.displayAutoAffectedStatus(this._subject);
+    this._logWindow.displayCurrentState(this._subject);
+    this._logWindow.displayRegeneration(this._subject);
     this._battlePhase = BattlePhase.Close;
 };
 
@@ -796,7 +776,7 @@ BattleManager.startAction = function() {
     this._battlePhase = BattlePhase.Action;
     this._subject.useItem(this._action.item());
     this._action.applyGlobal();
-    this._logWindow.startAction(this._subject, this._action, this._targets);
+    // this._logWindow.startAction(this._subject, this._action, this._targets);
 };
 
 BattleManager.updateAction = function() {
@@ -887,7 +867,6 @@ BattleManager.endPlayerPhase = function() {
     $gameSelector.setTransparent(true);
     $gameSelector.savePosition();
     $gameMap.clearTiles();
-    this.makeEnemyOrders();
 };
 
 BattleManager.endEnemyPhase = function() {

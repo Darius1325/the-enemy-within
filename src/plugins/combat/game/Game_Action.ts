@@ -1,9 +1,13 @@
 // $PluginCompiler TEW_Combat.js
 
-import { BodyLocation, ConditionId, SpellEffectType, SpellRange, SpellTarget, SpellTargetRadius, Stat, WeaponGroup } from "../../_types/enum";
+import { CompleteBattler } from "../../_types/battlerAI";
+import { BattleOption, BattleTargetType, BodyLocation, ConditionId, GameActionUsableObject, SpellEffectType, SpellRange, SpellTarget, SpellTargetRadius, Stat, WeaponGroup } from "../../_types/enum";
+import { MeleeWeapon } from "../../_types/meleeWeapon";
+import { RangedWeapon } from "../../_types/rangedWeapon";
 import { Spell } from "../../_types/spell";
 import TEW from "../../_types/tew";
 import { Game_BattlerBase } from "../../base/stats/Game_BattlerBase";
+import { BattlePhase } from "./BattleManager";
 import Game_Battler from "./Game_Battler";
 
 // $StartCompilation
@@ -13,32 +17,156 @@ import Game_Battler from "./Game_Battler";
 //
 // The game object class for a battle action.
 
-TEW.MEMORY.gameActionInit = Game_Action.prototype.initialize;
 // TODO +10 when deafened and attacking from behind/flank
 // TODO +20 if prone
 // TODO +20 if surprised
 // TODO +10 if blinded
 // TODO bonus on unconscious
-Game_Action.prototype.initialize = function(subject, forcing, modifiers = {}) {
-    TEW.MEMORY.gameActionInit.call(this, subject, forcing);
+Game_Action.prototype.initialize = function(subject, forcing, params = undefined, modifiers = {}) {
+    this._subjectActorId = 0;
+    this._subjectEnemyIndex = -1;
+    this._subject = subject;
+    
+    this._forcing = forcing || false; // legacy
+
+    this.setSubject(subject);
+    this.clear();
+
     this._moveRoute = 0;
     this._modifiers = modifiers;
     this._aoeRange = [];
 
     this._subjectAbilityRoll = undefined;
+
+    this._objectType = GameActionUsableObject.ITEM;
+    this._targets = [];
+
+    // TODO separate function
+    if (params === undefined) {
+        console.log("INFO Legacy Game_Action init, look into it");
+    } else {
+        this._option = params.option;
+
+        if (this.isMove()) {
+            this._moveRoute = this._subject.makeShortestMoves
+        } if (params.weapon) {
+            this._object = params.weapon;
+            this._objectType = GameActionUsableObject.WEAPON;
+        } else if (params.spell) {
+            this._object = params.spell;
+            this._objectType = GameActionUsableObject.SPELL;
+        } else if (params.item) {
+            this._object = params.item;
+        }
+
+        if (params.target?.type === BattleTargetType.BATTLER) {
+            this._targets = [params.target.target];
+        } else if (params.target?.type === BattleTargetType.TILE) {
+            this._targetTile = params.target.target;
+        }
+    }
 };
 
-Game_Action.prototype.combatOpponentsUnit = function(battler) {
-    var units = battler.opponentsUnitTS().aliveMembers();
-    return this.searchBattlers(battler, units);
+Game_Action.prototype.subject = function() {
+    return this._subject;
 };
 
-Game_Action.prototype.combatFriendsUnit = function(battler) {
-    var friends = battler.friendsUnitTS().aliveMembers();
-    return [battler].concat(this.searchBattlers(battler, friends));
+Game_Action.prototype.getTargettableEnemies = function() {
+    const battlers = this._subject.opponentsUnitTS().aliveMembers();
+    return this.findBattlersInRange(battlers);
+};
+
+Game_Action.prototype.getTargettableAllies = function() {
+    const battlers = this._subject.friendsUnitTS().aliveMembers();
+    return this.findBattlersInRange(battlers);
+};
+
+Game_Action.prototype.findBattlersInRange = function(battlers: Game_Battler[]) {
+    const battlersInRange = [];
+
+    const range: number = this.updateRange();
+    this.updateAoeRange();
+
+    const rangeSquared = range * range;
+    for (let battler of battlers) {
+        if (this.isInEuclideanDistance(rangeSquared, battler.tx, battler.ty, this._subject.tx, this._subject.ty)) {
+            battlersInRange.push(battler);
+        }
+    }
+    return battlersInRange;
+};
+
+Game_Action.prototype.updateRange = function() {
+    const range = this.extractRangeData();
+    // TODO better algorithm for obstacles
+    this._range = this.computeEuclideanRange(0, range, this._subject.tx, this._subject.ty);
+    return range;
+};
+
+Game_Action.prototype.extractRangeData = function() {
+    const range = this._object?.range;
+    if (range) {
+        if (typeof range === 'number') {
+            return range;
+        } else { // Spell range
+            const rangeType: SpellRange = range.type;
+            switch (rangeType) {
+                case SpellRange.SELF: return 0;
+                case SpellRange.TOUCH: return 1;
+                case SpellRange.WILL: return this._subject.paramByName(Stat.WILL);
+                case SpellRange.ONE: return 0; // TODO WTF
+            }
+        }
+    }
+    return 0;
+};
+
+Game_Action.prototype.updateAoeRange = function() {
+    const aoe = this.extractAoeData();
+    if (aoe !== 0) {
+        this._aoeRange = this.computeEuclideanRange(0, aoe, $gameSelector._x, $gameSelector._y);
+        this._aoeRange.push([$gameSelector._x, $gameSelector._y]);
+    } else {
+        this._aoeRange = [];
+    }
+    return aoe;
+};
+
+// TODO
+Game_Action.prototype.extractAoeData = function() {
+    const target = this._object?.target;
+    if (target) {
+        const targetType: SpellTarget = target.type;
+        if (targetType === SpellTarget.AOE) {
+            const targetRadius: SpellTargetRadius = target.distance;
+            if (targetRadius === SpellTargetRadius.WILL_BONUS) {
+                return this._subject.paramBonus(Stat.WILL);
+            }
+        }
+    }
+    // Default case
+    return 0;
+};
+
+Game_Action.prototype.computeEuclideanRange = function(d: number, x: number, y: number) {
+    const range = [];
+    const dSquared = d * d;
+    for (var i = x - d; i <= x + d; i++) {
+        for (var j = y - d; j <= y + d; j++) {
+            if (this.isInEuclideanDistance(dSquared, i, j, x, y)) {
+                range.push([i, j]);
+            }
+        }
+    }
+    return range;
+};
+
+Game_Action.prototype.isInEuclideanDistance = function(dSquared: number, x: number, y: number, centerX: number, centerY: number) {
+    return (x - centerX) * (x - centerX) + (y - centerY) * (y - centerY) <= dSquared;
 };
 
 Game_Action.prototype.searchBattlers = function(battler, units) {
+    console.log("INFO Legacy Game_Action call searchBattlers, look into it");
     var battlers = [];
     var item;
     if (this.isAttackRange(battler)) { // TODO fuse this with base flow ?
@@ -46,8 +174,8 @@ Game_Action.prototype.searchBattlers = function(battler, units) {
     } else {
         item = this.item();
     }
-    this.updateRange(item, battler);
-    this.updateAoeRange(item, battler);
+    this.updateRangeLegacy(item, battler);
+    this.updateAoeRangeLegacy(item, battler);
     for (var i = 0; i < this._range.length; i++) {
         var redCell = this._range[i];
         var x = redCell[0];
@@ -63,11 +191,13 @@ Game_Action.prototype.searchBattlers = function(battler, units) {
 };
 
 Game_Action.prototype.isAttackRange = function (subject) {
+    console.log("INFO Legacy Game_Action call isAttackRange, look into it");
     return subject.isActor() && this.isAttack();
 };
 
-Game_Action.prototype.updateRange = function(item, battler: Game_Battler) {
-    const range = this.extractRangeData(item, battler);
+Game_Action.prototype.updateRangeLegacy = function(item, battler: Game_Battler) {
+    console.log("INFO Legacy Game_Action call updateRange, look into it");
+    const range = this.extractRangeDataLegacy(item, battler);
     // TODO better algorithm for obstacles
     if (range === 0 || this.isForUser()) {
         this._range = [[battler.tx, battler.ty]];
@@ -76,7 +206,8 @@ Game_Action.prototype.updateRange = function(item, battler: Game_Battler) {
     }
 };
 
-Game_Action.prototype.extractRangeData = function(object, battler: Game_BattlerBase) {
+Game_Action.prototype.extractRangeDataLegacy = function(object, battler: Game_BattlerBase) {
+    console.log("INFO Legacy Game_Action call extractRangeData, look into it");
     const range = object?.range;
     if (range) {
         if (typeof range === 'number') {
@@ -95,8 +226,9 @@ Game_Action.prototype.extractRangeData = function(object, battler: Game_BattlerB
     return TEW.COMBAT.SYSTEM.actionRange;
 };
 
-Game_Action.prototype.updateAoeRange = function(item, battler: Game_Battler) {
-    const aoe = this.extractAoeData(item, battler);
+Game_Action.prototype.updateAoeRangeLegacy = function(item, battler: Game_Battler) {
+    console.log("INFO Legacy Game_Action call updateAoeRange, look into it");
+    const aoe = this.extractAoeDataLegacy(item, battler);
     if (aoe !== 0) {
         this._aoeRange = this.createRange(0, aoe, $gameSelector._x, $gameSelector._y, aoe === 1 ? 'diamond' : 'euclidean');
         this._aoeRange.push([$gameSelector._x, $gameSelector._y]);
@@ -106,7 +238,8 @@ Game_Action.prototype.updateAoeRange = function(item, battler: Game_Battler) {
 };
 
 // TODO
-Game_Action.prototype.extractAoeData = function(object, battler: Game_BattlerBase) {
+Game_Action.prototype.extractAoeDataLegacy = function(object, battler: Game_BattlerBase) {
+    console.log("INFO Legacy Game_Action call extractAoeData, look into it");
     const target = object.target;
     if (target) {
         const targetType: SpellTarget = target.type;
@@ -122,6 +255,7 @@ Game_Action.prototype.extractAoeData = function(object, battler: Game_BattlerBas
 };
 
 Game_Action.prototype.createRange = function(d1, d2, x, y, shape) {
+    console.log("INFO Legacy Game_Action call createRange, look into it");
     var range = [];
     for (var i = x - d2; i <= x + d2; i++) {
         for (var j = y - d2; j <= y + d2; j++) {
@@ -162,23 +296,28 @@ Game_Action.prototype.showAreaOfEffect = function() {
     }, this)
 };
 
+// TODO refactor this shit
 Game_Action.prototype.isInRange = function(x: number, y: number) {
     return this._range.some(pos => pos[0] === x && pos[1] === y);
 };
 
+// TODO refactor this shit
 Game_Action.prototype.color = function() {
     return this.isForFriend() ? TEW.COMBAT.SYSTEM.allyScopeColor : TEW.COMBAT.SYSTEM.enemyScopeColor;
 };
 
 Game_Action.prototype.setSpell = function(spellId: string) {
+    console.log("INFO Legacy Game_Action call setSpell, look into it");
     this._item.setObject(TEW.DATABASE.SPELLS.ARRAY.find(entry => entry[0] === spellId));
 };
 
 Game_Action.prototype.isSpell = function() {
+    console.log("INFO Legacy Game_Action call isSpell, look into it");
     return this._item.isSpell();
 };
 
 Game_Action.prototype.testDamageMinMaxValue = function(target, minMax) {
+    console.log("INFO Legacy Game_Action call testDamageMinMaxValue, look into it");
     var item = this.item();
     var baseValue = this.evalDamageFormula(target);
     var value = baseValue * this.calcElementRate(target);
@@ -198,6 +337,7 @@ Game_Action.prototype.testDamageMinMaxValue = function(target, minMax) {
 };
 
 Game_Action.prototype.testMinMaxVariance = function(damage, variance, minMax) {
+    console.log("INFO Legacy Game_Action call testMinMaxVariance, look into it");
     var amp = Math.floor(Math.max(Math.abs(damage) * variance / 100, 0));
     var v = minMax ? amp : - amp;
     return damage >= 0 ? damage + v : damage - v;
@@ -218,62 +358,76 @@ Game_Action.prototype.isTargetValid = function(battler) {
 };
 
 Game_Action.prototype.isMove = function() {
-    return this._moveRoute !== 0;
+    return this._moveRoute !== 0
+        || this._option === BattleOption.WALK || this._option === BattleOption.RUN;
 };
 
 Game_Action.prototype.setWait = function() {
+    console.log("INFO Legacy Game_Action call setWait, look into it");
     this.setSkill(this.subject().waitSkillId());
 };
 
 Game_Action.prototype.isWait = function() {
+    console.log("INFO Legacy Game_Action call isWait, look into it");
     return this.item() === $dataSkills[this.subject().waitSkillId()];
-};
-
-// TODO fishy
-TEW.MEMORY.gameActionSubject = Game_Action.prototype.subject;
-Game_Action.prototype.subject = function() {
-    TEW.MEMORY.gameActionSubject.call(this);
-    if ($gamePartyTs.inBattle()) {
-        if (this._subjectActorId <= 0) {
-            return $gameTroopTs.members()[this._subjectEnemyIndex];
-        }
-    }
-    return TEW.MEMORY.gameActionSubject.call(this);
-};
-
-TEW.MEMORY.gameActionSetSubject = Game_Action.prototype.setSubject;
-Game_Action.prototype.setSubject = function(subject) {
-    TEW.MEMORY.gameActionSetSubject.call(this, subject);
-    // For enemy restriction attack an ally...
-    if ($gamePartyTs.inBattle()) {
-        if (!subject.isActor()) {
-            this._subjectEnemyIndex = $gameTroopTs.members().indexOf(subject);
-        }
-    }
 };
 
 Game_Action.prototype.attackRollModifier = function() {
     return this._modifiers.attackRoll || 0;
 };
 
-Game_Action.prototype.apply = function(target) {
-    if (this.isAttack()) { // TODO may be obsolete if we rework attack actions
-        this.applyWeaponAttack(target);
-    } else if (this.isSpell()) {
+Game_Action.prototype.apply = function(_) {
+    console.log("INFO Legacy Game_Action call apply, look into it");
+    return this.apply();
+};
+
+Game_Action.prototype.apply = function() {
+    // TODO refactor + check that _targets is not empty
+    if (this._option === BattleOption.WALK || this._option === BattleOption.RUN) {
+        this.applyMove(); // TODO no?
+    } else if (this._option === BattleOption.CHARGE) {
+        this.applyCharge();
+    } else if (this._option === BattleOption.MELEE_ATTACK) {
+        this.applyMeleeWeaponAttack();
+    } else if (this._option === BattleOption.USE_SPELL) {
         this.applySpell();
     }
 };
 
-// TODO split magic resolution
-Game_Action.prototype.applyWeaponAttack = function(target) {
-    var result = target.result();
-    this.subject().clearResult();
-    result.clear();
+Game_Action.prototype.applyCharge = function() {
+    // TODO update here or not?
+    BattleManager.spendMove();
+    BattleManager.spendAction();
 
-    const attacker = this.subject();
-    const attackerWeapon = TEW.COMBAT.getWeaponFromId(attacker.equippedWeapon().id); // TODO attack with second hand
+    // TODO constant
+    // TODO handle crit fail?
+    const chargeTestResult = TEW.DICE.skillTest(this._subject, 'ATHLETICS', 20, !this._subject.isActor());
+    const maxMove = this._subject.baseMove() + chargeTestResult.sl;
+
+    const path = $gameMap.loadOrComputeChargeRangeForAI(
+        { x: this._subject.tx, y: this._subject.ty },
+        { ...this._targetTile },
+        this._subject.event()
+    ).slice(0, maxMove);
+
+    this._subject.moveAlongPredefinedPath(path);
+    $gameMap._flexibleMovement = true; // Go back to free movement range for next action
+    BattleManager.setBattlePhase(BattlePhase.ProcessCharge);
+    $gameMap.clearTiles();
+};
+
+Game_Action.prototype.applyMeleeWeaponAttack = function() {
+    // TODO unused ?
+    // var result = this._target.result();
+    // this._subject.clearResult();
+    // result.clear();
+
+    const attacker = this._subject;
+    const attackerWeapon: MeleeWeapon | RangedWeapon = this._object;
+    const target = this._targets[0];
+    // const attackerWeapon = TEW.COMBAT.getWeaponFromId(attacker.equippedWeapon().id); // TODO attack with second hand
     const attackerWeaponEffects = TEW.COMBAT.getWeaponQualityEffects(attackerWeapon);
-    const isMeleeWeapon = TEW.COMBAT.isMeleeWeapon(attackerWeapon);
+    // const isMeleeWeapon = TEW.COMBAT.isMeleeWeapon(attackerWeapon); // TODO should be unused
 
     const defenderWeapon = TEW.COMBAT.getWeaponFromId(target.equippedWeapon().id); // TODO defend with second hand
     const defenderWeaponEffects = TEW.COMBAT.getWeaponQualityEffects(defenderWeapon);
@@ -285,7 +439,7 @@ Game_Action.prototype.applyWeaponAttack = function(target) {
     const attackerCombatSkill = TEW.COMBAT.getAttackCompOrDefault(
         attacker,
         attackerWeapon.group,
-        isMeleeWeapon
+        true
     );
 
     // TODO Get (best) weapon from defender
@@ -311,18 +465,17 @@ Game_Action.prototype.applyWeaponAttack = function(target) {
         attackerConditionMod += 20;
         target.removeCondition(ConditionId.SURPRISED);
     }
-    if (isMeleeWeapon) {
-        if (target.hasCondition(ConditionId.BLINDED)) {
-            attackerConditionMod += 10;
-        }
-        // TODO deafened
-        // TODO prone
+    if (target.hasCondition(ConditionId.BLINDED)) {
+        attackerConditionMod += 10;
     }
+    // TODO deafened
+    // TODO prone
 
     // Defender condition modifiers
     const defenderConditionMod = target.totalConditionModifier();
     
     // Roll dice
+    console.log("NaN because of:", attackerCombatSkill, attackerWeaponEffects.attackMod, attackerConditionMod)
     const combatResult = TEW.DICE.combatOpposedSkillTest(
         attackerCombatSkill.value + attackerWeaponEffects.attackMod + this.attackRollModifier() + attackerConditionMod,
         defenderCombatSkill.value + defenderWeaponEffects.defenceMod + defenderConditionMod,
@@ -359,11 +512,9 @@ Game_Action.prototype.applyWeaponAttack = function(target) {
 
     // TODO Check attacker's talents on dice roll (make a list)
     // TODO Check weapon effects on dice roll (make a list)
-    // Check hit/miss
-    result.isHit = combatResult.slAttacker >= 0 && combatResult.success;
-    result.missed = !result.isHit;
+    // TODO miss
 
-    if (result.isHit) {
+    if (combatResult.slAttacker >= 0 && combatResult.success) {
         // TODO Check weapon effects on crit (make a list)
         // TODO Check for crits
 
@@ -400,14 +551,14 @@ Game_Action.prototype.applyWeaponAttack = function(target) {
         if (attackerWeaponEffects.effects.ENTANGLE) {
             target.addCondition(ConditionId.ENTANGLED, 1, attacker.paramBonus(Stat.STRG));
         }
-        if (!isMeleeWeapon) {
-            if (attackerWeapon.group === WeaponGroup.BLACKPOWDER) {
-                const brokenTestResult = TEW.DICE.skillTest(target, 'CALM', 20);
-                if (!brokenTestResult.success) {
-                    // add broken condition
-                }
-            }
-        }
+        // if (!isMeleeWeapon) {
+        //     if (attackerWeapon.group === WeaponGroup.BLACKPOWDER) {
+        //         const brokenTestResult = TEW.DICE.skillTest(target, 'CALM', 20);
+        //         if (!brokenTestResult.success) {
+        //             // add broken condition
+        //         }
+        //     }
+        // }
 
         // TODO Lookup crit table (help me)
     }
@@ -431,12 +582,13 @@ Game_Action.prototype.applyWeaponAttack = function(target) {
  * The attacker only rolls once tho, as the result is stored and retrieved for each supplementary target.
  */
 Game_Action.prototype.applySpell = function(target) {
-    var result = target.result();
-    this.subject().clearResult();
-    result.clear();
+    // TODO unused ?
+    // var result = target.result();
+    // this.subject().clearResult();
+    // result.clear();
     
-    const attacker = this.subject();
-    const spell: Spell = this.item();
+    const attacker = this._subject;
+    const spell: Spell = this._object;
     
     /*
     If Dice roll hasnt been made
@@ -489,6 +641,7 @@ Game_Action.prototype.applySpell = function(target) {
 // Calculating damage value
 // Used in auto battle actions
 Game_Action.prototype.makeDamageValue = function(target, critical) {
+    console.log("INFO Legacy Game_Action call makeDamageValue, look into it");
     var item = this.item();
     var baseValue = this.evalDamageFormula(target);
     var value = baseValue * this.calcElementRate(target);
@@ -517,6 +670,7 @@ Game_Action.prototype.makeTargets = function() {
     // TODO self-targetting
     // TODO multi-targetting?
 
+    // TODO optimize using euclidean distance
     // Special case for AOE attacks: user is a valid target and targets can be outside of attack range
     if (this._aoeRange.length > 0) {
         this._aoeRange.forEach((tile: [number, number]) => {
@@ -597,4 +751,34 @@ Game_Action.prototype.applyGlobal = function() {
     //         $gameTemp.reserveCommonEvent(effect.dataId);
     //     }
     // }, this);
+};
+
+Game_Action.prototype.combatOpponentsUnit = function(_) {
+    console.log("INFO Legacy Game_Action call combatOpponentsUnit, look into it");
+    return this.getTargettableEnemies();
+};
+
+Game_Action.prototype.combatFriendsUnit = function(_) {
+    console.log("INFO Legacy Game_Action call combatFriendsUnit, look into it");
+    return this.getTargettableAllies();
+};
+
+Game_Action.chargeAttack = function(subject: CompleteBattler, target: Game_Battler, success: boolean) {
+    return new Game_Action(
+        subject,
+        false,
+        {
+            option: BattleOption.MELEE_ATTACK,
+            target: {
+                type: BattleTargetType.BATTLER,
+                target,
+            },
+            weapon: TEW.DATABASE.WEAPONS.MELEE_SET[subject.mainHand().id]
+        },
+        { attackRoll: success ? 10 : 0 }
+    );
+};
+
+Game_Action.prototype.checkDamageType = function(_) {
+    return false;
 };

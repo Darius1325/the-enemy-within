@@ -337,3 +337,36 @@ export const enum CareerClass {
     ROGUE = "Rogue",
     WARRIOR = "Warrior"
 }
+
+export const enum BattlerAIType {
+    LAZY = "LAZY",
+    DEFAULT = "DEFAULT",
+    LAZY_RANGED = "LAZY_RANGED",
+    SMART_RANGED = "SMART_RANGED",
+    DEBUG = "DEBUG"
+}
+
+export const enum BattleOption {
+    WAIT,
+    WALK,
+    RUN,
+    CHARGE,
+    DISENGAGE,
+    SWITCH_WEAPONS,
+    MELEE_ATTACK,
+    RANGED_ATTACK,
+    USE_SPELL,
+    USE_ITEM,
+    RELOAD
+}
+
+export const enum BattleTargetType {
+    BATTLER,
+    TILE
+}
+
+export const enum GameActionUsableObject {
+    WEAPON,
+    SPELL,
+    ITEM
+}

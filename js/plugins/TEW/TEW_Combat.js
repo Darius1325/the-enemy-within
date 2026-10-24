@@ -788,15 +788,16 @@ BattleManager.spendAction = function () {
         this._subject._actionCount -= 1;
     }
 };
-BattleManager.setup = function (troopId, canEscape, canLose) {
+BattleManager.setup = function (battleId, canEscape, canLose) {
     this.initMembers();
     this._canEscape = canEscape;
     this._canLose = canLose;
-    this.makeEscapeRatio();
-    $gameTroop.setup(troopId);
+    console.log("Setup battle processing");
+    $gameTroop.setup(battleId);
     $gameSwitches.update();
     $gameVariables.update();
     $gameSelector.performTransfer($gamePlayer.x, $gamePlayer.y);
+    console.log("Battle start");
     this._phase = Phase.Start;
 };
 BattleManager.initMembers = function () {
@@ -852,7 +853,8 @@ BattleManager.addGameParty = function (event) {
 };
 BattleManager.addGameEnemy = function (event) {
     const npcId = event.tparam('NPC');
-    $gameTroopTs.addEnemy(npcId, event);
+    const ai = event.tparam('AI') || TEW.DATABASE.NPCS.SET[npcId].ai || "DEFAULT";
+    $gameTroopTs.addEnemy(npcId, event, ai);
 };
 BattleManager.addGameTroop = function (event) {
     const index = Number(event.tparam('Troop'));
@@ -869,16 +871,6 @@ BattleManager.setEnemyWindow = function (enemyWindow) {
 };
 BattleManager.setInfoWindow = function (infoWindow) {
     this._infoWindow = infoWindow;
-};
-BattleManager.onEncounter = function () {
-    this._preemptive = (Math.random() < this.ratePreemptive());
-    this._surprise = (Math.random() < this.rateSurprise() && !this._preemptive);
-};
-BattleManager.ratePreemptive = function () {
-    return $gameParty.ratePreemptive($gameTroop.agility());
-};
-BattleManager.rateSurprise = function () {
-    return $gameParty.rateSurprise($gameTroop.agility());
 };
 BattleManager.startBattle = function () {
     $gamePartyTs.onBattleStart();
@@ -897,10 +889,6 @@ BattleManager.isActive = function () {
         }
     }
     return false;
-};
-// TODO remove
-BattleManager.makeEscapeRatio = function () {
-    this._escapeRatio = 0.5 * $gameParty.agility() / $gameTroop.agility();
 };
 BattleManager.update = function () {
     if (!this.isBusy() && !this.updateEvent()) {
@@ -1004,12 +992,9 @@ BattleManager.phase = function () {
 BattleManager.battlePhase = function () {
     return this._battlePhase;
 };
-// BattleManager.isPlayerPhase = function() {
-//     return this._phase === Phase.Battlers;
-// };
-// BattleManager.isEnemyPhase = function() {
-//     return this._phase === Phase.Battlers;
-// };
+BattleManager.setBattlePhase = function (battlePhase) {
+    this._battlePhase = battlePhase;
+};
 BattleManager.isBattleEnd = function () {
     return this._phase === Phase.BattleEnd;
 };
@@ -1049,10 +1034,6 @@ BattleManager.battler = function () {
     }
     return null;
 };
-// TODO remove when managing enemies
-BattleManager.makeEnemyOrders = function () {
-    this._enemiesOrder = $gameTroopTs.battleMembers();
-};
 // TODO call once when battle starts
 BattleManager.makeTurnOrder = function () {
     const playerInitRolls = $gamePartyTs.members()
@@ -1080,7 +1061,6 @@ BattleManager.turnIndex = function () {
 };
 BattleManager.updateStartPhase = function () {
     $gameTroop.increaseTurn(); // useless ?
-    this.makeEnemyOrders(); // TODO remove when managing enemies
     this.makeTurnOrder();
     // $gameTroopTs.onTurnStart(); // play enemy related events ?? Idk what this does
     // $gamePartyTs.onTurnStart(); // TODO change flow from here
@@ -1303,22 +1283,22 @@ BattleManager.updateStartPlayer = function () {
 // };
 BattleManager.updateStartEnemy = function () {
     $gameSelector.setTransparent(false);
+    this._subject.onTurnStart();
     this.updateEnemyPhase();
     // this._battlePhase = BattlePhase.TurnEnd;
 };
 BattleManager.updateEnemyPhase = function () {
     this._battlePhase = BattlePhase.ProcessMove;
-    this._subject = $gameTroopTs.members()[this._battlerIndex];
-    $gameTroop.setupTactics([this._subject]);
-    this._subject.makeMoves();
-    this._subject.findMoves();
-    this._subject.makeActions();
+    $gameTroop.setupTactics([this._subject]); // TODO optimization
+    // Call custom decision algorithm
+    const decisionAlgorithm = this._subject.getAI();
+    console.log("Battler AI: ", this._subject._ai);
+    const actionParameters = decisionAlgorithm(this._subject, $gameTroopTs.members(), $gamePartyTs.members());
+    console.log("Decision: ", actionParameters);
+    this.supplementActionParameters(actionParameters);
+    const action = new Game_Action(this._subject, false, actionParameters);
+    action.apply();
     $gameMap.clearTiles();
-    if (this._subject.isPattern()) {
-        var x = this._subject.tx;
-        var y = this._subject.ty;
-        $gameSelector.performTransfer(x, y);
-    }
 };
 BattleManager.updateMove = function (forceAttackAfterMove = false) {
     if (!this._subject.isMoving()) {
@@ -1327,17 +1307,16 @@ BattleManager.updateMove = function (forceAttackAfterMove = false) {
             action.applyMove();
             this._subject.nextMove();
         }
+        // TODO dead cases
         if (!action || !action.isMove()) {
-            console.log(action);
             if (forceAttackAfterMove) {
+                console.log("Should be a charge:", action);
                 // TODO better handling with processAction ?
-                // TODO constant
-                const action = new Game_Action(this._subject, false, { attackRoll: 10 });
-                action.setAttack();
-                const target = $gameSelector.select();
+                // TODO constant/function
+                const attack = Game_Action.chargeAttack(this._subject, $gameSelector.select(), true); // TODO find charge roll
                 // TODO melee weapon or hit unarmed
                 if (this._subject.isAdjacentTo($gameSelector)) {
-                    action.apply(target);
+                    attack.apply();
                 }
                 this.endAction();
             }
@@ -1345,9 +1324,23 @@ BattleManager.updateMove = function (forceAttackAfterMove = false) {
                 this._battlePhase = BattlePhase.InputCommand;
             }
             else {
-                this.setupAction();
+                this.endAction();
+                // this.setupAction();
             }
         }
+    }
+};
+BattleManager.supplementActionParameters = function (parameters) {
+    const option = parameters.option;
+    if (option === 6 /* BattleOption.MELEE_ATTACK */ || option === 7 /* BattleOption.RANGED_ATTACK */ || option === 10 /* BattleOption.RELOAD */) {
+        const weaponId = this._subject.mainHand().id;
+        parameters.weapon = TEW.DATABASE.WEAPONS.MELEE_SET[weaponId] || TEW.DATABASE.WEAPONS.RANGED_SET[weaponId]; // TODO second hand
+    }
+    else if (option === 9 /* BattleOption.USE_ITEM */) {
+        // TODO
+    }
+    else if (option === 8 /* BattleOption.USE_SPELL */) {
+        // TODO
     }
 };
 BattleManager.setupAction = function () {
@@ -1401,11 +1394,10 @@ BattleManager.endAction = function () {
     $gameSelector.updateSelect();
     $gameMap.clearTiles();
     $gameTemp.setCancel(true);
-    var subject = this._subject;
-    subject.onAllActionsEnd();
-    this._logWindow.displayAutoAffectedStatus(subject);
-    this._logWindow.displayCurrentState(subject);
-    this._logWindow.displayRegeneration(subject);
+    this._subject.onAllActionsEnd();
+    this._logWindow.displayAutoAffectedStatus(this._subject);
+    this._logWindow.displayCurrentState(this._subject);
+    this._logWindow.displayRegeneration(this._subject);
     this._battlePhase = BattlePhase.Close;
 };
 BattleManager.updateClose = function () {
@@ -1431,7 +1423,7 @@ BattleManager.startAction = function () {
     this._battlePhase = BattlePhase.Action;
     this._subject.useItem(this._action.item());
     this._action.applyGlobal();
-    this._logWindow.startAction(this._subject, this._action, this._targets);
+    // this._logWindow.startAction(this._subject, this._action, this._targets);
 };
 BattleManager.updateAction = function () {
     this._targetIndex++;
@@ -1515,7 +1507,6 @@ BattleManager.endPlayerPhase = function () {
     $gameSelector.setTransparent(true);
     $gameSelector.savePosition();
     $gameMap.clearTiles();
-    this.makeEnemyOrders();
 };
 BattleManager.endEnemyPhase = function () {
     this._phase = Phase.Start;
@@ -1752,28 +1743,145 @@ DataManager.createGameObjects = function () {
 // Game_Action
 //
 // The game object class for a battle action.
-TEW.MEMORY.gameActionInit = Game_Action.prototype.initialize;
 // TODO +10 when deafened and attacking from behind/flank
 // TODO +20 if prone
 // TODO +20 if surprised
 // TODO +10 if blinded
 // TODO bonus on unconscious
-Game_Action.prototype.initialize = function (subject, forcing, modifiers = {}) {
-    TEW.MEMORY.gameActionInit.call(this, subject, forcing);
+Game_Action.prototype.initialize = function (subject, forcing, params = undefined, modifiers = {}) {
+    var _a, _b;
+    this._subjectActorId = 0;
+    this._subjectEnemyIndex = -1;
+    this._subject = subject;
+    this._forcing = forcing || false; // legacy
+    this.setSubject(subject);
+    this.clear();
     this._moveRoute = 0;
     this._modifiers = modifiers;
     this._aoeRange = [];
     this._subjectAbilityRoll = undefined;
+    this._objectType = 2 /* GameActionUsableObject.ITEM */;
+    this._targets = [];
+    // TODO separate function
+    if (params === undefined) {
+        console.log("INFO Legacy Game_Action init, look into it");
+    }
+    else {
+        this._option = params.option;
+        if (this.isMove()) {
+            this._moveRoute = this._subject.makeShortestMoves;
+        }
+        if (params.weapon) {
+            this._object = params.weapon;
+            this._objectType = 0 /* GameActionUsableObject.WEAPON */;
+        }
+        else if (params.spell) {
+            this._object = params.spell;
+            this._objectType = 1 /* GameActionUsableObject.SPELL */;
+        }
+        else if (params.item) {
+            this._object = params.item;
+        }
+        if (((_a = params.target) === null || _a === void 0 ? void 0 : _a.type) === 0 /* BattleTargetType.BATTLER */) {
+            this._targets = [params.target.target];
+        }
+        else if (((_b = params.target) === null || _b === void 0 ? void 0 : _b.type) === 1 /* BattleTargetType.TILE */) {
+            this._targetTile = params.target.target;
+        }
+    }
 };
-Game_Action.prototype.combatOpponentsUnit = function (battler) {
-    var units = battler.opponentsUnitTS().aliveMembers();
-    return this.searchBattlers(battler, units);
+Game_Action.prototype.subject = function () {
+    return this._subject;
 };
-Game_Action.prototype.combatFriendsUnit = function (battler) {
-    var friends = battler.friendsUnitTS().aliveMembers();
-    return [battler].concat(this.searchBattlers(battler, friends));
+Game_Action.prototype.getTargettableEnemies = function () {
+    const battlers = this._subject.opponentsUnitTS().aliveMembers();
+    return this.findBattlersInRange(battlers);
+};
+Game_Action.prototype.getTargettableAllies = function () {
+    const battlers = this._subject.friendsUnitTS().aliveMembers();
+    return this.findBattlersInRange(battlers);
+};
+Game_Action.prototype.findBattlersInRange = function (battlers) {
+    const battlersInRange = [];
+    const range = this.updateRange();
+    this.updateAoeRange();
+    const rangeSquared = range * range;
+    for (let battler of battlers) {
+        if (this.isInEuclideanDistance(rangeSquared, battler.tx, battler.ty, this._subject.tx, this._subject.ty)) {
+            battlersInRange.push(battler);
+        }
+    }
+    return battlersInRange;
+};
+Game_Action.prototype.updateRange = function () {
+    const range = this.extractRangeData();
+    // TODO better algorithm for obstacles
+    this._range = this.computeEuclideanRange(0, range, this._subject.tx, this._subject.ty);
+    return range;
+};
+Game_Action.prototype.extractRangeData = function () {
+    var _a;
+    const range = (_a = this._object) === null || _a === void 0 ? void 0 : _a.range;
+    if (range) {
+        if (typeof range === 'number') {
+            return range;
+        }
+        else { // Spell range
+            const rangeType = range.type;
+            switch (rangeType) {
+                case "Self" /* SpellRange.SELF */: return 0;
+                case "Touch" /* SpellRange.TOUCH */: return 1;
+                case "Willpower" /* SpellRange.WILL */: return this._subject.paramByName("WILL" /* Stat.WILL */);
+                case "One" /* SpellRange.ONE */: return 0; // TODO WTF
+            }
+        }
+    }
+    return 0;
+};
+Game_Action.prototype.updateAoeRange = function () {
+    const aoe = this.extractAoeData();
+    if (aoe !== 0) {
+        this._aoeRange = this.computeEuclideanRange(0, aoe, $gameSelector._x, $gameSelector._y);
+        this._aoeRange.push([$gameSelector._x, $gameSelector._y]);
+    }
+    else {
+        this._aoeRange = [];
+    }
+    return aoe;
+};
+// TODO
+Game_Action.prototype.extractAoeData = function () {
+    var _a;
+    const target = (_a = this._object) === null || _a === void 0 ? void 0 : _a.target;
+    if (target) {
+        const targetType = target.type;
+        if (targetType === "AoE" /* SpellTarget.AOE */) {
+            const targetRadius = target.distance;
+            if (targetRadius === "Willpower Bonus" /* SpellTargetRadius.WILL_BONUS */) {
+                return this._subject.paramBonus("WILL" /* Stat.WILL */);
+            }
+        }
+    }
+    // Default case
+    return 0;
+};
+Game_Action.prototype.computeEuclideanRange = function (d, x, y) {
+    const range = [];
+    const dSquared = d * d;
+    for (var i = x - d; i <= x + d; i++) {
+        for (var j = y - d; j <= y + d; j++) {
+            if (this.isInEuclideanDistance(dSquared, i, j, x, y)) {
+                range.push([i, j]);
+            }
+        }
+    }
+    return range;
+};
+Game_Action.prototype.isInEuclideanDistance = function (dSquared, x, y, centerX, centerY) {
+    return (x - centerX) * (x - centerX) + (y - centerY) * (y - centerY) <= dSquared;
 };
 Game_Action.prototype.searchBattlers = function (battler, units) {
+    console.log("INFO Legacy Game_Action call searchBattlers, look into it");
     var battlers = [];
     var item;
     if (this.isAttackRange(battler)) { // TODO fuse this with base flow ?
@@ -1782,8 +1890,8 @@ Game_Action.prototype.searchBattlers = function (battler, units) {
     else {
         item = this.item();
     }
-    this.updateRange(item, battler);
-    this.updateAoeRange(item, battler);
+    this.updateRangeLegacy(item, battler);
+    this.updateAoeRangeLegacy(item, battler);
     for (var i = 0; i < this._range.length; i++) {
         var redCell = this._range[i];
         var x = redCell[0];
@@ -1798,10 +1906,12 @@ Game_Action.prototype.searchBattlers = function (battler, units) {
     return battlers;
 };
 Game_Action.prototype.isAttackRange = function (subject) {
+    console.log("INFO Legacy Game_Action call isAttackRange, look into it");
     return subject.isActor() && this.isAttack();
 };
-Game_Action.prototype.updateRange = function (item, battler) {
-    const range = this.extractRangeData(item, battler);
+Game_Action.prototype.updateRangeLegacy = function (item, battler) {
+    console.log("INFO Legacy Game_Action call updateRange, look into it");
+    const range = this.extractRangeDataLegacy(item, battler);
     // TODO better algorithm for obstacles
     if (range === 0 || this.isForUser()) {
         this._range = [[battler.tx, battler.ty]];
@@ -1810,7 +1920,8 @@ Game_Action.prototype.updateRange = function (item, battler) {
         this._range = this.createRange(0, range, battler.tx, battler.ty, range === 1 ? 'diamond' : 'euclidean');
     }
 };
-Game_Action.prototype.extractRangeData = function (object, battler) {
+Game_Action.prototype.extractRangeDataLegacy = function (object, battler) {
+    console.log("INFO Legacy Game_Action call extractRangeData, look into it");
     const range = object === null || object === void 0 ? void 0 : object.range;
     if (range) {
         if (typeof range === 'number') {
@@ -1829,8 +1940,9 @@ Game_Action.prototype.extractRangeData = function (object, battler) {
     // Default case, should never happen
     return TEW.COMBAT.SYSTEM.actionRange;
 };
-Game_Action.prototype.updateAoeRange = function (item, battler) {
-    const aoe = this.extractAoeData(item, battler);
+Game_Action.prototype.updateAoeRangeLegacy = function (item, battler) {
+    console.log("INFO Legacy Game_Action call updateAoeRange, look into it");
+    const aoe = this.extractAoeDataLegacy(item, battler);
     if (aoe !== 0) {
         this._aoeRange = this.createRange(0, aoe, $gameSelector._x, $gameSelector._y, aoe === 1 ? 'diamond' : 'euclidean');
         this._aoeRange.push([$gameSelector._x, $gameSelector._y]);
@@ -1840,7 +1952,8 @@ Game_Action.prototype.updateAoeRange = function (item, battler) {
     }
 };
 // TODO
-Game_Action.prototype.extractAoeData = function (object, battler) {
+Game_Action.prototype.extractAoeDataLegacy = function (object, battler) {
+    console.log("INFO Legacy Game_Action call extractAoeData, look into it");
     const target = object.target;
     if (target) {
         const targetType = target.type;
@@ -1855,6 +1968,7 @@ Game_Action.prototype.extractAoeData = function (object, battler) {
     return 0;
 };
 Game_Action.prototype.createRange = function (d1, d2, x, y, shape) {
+    console.log("INFO Legacy Game_Action call createRange, look into it");
     var range = [];
     for (var i = x - d2; i <= x + d2; i++) {
         for (var j = y - d2; j <= y + d2; j++) {
@@ -1891,19 +2005,24 @@ Game_Action.prototype.showAreaOfEffect = function () {
         $gameMap.addAoeTile(tile);
     }, this);
 };
+// TODO refactor this shit
 Game_Action.prototype.isInRange = function (x, y) {
     return this._range.some(pos => pos[0] === x && pos[1] === y);
 };
+// TODO refactor this shit
 Game_Action.prototype.color = function () {
     return this.isForFriend() ? TEW.COMBAT.SYSTEM.allyScopeColor : TEW.COMBAT.SYSTEM.enemyScopeColor;
 };
 Game_Action.prototype.setSpell = function (spellId) {
+    console.log("INFO Legacy Game_Action call setSpell, look into it");
     this._item.setObject(TEW.DATABASE.SPELLS.ARRAY.find(entry => entry[0] === spellId));
 };
 Game_Action.prototype.isSpell = function () {
+    console.log("INFO Legacy Game_Action call isSpell, look into it");
     return this._item.isSpell();
 };
 Game_Action.prototype.testDamageMinMaxValue = function (target, minMax) {
+    console.log("INFO Legacy Game_Action call testDamageMinMaxValue, look into it");
     var item = this.item();
     var baseValue = this.evalDamageFormula(target);
     var value = baseValue * this.calcElementRate(target);
@@ -1922,6 +2041,7 @@ Game_Action.prototype.testDamageMinMaxValue = function (target, minMax) {
     return value;
 };
 Game_Action.prototype.testMinMaxVariance = function (damage, variance, minMax) {
+    console.log("INFO Legacy Game_Action call testMinMaxVariance, look into it");
     var amp = Math.floor(Math.max(Math.abs(damage) * variance / 100, 0));
     var v = minMax ? amp : -amp;
     return damage >= 0 ? damage + v : damage - v;
@@ -1938,62 +2058,71 @@ Game_Action.prototype.isTargetValid = function (battler) {
     return !!battler;
 };
 Game_Action.prototype.isMove = function () {
-    return this._moveRoute !== 0;
+    return this._moveRoute !== 0
+        || this._option === 1 /* BattleOption.WALK */ || this._option === 2 /* BattleOption.RUN */;
 };
 Game_Action.prototype.setWait = function () {
+    console.log("INFO Legacy Game_Action call setWait, look into it");
     this.setSkill(this.subject().waitSkillId());
 };
 Game_Action.prototype.isWait = function () {
+    console.log("INFO Legacy Game_Action call isWait, look into it");
     return this.item() === $dataSkills[this.subject().waitSkillId()];
-};
-// TODO fishy
-TEW.MEMORY.gameActionSubject = Game_Action.prototype.subject;
-Game_Action.prototype.subject = function () {
-    TEW.MEMORY.gameActionSubject.call(this);
-    if ($gamePartyTs.inBattle()) {
-        if (this._subjectActorId <= 0) {
-            return $gameTroopTs.members()[this._subjectEnemyIndex];
-        }
-    }
-    return TEW.MEMORY.gameActionSubject.call(this);
-};
-TEW.MEMORY.gameActionSetSubject = Game_Action.prototype.setSubject;
-Game_Action.prototype.setSubject = function (subject) {
-    TEW.MEMORY.gameActionSetSubject.call(this, subject);
-    // For enemy restriction attack an ally...
-    if ($gamePartyTs.inBattle()) {
-        if (!subject.isActor()) {
-            this._subjectEnemyIndex = $gameTroopTs.members().indexOf(subject);
-        }
-    }
 };
 Game_Action.prototype.attackRollModifier = function () {
     return this._modifiers.attackRoll || 0;
 };
-Game_Action.prototype.apply = function (target) {
-    if (this.isAttack()) { // TODO may be obsolete if we rework attack actions
-        this.applyWeaponAttack(target);
+Game_Action.prototype.apply = function (_) {
+    console.log("INFO Legacy Game_Action call apply, look into it");
+    return this.apply();
+};
+Game_Action.prototype.apply = function () {
+    // TODO refactor + check that _targets is not empty
+    if (this._option === 1 /* BattleOption.WALK */ || this._option === 2 /* BattleOption.RUN */) {
+        this.applyMove(); // TODO no?
     }
-    else if (this.isSpell()) {
+    else if (this._option === 3 /* BattleOption.CHARGE */) {
+        this.applyCharge();
+    }
+    else if (this._option === 6 /* BattleOption.MELEE_ATTACK */) {
+        this.applyMeleeWeaponAttack();
+    }
+    else if (this._option === 8 /* BattleOption.USE_SPELL */) {
         this.applySpell();
     }
 };
-// TODO split magic resolution
-Game_Action.prototype.applyWeaponAttack = function (target) {
-    var result = target.result();
-    this.subject().clearResult();
-    result.clear();
-    const attacker = this.subject();
-    const attackerWeapon = TEW.COMBAT.getWeaponFromId(attacker.equippedWeapon().id); // TODO attack with second hand
+Game_Action.prototype.applyCharge = function () {
+    // TODO update here or not?
+    BattleManager.spendMove();
+    BattleManager.spendAction();
+    // TODO constant
+    // TODO handle crit fail?
+    const chargeTestResult = TEW.DICE.skillTest(this._subject, 'ATHLETICS', 20, !this._subject.isActor());
+    const maxMove = this._subject.baseMove() + chargeTestResult.sl;
+    const path = $gameMap.loadOrComputeChargeRangeForAI({ x: this._subject.tx, y: this._subject.ty }, Object.assign({}, this._targetTile), this._subject.event()).slice(0, maxMove);
+    this._subject.moveAlongPredefinedPath(path);
+    $gameMap._flexibleMovement = true; // Go back to free movement range for next action
+    BattleManager.setBattlePhase(BattlePhase.ProcessCharge);
+    $gameMap.clearTiles();
+};
+Game_Action.prototype.applyMeleeWeaponAttack = function () {
+    // TODO unused ?
+    // var result = this._target.result();
+    // this._subject.clearResult();
+    // result.clear();
+    const attacker = this._subject;
+    const attackerWeapon = this._object;
+    const target = this._targets[0];
+    // const attackerWeapon = TEW.COMBAT.getWeaponFromId(attacker.equippedWeapon().id); // TODO attack with second hand
     const attackerWeaponEffects = TEW.COMBAT.getWeaponQualityEffects(attackerWeapon);
-    const isMeleeWeapon = TEW.COMBAT.isMeleeWeapon(attackerWeapon);
+    // const isMeleeWeapon = TEW.COMBAT.isMeleeWeapon(attackerWeapon); // TODO should be unused
     const defenderWeapon = TEW.COMBAT.getWeaponFromId(target.equippedWeapon().id); // TODO defend with second hand
     const defenderWeaponEffects = TEW.COMBAT.getWeaponQualityEffects(defenderWeapon);
     // Damage calc
     //
     // Choose weapon (elsewhere)
     //   Get combat characteristic associated with weapon
-    const attackerCombatSkill = TEW.COMBAT.getAttackCompOrDefault(attacker, attackerWeapon.group, isMeleeWeapon);
+    const attackerCombatSkill = TEW.COMBAT.getAttackCompOrDefault(attacker, attackerWeapon.group, true);
     // TODO Get (best) weapon from defender
     // TODO ranged attacks must be dodged
     //   Get combat characteristic associated with weapon
@@ -2011,16 +2140,15 @@ Game_Action.prototype.applyWeaponAttack = function (target) {
         attackerConditionMod += 20;
         target.removeCondition("SURPRISED" /* ConditionId.SURPRISED */);
     }
-    if (isMeleeWeapon) {
-        if (target.hasCondition("BLINDED" /* ConditionId.BLINDED */)) {
-            attackerConditionMod += 10;
-        }
-        // TODO deafened
-        // TODO prone
+    if (target.hasCondition("BLINDED" /* ConditionId.BLINDED */)) {
+        attackerConditionMod += 10;
     }
+    // TODO deafened
+    // TODO prone
     // Defender condition modifiers
     const defenderConditionMod = target.totalConditionModifier();
     // Roll dice
+    console.log("NaN because of:", attackerCombatSkill, attackerWeaponEffects.attackMod, attackerConditionMod);
     const combatResult = TEW.DICE.combatOpposedSkillTest(attackerCombatSkill.value + attackerWeaponEffects.attackMod + this.attackRollModifier() + attackerConditionMod, defenderCombatSkill.value + defenderWeaponEffects.defenceMod + defenderConditionMod, true, false // GIGA TODO
     );
     // Special weapon quality checks
@@ -2049,10 +2177,8 @@ Game_Action.prototype.applyWeaponAttack = function (target) {
     // TODO wait X seconds here for player input (fortune points)
     // TODO Check attacker's talents on dice roll (make a list)
     // TODO Check weapon effects on dice roll (make a list)
-    // Check hit/miss
-    result.isHit = combatResult.slAttacker >= 0 && combatResult.success;
-    result.missed = !result.isHit;
-    if (result.isHit) {
+    // TODO miss
+    if (combatResult.slAttacker >= 0 && combatResult.success) {
         // TODO Check weapon effects on crit (make a list)
         // TODO Check for crits
         // Check location
@@ -2083,14 +2209,14 @@ Game_Action.prototype.applyWeaponAttack = function (target) {
         if (attackerWeaponEffects.effects.ENTANGLE) {
             target.addCondition("ENTANGLED" /* ConditionId.ENTANGLED */, 1, attacker.paramBonus("STRG" /* Stat.STRG */));
         }
-        if (!isMeleeWeapon) {
-            if (attackerWeapon.group === 14 /* WeaponGroup.BLACKPOWDER */) {
-                const brokenTestResult = TEW.DICE.skillTest(target, 'CALM', 20);
-                if (!brokenTestResult.success) {
-                    // add broken condition
-                }
-            }
-        }
+        // if (!isMeleeWeapon) {
+        //     if (attackerWeapon.group === WeaponGroup.BLACKPOWDER) {
+        //         const brokenTestResult = TEW.DICE.skillTest(target, 'CALM', 20);
+        //         if (!brokenTestResult.success) {
+        //             // add broken condition
+        //         }
+        //     }
+        // }
         // TODO Lookup crit table (help me)
     }
     // if (result.isHit) {
@@ -2111,11 +2237,12 @@ Game_Action.prototype.applyWeaponAttack = function (target) {
  * The attacker only rolls once tho, as the result is stored and retrieved for each supplementary target.
  */
 Game_Action.prototype.applySpell = function (target) {
-    var result = target.result();
-    this.subject().clearResult();
-    result.clear();
-    const attacker = this.subject();
-    const spell = this.item();
+    // TODO unused ?
+    // var result = target.result();
+    // this.subject().clearResult();
+    // result.clear();
+    const attacker = this._subject;
+    const spell = this._object;
     /*
     If Dice roll hasnt been made
         Roll dice
@@ -2159,6 +2286,7 @@ Game_Action.prototype.applySpell = function (target) {
 // Calculating damage value
 // Used in auto battle actions
 Game_Action.prototype.makeDamageValue = function (target, critical) {
+    console.log("INFO Legacy Game_Action call makeDamageValue, look into it");
     var item = this.item();
     var baseValue = this.evalDamageFormula(target);
     var value = baseValue * this.calcElementRate(target);
@@ -2184,6 +2312,7 @@ Game_Action.prototype.makeTargets = function () {
     const aliveBattlersInRange = $gameParty.aliveMembers().concat($gameTroop.aliveMembers());
     // TODO self-targetting
     // TODO multi-targetting?
+    // TODO optimize using euclidean distance
     // Special case for AOE attacks: user is a valid target and targets can be outside of attack range
     if (this._aoeRange.length > 0) {
         this._aoeRange.forEach((tile) => {
@@ -2269,6 +2398,27 @@ Game_Action.prototype.applyGlobal = function () {
     //         $gameTemp.reserveCommonEvent(effect.dataId);
     //     }
     // }, this);
+};
+Game_Action.prototype.combatOpponentsUnit = function (_) {
+    console.log("INFO Legacy Game_Action call combatOpponentsUnit, look into it");
+    return this.getTargettableEnemies();
+};
+Game_Action.prototype.combatFriendsUnit = function (_) {
+    console.log("INFO Legacy Game_Action call combatFriendsUnit, look into it");
+    return this.getTargettableAllies();
+};
+Game_Action.chargeAttack = function (subject, target, success) {
+    return new Game_Action(subject, false, {
+        option: 6 /* BattleOption.MELEE_ATTACK */,
+        target: {
+            type: 0 /* BattleTargetType.BATTLER */,
+            target,
+        },
+        weapon: TEW.DATABASE.WEAPONS.MELEE_SET[subject.mainHand().id]
+    }, { attackRoll: success ? 10 : 0 });
+};
+Game_Action.prototype.checkDamageType = function (_) {
+    return false;
 };
 // #endregion =========================== Game_Action ============================== //
 // ============================== //
@@ -2871,11 +3021,20 @@ Game_CharacterBase.prototype.isCollidedWithEvents = function (x, y) {
 // Game_Enemy
 //
 // The game object class for an enemy.
-// TODO turn 99 into a TEW battle system constant
+// TODO we do'nt gaf
 Object.defineProperties(Game_Enemy.prototype, {
     // AGGressivity
     agg: { get: function () { return this.tparam('Aggro') || 99; }, configurable: true }
 });
+Game_Enemy.prototype.initialize = function (enemyId, x, y, ai) {
+    Game_Battler.prototype.initialize.call(this);
+    this.setup(enemyId, x, y);
+    this._ai = ai;
+    const data = TEW.DATABASE.NPCS.SET[enemyId];
+    for (let weapon of data.weapons) {
+        this.addWeapon(weapon);
+    }
+};
 Game_Enemy.prototype.currentBattler = function () {
     return this.enemy();
 };
@@ -2894,18 +3053,8 @@ Game_Enemy.prototype.allBattlersIndex = function () {
 Game_Enemy.prototype.makeMoves = function () {
     Game_Battler.prototype.makeMoves.call(this);
 };
-// TODO make 'DEFAULT' a constant
 Game_Enemy.prototype.makeActions = function () {
-    Game_Battler.prototype.makeActions.call(this);
-    if (this.numActions() > 0) {
-        var actionList = this.getAI().actions.filter(function (a) {
-            return this.isActionValid(a);
-        }, this);
-        if (actionList.length > 0) {
-            this.selectAllActions(actionList);
-        }
-    }
-    this.setActionState('waiting');
+    // Override
 };
 Game_Enemy.prototype.findMoves = function () {
     if (!this.isConfused()) {
@@ -2954,7 +3103,7 @@ Game_Enemy.prototype.paramBase = function (paramId) {
     if (paramId === 0) {
         return TEW.DATABASE.NPCS.SET[this._enemyId].wounds;
     }
-    return TEW.DATABASE.NPCS.SET[this._enemyId].stats[this.statName(paramId)];
+    return TEW.DATABASE.NPCS.SET[this._enemyId].stats[paramId];
 };
 // MHP is handled separately
 Game_Enemy.prototype.statName = function (paramId) {
@@ -2964,8 +3113,7 @@ Game_Enemy.prototype.enemy = function () {
     return TEW.DATABASE.NPCS.SET[this._enemyId];
 };
 Game_Enemy.prototype.getAI = function () {
-    const aiId = this.tparam('AI') || 'DEFAULT';
-    return TEW.DATABASE.NPCS.AI[aiId];
+    return TEW.DATABASE.NPCS.AI[this._ai];
 };
 Game_Enemy.prototype.refresh = function () {
     Game_BattlerBase.prototype.refresh.call(this);
@@ -3265,6 +3413,44 @@ Game_Map.prototype.chargeRange = function (distance, event, through = false) {
         this.addTile(this.tile(enemyPos.x, enemyPos.y));
     }
 };
+// TODO deduplicate?
+Game_Map.prototype.chargeRangeForAI = function (distance, event, enemies, through = false) {
+    const start = { x: event.x, y: event.y };
+    const startKey = `${start.x},${start.y}`;
+    this._straightPaths[startKey] = this._straightPaths[startKey] || {};
+    const targettableEnemies = [];
+    for (const enemy of enemies) {
+        const enemyPos = { x: enemy.tx, y: enemy.ty };
+        if (!this.isInChargeRange(start, enemyPos, distance))
+            continue;
+        const enemyKey = `${enemyPos.x},${enemyPos.y}`;
+        const cached = this._straightPaths[startKey][enemyKey];
+        if (cached) {
+            targettableEnemies.push(enemy);
+            continue;
+        }
+        const path = this.computeChargePath(start, enemyPos, event);
+        if (!path)
+            continue;
+        targettableEnemies.push(enemy);
+        this.storePath(startKey, enemyKey, path);
+    }
+    return targettableEnemies;
+};
+Game_Map.prototype.loadOrComputeChargeRangeForAI = function (start, target, event) {
+    const startKey = `${start.x},${start.y}`;
+    this._straightPaths[startKey] = this._straightPaths[startKey] || {};
+    const targetKey = `${target.x},${target.y}`;
+    let path = this._straightPaths[startKey][targetKey];
+    if (!path) {
+        path = this.computeChargePath(start, target, event);
+        if (!path) {
+            return [];
+        }
+        this.storePath(startKey, targetKey, path);
+    }
+    return path;
+};
 /**
  * Store the computed path between two points in the cache, for later retrieval. Also adds the target tile to the map's tiles for move processing.
  */
@@ -3305,16 +3491,31 @@ Game_Map.prototype.computeChargePath = function (start, target, event) {
  */
 Game_Map.prototype.computeStraightLinePath = function (start, target, event) {
     const path = [];
+    console.log("Straight charge");
     if (start.x === target.x) {
-        const [low, high] = [start.y, target.y].sort((a, b) => a - b);
-        for (let y = low; y < high; y++) {
-            path.push({ x: start.x, y });
+        const direction = target.y - start.y;
+        if (direction > 0) {
+            for (let y = start.y; y < target.y; y++) {
+                path.push({ x: start.x, y });
+            }
+        }
+        else {
+            for (let y = start.y; y > target.y; y--) {
+                path.push({ x: start.x, y });
+            }
         }
     }
     else {
-        const [low, high] = [start.x, target.x].sort((a, b) => a - b);
-        for (let x = low; x < high; x++) {
-            path.push({ x, y: start.y });
+        const direction = target.x - start.x;
+        if (direction > 0) {
+            for (let x = start.x; x < target.x; x++) {
+                path.push({ x, y: start.y });
+            }
+        }
+        else {
+            for (let x = start.x; x > target.x; x--) {
+                path.push({ x, y: start.y });
+            }
         }
     }
     if (!this.isPathClear(start, path, event))
@@ -4175,28 +4376,30 @@ Game_Troop.prototype.makeDropItems = function () {
     return [];
 };
 // Use TEW NPC data instead of RMMV's enemy database
-Game_Troop.prototype.setup = function (troopId) {
+Game_Troop.prototype.setup = function (battleId) {
     this.clear();
-    this._troopId = troopId;
+    this._troopId = battleId; // TODO renaming might not be possible
     this._enemies = [];
+    console.log("Setting up enemies");
     this.troop().members.forEach(function (member) {
-        if (TEW.DATABASE.NPCS.SET[member.enemyId]) {
-            var enemyId = member.enemyId;
+        if (TEW.DATABASE.NPCS.SET[member.npc]) {
+            var enemyId = member.npc;
             var x = member.x;
             var y = member.y;
-            var enemy = new Game_Enemy(enemyId, x, y);
+            var enemy = new Game_Enemy(enemyId, x, y, member.ai);
             if (member.hidden) {
                 enemy.hide();
             }
             this._enemies.push(enemy);
         }
     }, this);
+    console.log("Enemies set up");
     this.makeUniqueNames();
 };
 Game_Troop.prototype.troop = function () {
-    const tewTroop = TEW.DATABASE.NPCS.TROOPS[this._troopId];
+    const tewTroop = TEW.DATABASE.COMBATS[this._troopId];
     return {
-        members: tewTroop.members,
+        members: tewTroop.enemies,
         pages: []
     };
 };
@@ -4219,11 +4422,14 @@ Game_TroopTs.prototype.initialize = function () {
 Game_TroopTs.prototype.clear = function () {
     this._enemies = [];
 };
-Game_TroopTs.prototype.addEnemy = function (enemyId, event) {
-    var enemy = new Game_Enemy(enemyId);
+Game_TroopTs.prototype.addEnemy = function (enemyId, event, ai = "DEFAULT") {
+    var enemy = new Game_Enemy(enemyId, 0, 0, ai);
     var eventId = event.eventId();
     this._enemies.push(enemy);
     enemy.setupEvent(eventId);
+    // temp
+    enemy.equipMainHand(1);
+    // temp
 };
 Game_TroopTs.prototype.addTroop = function (index, event) {
     var enemy = $gameTroop.members()[index - 1];
@@ -4546,7 +4752,7 @@ Game_Interpreter.prototype.command301 = function () {
         else { // Same as Random Encounter
             troopId = $gamePlayer.makeEncounterTroopId();
         }
-        if (TEW.DATABASE.NPCS.TROOPS[troopId]) {
+        if (TEW.DATABASE.COMBATS[troopId]) {
             BattleManager.setup(troopId, this._params[2], this._params[3]);
             BattleManager.setEventCallback(function (n) {
                 this._branch[this._indent] = n;

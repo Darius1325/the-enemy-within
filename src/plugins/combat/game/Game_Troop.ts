@@ -1,4 +1,7 @@
 // $PluginCompiler TEW_Combat.js
+
+import TEW from "../../_types/tew";
+
 // $StartCompilation
 
 //-----------------------------------------------------------------------------
@@ -53,29 +56,31 @@ Game_Troop.prototype.makeDropItems = function() {
 };
 
 // Use TEW NPC data instead of RMMV's enemy database
-Game_Troop.prototype.setup = function(troopId: string) {
+Game_Troop.prototype.setup = function(battleId: string) {
     this.clear();
-    this._troopId = troopId;
+    this._troopId = battleId; // TODO renaming might not be possible
     this._enemies = [];
+    console.log("Setting up enemies");
     this.troop().members.forEach(function(member) {
-        if (TEW.DATABASE.NPCS.SET[member.enemyId]) {
-            var enemyId = member.enemyId;
+        if (TEW.DATABASE.NPCS.SET[member.npc]) {
+            var enemyId = member.npc;
             var x = member.x;
             var y = member.y;
-            var enemy = new Game_Enemy(enemyId, x, y);
+            var enemy = new Game_Enemy(enemyId, x, y, member.ai);
             if (member.hidden) {
                 enemy.hide();
             }
             this._enemies.push(enemy);
         }
     }, this);
+    console.log("Enemies set up")
     this.makeUniqueNames();
 };
 
 Game_Troop.prototype.troop = function() {
-    const tewTroop = TEW.DATABASE.NPCS.TROOPS[this._troopId];
+    const tewTroop = TEW.DATABASE.COMBATS[this._troopId];
     return {
-        members: tewTroop.members,
+        members: tewTroop.enemies,
         pages: []
     };
 };

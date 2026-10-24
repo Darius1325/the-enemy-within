@@ -4,6 +4,7 @@ import { Game_CharacterBase } from "../../../rmmv/objects/Game_CharacterBase";
 import { Game_Enemy } from "../../../rmmv/objects/Game_Enemy";
 import { Direction } from "../../_types/enum";
 import { Point } from "../../_types/point";
+import Game_Battler from "./Game_Battler";
 
 // $StartCompilation
 
@@ -218,6 +219,53 @@ Game_Map.prototype.chargeRange = function(distance: number, event: Game_Characte
     }
 };
 
+// TODO deduplicate?
+Game_Map.prototype.chargeRangeForAI = function(distance: number, event: Game_CharacterBase, enemies: Game_Battler[], through: boolean = false) {
+    const start = { x: event.x, y: event.y };
+    const startKey = `${start.x},${start.y}`;
+    this._straightPaths[startKey] = this._straightPaths[startKey] || {};
+
+    const targettableEnemies = [];
+    for (const enemy of enemies) {
+        const enemyPos: Point = { x: enemy.tx, y: enemy.ty };
+
+        if (!this.isInChargeRange(start, enemyPos, distance)) continue;
+
+        const enemyKey = `${enemyPos.x},${enemyPos.y}`;
+
+        const cached = this._straightPaths[startKey][enemyKey];
+        if (cached) {
+            targettableEnemies.push(enemy);
+            continue;
+        }
+
+        const path = this.computeChargePath(start, enemyPos, event);
+        if (!path) continue;
+
+        targettableEnemies.push(enemy);
+        this.storePath(startKey, enemyKey, path);
+    }
+
+    return targettableEnemies;
+};
+
+Game_Map.prototype.loadOrComputeChargeRangeForAI = function(start: Point, target: Point, event: Game_CharacterBase) {
+    const startKey = `${start.x},${start.y}`;
+    this._straightPaths[startKey] = this._straightPaths[startKey] || {};
+    const targetKey = `${target.x},${target.y}`;
+
+    let path = this._straightPaths[startKey][targetKey];
+    if (!path) {
+        path = this.computeChargePath(start, target, event);
+        if (!path) {
+            return [];
+        }
+        this.storePath(startKey, targetKey, path);
+    }
+
+    return path;
+};
+
 /**
  * Store the computed path between two points in the cache, for later retrieval. Also adds the target tile to the map's tiles for move processing.
  */
@@ -267,16 +315,29 @@ Game_Map.prototype.computeChargePath = function(start: Point, target: Point, eve
  */
 Game_Map.prototype.computeStraightLinePath = function(start: Point, target: Point, event: Game_CharacterBase) {
     const path = [];
+    console.log("Straight charge");
 
     if (start.x === target.x) {
-        const [low, high] = [start.y, target.y].sort((a, b) => a - b);
-        for (let y = low; y < high; y++) {
-            path.push({ x: start.x, y });
+        const direction = target.y - start.y;
+        if (direction > 0) {
+            for (let y = start.y; y < target.y; y++) {
+                path.push({ x: start.x, y });
+            }
+        } else {
+            for (let y = start.y; y > target.y; y--) {
+                path.push({ x: start.x, y });
+            }
         }
     } else {
-        const [low, high] = [start.x, target.x].sort((a, b) => a - b);
-        for (let x = low; x < high; x++) {
-            path.push({ x, y: start.y });
+        const direction = target.x - start.x;
+        if (direction > 0) {
+            for (let x = start.x; x < target.x; x++) {
+                path.push({ x, y: start.y });
+            }
+        } else {
+            for (let x = start.x; x > target.x; x--) {
+                path.push({ x, y: start.y });
+            }
         }
     }
 

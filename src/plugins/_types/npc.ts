@@ -9,6 +9,7 @@
 // Imports
 // ----------------------
 
+import { BattlerAI } from "./battlerAI";
 import { Status } from "./enum"
 
 /**
@@ -90,5 +91,6 @@ export type NPC = {
      * @example {{BLESSED: 1}, {PROTECTION: 1}}
      */
     prayers: Record<string, number>;
-    /*ammo: Record<string, number>;       // <AmmoId, number>*/
+
+    ai?: string;
 };

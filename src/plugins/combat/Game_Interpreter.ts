@@ -1,6 +1,7 @@
 // $PluginCompiler TEW_Combat.js
 
 import {Scene_Battle} from "../../rmmv/scenes/Scene_Battle";
+import TEW from "../_types/tew";
 
 // $StartCompilation
 
@@ -176,7 +177,7 @@ Game_Interpreter.prototype.command301 = function() {
         } else {  // Same as Random Encounter
             troopId = $gamePlayer.makeEncounterTroopId();
         }
-        if (TEW.DATABASE.NPCS.TROOPS[troopId]) {
+        if (TEW.DATABASE.COMBATS[troopId]) {
             BattleManager.setup(troopId, this._params[2], this._params[3]);
             BattleManager.setEventCallback(function(n) {
                 this._branch[this._indent] = n;

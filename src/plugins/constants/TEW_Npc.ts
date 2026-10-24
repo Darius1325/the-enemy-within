@@ -182,6 +182,7 @@ TEW.DATABASE.NPCS.SET = {
         },
         prayers: {}
     },
+    //TODO default equipped weapon
     PHILLIPE_DESCARTES: {
         name: "Phillipe Descartes",
         stats: [30, 32, 30, 26, 31, 34, 44, 33, 30, 29],
@@ -233,6 +234,8 @@ TEW.DATABASE.NPCS.SET = {
 
 // #endregion === NPCS SET === //
 // #region ====== BATTLE TROOPS === //
+
+// TODO remove
 TEW.DATABASE.NPCS.TROOPS = {
     BATTLE_TEST: {
         members : ["GUSTAV_FONDLEBURGER"]
