@@ -5,6 +5,7 @@ import Game_Battler from "./Game_Battler";
 import Game_Actor from "./Game_Actor";
 import { $gameSelfSwitches } from "../../../rmmv/variables";
 import { BattleOption } from "../../_types/enum";
+import { BattleDecision } from "../../_types/battlerAI";
 
 // $StartCompilation
 
@@ -61,13 +62,13 @@ BattleManager.canInput = function() {
 
 BattleManager.spendMove = function() {
     if (this._subject) {
-        this._subject._moveCount -= 1;
+        this._subject.spendMovePoint();
     }
 }
 
 BattleManager.spendAction = function() {
     if (this._subject) {
-        this._subject._actionCount -= 1;
+        this._subject.spendActionPoint();
     }
 }
 
@@ -108,6 +109,8 @@ BattleManager.initMembers = function() {
     this._escaped = false;
     this._rewards = {};
     this._turnForced = false;
+    this._decisionAction = null;
+    this._decisionPointsBefore = 0;
 };
 
 BattleManager.createGameObjects = function() {
@@ -624,67 +627,107 @@ BattleManager.updateStartEnemy = function() {
     $gameSelector.setTransparent(false);
     this._subject.onTurnStart();
     this.updateEnemyPhase();
-    // this._battlePhase = BattlePhase.TurnEnd;
 };
 
 BattleManager.updateEnemyPhase = function() {
-    this._battlePhase = BattlePhase.ProcessMove;
     $gameTroop.setupTactics([this._subject]); // TODO optimization
-    
+
     // Call custom decision algorithm
     const decisionAlgorithm = this._subject.getAI();
-    console.log("Battler AI: ", this._subject._ai);
-    const actionParameters = decisionAlgorithm(this._subject, $gameTroopTs.members(), $gamePartyTs.members());
-    console.log("Decision: ", actionParameters);
-    
-    this.supplementActionParameters(actionParameters);
+    const decision: BattleDecision = decisionAlgorithm(this._subject, $gameTroopTs.aliveMembers(), $gamePartyTs.aliveMembers());
+    console.log("Decision: ", decision);
 
-    const action = new Game_Action(
-        this._subject,
-        false,
-        actionParameters
-    );
+    this.executeDecision(decision);
+};
 
-    action.apply();
-
+/**
+ * Resolve a decision taken by the active battler. Movements are then processed in the ProcessMove phase,
+ * other actions end right away.
+ */
+BattleManager.executeDecision = function(decision: BattleDecision) {
+    this.supplementActionParameters(decision);
+    this._decisionPointsBefore = this._subject.actionAndMovePoints();
+    this._decisionAction = new Game_Action(this._subject, false, decision);
+    this._decisionAction.apply();
     $gameMap.clearTiles();
+    if (this._decisionAction.hasPendingMove()) {
+        this._battlePhase = BattlePhase.ProcessMove;
+    } else {
+        this.onDecisionEnd();
+    }
+};
+
+/**
+ * Move the subject along its decision path, one tile at a time
+ */
+BattleManager.updateDecisionMove = function() {
+    if (this._subject.hasPendingMoveStep()) {
+        this._subject.processMoveStep();
+    } else {
+        this._decisionAction.onMoveEnd();
+        this.onDecisionEnd();
+    }
+};
+
+/**
+ * After a decision is resolved: an enemy is asked for another decision as long as it can act and its last decision
+ * did something (spent points), otherwise its turn ends.
+ */
+BattleManager.onDecisionEnd = function() {
+    const action = this._decisionAction;
+    this._decisionAction = null;
+    $gameMap.clearTiles();
+    const hasSpentPoints = this._subject.actionAndMovePoints() < this._decisionPointsBefore;
+    const canContinue = action.option() !== BattleOption.WAIT && hasSpentPoints
+        && this._subject.isAlive() && this.canActOrMove();
+    if (canContinue && this._subject.isEnemy()) {
+        this.updateEnemyPhase();
+    } else {
+        this.endAction();
+    }
 };
 
 BattleManager.updateMove = function(forceAttackAfterMove = false) {
-    if (!this._subject.isMoving()) {
-        var action = this._subject.currentMove();
-        if (action && action.isMove()) {
-            action.applyMove();
-            this._subject.nextMove();
-        }
-        // TODO dead cases
-        if (!action || !action.isMove()) {
-            if (forceAttackAfterMove) {
-                console.log("Should be a charge:", action);
-                // TODO better handling with processAction ?
-                // TODO constant/function
-                const attack = Game_Action.chargeAttack(this._subject, $gameSelector.select(), true); // TODO find charge roll
+    if (this._subject.isMoving()) {
+        return;
+    }
+    if (this._decisionAction) {
+        this.updateDecisionMove();
+        return;
+    }
+    // Legacy per-tile moves (player input)
+    const action = this._subject.currentMove();
+    if (action && action.isMove()) {
+        action.applyMove();
+        this._subject.nextMove();
+    }
+    // TODO dead cases
+    if (!action || !action.isMove()) {
+        if (forceAttackAfterMove) {
+            // TODO better handling with processAction ?
+            const attack = Game_Action.chargeAttack(this._subject, $gameSelector.select(), true); // TODO find charge roll
 
-                // TODO melee weapon or hit unarmed
-                if (this._subject.isAdjacentTo($gameSelector)) {
-                    attack.apply();
-                }
-                this.endAction();
-            } else if (this.canInput() && this._subject.canInput() && this._subject.isActor()) {
-                this._battlePhase = BattlePhase.InputCommand;
-            } else {
-                this.endAction();
-                // this.setupAction();
+            // TODO melee weapon or hit unarmed
+            if (this._subject.isAdjacentTo($gameSelector)) {
+                attack.resolveWeaponAttack(true);
             }
+            this.endAction();
+        } else if (this.canInput() && this._subject.canInput() && this._subject.isActor()) {
+            this._battlePhase = BattlePhase.InputCommand;
+        } else {
+            this.endAction();
         }
     }
 };
 
-BattleManager.supplementActionParameters = function(parameters) {
-    const option = parameters.option;
-    if (option === BattleOption.MELEE_ATTACK || option === BattleOption.RANGED_ATTACK || option === BattleOption.RELOAD) {
-        const weaponId = this._subject.mainHand().id;
-        parameters.weapon = TEW.DATABASE.WEAPONS.MELEE_SET[weaponId] || TEW.DATABASE.WEAPONS.RANGED_SET[weaponId]; // TODO second hand
+/**
+ * Complete a decision with the subject's equipped weapon when it needs one and none was given
+ */
+BattleManager.supplementActionParameters = function(decision: BattleDecision) {
+    const option = decision.option;
+    if (!decision.weapon && (option === BattleOption.MELEE_ATTACK || option === BattleOption.RANGED_ATTACK || option === BattleOption.RELOAD)) {
+        const weaponId = this._subject.equippedWeapon().id;
+        decision.weapon = TEW.DATABASE.WEAPONS.MELEE_SET[weaponId] || TEW.DATABASE.WEAPONS.RANGED_SET[weaponId]; // TODO second hand
     } else if (option === BattleOption.USE_ITEM) {
         // TODO
     } else if (option === BattleOption.USE_SPELL) {

@@ -325,6 +325,8 @@ TEW.COMBAT.SYSTEM = TEW.COMBAT.SYSTEM || {};
 
 TEW.COMBAT.SYSTEM.actionRange = 1;
 TEW.COMBAT.SYSTEM.mvp = 4; // TODO should be removed eventually
+TEW.COMBAT.SYSTEM.runMultiplier = 2;
+TEW.COMBAT.SYSTEM.chargeTestModifier = 20; // Easy athletics test
 TEW.COMBAT.SYSTEM.chargeMinimumRange = 4;
 
 TEW.COMBAT.SYSTEM.durationStartSprite = 1; // TODO should be removed eventually

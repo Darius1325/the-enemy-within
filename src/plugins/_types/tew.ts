@@ -461,6 +461,12 @@ const TEW: {
             /** Max movement in one turn */
             mvp?: number;
 
+            /** Run distance = walk distance * runMultiplier */
+            runMultiplier?: number;
+
+            /** Modifier of the athletics test rolled when charging */
+            chargeTestModifier?: number;
+
             /** ??? */
             durationStartSprite?: number;
 
