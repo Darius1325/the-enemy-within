@@ -72,19 +72,6 @@ Game_PartyTs.prototype.allMembers = function() {
     });
 };
 
-// TODO prolly useless, we should check actor state at the start of its turn
-Game_PartyTs.prototype.restrictedMembers = function() {
-    return this.members().filter(function(member) {
-        return (member.isRestricted() || member.isAutoBattle()) && member.isAlive();
-    }, this);
-};
-
-Game_PartyTs.prototype.onAllTurnEnd = function() {
-    this.aliveMembers().forEach(function(actor) {
-        actor.onActionEnd();
-    });
-};
-
 Game_PartyTs.prototype.onBattleEnd = function() {
     $gameParty.onBattleEnd();
     this._inBattle = false;

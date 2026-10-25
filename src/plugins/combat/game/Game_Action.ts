@@ -16,12 +16,9 @@ import Game_Battler from "./Game_Battler";
 // The game object class for a battle action.
 //
 // A Game_Action is either:
-//  - a decision-based action, built from a BattleDecision (enemy AI, and eventually player input)
-//    -> everything in this file
-//  - a legacy RMMV action, built without a decision (setAttack, setSkill, per-tile moves...)
-//    -> everything in Game_ActionLegacy.ts, to be removed once the overhaul is complete
-// Functions shared by both kinds are at the end of this file.
-// The two kinds must not call each other's functions: entry points (initialize, apply) dispatch on isDecision().
+//  - a decision-based action, built from a BattleDecision (enemy AI and player input): everything in this file
+//  - a legacy RMMV action, built without a decision by RMMV itself: see Game_ActionLegacy.ts
+// Entry points (initialize, apply) dispatch on isDecision().
 
 // TODO +10 when deafened and attacking from behind/flank
 // TODO +20 if prone
@@ -675,7 +672,7 @@ Game_Action.chargeAttack = function(subject: CompleteBattler, target: Game_Battl
 };
 
 // ----------------------
-// Shared by decision-based and legacy actions (tile display)
+// Tile display
 // ----------------------
 
 Game_Action.prototype.range = function() {
@@ -701,10 +698,7 @@ Game_Action.prototype.isInRange = function(x: number, y: number) {
 };
 
 Game_Action.prototype.color = function() {
-    if (this.isDecision()) {
-        return TEW.COMBAT.SYSTEM.enemyScopeColor; // TODO ally color for supportive spells and items
-    }
-    return this.isForFriend() ? TEW.COMBAT.SYSTEM.allyScopeColor : TEW.COMBAT.SYSTEM.enemyScopeColor;
+    return TEW.COMBAT.SYSTEM.enemyScopeColor; // TODO ally color for supportive spells and items
 };
 
 Game_Action.prototype.isTargetValid = function(battler) {
