@@ -905,7 +905,11 @@ BattleManager.refreshRedCells = function(action) {
 BattleManager.refreshAoeCells = function(action) {
     if (action._aoeRange?.length > 0) { // If this action targets an AOE
         $gameMap.clearAoeTiles();
-        action.updateAoeRange(action.item(), this._subject);
+        if (action.isDecision()) {
+            action.updateAoeRange();
+        } else {
+            action.updateAoeRangeLegacy(action.item(), this._subject);
+        }
         action.showAreaOfEffect();
     }
 };
