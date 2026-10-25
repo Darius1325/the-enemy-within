@@ -1,4 +1,7 @@
 // $PluginCompiler TEW_Combat.js
+
+import { BattleOption } from "../../../_types/enum";
+
 // $StartCompilation
 
 //-----------------------------------------------------------------------------
@@ -13,17 +16,8 @@ function Window_TacticsMoveCommand() {
 export default Window_TacticsMoveCommand.prototype = Object.create(Window_ActorCommand.prototype);
 Window_TacticsMoveCommand.prototype.constructor = Window_TacticsMoveCommand;
 
-Window_TacticsMoveCommand.WALK_COMMAND_INDEX = 0;
-Window_TacticsMoveCommand.WALK_MOVE_MULTIPLIER = 1;
-
-Window_TacticsMoveCommand.RUN_COMMAND_INDEX = 1;
-Window_TacticsMoveCommand.RUN_MOVE_MULTIPLIER = 2;
-
-Window_TacticsMoveCommand.CHARGE_COMMAND_INDEX = 2;
-Window_TacticsMoveCommand.CHARGE_MOVE_MULTIPLIER = 2;
-
-Window_TacticsMoveCommand.SWITCH_WEAPON_COMMAND_INDEX = 3;
-Window_TacticsMoveCommand.SWITCH_WEAPON_MOVE_MULTIPLIER = 0;
+// Move option previewed on the map for each command (see BattleManager.previewMoveOption)
+Window_TacticsMoveCommand.PREVIEWED_OPTIONS = [BattleOption.WALK, BattleOption.RUN, BattleOption.CHARGE, BattleOption.SWITCH_WEAPONS];
 
 Window_TacticsMoveCommand.prototype.initialize = function() {
     Window_Command.prototype.initialize.call(this, 240, Graphics.boxHeight - this.windowHeight());
@@ -67,18 +61,8 @@ Window_TacticsMoveCommand.prototype.addSwitchWeaponCommand = function() {
 
 Window_TacticsMoveCommand.prototype.select = function(index: number) {
     Window_ActorCommand.prototype.select.call(this, index);
-    if (this._index === Window_TacticsMoveCommand.WALK_COMMAND_INDEX) {
-        BattleManager.moveMultiplier = Window_TacticsMoveCommand.WALK_MOVE_MULTIPLIER;
-        $gameMap._flexibleMovement = true;
-    } else if (this._index === Window_TacticsMoveCommand.RUN_COMMAND_INDEX) {
-        BattleManager.moveMultiplier = Window_TacticsMoveCommand.RUN_MOVE_MULTIPLIER;
-        $gameMap._flexibleMovement = true;
-    } else if (this._index === Window_TacticsMoveCommand.CHARGE_COMMAND_INDEX) {
-        BattleManager.moveMultiplier = Window_TacticsMoveCommand.CHARGE_MOVE_MULTIPLIER;
-        $gameMap._flexibleMovement = false;
-    } else if (this._index === Window_TacticsMoveCommand.SWITCH_WEAPON_COMMAND_INDEX) {
-        BattleManager.moveMultiplier = Window_TacticsMoveCommand.SWITCH_WEAPON_MOVE_MULTIPLIER;
-        $gameMap._flexibleMovement = true;
+    const option = Window_TacticsMoveCommand.PREVIEWED_OPTIONS[this._index];
+    if (option !== undefined) {
+        BattleManager.previewMoveOption(option);
     }
-    BattleManager.refreshMoveTiles();
 };

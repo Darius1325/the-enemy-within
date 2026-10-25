@@ -4,8 +4,8 @@ import TEW from "../../_types/tew";
 import Game_Battler from "./Game_Battler";
 import Game_Actor from "./Game_Actor";
 import { $gameSelfSwitches } from "../../../rmmv/variables";
-import { BattleOption } from "../../_types/enum";
-import { BattleDecision } from "../../_types/battlerAI";
+import { BattleOption, BattleTargetType } from "../../_types/enum";
+import { BattleDecision, BattleTarget } from "../../_types/battlerAI";
 
 // $StartCompilation
 
@@ -37,8 +37,6 @@ export enum BattlePhase {
 // BattleManager
 //
 // The static class that manages tactics progress.
-
-BattleManager.moveMultiplier = 1; // 0 to switch weapons, 1 for walking, 2 for running, ? for charging
 
 BattleManager.canMove = function() {
     return this._subject && this._subject._moveCount > 0;
@@ -111,6 +109,9 @@ BattleManager.initMembers = function() {
     this._turnForced = false;
     this._decisionAction = null;
     this._decisionPointsBefore = 0;
+    this._pendingDecision = null;
+    this._targettingAction = null;
+    this._previewMoveOption = BattleOption.WALK;
 };
 
 BattleManager.createGameObjects = function() {
@@ -413,13 +414,45 @@ BattleManager.updateExplore = function() {
     }
 };
 
+/**
+ * Display the move range of the battler under the selector: the active battler's range depends on the move option
+ * previewed in the move menu (see previewMoveOption), other battlers show their walking range
+ */
 BattleManager.refreshMoveTiles = function() {
-    var select = $gameSelector.select();
-    if (select) {
-        $gameMap.setMoveColor();
-        select.makeMoves();
+    const battler = $gameSelector.select();
+    if (battler) {
+        const option = battler === this._subject ? this._previewMoveOption : BattleOption.WALK;
+        this.showMoveRange(battler, option);
     } else {
         $gameMap.clearTiles();
+    }
+};
+
+BattleManager.previewMoveOption = function(option: BattleOption) {
+    this._previewMoveOption = option;
+    this.refreshMoveTiles();
+};
+
+/**
+ * Highlight the tiles a battler can reach with a move option
+ */
+BattleManager.showMoveRange = function(battler: Game_Battler, option: BattleOption) {
+    $gameMap.clearTiles();
+    $gameMap.setMoveColor();
+    switch (option) {
+        case BattleOption.WALK:
+            $gameMap.makeRange(battler.walkDistance(), battler.event());
+            break;
+        case BattleOption.RUN:
+            $gameMap.makeRange(battler.runDistance(), battler.event());
+            break;
+        case BattleOption.CHARGE:
+            $gameMap._flexibleMovement = false; // straight charge paths toward enemies
+            $gameMap.makeRange(battler.maxChargeDistance(), battler.event());
+            $gameMap._flexibleMovement = true;
+            break;
+        default:
+            break; // No movement
     }
 };
 
@@ -428,108 +461,127 @@ BattleManager.selectActor = function(actor: Game_Actor) {
     this._subject = actor;
     this._subject.performSelect();
     this._subject.savePosition();
+    this._previewMoveOption = BattleOption.WALK;
     $gameParty.setupTactics([this._subject]);
     this._battlePhase = BattlePhase.InputCommand;
 };
 
-BattleManager.updateSelect = function() {
-    var x = $gameSelector.x;
-    var y = $gameSelector.y;
-    this.refreshEnemyWindow($gameSelector.select());
-    if ($gameSelector.isMoving()) {
-        this._subject.refreshMovesAction(x, y);
-    }
-    if ($gameSelector.checkDestination(this._subject)) {
-        SoundManager.playOk();
-        $gameMap._flexibleMovement = true; // Go back to free movement range
-        this._battlePhase = BattlePhase.ProcessMove;
-        $gameMap.clearTiles();
-    }
-    if ($gameSelector.isCancelled()) {
-        SoundManager.playCancel();
-        this.previousSelect(); // TODO go back to previous menu instead
+// ----------------------
+// Player targetting
+// ----------------------
+// A player command starts an incomplete decision (option, weapon, spell...), the targetting phase completes it with a target,
+// then it is executed like any AI decision (see executeDecision).
+
+BattleManager.startTargetting = function(decision: { option: BattleOption, weapon?: any, spell?: any, item?: any }) {
+    this._pendingDecision = {
+        initiator: this._subject,
+        target: undefined,
+        ...decision
+    };
+    this.supplementActionParameters(this._pendingDecision);
+    $gameMap.clearAoeTiles();
+    $gameSelector.performTransfer(this._subject.x, this._subject.y);
+    switch (decision.option) {
+        case BattleOption.WALK:
+        case BattleOption.RUN:
+            this.showMoveRange(this._subject, decision.option);
+            this._battlePhase = BattlePhase.InputMove;
+            break;
+        case BattleOption.CHARGE:
+            this.showMoveRange(this._subject, decision.option);
+            this._battlePhase = BattlePhase.InputCharge;
+            break;
+        default:
+            this._targettingAction = new Game_Action(this._subject, false, this._pendingDecision);
+            this.refreshRedCells(this._targettingAction);
+            this._battlePhase = BattlePhase.Target;
+            break;
     }
 };
 
-BattleManager.updateChargeTarget = function() {
-    // console.log("Game troop: ", $gameTroop);
-    // console.log("Game troop overload: ", $gameTroopTs);
+BattleManager.confirmTarget = function(target: BattleTarget) {
+    const decision = this._pendingDecision;
+    decision.target = target;
+    this._pendingDecision = null;
+    this._targettingAction = null;
+    $gameMap.clearAoeTiles();
+    this._enemyWindow.close();
+    this._infoWindow.close();
+    this.executeDecision(decision);
+};
 
-    const startX = this._subject.x;
-    const startY = this._subject.y;
-    const targetX = $gameSelector.x;
-    const targetY = $gameSelector.y;
-    this.refreshEnemyWindow($gameSelector.select()); // TODO change enemy window
-    const action = new Game_Action(this._subject);
-    action.setAttack();
-    if ($gameSelector.selectTarget(action) >= 0) { // -1 if invalid target
+BattleManager.cancelTargetting = function() {
+    SoundManager.playCancel();
+    this._pendingDecision = null;
+    this._targettingAction = null;
+    $gameMap.clearAoeTiles();
+    this._enemyWindow.close();
+    this._infoWindow.close();
+    this.processCancel();
+    this.previousSelect();
+};
+
+// Walk or run: select a free tile in range
+BattleManager.updateSelect = function() {
+    this.refreshEnemyWindow($gameSelector.select());
+    if ($gameSelector.checkDestination(this._subject)) {
         SoundManager.playOk();
-        BattleManager.spendMove();
-        BattleManager.spendAction();
-
-        // TODO constant
-        // TODO handle crit fail?
-        const chargeTestResult = TEW.DICE.skillTest(this._subject, 'ATHLETICS', 20, !this._subject.isActor());
-        const maxMove = this._subject.baseMove() + chargeTestResult.sl;
-
-        const path = $gameMap._straightPaths[`${startX},${startY}`][`${targetX},${targetY}`]
-                .slice(0, maxMove);
-
-        this._subject.moveAlongPredefinedPath(path);
-        $gameMap._flexibleMovement = true; // Go back to free movement range for next action
-        this._battlePhase = BattlePhase.ProcessCharge;
-        $gameMap.clearTiles();
+        this.confirmTarget({
+            type: BattleTargetType.TILE,
+            target: { x: $gameSelector.x, y: $gameSelector.y }
+        });
+    } else if ($gameSelector.isCancelled()) {
+        this.cancelTargetting();
     }
-    if ($gameSelector.isCancelled()) {
-        SoundManager.playCancel();
-        this.previousSelect();
+};
+
+// Charge: select an enemy in charge range
+BattleManager.updateChargeTarget = function() {
+    const selected = $gameSelector.select();
+    this.refreshEnemyWindow(selected); // TODO change enemy window
+    if ($gameSelector.isOk()) {
+        if (selected && selected.isAlive() && selected.isEnemy() && $gameMap.isOnTiles($gameSelector.x, $gameSelector.y)) {
+            SoundManager.playOk();
+            this.confirmTarget({ type: BattleTargetType.BATTLER, target: selected });
+        } else {
+            SoundManager.playBuzzer();
+        }
+    } else if ($gameSelector.isCancelled()) {
+        this.cancelTargetting();
     }
 };
 
 BattleManager.previousSelect = function() {
     this._battlePhase = BattlePhase.InputCommand;
-    // this._subject = null; // TODO wtf
     $gameSelector.updateSelect();
     this.refreshMoveTiles();
-    // const select = $gameSelector.select();
-    // if (select && select.isAlive()) {
-    //     this._actorWindow.open(select);
-    // } else {
-    //     this._actorWindow.close();
-    // }
 };
 
-BattleManager.processTarget = function() {
-    this._battlePhase = BattlePhase.Target;
-    $gameSelector.updateSelect();
-};
-
+// Attacks and spells: select a battler in range (or a tile for area spells)
 BattleManager.updateTarget = function() {
-    var action = this.inputtingAction();
+    const action = this._targettingAction;
     if ($gameSelector.isMoving()) {
         this.refreshTarget();
         this.refreshAoeCells(action);
     }
-    var index = $gameSelector.selectTarget(action);
-    if (index >= 0) {
-        action.setTarget(index);
-        this.setupAction();
-    } else if ($gameSelector.isOk() && action.isInRange($gameSelector.x, $gameSelector.y)) {
-        // TODO hit the void
-        this.endAction();
+    if ($gameSelector.isOk()) {
+        const x = $gameSelector.x;
+        const y = $gameSelector.y;
+        const selected = $gameSelector.select();
+        if (!action.isInRange(x, y)) {
+            SoundManager.playBuzzer();
+        } else if (action.extractAoeData() > 0) {
+            SoundManager.playOk();
+            this.confirmTarget({ type: BattleTargetType.TILE, target: { x, y } });
+        } else if (selected && selected.isAlive() && selected !== this._subject) {
+            SoundManager.playOk();
+            this.confirmTarget({ type: BattleTargetType.BATTLER, target: selected });
+        } else {
+            SoundManager.playBuzzer();
+        }
+    } else if ($gameSelector.isCancelled()) {
+        this.cancelTargetting();
     }
-    if ($gameSelector.isCancelled()) {
-        SoundManager.playCancel();
-        this.previousTarget();
-    }
-};
-
-BattleManager.previousTarget = function() {
-    SoundManager.playCancel();
-    this._battlePhase = BattlePhase.InputCommand;
-    this.processCancel();
-    this._enemyWindow.close();
-    this._infoWindow.close();
 };
 
 BattleManager.inputtingAction = function() {
@@ -677,14 +729,21 @@ BattleManager.onDecisionEnd = function() {
     const action = this._decisionAction;
     this._decisionAction = null;
     $gameMap.clearTiles();
-    const hasSpentPoints = this._subject.actionAndMovePoints() < this._decisionPointsBefore;
-    const canContinue = action.option() !== BattleOption.WAIT && hasSpentPoints
-        && this._subject.isAlive() && this.canActOrMove();
-    if (canContinue && this._subject.isEnemy()) {
-        this.updateEnemyPhase();
-    } else {
-        this.endAction();
+    const isWait = action.option() === BattleOption.WAIT;
+    if (this._subject.isEnemy()) {
+        const hasSpentPoints = this._subject.actionAndMovePoints() < this._decisionPointsBefore;
+        if (!isWait && hasSpentPoints && this._subject.isAlive() && this.canActOrMove()) {
+            this.updateEnemyPhase();
+            return;
+        }
+    } else if (!isWait && this._subject.isAlive() && this.canInput() && this._subject.canInput()) {
+        // Players keep control until they wait or have nothing left to do
+        this._previewMoveOption = BattleOption.WALK;
+        $gameSelector.performTransfer(this._subject.x, this._subject.y);
+        this._battlePhase = BattlePhase.InputCommand;
+        return;
     }
+    this.endAction();
 };
 
 BattleManager.updateMove = function(forceAttackAfterMove = false) {
@@ -939,7 +998,12 @@ BattleManager.setupCombat = function(action) {
 BattleManager.refreshRedCells = function(action) {
     $gameMap.clearTiles();
     $gameMap.clearAoeTiles();
-    BattleManager.setupCombat(action);
+    if (action.isDecision()) {
+        action.updateRange();
+        action.updateAoeRange();
+    } else {
+        BattleManager.setupCombat(action);
+    }
     $gameMap.setActionColor(action);
     action.showRange();
     action.showAreaOfEffect();

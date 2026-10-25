@@ -616,7 +616,7 @@ Game_Action.prototype.applySpell = function(target: CompleteBattler) {
 
     // Roll dice once, then reuse the result for every target
     if (!this._subjectAbilityRoll) {
-        const womModifier = $gameVariables.getValue(15);
+        const womModifier = $gameVariables.value(15); // Winds of magic
         this._subjectAbilityRoll = TEW.DICE.skillTest(attacker, TEW.MAGIC.MAGIC_COMP, womModifier, false);
 
         // Add channelled SL
