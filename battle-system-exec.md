@@ -98,3 +98,20 @@ No unit tests exist, so each step is checked by:
 - A charge whose path can't be followed, or a walk with nowhere to go, spends nothing.
 - Runtime check (debug map): enemies walk, charge (path, test, attack), attack in melee, kill actors, and switch to the next target. With crossbows given to both enemies in the harness, `LAZY_RANGED`/`SMART_RANGED` reload, shoot, reload. No error over 40 player inputs.
 - Note: on the debug map, the second enemy starts in a pocket (12,13-12,15) with no walkable connection to the party, so it can only edge closer. That's a level design matter.
+
+### Step 4 - Transform player actions (done)
+- **Targetting is now part of the decision flow.** A menu command calls `Scene_Battle.startTargetting({ option, weapon?, spell? })` → `BattleManager.startTargetting(partialDecision)`. That stores a pending `BattleDecision` (initiator, option, weapon), shows the tiles, and enters the matching phase:
+  - `WALK`/`RUN` → `InputMove` (`updateSelect`): a free tile in range completes the decision with a `TILE` target.
+  - `CHARGE` → `InputCharge` (`updateChargeTarget`): an enemy in charge range completes it with a `BATTLER` target.
+  - `MELEE_ATTACK`/`RANGED_ATTACK`/`USE_SPELL` → `Target` (`updateTarget`): a battler in range (or any tile in range for area spells) completes it. Selecting an empty tile now buzzes, instead of silently ending the turn ("hit the void").
+  - `BattleManager.confirmTarget(target)` then calls the same `executeDecision` as the AI. `cancelTargetting` drops the pending decision and returns to the command menu.
+- `Wait` executes a `WAIT` decision. `Attack` uses the equipped weapon (melee or ranged, `UNARMED` by default). **An unloaded reloadable weapon is reloaded instead** (spends the action), because there is no Reload command or icon yet. → Question: add a dedicated "Reload" command?
+- After a decision, players get the command menu back while they have points (and didn't wait). Unlike enemies, they keep control even if the decision spent nothing (e.g. confirming their own tile).
+- **Points are spent on execution** (question 4 / B9): cancelling a walk, run, charge or attack target selection costs nothing (checked at runtime).
+- Move range preview: `BattleManager.moveMultiplier` is gone. `Window_TacticsMoveCommand.select` calls `BattleManager.previewMoveOption(option)`, and `showMoveRange(battler, option)` draws `walkDistance`/`runDistance`/`maxChargeDistance` ranges.
+- No legacy `Game_Action` is involved in player actions any more. The remaining legacy constructions come from turn-start `makeActions`/`makeMoves`, which are removed in step 5.
+- Fixed on the way (both made player spells unusable):
+  - `applySpell` read `$gameVariables.getValue(15)`, which doesn't exist (`value(15)`).
+  - `commandSpell` loaded `img/system/bg_battle_commandSpell.png`, which exists neither in the repository nor in the working copy. RMMV stops the game when an image fails to load, so opening the Spell menu froze the game. It now uses `bg_battle_command3` (third menu level). Swap in a dedicated image if one is planned.
+- Runtime check: walk, run, melee attack, ranged reload, charge (failed roll: stops short, no attack; successful roll: reaches the target and attacks), DART spell (damage applied), cancel (no point spent). Long battles run to the death of every enemy.
+- Found while testing victory: RMMV's reward flow (`gainExp`) crashes on TEW actors, which have no RMMV skills. It was never reached before, since nothing could die. Handled in step 5.

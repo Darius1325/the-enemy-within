@@ -13,7 +13,7 @@ import { BattlePhase } from "../game/BattleManager";
 import Window_TacticsWeapons, { LoadedWeapon } from "./weapons/Window_TacticsWeapons";
 import Window_TacticsWeaponDetails from "./weapons/Window_TacticsWeaponDetails";
 import Window_TacticsWeaponCommand from "./weapons/Window_TacticsWeaponCommand";
-import { WeaponGroup, WeaponQuality } from "../../_types/enum";
+import { BattleOption, WeaponGroup, WeaponQuality } from "../../_types/enum";
 import { Sprite } from "../../../rmmv/core/Sprite";
 import Window_TurnOrder from "./Window_TurnOrder";
 import Window_TacticsSpellList from "./spell/Window_TacticsSpellList";
@@ -208,7 +208,8 @@ Scene_Battle.prototype.createMoveCommandWindow = function() {
     this._moveCommandWindow.setHandler(TEW.COMBAT.SYSTEM.moveSwitchWeapon, this.commandSwitchWeapon.bind(this));
     this._moveCommandWindow.setHandler('cancel', () => {
         $gameMap.clearTiles();
-        $gameMap._flexibleMovement = true; // Go back to free movement range if charge was selected
+        BattleManager.previewMoveOption(BattleOption.WALK);
+        $gameMap.clearTiles();
         this._tacticsCommandWindow.extend();
         this._tacticsCommandWindow.activate();
         this._moveCommandWindow.deactivate();
@@ -592,51 +593,48 @@ Scene_Battle.prototype.commandMove = function() {
     BattleManager.refreshMoveTiles();
 };
 
+// Move and action points are spent when the decision is executed, so cancelling a target selection costs nothing
 Scene_Battle.prototype.commandWalk = function() {
-    // Spend a movement if possible or spend an action to move
-    if (BattleManager.canMove()) {
-        BattleManager.spendMove();
-        this.commandWalkOrRun();
-    } else if (BattleManager.canAct()) {
-        BattleManager.spendAction();
-        this.commandWalkOrRun();
+    if (BattleManager.canMove() || BattleManager.canAct()) {
+        this.startTargetting({ option: BattleOption.WALK });
     } else {
-        SoundManager.playCancel();
+        SoundManager.playBuzzer();
     }
 };
 
 Scene_Battle.prototype.commandRun = function() {
     if (BattleManager.canRun()) {
-        BattleManager.spendMove();
-        BattleManager.spendAction();
-        this.commandWalkOrRun();
+        this.startTargetting({ option: BattleOption.RUN });
     } else {
-        SoundManager.playCancel();
+        SoundManager.playBuzzer();
     }
 };
 
 Scene_Battle.prototype.commandCharge = function() {
     if (BattleManager.canRun()) {
-        BattleManager._battlePhase = BattlePhase.InputCharge;
-        this.changeBackground();
-        this._moveCommandWindow.close();
-        this._tacticsCommandWindow.close();
         // TODO account for critical failure
-        // TODO switch back to flexible movement when done
-        // TODO special phase for special pathfinding + no menu
-        BattleManager.refreshMoveTiles();
+        this.startTargetting({ option: BattleOption.CHARGE });
     } else {
-        SoundManager.playCancel();
+        SoundManager.playBuzzer();
     }
-}
+};
 
-Scene_Battle.prototype.commandWalkOrRun = function() {
-    // TODO restore move/action points
-    BattleManager._battlePhase = BattlePhase.InputMove;
+/**
+ * Close the command windows and let the player select a target for the decision on the map
+ */
+Scene_Battle.prototype.startTargetting = function(decision: { option: BattleOption, weapon?: any, spell?: any }) {
     this.changeBackground();
+    this._skillWindow.hide();
+    this._itemWindow.hide();
+    this._windowSpellList.close();
+    this._windowSpellDetails.close();
     this._moveCommandWindow.close();
+    this._moveCommandWindow.deactivate();
+    this._actionCommandWindow.close();
+    this._actionCommandWindow.deactivate();
     this._tacticsCommandWindow.close();
-    BattleManager.refreshMoveTiles();
+    this._tacticsCommandWindow.deactivate();
+    BattleManager.startTargetting(decision);
 };
 
 Scene_Battle.prototype.commandSwitchWeapon = function() {
@@ -665,10 +663,10 @@ Scene_Battle.prototype.commandSwitchWeapon = function() {
 };
 
 Scene_Battle.prototype.commandWait = function() {
-    BattleManager.inputtingAction().setWait();
-    BattleManager.setupAction();
     this.changeBackground();
     this._tacticsCommandWindow.close();
+    this._tacticsCommandWindow.deactivate();
+    BattleManager.executeDecision({ initiator: BattleManager.actor(), option: BattleOption.WAIT, target: undefined });
 };
 
 Scene_Battle.prototype.commandAction = function() {
@@ -686,16 +684,30 @@ Scene_Battle.prototype.commandAction = function() {
     BattleManager.refreshMoveTiles();
 };
 
+/**
+ * Attack with the main hand weapon. An unloaded reloadable weapon is reloaded instead (TODO dedicated reload command)
+ */
 Scene_Battle.prototype.commandAttack = function() {
-    var action = BattleManager.inputtingAction();
-    action.setAttack(); // TODO maybe get rid of that
-    // BattleManager.setupCombat(action); // WTF are you doing step bro ?
-    BattleManager.refreshRedCells(action);
-    this.onSelectAction();
+    const actor = BattleManager.actor();
+    const equipped = actor.equippedWeapon();
+    const rangedWeapon = TEW.DATABASE.WEAPONS.RANGED_SET[equipped.id];
+    if (rangedWeapon && equipped.isReloadable && equipped.ammo <= 0) {
+        this.changeBackground();
+        this._actionCommandWindow.close();
+        this._actionCommandWindow.deactivate();
+        this._tacticsCommandWindow.close();
+        this._tacticsCommandWindow.deactivate();
+        BattleManager.executeDecision({ initiator: actor, option: BattleOption.RELOAD, target: undefined, weapon: rangedWeapon });
+        return;
+    }
+    this.startTargetting({
+        option: rangedWeapon ? BattleOption.RANGED_ATTACK : BattleOption.MELEE_ATTACK,
+        weapon: rangedWeapon || TEW.DATABASE.WEAPONS.MELEE_SET[equipped.id]
+    });
 };
 
 Scene_Battle.prototype.commandSpell = function() {
-    this.changeBackground('Spell');
+    this.changeBackground(3); // bg_battle_commandSpell.png does not exist, which stopped the game
 
     this._windowSpellList.setActor(BattleManager.actor());
 
@@ -767,12 +779,9 @@ Scene_Battle.prototype.onSkillCancel = function() {
 };
 
 Scene_Battle.prototype.onSpellOk = function() {
-    var spellId: string = this._windowSpellList.item();
-    var action = BattleManager.inputtingAction();
-    action.setSpell(spellId);
+    const spellId: string = this._windowSpellList.item();
     BattleManager.actor().setLastSpell(spellId);
-    BattleManager.refreshRedCells(action);
-    this.onSelectAction();
+    this.startTargetting({ option: BattleOption.USE_SPELL, spell: TEW.DATABASE.SPELLS.SET[spellId] });
 };
 
 Scene_Battle.prototype.onItemOk = function() {
