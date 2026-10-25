@@ -166,6 +166,201 @@ Object.defineProperties(TextManager, {
 });
 // #endregion =========================== properties ============================== //
 // ============================== //
+// #region ============================== properties ============================== //
+// ----------------------
+TEW.SHOPS = TEW.SHOPS || {};
+// #region ====== MONEY === //
+// 1 gold crown = 20 silver shillings = 240 copper coins
+TEW.SHOPS.COPPER_PER_SILVER = 12;
+TEW.SHOPS.COPPER_PER_GOLD = 20 * TEW.SHOPS.COPPER_PER_SILVER;
+TEW.SHOPS.GOLD_LABEL = "G";
+TEW.SHOPS.SILVER_LABEL = "S";
+TEW.SHOPS.COPPER_LABEL = "C";
+TEW.SHOPS.formatMoney = function (copper) {
+    const amount = Math.max(0, Math.floor(copper));
+    const gold = Math.floor(amount / TEW.SHOPS.COPPER_PER_GOLD);
+    const silver = Math.floor((amount % TEW.SHOPS.COPPER_PER_GOLD) / TEW.SHOPS.COPPER_PER_SILVER);
+    const rest = amount % TEW.SHOPS.COPPER_PER_SILVER;
+    const parts = [];
+    if (gold > 0) {
+        parts.push(gold + TEW.SHOPS.GOLD_LABEL);
+    }
+    if (silver > 0) {
+        parts.push(silver + TEW.SHOPS.SILVER_LABEL);
+    }
+    if (rest > 0 || parts.length === 0) {
+        parts.push(rest + TEW.SHOPS.COPPER_LABEL);
+    }
+    return parts.join(" ");
+};
+// #endregion === MONEY === //
+// #region ====== HAGGLING === //
+TEW.SHOPS.MERCHANT_VARIABLE_ID = 17;
+TEW.SHOPS.HAGGLE_VARIABLE_ID = 18;
+TEW.SHOPS.HAGGLE_COMP = "HAGGLE";
+TEW.SHOPS.HAGGLE_WIN = 10;
+TEW.SHOPS.HAGGLE_CRITICAL_WIN = 20;
+TEW.SHOPS.HAGGLE_LOSS = 0;
+TEW.SHOPS.HAGGLE_CRITICAL_LOSS = -10;
+TEW.SHOPS.HAGGLE_DICE_WAIT = 120;
+// #endregion === HAGGLING === //
+// #region ====== STOCK AND PRICES === //
+TEW.SHOPS.SELL_RATIO = 50;
+// Only rare and exotic goods depend on a roll
+TEW.SHOPS.AVAILABILITY_CHANCES = {
+    [0 /* Availability.COMMON */]: 100,
+    [3 /* Availability.SCARCE */]: 100,
+    [1 /* Availability.RARE */]: 30,
+    [2 /* Availability.EXOTIC */]: 10
+};
+TEW.SHOPS.UNLIMITED = -1;
+TEW.SHOPS.UNLIMITED_LABEL = "∞";
+TEW.SHOPS.MAX_TRANSACTION = 99;
+// #region ====== SELLABLE DATABASES === //
+// IDs are unique across items, weapons, armors and ammunition, so a good is found by its ID alone
+TEW.SHOPS.isItem = function (id) {
+    return !!TEW.DATABASE.ITEMS.SET[id];
+};
+TEW.SHOPS.isWeapon = function (id) {
+    return !!(TEW.DATABASE.WEAPONS.MELEE_SET[id] || TEW.DATABASE.WEAPONS.RANGED_SET[id]);
+};
+TEW.SHOPS.isArmor = function (id) {
+    return !!TEW.DATABASE.ARMORS.SET[id];
+};
+TEW.SHOPS.isAmmo = function (id) {
+    return !!TEW.DATABASE.WEAPONS.AMMO_SET[id];
+};
+TEW.SHOPS.goodData = function (id) {
+    return TEW.DATABASE.ITEMS.SET[id]
+        || TEW.DATABASE.WEAPONS.MELEE_SET[id]
+        || TEW.DATABASE.WEAPONS.RANGED_SET[id]
+        || TEW.DATABASE.ARMORS.SET[id]
+        || TEW.DATABASE.WEAPONS.AMMO_SET[id];
+};
+// Items and ammunition only have a group icon
+TEW.SHOPS.goodIcon = function (id) {
+    const data = TEW.SHOPS.goodData(id);
+    if (!data) {
+        return 0;
+    }
+    if (TEW.SHOPS.isItem(id) || TEW.SHOPS.isAmmo(id)) {
+        return data.groupIcon;
+    }
+    return data.icon;
+};
+// Ammunition has no encumbrance
+TEW.SHOPS.goodEnc = function (id) {
+    const data = TEW.SHOPS.goodData(id);
+    return (data && data.enc) || 0;
+};
+// Items are priced by batch of 'nb', ammunition by batch of 'ammountSold'
+TEW.SHOPS.unitPrice = function (id) {
+    const data = TEW.SHOPS.goodData(id);
+    if (!data) {
+        return 0;
+    }
+    let batch = 1;
+    if (TEW.SHOPS.isItem(id)) {
+        batch = data.nb || 1;
+    }
+    else if (TEW.SHOPS.isAmmo(id)) {
+        batch = data.ammountSold || 1;
+    }
+    return (data.price || 0) / batch;
+};
+// IDs found in several sellable databases, which would make goods ambiguous
+TEW.SHOPS.duplicateIds = function () {
+    const ids = [
+        ...Object.keys(TEW.DATABASE.ITEMS.SET),
+        ...Object.keys(TEW.DATABASE.WEAPONS.MELEE_SET),
+        ...Object.keys(TEW.DATABASE.WEAPONS.RANGED_SET),
+        ...Object.keys(TEW.DATABASE.ARMORS.SET),
+        ...Object.keys(TEW.DATABASE.WEAPONS.AMMO_SET)
+    ];
+    return ids.filter((id, index) => ids.indexOf(id) !== index);
+};
+if (TEW.SHOPS.duplicateIds().length > 0) {
+    console.warn("IDs shared by several sellable databases, shops will pick the first one found "
+        + "(items, melee weapons, ranged weapons, armors, ammunition):", TEW.SHOPS.duplicateIds());
+}
+// #endregion === SELLABLE DATABASES === //
+// A better haggle makes goods cheaper
+TEW.SHOPS.buyPrice = function (basePrice, multiplier, haggle) {
+    if (basePrice <= 0) {
+        return 0;
+    }
+    return Math.max(1, Math.round(basePrice * multiplier / 100 * (100 - haggle) / 100));
+};
+// A better haggle makes the merchant pay more, but never more than his own selling price
+TEW.SHOPS.sellPrice = function (basePrice, multiplier, haggle) {
+    if (basePrice <= 0) {
+        return 0;
+    }
+    const price = Math.max(1, Math.floor(basePrice * TEW.SHOPS.SELL_RATIO / 100 * multiplier / 100 * (100 + haggle) / 100));
+    return Math.min(price, TEW.SHOPS.buyPrice(basePrice, multiplier, haggle));
+};
+TEW.SHOPS.newMerchantState = function () {
+    return {
+        haggle: null,
+        purchases: {},
+        stock: {}
+    };
+};
+// #endregion === STOCK AND PRICES === //
+// #region ====== SORTING === //
+Input.keyMapper[83] = "S_Key";
+TEW.SHOPS.SORT_KEY = "S_Key";
+TEW.SHOPS.SORT_KEY_LABEL = "S";
+TEW.SHOPS.SORT_ORDERS = ["NAME" /* ShopSortOrder.NAME */, "WEIGHT" /* ShopSortOrder.WEIGHT */, "PRICE" /* ShopSortOrder.PRICE */];
+TEW.SHOPS.sortEntries = function (entries, order) {
+    const byName = (a, b) => a.data.name.localeCompare(b.data.name);
+    return entries.slice().sort((a, b) => {
+        let difference = 0;
+        if (order === "WEIGHT" /* ShopSortOrder.WEIGHT */) {
+            difference = TEW.SHOPS.goodEnc(b.id) - TEW.SHOPS.goodEnc(a.id);
+        }
+        else if (order === "PRICE" /* ShopSortOrder.PRICE */) {
+            difference = b.price - a.price;
+        }
+        return difference !== 0 ? difference : byName(a, b);
+    });
+};
+// #endregion === SORTING === //
+// #region ====== TEXTS === //
+TEW.MENU.COMMAND_NAMES = TEW.MENU.COMMAND_NAMES || {};
+TEW.MENU.COMMAND_NAMES[97] = "Buy";
+TEW.MENU.COMMAND_NAMES[98] = "Sell";
+TEW.MENU.COMMAND_NAMES[99] = "Sort";
+TEW.MENU.COMMAND_NAMES[100] = "Name";
+TEW.MENU.COMMAND_NAMES[101] = "Weight";
+TEW.MENU.COMMAND_NAMES[102] = "Price";
+TEW.MENU.COMMAND_NAMES[103] = "Purse";
+TEW.MENU.COMMAND_NAMES[104] = "Price";
+TEW.MENU.COMMAND_NAMES[105] = "Offer";
+TEW.MENU.COMMAND_NAMES[106] = "In stock";
+TEW.MENU.COMMAND_NAMES[107] = "Owned";
+TEW.MENU.COMMAND_NAMES[108] = "Group";
+TEW.MENU.COMMAND_NAMES[109] = "Enc.";
+TEW.MENU.COMMAND_NAMES[110] = "Total";
+Object.defineProperties(TextManager, {
+    shopBuy: TextManager.getter('command', 97),
+    shopSell: TextManager.getter('command', 98),
+    shopSort: TextManager.getter('command', 99),
+    shopSortName: TextManager.getter('command', 100),
+    shopSortWeight: TextManager.getter('command', 101),
+    shopSortPrice: TextManager.getter('command', 102),
+    shopMoney: TextManager.getter('command', 103),
+    shopBuyPrice: TextManager.getter('command', 104),
+    shopSellPrice: TextManager.getter('command', 105),
+    shopStock: TextManager.getter('command', 106),
+    shopOwned: TextManager.getter('command', 107),
+    shopGroup: TextManager.getter('command', 108),
+    shopEnc: TextManager.getter('command', 109),
+    shopTotal: TextManager.getter('command', 110),
+});
+// #endregion === TEXTS === //
+// #endregion =========================== properties ============================== //
+// ============================== //
 // #region ============================== Scene_Menu ============================== //
 // ----------------------
 function Scene_Menu() {
@@ -1940,6 +2135,63 @@ Window_JournalPrettyEntry.prototype.close = function () {
 };
 // #endregion =========================== Window_JournalPrettyEntry ============================== //
 // ============================== //
+// #region ============================== Window_ShopSpinner ============================== //
+// ----------------------
+//-----------------------------------------------------------------------------
+// Window_ShopSpinner
+//
+// Spinner to choose how many goods to buy or sell
+function Window_ShopSpinner() {
+    this.initialize.apply(this, arguments);
+}
+Window_ShopSpinner.MARGIN_Y = 20;
+Window_ShopSpinner.prototype = Object.create(Window_InventoryTransferSpinner.prototype);
+Window_ShopSpinner.prototype.constructor = Window_ShopSpinner;
+// Centered at the bottom of the list window
+Window_ShopSpinner.prototype.initialize = function () {
+    this._entry = null;
+    Window_InventoryTransferSpinner.prototype.initialize.call(this);
+    this.x = (Graphics.boxWidth / 2 - this.windowWidth()) / 2;
+    this.y = Graphics.boxHeight - this.windowHeight() - Window_ShopSpinner.MARGIN_Y;
+    this.hide();
+};
+Window_ShopSpinner.prototype.setEntry = function (entry, max) {
+    this._entry = entry;
+    this.setMax(Math.max(1, Math.min(max, TEW.SHOPS.MAX_TRANSACTION)));
+};
+Window_ShopSpinner.prototype.number = function () {
+    return this._number;
+};
+Window_ShopSpinner.prototype.total = function () {
+    return this._entry ? this._entry.price * this._number : 0;
+};
+// The cursor highlights the quantity line
+Window_ShopSpinner.prototype.itemRect = function () {
+    return new Rectangle(0, this.lineHeight(), this.contentsWidth(), this.lineHeight());
+};
+// Good's name, quantity and total price
+Window_ShopSpinner.prototype.drawAllItems = function () {
+    if (!this._entry) {
+        return;
+    }
+    const width = this.contentsWidth();
+    const lineHeight = this.lineHeight();
+    this.changeTextColor(this.systemColor());
+    this.drawText(this._entry.data.name, 0, 0, width, 'center');
+    this.resetTextColor();
+    const quantity = '× ' + this._number;
+    this.drawText(quantity, 0, lineHeight, width, 'center');
+    const totalLabel = TextManager.shopTotal + " : ";
+    const totalValue = TEW.SHOPS.formatMoney(this.total());
+    const totalWidth = this.textWidth(totalLabel + totalValue);
+    const totalX = (width - totalWidth) / 2;
+    this.changeTextColor(this.systemColor());
+    this.drawText(totalLabel, totalX, lineHeight * 2, this.textWidth(totalLabel), 'left');
+    this.resetTextColor();
+    this.drawText(totalValue, totalX + this.textWidth(totalLabel), lineHeight * 2, this.textWidth(totalValue), 'left');
+};
+// #endregion =========================== Window_ShopSpinner ============================== //
+// ============================== //
 // #region ============================== Window_InventoryArmorCommand ============================== //
 //-----------------------------------------------------------------------------
 // Window_InventoryArmorCommand
@@ -3321,6 +3573,543 @@ Window_MenuStatus.prototype.backgroundImageName = function () {
     return "bg_menuStatus";
 };
 // #endregion =========================== Window_MenuStatus ============================== //
+// ============================== //
+// #region ============================== Game_Interpreter ============================== //
+// ----------------------
+//-----------------------------------------------------------------------------
+// Game_Interpreter
+//
+// Shopping commands
+// Haggle skill value of a merchant: Fellowship + Haggle advances
+Game_Interpreter.prototype.merchantHaggleValue = function (npcId) {
+    const npc = TEW.DATABASE.NPCS.SET[npcId];
+    if (!npc) {
+        return 0;
+    }
+    const statName = TEW.DATABASE.COMPS.SET[TEW.SHOPS.HAGGLE_COMP].stat;
+    let statValue;
+    if (Array.isArray(npc.stats)) {
+        // Stat arrays do not hold the max wounds: [WEAS, BALS, ..., FELW]
+        statValue = npc.stats[TEW.CHARACTERS.STATS[statName.toLowerCase()] - 1];
+    }
+    else {
+        statValue = npc.stats[statName];
+    }
+    return (statValue || 0) + (npc.comps[TEW.SHOPS.HAGGLE_COMP] || 0);
+};
+/**
+ * Haggle with a merchant, opposing the party's best Haggle to the merchant's
+ * The test is only rolled on the first visit, its result being saved for later ones
+ * The modifier (percentage, positive in the player's favour) is stored in TEW.SHOPS.HAGGLE_VARIABLE_ID
+ * @param npcId merchant's ID in TEW.DATABASE.NPCS.SET
+ * @returns the haggling modifier
+ */
+Game_Interpreter.prototype.haggle = function (npcId) {
+    if (!$gameParty.hasHaggledWith(npcId)) {
+        let modifier = TEW.SHOPS.HAGGLE_LOSS;
+        const partyValue = Math.max(...$gameParty.allMembers().map((actor) => actor.compWithModifiers(TEW.SHOPS.HAGGLE_COMP)));
+        const result = TEW.DICE.opposedTest(partyValue, this.merchantHaggleValue(npcId));
+        if (result.success) {
+            modifier = result.criticalPlayer ? TEW.SHOPS.HAGGLE_CRITICAL_WIN : TEW.SHOPS.HAGGLE_WIN;
+        }
+        else if (result.criticalPlayer) {
+            modifier = TEW.SHOPS.HAGGLE_CRITICAL_LOSS;
+        }
+        console.log(`Haggling with ${npcId}: SL ${result.sl}, success ${result.success}, critical ${result.criticalPlayer} => ${modifier}%`);
+        $gameParty.setMerchantHaggle(npcId, modifier);
+    }
+    const haggle = $gameParty.merchantHaggle(npcId);
+    $gameVariables.setValue(TEW.SHOPS.HAGGLE_VARIABLE_ID, haggle);
+    return haggle;
+};
+// Redefining event command : Shop Processing
+// The goods chosen in the editor are ignored, the shop is described in TEW.DATABASE.SHOPS.SET
+// Parameter 4 (purchase only) is kept
+Game_Interpreter.prototype.command302 = function () {
+    if (!$gameParty.inBattle()) {
+        const npcId = $gameVariables.value(TEW.SHOPS.MERCHANT_VARIABLE_ID);
+        if (!TEW.DATABASE.SHOPS.SET[npcId]) {
+            console.warn(`No shop found for merchant "${npcId}" (game variable #${TEW.SHOPS.MERCHANT_VARIABLE_ID})`);
+            this.skipShopGoods();
+            return true;
+        }
+        // First visit: haggling, then waiting for the dice to be seen before this command runs again
+        if (!$gameParty.hasHaggledWith(npcId)) {
+            this.haggle(npcId);
+            this.wait(TEW.SHOPS.HAGGLE_DICE_WAIT);
+            return false;
+        }
+        // Restoring this merchant's modifier, the variable may hold another merchant's
+        this.haggle(npcId);
+        this.skipShopGoods();
+        SceneManager.push(Scene_Shop);
+        SceneManager.prepareNextScene(npcId, $gameVariables.value(TEW.SHOPS.HAGGLE_VARIABLE_ID), this._params[4]);
+    }
+    return true;
+};
+// Skipping the 'more goods' lines following the Shop Processing command
+Game_Interpreter.prototype.skipShopGoods = function () {
+    while (this.nextEventCode() === 605) {
+        this._index++;
+    }
+};
+// #endregion =========================== Game_Interpreter ============================== //
+// ============================== //
+// #region ============================== Game_Party ============================== //
+// ----------------------
+//-----------------------------------------------------------------------------
+// Game_Party
+//
+// Merchants progression, created lazily so older saves stay compatible
+// #region ====== MERCHANTS === //
+Game_Party.prototype.merchantState = function (npcId) {
+    if (!this._merchants) {
+        this._merchants = {};
+    }
+    if (!this._merchants[npcId]) {
+        this._merchants[npcId] = TEW.SHOPS.newMerchantState();
+    }
+    return this._merchants[npcId];
+};
+Game_Party.prototype.hasHaggledWith = function (npcId) {
+    const haggle = this.merchantState(npcId).haggle;
+    return haggle !== null && haggle !== undefined;
+};
+Game_Party.prototype.merchantHaggle = function (npcId) {
+    return this.merchantState(npcId).haggle || 0;
+};
+Game_Party.prototype.setMerchantHaggle = function (npcId, haggle) {
+    this.merchantState(npcId).haggle = haggle;
+};
+// Units of a good already bought from a merchant
+Game_Party.prototype.merchantPurchases = function (npcId, shopItem) {
+    return this.merchantState(npcId).purchases[shopItem.id] || 0;
+};
+Game_Party.prototype.addMerchantPurchase = function (npcId, shopItem, quantity) {
+    const purchases = this.merchantState(npcId).purchases;
+    purchases[shopItem.id] = (purchases[shopItem.id] || 0) + quantity;
+};
+// Units of a good the merchant can still sell, negative if unlimited
+Game_Party.prototype.merchantRemaining = function (npcId, shopItem) {
+    if (shopItem.quantity < 0) {
+        return TEW.SHOPS.UNLIMITED;
+    }
+    return Math.max(0, shopItem.quantity - this.merchantPurchases(npcId, shopItem));
+};
+// Rare and exotic goods are rolled once per merchant, the result being saved
+Game_Party.prototype.isInMerchantStock = function (npcId, shopItem) {
+    const data = TEW.SHOPS.goodData(shopItem.id);
+    if (!data) {
+        return false;
+    }
+    const chance = TEW.SHOPS.AVAILABILITY_CHANCES[data.availability];
+    if (chance === undefined || chance >= 100) {
+        return true;
+    }
+    const stock = this.merchantState(npcId).stock;
+    if (stock[shopItem.id] === undefined) {
+        stock[shopItem.id] = TEW.DICE.roll() <= chance;
+    }
+    return stock[shopItem.id];
+};
+// #endregion === MERCHANTS === //
+// #region ====== PARTY GOODS === //
+Game_Party.prototype.shopActors = function () {
+    return this.allMembers();
+};
+// Every good carried by the party (items, ammunition, weapons and armors together)
+// unequippedOnly: whether equipped weapons and armors are left out
+Game_Party.prototype.goodsCount = function (unequippedOnly) {
+    const goods = {};
+    const add = (id, quantity) => {
+        goods[id] = (goods[id] || 0) + quantity;
+    };
+    this.shopActors().forEach((actor) => {
+        Object.keys(actor._items).forEach((id) => {
+            add(id, actor.item(id));
+        });
+        Object.keys(actor._ammo).forEach((id) => {
+            add(id, actor.ammo(id));
+        });
+        actor._weapons.forEach((weapon) => {
+            if (!unequippedOnly || (!weapon.isInMainHand && !weapon.isInSecondHand)) {
+                add(weapon.id, 1);
+            }
+        });
+        actor._armors.forEach((id) => {
+            add(id, 1);
+        });
+        if (!unequippedOnly) {
+            actor._equippedArmors.forEach((id) => {
+                add(id, 1);
+            });
+        }
+    });
+    return goods;
+};
+// Units of a good carried by the party
+Game_Party.prototype.goodCount = function (id, unequippedOnly) {
+    return this.goodsCount(unequippedOnly)[id] || 0;
+};
+// Giving bought goods to the leader, in the inventory matching the good's database
+Game_Party.prototype.addGood = function (id, quantity) {
+    const leader = this.leader();
+    if (TEW.SHOPS.isWeapon(id)) {
+        for (let i = 0; i < quantity; i++) {
+            leader.addWeapon(id);
+        }
+    }
+    else if (TEW.SHOPS.isArmor(id)) {
+        for (let i = 0; i < quantity; i++) {
+            leader.addArmor(id);
+        }
+    }
+    else if (TEW.SHOPS.isAmmo(id)) {
+        leader.addAmmo(id, quantity);
+    }
+    else {
+        leader.addItem(id, quantity);
+    }
+};
+// Removing unequipped goods from the party, starting with the leader
+Game_Party.prototype.removeUnequippedGood = function (id, quantity) {
+    let left = quantity;
+    const actors = this.shopActors();
+    const isUnequipped = (weapon) => weapon.id === id && !weapon.isInMainHand && !weapon.isInSecondHand;
+    for (let i = 0; i < actors.length && left > 0; i++) {
+        const actor = actors[i];
+        if (TEW.SHOPS.isWeapon(id)) {
+            let index = actor._weapons.findIndex(isUnequipped);
+            while (index >= 0 && left > 0) {
+                actor.removeWeapon(index);
+                left--;
+                index = actor._weapons.findIndex(isUnequipped);
+            }
+        }
+        else if (TEW.SHOPS.isArmor(id)) {
+            while (actor.hasArmorTEW(id) && left > 0) {
+                actor.removeArmor(id);
+                left--;
+            }
+        }
+        else if (TEW.SHOPS.isAmmo(id)) {
+            const removed = Math.min(actor.ammo(id), left);
+            if (removed > 0) {
+                actor.removeAmmo(id, removed);
+                left -= removed;
+            }
+        }
+        else {
+            const removed = Math.min(actor.item(id), left);
+            if (removed > 0) {
+                actor.removeItem(id, removed);
+                left -= removed;
+            }
+        }
+    }
+    return quantity - left;
+};
+// #endregion === PARTY GOODS === //
+// #endregion =========================== Game_Party ============================== //
+// ============================== //
+// #region ============================== Window_ShopDetails ============================== //
+// ----------------------
+//-----------------------------------------------------------------------------
+// Window_ShopDetails
+//
+// The window for displaying a good's details and price
+function Window_ShopDetails() {
+    this.initialize.apply(this, arguments);
+}
+Window_ShopDetails.TABLE_Y = 80;
+Window_ShopDetails.LINE_MARGIN_Y = 12;
+Window_ShopDetails.DESCRIPTION_MARGIN_Y = 20;
+Window_ShopDetails.prototype = Object.create(HalfWindow_Details.prototype);
+Window_ShopDetails.prototype.constructor = Window_ShopDetails;
+Window_ShopDetails.prototype.initialize = function () {
+    this._entry = null;
+    this._mode = "BUY" /* ShopMode.BUY */;
+    HalfWindow_Details.prototype.initialize.call(this);
+};
+Window_ShopDetails.prototype.setEntry = function (entry, mode) {
+    this._entry = entry;
+    this._mode = mode;
+    this.refresh();
+};
+// Erase window content
+Window_ShopDetails.prototype.empty = function () {
+    this._entry = null;
+    this.refresh();
+};
+Window_ShopDetails.prototype.refresh = function () {
+    if (!this.contents) {
+        return;
+    }
+    this.contents.clear();
+    if (this._entry) {
+        this.drawDetails(this._entry);
+    }
+};
+// Rows of the details table
+Window_ShopDetails.prototype.detailsTable = function (entry) {
+    const table = [];
+    if (this._mode === "BUY" /* ShopMode.BUY */) {
+        table.push([TextManager.shopBuyPrice + " :", TEW.SHOPS.formatMoney(entry.price)]);
+        table.push([TextManager.shopStock + " :", entry.quantity < 0 ? TEW.SHOPS.UNLIMITED_LABEL : "x" + entry.quantity]);
+    }
+    else {
+        table.push([TextManager.shopSellPrice + " :", TEW.SHOPS.formatMoney(entry.price)]);
+    }
+    table.push([TextManager.shopOwned + " :", "x" + entry.owned]);
+    table.push([TextManager.shopGroup + " :", entry.data.groupLabel]);
+    if (!TEW.SHOPS.isAmmo(entry.id)) {
+        table.push([TextManager.shopEnc + " :", "" + TEW.SHOPS.goodEnc(entry.id)]);
+    }
+    return table;
+};
+Window_ShopDetails.prototype.drawDetails = function (entry) {
+    // Title
+    this.drawUnderlinedText(entry.data.name, 0, 0, this.contentsWidth(), "center");
+    // Good's icon
+    this.drawIcon(TEW.SHOPS.goodIcon(entry.id), 0, 0);
+    // Availability icon
+    this.drawIcon(entry.data.availabilityIcon, this.contentsWidth() - 32, 0);
+    // Table
+    const table = this.detailsTable(entry);
+    this.drawTable2Columns(0, Window_ShopDetails.TABLE_Y, this.contentsWidth(), table.length, table);
+    const lineY = Window_ShopDetails.TABLE_Y + table.length * this.lineHeight() + Window_ShopDetails.LINE_MARGIN_Y;
+    this.drawLine(lineY);
+    // Description
+    const descriptionY = lineY + Window_ShopDetails.DESCRIPTION_MARGIN_Y;
+    this.drawWrappedTextManually(entry.data.description || "", 0, descriptionY, this.contentsHeight() - descriptionY);
+};
+// #endregion =========================== Window_ShopDetails ============================== //
+// ============================== //
+// #region ============================== Window_ShopList ============================== //
+// ----------------------
+//-----------------------------------------------------------------------------
+// Window_ShopList
+//
+// Shop goods list window
+function Window_ShopList() {
+    this.initialize.apply(this, arguments);
+}
+Window_ShopList.LEFT_COLUMN_WIDTH = 500;
+Window_ShopList.RIGHT_COLUMN_WIDTH = 80;
+Window_ShopList.RIGHT_COLUMN_POSITION = 500;
+Window_ShopList.prototype = Object.create(HalfWindow_List.prototype);
+Window_ShopList.prototype.constructor = Window_ShopList;
+// Same as HalfWindow_List, without the bottom command window
+Window_ShopList.prototype.initialize = function () {
+    Window_Selectable.prototype.initialize.call(this, 0, TEW.MENU.INVENTORY_WINDOW_TOPBAR_HEIGHT, this.windowWidth(), this.windowHeight());
+    this._actor = null;
+    this._entries = [];
+    this._maxItems = 0;
+    this._enabledChecker = null;
+    this._leftPadding = 10;
+    this._iconPadding = 5;
+    this.deactivate();
+    this.refresh();
+};
+Window_ShopList.prototype.setEntries = function (entries) {
+    this._entries = entries;
+    this._maxItems = entries.length;
+    if (this.index() >= this._maxItems) {
+        this._index = this._maxItems - 1;
+    }
+    this.refresh();
+};
+// The scene decides whether an entry can be traded (money, stock...)
+Window_ShopList.prototype.setEnabledChecker = function (checker) {
+    this._enabledChecker = checker;
+};
+Window_ShopList.prototype.entries = function () {
+    return this._entries;
+};
+Window_ShopList.prototype.isEnabled = function (entry) {
+    return !!entry && (!this._enabledChecker || this._enabledChecker(entry));
+};
+Window_ShopList.prototype.isCurrentItemEnabled = function () {
+    return this.isEnabled(this.item());
+};
+// Entries do not depend on an actor
+Window_ShopList.prototype.refresh = function () {
+    if (this.contents) {
+        this.contents.clear();
+        this.drawAllItems();
+    }
+};
+Window_ShopList.prototype.drawAllItems = function () {
+    const topIndex = this.topIndex();
+    for (let i = 0; i < this.maxPageItems(); i++) {
+        const index = topIndex + i;
+        if (index < this.maxItems()) {
+            this.drawItem(index);
+        }
+    }
+};
+Window_ShopList.prototype.drawItem = function (index) {
+    const entry = this.entryFromIndex(index);
+    if (!entry) {
+        return;
+    }
+    const normalizedIndex = index - this.topIndex();
+    const x = 0;
+    const y = normalizedIndex * TEW.MENU.LINE_HEIGHT;
+    const quantity = entry.quantity < 0 ? TEW.SHOPS.UNLIMITED_LABEL : entry.quantity;
+    this.changePaintOpacity(this.isEnabled(entry));
+    this.changeTextColor(this.systemColor());
+    this.drawIcon(TEW.SHOPS.goodIcon(entry.id), x, y);
+    this.drawText(entry.data.name, x + 32 + this._iconPadding, y, Window_ShopList.LEFT_COLUMN_WIDTH - 32 - this._iconPadding);
+    this.resetTextColor();
+    this.drawText(quantity, Window_ShopList.RIGHT_COLUMN_POSITION, y, Window_ShopList.RIGHT_COLUMN_WIDTH, 'right');
+    this.changePaintOpacity(true);
+};
+Window_ShopList.prototype.entryFromIndex = function (index) {
+    return this._entries[index];
+};
+// Getting the current selected entry
+Window_ShopList.prototype.item = function () {
+    return this.entryFromIndex(this.index());
+};
+// Finding an entry after the list was rebuilt (same good)
+Window_ShopList.prototype.indexOfEntry = function (entry) {
+    if (!entry) {
+        return -1;
+    }
+    return this._entries.findIndex((e) => e.id === entry.id);
+};
+// Selecting an entry, the details window following the cursor
+Window_ShopList.prototype.select = function (index) {
+    this._index = index;
+    if (this._index >= 0) {
+        this.callHandler("show_details");
+    }
+    this._stayCount = 0;
+    this.ensureCursorVisible();
+    this.updateCursor();
+    this.callUpdateHelp();
+};
+Window_ShopList.prototype.processOk = function () {
+    if (this.isCurrentItemEnabled()) {
+        this.playOkSound();
+        this.updateInputData();
+        this.deactivate();
+        this.callOkHandler();
+    }
+    else {
+        this.playBuzzerSound();
+    }
+};
+// #endregion =========================== Window_ShopList ============================== //
+// ============================== //
+// #region ============================== Window_ShopTopbar ============================== //
+// ----------------------
+//-----------------------------------------------------------------------------
+// Window_ShopTopbar
+//
+// The window for selecting a tab on the shop screen.
+function Window_ShopTopbar() {
+    this.initialize.apply(this, arguments);
+}
+// The tabs are placed right after the sort indicator, the money being drawn in the remaining space
+Window_ShopTopbar.SORT_INDICATOR_WIDTH = 300;
+Window_ShopTopbar.COMMAND_WIDTH = 200;
+Window_ShopTopbar.INDICATOR_MARGIN_X = 20;
+Window_ShopTopbar.prototype = Object.create(Window_HorzCommand.prototype);
+Window_ShopTopbar.prototype.constructor = Window_ShopTopbar;
+// Initializing the command window
+Window_ShopTopbar.prototype.initialize = function (x, y, purchaseOnly = false) {
+    this._purchaseOnly = !!purchaseOnly;
+    this._sortOrder = TEW.SHOPS.SORT_ORDERS[0];
+    Window_HorzCommand.prototype.initialize.call(this, x, y);
+};
+Window_ShopTopbar.prototype.maxCols = function () {
+    return 2;
+};
+// Tabs keep a fixed width instead of spreading over the whole topbar
+Window_ShopTopbar.prototype.itemWidth = function () {
+    return Window_ShopTopbar.COMMAND_WIDTH;
+};
+// Tabs are shifted to leave room for the sort indicator
+Window_ShopTopbar.prototype.itemRect = function (index) {
+    const rect = Window_HorzCommand.prototype.itemRect.call(this, index);
+    rect.x += this.commandsX();
+    return rect;
+};
+Window_ShopTopbar.prototype.commandsX = function () {
+    return Window_ShopTopbar.SORT_INDICATOR_WIDTH + Window_ShopTopbar.INDICATOR_MARGIN_X;
+};
+// Making the 2 tabs
+Window_ShopTopbar.prototype.makeCommandList = function () {
+    this.addCommand(TextManager.shopBuy, 'shop_buy');
+    this.addCommand(TextManager.shopSell, 'shop_sell', !this._purchaseOnly);
+};
+Window_ShopTopbar.prototype.cursorRight = function (wrap) {
+    Window_HorzCommand.prototype.cursorRight.call(this, wrap);
+    this.callHandler('right');
+};
+Window_ShopTopbar.prototype.cursorLeft = function (wrap) {
+    Window_HorzCommand.prototype.cursorLeft.call(this, wrap);
+    this.callHandler('left');
+};
+Window_ShopTopbar.prototype.verticalBorderPadding = function () {
+    return 18;
+};
+// Current tab
+Window_ShopTopbar.prototype.mode = function () {
+    return this.currentSymbol() === 'shop_sell' ? "SELL" /* ShopMode.SELL */ : "BUY" /* ShopMode.BUY */;
+};
+// #region ====== Indicators === //
+Window_ShopTopbar.prototype.setSortOrder = function (order) {
+    if (this._sortOrder !== order) {
+        this._sortOrder = order;
+        this.refresh();
+    }
+};
+Window_ShopTopbar.prototype.refresh = function () {
+    Window_HorzCommand.prototype.refresh.call(this);
+    this.drawSortIndicator();
+    this.drawMoney();
+};
+Window_ShopTopbar.prototype.sortOrderLabel = function () {
+    switch (this._sortOrder) {
+        case "WEIGHT" /* ShopSortOrder.WEIGHT */:
+            return TextManager.shopSortWeight;
+        case "PRICE" /* ShopSortOrder.PRICE */:
+            return TextManager.shopSortPrice;
+        default:
+            return TextManager.shopSortName;
+    }
+};
+// "Sort (S): Name" on the left of the tabs
+Window_ShopTopbar.prototype.drawSortIndicator = function () {
+    const width = Window_ShopTopbar.SORT_INDICATOR_WIDTH;
+    const label = `${TextManager.shopSort} (${TEW.SHOPS.SORT_KEY_LABEL}): `;
+    const labelWidth = this.textWidth(label);
+    this.changeTextColor(this.systemColor());
+    this.drawText(label, 0, 0, labelWidth, 'left');
+    this.resetTextColor();
+    this.drawText(this.sortOrderLabel(), labelWidth, 0, width - labelWidth, 'left');
+};
+// Party's money, in readable format, on the right of the tabs
+Window_ShopTopbar.prototype.drawMoney = function () {
+    const x = this.commandsX()
+        + this.maxCols() * (Window_ShopTopbar.COMMAND_WIDTH + this.spacing())
+        + Window_ShopTopbar.INDICATOR_MARGIN_X;
+    const width = this.contentsWidth() - x;
+    if (width <= 0) {
+        return;
+    }
+    const value = TEW.SHOPS.formatMoney($gameParty.gold());
+    const valueWidth = this.textWidth(value);
+    this.drawText(value, x, 0, width, 'right');
+    this.changeTextColor(this.systemColor());
+    this.drawText(`${TextManager.shopMoney}: `, x, 0, width - valueWidth, 'right');
+    this.resetTextColor();
+};
+// #endregion === Indicators === //
+// #endregion =========================== Window_ShopTopbar ============================== //
 // ============================== //
 // #region ============================== Window_StatusCompetenceDetails ============================== //
 function Window_StatusCompetenceDetails() {
@@ -5359,6 +6148,277 @@ Scene_Journals.prototype.openJournal = function () {
     }
 };
 // #endregion =========================== Scene_Journals ============================== //
+// ============================== //
+// #region ============================== backgrounds ============================== //
+Window_ShopTopbar.prototype.backgroundImageName = function () {
+    return "bg_menuTopbarCommands";
+};
+Window_ShopTopbar.prototype.windowWidth = function () {
+    return Graphics.boxWidth;
+};
+Window_ShopTopbar.prototype.windowHeight = function () {
+    return TEW.MENU.INVENTORY_WINDOW_TOPBAR_HEIGHT;
+};
+// No command window below the list, it takes the whole height
+Window_ShopList.prototype.backgroundImageName = function () {
+    return "bg_menuHalfWindowFullHeight";
+};
+Window_ShopList.prototype.windowWidth = function () {
+    return Graphics.boxWidth / 2;
+};
+Window_ShopList.prototype.windowHeight = function () {
+    return 648; // total height - topbar height
+};
+Window_ShopDetails.prototype.backgroundImageName = function () {
+    return "bg_menuHalfWindowFullHeight";
+};
+Window_ShopDetails.prototype.windowWidth = function () {
+    return Graphics.boxWidth / 2;
+};
+Window_ShopDetails.prototype.windowHeight = function () {
+    return 648; // total height - topbar height
+};
+Window_ShopSpinner.prototype.backgroundImageName = function () {
+    return "bg_inventoryTransferCommand";
+};
+Window_ShopSpinner.prototype.windowWidth = function () {
+    return 380;
+};
+Window_ShopSpinner.prototype.windowHeight = function () {
+    return 168; // line height * 3 + bg padding
+};
+// #endregion =========================== backgrounds ============================== //
+// ============================== //
+// #region ============================== Scene_Shop ============================== //
+// ----------------------
+//-----------------------------------------------------------------------------
+// Scene_Shop (override)
+//
+// The scene class of the shop screen.
+/**
+ * Preparing the scene, called through SceneManager.prepareNextScene
+ * @param npcId merchant's ID, key of TEW.DATABASE.SHOPS.SET
+ * @param haggle haggling modifier (percentage, positive in the player's favour)
+ * @param purchaseOnly whether the Sell tab is disabled
+ */
+Scene_Shop.prototype.prepare = function (npcId, haggle = 0, purchaseOnly = false) {
+    this._npcId = npcId;
+    this._shop = TEW.DATABASE.SHOPS.SET[npcId] || { multiplier: 100, items: [] };
+    this._haggle = Number(haggle) || 0;
+    this._purchaseOnly = !!purchaseOnly;
+    this._sortOrder = TEW.SHOPS.SORT_ORDERS[0];
+};
+Scene_Shop.prototype.create = function () {
+    Scene_MenuBase.prototype.create.call(this);
+    this.addFullscreenBackground();
+    this.createTopbarWindow();
+    this.createListWindow();
+    this.createDetailsWindow();
+    this.createSpinnerWindow();
+    this.displayWindow();
+};
+Scene_Shop.prototype.addFullscreenBackground = function () {
+    this._background = new Sprite(ImageManager.loadSystem('bg_fullscreen'));
+    this.addChildAt(this._background, this.getChildIndex(this._windowLayer));
+};
+// Watching the sort input key
+Scene_Shop.prototype.update = function () {
+    Scene_MenuBase.prototype.update.call(this);
+    this.updateSortToggle();
+};
+// #region ====== Windows creation === //
+Scene_Shop.prototype.createTopbarWindow = function () {
+    this._topbarWindow = new Window_ShopTopbar(0, 0, this._purchaseOnly);
+    this._topbarWindow.setHandler('cancel', this.popScene.bind(this));
+    this._topbarWindow.setHandler('right', this.displayWindow.bind(this));
+    this._topbarWindow.setHandler('left', this.displayWindow.bind(this));
+    this._topbarWindow.setHandler('shop_buy', this.activateList.bind(this));
+    this._topbarWindow.setHandler('shop_sell', this.activateList.bind(this));
+    this.addWindow(this._topbarWindow);
+};
+Scene_Shop.prototype.createListWindow = function () {
+    this._listWindow = new Window_ShopList();
+    this._listWindow.setEnabledChecker(this.isEntryEnabled.bind(this));
+    this._listWindow.setHandler('ok', this.onListOk.bind(this));
+    this._listWindow.setHandler('cancel', this.onListCancel.bind(this));
+    this._listWindow.setHandler('show_details', this.showDetails.bind(this));
+    this.addWindow(this._listWindow);
+};
+Scene_Shop.prototype.createDetailsWindow = function () {
+    this._detailsWindow = new Window_ShopDetails();
+    this.addWindow(this._detailsWindow);
+};
+Scene_Shop.prototype.createSpinnerWindow = function () {
+    this._spinnerWindow = new Window_ShopSpinner();
+    this._spinnerWindow.setHandler('ok', this.onSpinnerOk.bind(this));
+    this._spinnerWindow.setHandler('cancel', this.onSpinnerCancel.bind(this));
+    this.addWindow(this._spinnerWindow);
+};
+// #endregion === Windows creation === //
+// #region ====== Entries === //
+Scene_Shop.prototype.mode = function () {
+    return this._topbarWindow.mode();
+};
+// Goods of the merchant which are in stock (unknown IDs are left out)
+Scene_Shop.prototype.makeBuyEntries = function () {
+    const owned = $gameParty.goodsCount(false);
+    return this._shop.items
+        .filter((shopItem) => $gameParty.isInMerchantStock(this._npcId, shopItem))
+        .map((shopItem) => {
+        return {
+            id: shopItem.id,
+            data: TEW.SHOPS.goodData(shopItem.id),
+            quantity: $gameParty.merchantRemaining(this._npcId, shopItem),
+            owned: owned[shopItem.id] || 0,
+            price: TEW.SHOPS.buyPrice(TEW.SHOPS.unitPrice(shopItem.id), this._shop.multiplier, this._haggle)
+        };
+    });
+};
+// Unequipped goods of the whole party, worthless ones excepted
+Scene_Shop.prototype.makeSellEntries = function () {
+    const unequipped = $gameParty.goodsCount(true);
+    const owned = $gameParty.goodsCount(false);
+    const entries = [];
+    Object.keys(unequipped).forEach((id) => {
+        const data = TEW.SHOPS.goodData(id);
+        const quantity = unequipped[id];
+        if (!data || quantity <= 0) {
+            return;
+        }
+        const price = TEW.SHOPS.sellPrice(TEW.SHOPS.unitPrice(id), this._shop.multiplier, this._haggle);
+        if (price > 0) {
+            entries.push({
+                id: id,
+                data: data,
+                quantity: quantity,
+                owned: owned[id] || 0,
+                price: price
+            });
+        }
+    });
+    return entries;
+};
+// Rebuilding the list, keeping the cursor on the same good if it is still listed
+Scene_Shop.prototype.refreshEntries = function () {
+    const previous = this._listWindow.index() >= 0 ? this._listWindow.item() : null;
+    const entries = this.mode() === "SELL" /* ShopMode.SELL */ ? this.makeSellEntries() : this.makeBuyEntries();
+    this._listWindow.setEntries(TEW.SHOPS.sortEntries(entries, this._sortOrder));
+    if (previous && this._listWindow.index() >= 0) {
+        const index = this._listWindow.indexOfEntry(previous);
+        this._listWindow.select(index >= 0 ? index : Math.min(this._listWindow.index(), entries.length - 1));
+    }
+    this._topbarWindow.refresh();
+};
+// Max units of a good which can be traded at once
+Scene_Shop.prototype.maxQuantity = function (entry) {
+    let max = TEW.SHOPS.MAX_TRANSACTION;
+    if (this.mode() === "SELL" /* ShopMode.SELL */) {
+        return Math.min(max, entry.quantity);
+    }
+    if (entry.quantity >= 0) {
+        max = Math.min(max, entry.quantity);
+    }
+    if (entry.price > 0) {
+        max = Math.min(max, Math.floor($gameParty.gold() / entry.price));
+    }
+    return max;
+};
+Scene_Shop.prototype.isEntryEnabled = function (entry) {
+    if (this.mode() === "SELL" /* ShopMode.SELL */ && this._purchaseOnly) {
+        return false;
+    }
+    return this.maxQuantity(entry) > 0;
+};
+// #endregion === Entries === //
+// #region ====== Navigation === //
+// Showing the list matching the topbar's current tab
+Scene_Shop.prototype.displayWindow = function () {
+    this._spinnerWindow.hide();
+    this._spinnerWindow.deactivate();
+    this._listWindow.deactivate();
+    this._listWindow.deselect();
+    this.refreshEntries();
+    this._detailsWindow.empty();
+    this._topbarWindow.activate();
+};
+Scene_Shop.prototype.activateList = function (index = 0) {
+    const nbEntries = this._listWindow.maxItems();
+    if (nbEntries > 0) {
+        this._topbarWindow.deactivate();
+        this._listWindow.activate();
+        this._listWindow.select(Math.max(0, Math.min(index, nbEntries - 1)));
+    }
+    else {
+        this.displayWindow();
+    }
+};
+Scene_Shop.prototype.showDetails = function () {
+    const entry = this._listWindow.item();
+    if (entry) {
+        this._detailsWindow.setEntry(entry, this.mode());
+    }
+    else {
+        this._detailsWindow.empty();
+    }
+};
+Scene_Shop.prototype.onListOk = function () {
+    const entry = this._listWindow.item();
+    this._spinnerWindow.setEntry(entry, this.maxQuantity(entry));
+    this._spinnerWindow.start();
+};
+Scene_Shop.prototype.onListCancel = function () {
+    this.displayWindow();
+};
+Scene_Shop.prototype.onSpinnerOk = function () {
+    const entry = this._listWindow.item();
+    const quantity = this._spinnerWindow.number();
+    if (this.mode() === "SELL" /* ShopMode.SELL */) {
+        this.doSell(entry, quantity);
+    }
+    else {
+        this.doBuy(entry, quantity);
+    }
+    this.closeSpinner();
+};
+Scene_Shop.prototype.onSpinnerCancel = function () {
+    this.closeSpinner();
+};
+Scene_Shop.prototype.closeSpinner = function () {
+    this._spinnerWindow.hide();
+    this._spinnerWindow.deactivate();
+    this.refreshEntries();
+    this.activateList(this._listWindow.index());
+};
+// Cycling through sort orders, unless a transaction is being confirmed
+Scene_Shop.prototype.updateSortToggle = function () {
+    if (Input.isTriggered(TEW.SHOPS.SORT_KEY) && !this._spinnerWindow.active) {
+        SoundManager.playCursor();
+        const orders = TEW.SHOPS.SORT_ORDERS;
+        this._sortOrder = orders[(orders.indexOf(this._sortOrder) + 1) % orders.length];
+        this._topbarWindow.setSortOrder(this._sortOrder);
+        this.refreshEntries();
+    }
+};
+// #endregion === Navigation === //
+// #region ====== Transactions === //
+// Bought goods go to the leader's inventory
+Scene_Shop.prototype.doBuy = function (entry, quantity) {
+    const shopItem = this._shop.items.find((item) => item.id === entry.id);
+    $gameParty.loseGold(entry.price * quantity);
+    $gameParty.addGood(entry.id, quantity);
+    if (shopItem && shopItem.quantity >= 0) {
+        $gameParty.addMerchantPurchase(this._npcId, shopItem, quantity);
+    }
+    SoundManager.playShop();
+};
+// Sold goods are taken from the party's unequipped goods
+Scene_Shop.prototype.doSell = function (entry, quantity) {
+    const sold = $gameParty.removeUnequippedGood(entry.id, quantity);
+    $gameParty.gainGold(entry.price * sold);
+    SoundManager.playShop();
+};
+// #endregion === Transactions === //
+// #endregion =========================== Scene_Shop ============================== //
 // ============================== //
 // #region ============================== Scene_Status ============================== //
 // ----------------------

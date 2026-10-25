@@ -5959,18 +5959,18 @@ TEW.DATABASE.NPCS.UTILITIES.checkRangeWeaponEquipped = (initiator) => {
 };
 TEW.DATABASE.NPCS.UTILITIES.checkReloadableWeaponEquipped = (initiator) => {
     const mainHand = initiator.mainHand();
-    return mainHand.isReloadable;
+    return !!mainHand && mainHand.isReloadable;
 };
 TEW.DATABASE.NPCS.UTILITIES.checkLoadedWeaponEquipped = (initiator) => {
     const mainHand = initiator.mainHand();
-    return mainHand.ammo > 0;
+    return !!mainHand && mainHand.ammo > 0;
 };
 TEW.DATABASE.NPCS.UTILITIES.manhattanDistance = (a, b) => {
     return Math.abs(a.tx - b.tx) + Math.abs(a.ty - b.ty);
 };
 // Checks if an enemy is in melee range and returns the closest one
 TEW.DATABASE.NPCS.UTILITIES.checkEnemyInMeleeRangeAndChooseAtRandom = (initiator, enemies) => {
-    const dummyMeleeAttack = new Game_Action(initiator, false, { weapon: { range: 1 } });
+    const dummyMeleeAttack = new Game_Action(initiator, false, { initiator, option: 6 /* BattleOption.MELEE_ATTACK */, target: undefined, weapon: { range: 1 } });
     const enemiesInRange = dummyMeleeAttack.findBattlersInRange(enemies);
     if (enemiesInRange.length === 0) {
         return undefined;
@@ -5979,11 +5979,12 @@ TEW.DATABASE.NPCS.UTILITIES.checkEnemyInMeleeRangeAndChooseAtRandom = (initiator
 };
 // Checks if an enemy is in shooting range and returns the closest one
 TEW.DATABASE.NPCS.UTILITIES.checkEnemyInShootingRangeAndReturnClosest = (initiator, enemies) => {
-    const rangedWeapon = TEW.DATABASE.WEAPONS.RANGED_SET[initiator.mainHand().id]; // TODO second hand
+    var _a;
+    const rangedWeapon = TEW.DATABASE.WEAPONS.RANGED_SET[(_a = initiator.mainHand()) === null || _a === void 0 ? void 0 : _a.id]; // TODO second hand
     if (!rangedWeapon) {
         return undefined;
     }
-    const dummyRangedAttack = new Game_Action(initiator, false, { weapon: rangedWeapon });
+    const dummyRangedAttack = new Game_Action(initiator, false, { initiator, option: 7 /* BattleOption.RANGED_ATTACK */, target: undefined, weapon: rangedWeapon });
     // TODO maybe random tie break here, otherwise the first character in party order will be selected
     const enemiesSortedByProximity = enemies.sort((a, b) => TEW.DATABASE.NPCS.UTILITIES.manhattanDistance(a, initiator)
         - TEW.DATABASE.NPCS.UTILITIES.manhattanDistance(b, initiator));
@@ -5995,14 +5996,13 @@ TEW.DATABASE.NPCS.UTILITIES.checkEnemyInShootingRangeAndReturnClosest = (initiat
 };
 // Checks where is the closest enemy in charge range and returns it, if there is one
 TEW.DATABASE.NPCS.UTILITIES.checkEnemyInChargeRangeAndReturnClosest = (initiator, enemies) => {
-    $gameMap._flexibleMovement = false; // Enable computing maximum charge range
-    const maxMove = initiator.move();
-    $gameMap._flexibleMovement = true;
+    const maxMove = initiator.maxChargeDistance();
     // TODO maybe random tie break here, otherwise the first character in party order will be selected
     const enemiesSortedByProximity = enemies.sort((a, b) => TEW.DATABASE.NPCS.UTILITIES.manhattanDistance(a, initiator)
         - TEW.DATABASE.NPCS.UTILITIES.manhattanDistance(b, initiator));
-    const targettableEnemies = $gameMap.chargeRangeForAI(maxMove, initiator.event(), enemiesSortedByProximity);
-    console.log(targettableEnemies);
+    // Only keep targets whose charge path can actually be followed (tile edges included)
+    const targettableEnemies = $gameMap.chargeRangeForAI(maxMove, initiator.event(), enemiesSortedByProximity)
+        .filter((enemy) => initiator.canFollowPath($gameMap.loadOrComputeChargeRangeForAI({ x: initiator.tx, y: initiator.ty }, { x: enemy.tx, y: enemy.ty }, initiator.event())));
     if (targettableEnemies.length === 0) {
         return undefined;
     }
@@ -6014,9 +6014,12 @@ TEW.DATABASE.NPCS.UTILITIES.checkEnemyAndReturnClosest = (initiator, enemies) =>
     const enemiesSortedByProximity = enemies
         .map(enemy => ({ enemy, distance: TEW.DATABASE.NPCS.UTILITIES.manhattanDistance(enemy, initiator) }))
         .sort((a, b) => a.distance - b.distance);
+    if (enemiesSortedByProximity.length === 0) {
+        return undefined;
+    }
     const minimumDistance = enemiesSortedByProximity[0].distance;
     const closestEnemies = enemiesSortedByProximity.filter(enemy => enemy.distance === minimumDistance);
-    return closestEnemies[Math.floor(Math.random() * closestEnemies.length)];
+    return closestEnemies[Math.floor(Math.random() * closestEnemies.length)].enemy;
 };
 // Checks if the initiatior is out of charging range of all enemies
 TEW.DATABASE.NPCS.UTILITIES.checkOutOfEnnemyChargingRange = (initiator, enemies) => {
@@ -6174,7 +6177,6 @@ TEW.DATABASE.NPCS.AI = {
             }
             // if the closest enemy is in charge range, charge it
             const closestEnemyInChargeRange = TEW.DATABASE.NPCS.UTILITIES.checkEnemyInChargeRangeAndReturnClosest(initiator, enemies);
-            console.log(closestEnemyInChargeRange);
             if (actionAvailable && moveAvailable && closestEnemyInChargeRange) {
                 return TEW.DATABASE.NPCS.UTILITIES.doCharge(initiator, closestEnemyInChargeRange.tx, closestEnemyInChargeRange.ty);
             }
@@ -6229,7 +6231,7 @@ TEW.DATABASE.NPCS.AI = {
             const canMoveOutOfChargeRange = TEW.DATABASE.NPCS.UTILITIES.checkCanMoveOutOfEnnemyChargingRange(initiator, enemies);
             if (canMoveOutOfChargeRange && moveAvailable) {
                 const position = TEW.DATABASE.NPCS.UTILITIES.getPositionOutOfEnnemyChargingRange(initiator, enemies);
-                return TEW.DATABASE.NPCS.UTILITIES.doMove(initiator, position.x, position.y);
+                return TEW.DATABASE.NPCS.UTILITIES.doWalk(initiator, position.x, position.y);
             }
             // Else, it switches weapons to melee
             return TEW.DATABASE.NPCS.UTILITIES.doSwitchToMelee(initiator);
@@ -7025,18 +7027,6 @@ TEW.DATABASE.ITEMS.SET = {
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
         description: "Contains a small knife, herbs, and a jar of leeches. A successful Heal Test with an antitoxin kit removes all Poisoned Conditions. Treatment takes at least two Rounds."
     },
-    BOAT_HOOK: {
-        name: "Boat Hook",
-        group: 2 /* ItemGroup.TOOLS */,
-        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_TOOLS,
-        groupLabel: "Tools" /* ItemGroupLabel.TOOLS */,
-        nb: 1,
-        price: 60,
-        enc: 1,
-        availability: 0 /* Availability.COMMON */,
-        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
-        description: "Tool used to catch boats from shore."
-    },
     BROOM: {
         name: "Broom",
         group: 2 /* ItemGroup.TOOLS */,
@@ -7288,18 +7278,6 @@ TEW.DATABASE.ITEMS.SET = {
         availability: 0 /* Availability.COMMON */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
         description: "Tools used by an apothecary."
-    },
-    PICK: {
-        name: "Pick",
-        group: 2 /* ItemGroup.TOOLS */,
-        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_TOOLS,
-        groupLabel: "Tools" /* ItemGroupLabel.TOOLS */,
-        nb: 1,
-        price: 216,
-        enc: 1,
-        availability: 0 /* Availability.COMMON */,
-        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
-        description: "Tool used by minors."
     },
     POLE: {
         name: "Pole (3 yards)",
@@ -8746,6 +8724,37 @@ TEW.DATABASE.QUESTS = [{
             }]
     }];
 // #endregion =========================== TEW_Quests ============================== //
+// ============================== //
+// #region ============================== TEW_Shops ============================== //
+// ----------------------
+TEW.DATABASE.SHOPS = {};
+// #region ====== SHOPS SET === //
+// quantity: number of purchases allowed (saved), -1 for unlimited
+// id: any ID from TEW_Items.ts, TEW_Weapons.ts (melee, ranged or ammunition) or TEW_Armors.ts
+// Rare and exotic goods are only in stock if they pass an availability roll (see TEW.SHOPS.AVAILABILITY_CHANCES)
+TEW.DATABASE.SHOPS.SET = {
+    // TODO placeholder shop, to be replaced by actual merchants
+    GUSTAV_FONDLEBURGER: {
+        multiplier: 100,
+        items: [
+            { id: "BOOTS", quantity: -1 },
+            { id: "COAT", quantity: -1 },
+            { id: "HAT", quantity: -1 },
+            { id: "CANDLE", quantity: -1 },
+            { id: "ROPE", quantity: -1 },
+            { id: "RATIONS_ONE_DAY", quantity: -1 },
+            { id: "HEALING_POULTICE", quantity: 5 },
+            { id: "HEALING_DRAUGHT", quantity: 2 },
+            { id: "SIGNET_RING", quantity: 1 },
+            { id: "HAND_MIRROR", quantity: 1 },
+            { id: "DAGGER", quantity: -1 },
+            { id: "LEATHER_JACK", quantity: 2 },
+            { id: "ARROW", quantity: -1 }
+        ]
+    }
+};
+// #endregion === SHOPS SET === //
+// #endregion =========================== TEW_Shops ============================== //
 // ============================== //
 // #region ============================== TEW_Spells ============================== //
 // ----------------------
