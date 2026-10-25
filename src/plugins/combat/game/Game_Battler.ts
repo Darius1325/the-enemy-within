@@ -22,6 +22,9 @@ export default interface Game_Battler extends Game_BattlerBase {
     onTurnStart: () => void;
 
     event: () => Game_CharacterBase;
+
+    friendsUnitTS: () => any;
+    opponentsUnitTS: () => any;
 }
 
 // $StartCompilation

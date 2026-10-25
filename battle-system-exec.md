@@ -60,3 +60,16 @@ No unit tests exist, so each step is checked by:
 (Steps 2-5: see section 5, which is filled in as the steps are done.)
 
 ## 5. Step log
+
+### Step 2 - Reorganize Game_Action (done)
+- `combat/game/Game_Action.ts` now only holds decision-based code (plus the few tile-display helpers both kinds share, grouped at the end). `combat/game/Game_ActionLegacy.ts` (priority 99, compiled first) holds every legacy function.
+- The two entry points dispatch explicitly: `initialize` → `initializeDecision(params)` / `initializeLegacy(forcing)`, and `apply(target?)` → `applyDecision()` / `applyLegacy(target)`. `isDecision()` tells them apart. The only state they share is `_range` / `_aoeRange` (tile display).
+- Legacy functions no longer go through decision code (and vice versa):
+  - `combatOpponentsUnit/combatFriendsUnit` use the legacy `searchBattlers`/`updateRangeLegacy` again, instead of the decision-only `findBattlersInRange`, which reads `_object`.
+  - `BattleManager.refreshAoeCells` calls `updateAoeRange()` or `updateAoeRangeLegacy(item, subject)` depending on the action kind.
+  - `isMove()` is now legacy-only (per-tile moves). Decision movement is `isMovementDecision()`.
+- The legacy friends unit always contains the acting battler (as the original TacticsSystem did). Legacy Wait relies on it.
+- Fixed in decision code: `computeEuclideanRange(d, x, y)` was called with 4 arguments (B3, decision side); the `_moveRoute = makeShortestMoves` assignment (B1) is removed; armor now uses `hitLocation` (B8); melee weapons (no `range`) get the default action range.
+- The "INFO Legacy ... look into it" traces are kept, centralised in `Game_Action.logLegacyCall`.
+- `BattleDecision` / `BattleTarget` are now exported from `_types/battlerAI.ts`. The AI's range-probe actions pass a full decision.
+- Runtime check: player wait over 3 full rounds; player walk, then legacy attack targeting (now accepted; the legacy resolution is still a no-op, as before); enemy melee attack resolved by the decision code.

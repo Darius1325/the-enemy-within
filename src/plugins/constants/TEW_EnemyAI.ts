@@ -48,7 +48,7 @@ TEW.DATABASE.NPCS.UTILITIES.checkEnemyInMeleeRangeAndChooseAtRandom = (initiator
     const dummyMeleeAttack = new Game_Action(
         initiator,
         false,
-        { weapon: { range: 1 } }
+        { initiator, option: BattleOption.MELEE_ATTACK, target: undefined, weapon: { range: 1 } }
     );
     const enemiesInRange = dummyMeleeAttack.findBattlersInRange(enemies);
     if (enemiesInRange.length === 0) {
@@ -66,7 +66,7 @@ TEW.DATABASE.NPCS.UTILITIES.checkEnemyInShootingRangeAndReturnClosest = (initiat
     const dummyRangedAttack = new Game_Action(
         initiator,
         false,
-        { weapon: rangedWeapon }
+        { initiator, option: BattleOption.RANGED_ATTACK, target: undefined, weapon: rangedWeapon }
     );
     // TODO maybe random tie break here, otherwise the first character in party order will be selected
     const enemiesSortedByProximity = enemies.sort((a, b) =>
