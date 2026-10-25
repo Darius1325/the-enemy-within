@@ -66,12 +66,8 @@ Window_ShopTopbar.prototype.itemWidth = function() {
 // Tabs are shifted to leave room for the sort indicator
 Window_ShopTopbar.prototype.itemRect = function(index: number) {
     const rect = Window_HorzCommand.prototype.itemRect.call(this, index);
-    rect.x += this.commandsX();
+    rect.x = this.contentsWidth() / 2 + (index - 1) * rect.width;
     return rect;
-};
-
-Window_ShopTopbar.prototype.commandsX = function() {
-    return Window_ShopTopbar.SORT_INDICATOR_WIDTH + Window_ShopTopbar.INDICATOR_MARGIN_X;
 };
 
 // Making the 2 tabs
@@ -130,25 +126,32 @@ Window_ShopTopbar.prototype.drawSortIndicator = function() {
     const label = `${TextManager.shopSort} (${TEW.SHOPS.SORT_KEY_LABEL}): `;
     const labelWidth = this.textWidth(label);
     this.changeTextColor(this.systemColor());
-    this.drawText(label, 0, 0, labelWidth, 'left');
+    this.drawText(label, Window_ShopTopbar.INDICATOR_MARGIN_X, 0, labelWidth, 'left');
     this.resetTextColor();
-    this.drawText(this.sortOrderLabel(), labelWidth, 0, width - labelWidth, 'left');
+    this.drawText(
+        this.sortOrderLabel(),
+        labelWidth + Window_ShopTopbar.INDICATOR_MARGIN_X, 0,
+        width - labelWidth - Window_ShopTopbar.INDICATOR_MARGIN_X,
+        'left'
+    );
 };
 
 // Party's money, in readable format, on the right of the tabs
 Window_ShopTopbar.prototype.drawMoney = function() {
-    const x = this.commandsX()
-        + this.maxCols() * (Window_ShopTopbar.COMMAND_WIDTH + this.spacing())
-        + Window_ShopTopbar.INDICATOR_MARGIN_X;
-    const width = this.contentsWidth() - x;
-    if (width <= 0) {
-        return;
-    }
+    const label = `${TextManager.shopMoney}: `;
     const value = TEW.SHOPS.formatMoney($gameParty.gold());
+    const labelWidth = this.textWidth(label);
     const valueWidth = this.textWidth(value);
-    this.drawText(value, x, 0, width, 'right');
+
+    const x = this.contentsWidth()
+        - labelWidth - valueWidth
+        - this.spacing()
+        - Window_ShopTopbar.INDICATOR_MARGIN_X;
+    const width = this.contentsWidth() - x - Window_ShopTopbar.INDICATOR_MARGIN_X;
+
     this.changeTextColor(this.systemColor());
-    this.drawText(`${TextManager.shopMoney}: `, x, 0, width - valueWidth, 'right');
+    this.drawText(label, x, 0, width - valueWidth, 'right');
     this.resetTextColor();
+    this.drawText(value, x + labelWidth + this.spacing(), 0, width - labelWidth - this.spacing(), 'right');
 };
 // #endregion === Indicators === //

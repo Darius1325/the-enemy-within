@@ -129,8 +129,11 @@ Window_ShopList.prototype.drawItem = function(index: number) {
     const y = normalizedIndex * TEW.MENU.LINE_HEIGHT;
     const quantity = entry.quantity < 0 ? TEW.SHOPS.UNLIMITED_LABEL : entry.quantity;
 
-    this.changePaintOpacity(this.isEnabled(entry));
-    this.changeTextColor(this.systemColor());
+    if (this.isEnabled(entry)) {
+        this.changeTextColor(this.systemColor());
+    } else {
+        this.changePaintOpacity(false);
+    }
     this.drawIcon(TEW.SHOPS.goodIcon(entry.id), x, y);
     this.drawText(entry.data.name, x + 32 + this._iconPadding, y, Window_ShopList.LEFT_COLUMN_WIDTH - 32 - this._iconPadding);
     this.resetTextColor();

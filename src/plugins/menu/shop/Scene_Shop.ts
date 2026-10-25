@@ -119,7 +119,6 @@ Scene_Shop.prototype.mode = function() {
 Scene_Shop.prototype.makeBuyEntries = function(): ShopEntry[] {
     const owned = $gameParty.goodsCount(false);
     return this._shop.items
-        .filter((shopItem: ShopItem) => $gameParty.isInMerchantStock(this._npcId, shopItem))
         .map((shopItem: ShopItem) => {
             return {
                 id: shopItem.id,
@@ -166,6 +165,7 @@ Scene_Shop.prototype.refreshEntries = function() {
         this._listWindow.select(index >= 0 ? index : Math.min(this._listWindow.index(), entries.length - 1));
     }
     this._topbarWindow.refresh();
+    this._listWindow.refresh();
 };
 
 // Max units of a good which can be traded at once

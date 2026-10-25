@@ -69,23 +69,6 @@ Game_Party.prototype.merchantRemaining = function(npcId: string, shopItem: ShopI
     }
     return Math.max(0, shopItem.quantity - this.merchantPurchases(npcId, shopItem));
 };
-
-// Rare and exotic goods are rolled once per merchant, the result being saved
-Game_Party.prototype.isInMerchantStock = function(npcId: string, shopItem: ShopItem) {
-    const data = TEW.SHOPS.goodData(shopItem.id);
-    if (!data) {
-        return false;
-    }
-    const chance = TEW.SHOPS.AVAILABILITY_CHANCES[data.availability];
-    if (chance === undefined || chance >= 100) {
-        return true;
-    }
-    const stock = this.merchantState(npcId).stock;
-    if (stock[shopItem.id] === undefined) {
-        stock[shopItem.id] = TEW.DICE.roll() <= chance;
-    }
-    return stock[shopItem.id];
-};
 // #endregion === MERCHANTS === //
 
 // #region ====== PARTY GOODS === //
