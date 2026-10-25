@@ -292,16 +292,6 @@ Game_Selector.prototype.isBusy = function() {
     return ($gameMap.isDestinationValid() || $gameTemp.isDestinationValid());
 };
 
-Game_Selector.prototype.selectActor = function() {
-    var select = this.select();
-    if (select && select.isActor() && select.canAction()) {
-        if (this.isOk()) {
-            SoundManager.playOk();
-            return select;
-        }
-    }
-};
-
 Game_Selector.prototype.checkDestination = function(subject) {
     var battler = this.select();
     if ($gameMap.isOnTiles(this.x, this.y)) {
@@ -312,20 +302,4 @@ Game_Selector.prototype.checkDestination = function(subject) {
         }
     }
     return false;
-};
-
-Game_Selector.prototype.selectTarget = function(action) {
-    const selectedBattler = this.select();
-    if (this.isOk()) {
-        if ($gameMap.isOnTiles(this.x, this.y) && action.isTargetValid(selectedBattler)) {
-            SoundManager.playOk();
-            console.log("Selector - Target", selectedBattler);
-            console.log("game party", $gameParty, $gameParty.members().includes(selectedBattler));
-            console.log("index", selectedBattler.allBattlersIndex());
-            return selectedBattler.allBattlersIndex();
-        } else {
-            SoundManager.playBuzzer();
-        }
-    }
-    return -1;
 };

@@ -39,16 +39,7 @@ Game_Enemy.prototype.indexTs = function() {
     return $gameTroopTs.members().indexOf(this);
 };
 
-Game_Enemy.prototype.allBattlersIndex = function() {
-    return $gameParty.members().length + $gameTroop.members().indexOf(this);
-};
-
-// Enemies move through decisions (see Game_Battler.setMovePath): no legacy per-tile move actions
-Game_Enemy.prototype.makeMoves = function() {
-    this.clearMoves();
-    this.clearMovePath();
-};
-
+// RMMV's implementation reads RMMV enemy actions, which TEW NPCs don't have: enemies act through their AI
 Game_Enemy.prototype.makeActions = function() {
     // Override
 };

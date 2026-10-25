@@ -115,3 +115,40 @@ No unit tests exist, so each step is checked by:
   - `commandSpell` loaded `img/system/bg_battle_commandSpell.png`, which exists neither in the repository nor in the working copy. RMMV stops the game when an image fails to load, so opening the Spell menu froze the game. It now uses `bg_battle_command3` (third menu level). Swap in a dedicated image if one is planned.
 - Runtime check: walk, run, melee attack, ranged reload, charge (failed roll: stops short, no attack; successful roll: reaches the target and attacks), DART spell (damage applied), cancel (no point spent). Long battles run to the death of every enemy.
 - Found while testing victory: RMMV's reward flow (`gainExp`) crashes on TEW actors, which have no RMMV skills. It was never reached before, since nothing could die. Handled in step 5.
+
+### Step 5 - Clean up BattleManager (done)
+**Split** (all in `combat/game/`, same `TEW_Combat.js` plugin):
+
+| File | Content |
+|---|---|
+| `BattleManager.ts` | `Phase`/`BattlePhase` enums, setup, game objects creation, main `update` loop, state accessors, RMMV overrides the engine relies on (`isBattleEnd`, `isInputting`, `isAborting`, `isTurnEnd`, `isActionForced`, `canEscape`, `canLose`, `isEscaped`, `setEventCallback`) |
+| `BattleManager_Turns.ts` | initiative order, turn start (actor/enemy), end of a battler's turn (`endAction`, `updateClose`) |
+| `BattleManager_Decisions.ts` | action/move points, `updateEnemyPhase`, `executeDecision`, `updateMove`, `onDecisionEnd` |
+| `BattleManager_Input.ts` | command/status windows, move range display, targetting phases, tiles highlighting |
+| `BattleManager_End.ts` | victory, defeat, end of battle, termination |
+
+`BattlePhase` now lists only the phases in use: `Init`, `Start`, `InputCommand`, `InputMove`, `InputCharge`, `Target`, `ProcessMove`, `Close`, `TurnEnd`. Removed: `Explore`, `Open`, `Action`, `ProcessCharge`, `Abort`. `BattleManager.actor()` now returns the active battler when it is an actor. It used to index the party with the turn order index, which returned a wrong actor during enemy turns.
+
+**Removed (dead after steps 3-4, or never reachable):**
+- BattleManager: the RMMV action flow (`setupAction`, `setupTarget`, `processAction`, `startAction`, `updateAction`, `nextAction`, `invokeAction`, counter attack / magic reflection, `setupCombat`, `setDirectionTargets`, `turnTowardCharacter`, `inputtingAction`), the explore phase (`updateExplore`, `refreshSubject`, `refreshActorWindow`, `isExploring`), `endPlayerPhase`, `endEnemyPhase`, `onAllTurnEnd`, `setBattlePhase`, `setInfoWindow`, and the overrides identical to RMMV's (victory/defeat ME and messages).
+- **RMMV rewards** (`makeRewards`, `displayRewards`/`Exp`/`Gold`/`DropItems`, `gainRewards`/`Exp`/`Gold`/`DropItems`): they were all 0, and `gainExp` **crashed every victory** (TEW actors have no RMMV skills list). Victory now plays the ME and message and ends the battle.
+- **Phase switches/variables** (`Game_Switches.ts`, `Game_Variables.ts` and their `TEW.COMBAT.SYSTEM` constants): every battle frame they overwrote switches 2-3 ("Event Result 1/2") and variables 1-4 ("Current player ID", "Current enemy ID", "Target stat", "Target competence") with TacticsSystem phase numbers (Map001 event 7 reads switch 2). Already marked "TODO useless, remove the whole mechanic". Verified: a battle on `main` resets switch 2 / variable 1; it no longer does.
+- `Game_ActionLegacy.ts` reduced to RMMV compatibility: actions built by RMMV itself (`Game_Battler.makeActions`, item menus) keep RMMV's behaviour, except `apply`, which stays a traced no-op as before. Its other overrides (legacy ranges, targets, damage formulas, spell/wait setters) are gone.
+- Game_Battler / Game_Actor / Game_Enemy: legacy per-tile moves (`_moves`, `makeMoves`, `makeShortestMoves`, `moveAlongPredefinedPath`, `refreshMovesAction`...), the RMMV action list overrides, the `mvp` property and `baseMove`/`move` (replaced by `walkDistance`/`runDistance`/`maxChargeDistance`), TacticsSystem confusion and auto-battle moves, event "action buttons", `allBattlersIndex`, `canAction`. `onTurnStart` no longer builds RMMV actions or legacy moves.
+- Game_Selector `selectActor`/`selectTarget`, Game_Temp `canCancel`/`setCancel`, Game_UnitTs `canActionMembers`/`isPhase`, Game_PartyTs `restrictedMembers`/`onAllTurnEnd`.
+- Scene_Battle: the unreachable RMMV skill/item windows, the map/status menu (only opened from the explore phase), the info window, and the commented-out legacy commands. Deleted files: `Window_TacticsSkill.ts`, `Window_TacticsItem.ts`, `Window_TacticsInfo.ts`, `Window_TacticsMap.ts`.
+
+**Kept on purpose:** `Window_TacticsLastUsedCommand` (work in progress, not legacy), `Game_Enemy.makeActions` (empty override: RMMV's version would read RMMV enemy actions), `Game_Map._straightPaths` (charge path cache), the TacticsSystem `@param` plugin header in `combat/import.ts` (documentation only, already marked "TODO remove").
+
+**Added:** the "Abort Battle" event command (RMMV's `BattleManager.abort`) is now handled. Before, it set a phase TEW never processed, so the battle froze.
+
+Runtime check (all scenarios on the final code, no page errors): waiting player, walk+attack, run, DART spell, cancelled targetting, charge, ranged AIs, forced victory (back to the map), forced defeat (game over).
+
+## 6. Summary of behaviour changes worth a playtest
+1. Enemies can act several times per turn (move then attack), as long as each decision spends points (question 1).
+2. Points are spent when an action resolves; cancelling a target selection is free (question 4).
+3. Damage now applies, battles can be won and lost, and victory no longer crashes.
+4. Attacking with an unloaded reloadable weapon reloads it (question 2 / step 4).
+5. Enemy walking uses a real shortest-path search; charges are only chosen when the path can be followed.
+6. Battles no longer overwrite switches 2-3 and variables 1-4.
+7. The Spell menu uses `bg_battle_command3` instead of the missing `bg_battle_commandSpell.png`.

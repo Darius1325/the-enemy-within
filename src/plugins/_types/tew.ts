@@ -548,24 +548,6 @@ const TEW: {
             /** ??? */
             battleStartId?: number;
 
-            /** ??? */
-            enemyPhaseId?: number;
-
-            /** ??? */
-            playerPhaseId?: number;
-
-            /** Which game variable stores ??? */
-            phaseVarId?: number;
-
-            /** Which game variable stores ??? */
-            battlePhaseVarId?: number;
-
-            /** ??? */
-            playerPhaseVarId?: number;
-
-            /** Which game variable stores the ongoing/last battle's turn count */
-            turnCountVarId?: number;
-
             /** Whether the battle is lost */
             isDefeated?: boolean;
 

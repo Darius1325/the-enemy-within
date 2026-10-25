@@ -69,9 +69,7 @@ Object.defineProperties(Game_Battler.prototype, {
     // Tactical position X
     tx: { get: function() { return this._tx; }, configurable: true },
     // Tactical position Y
-    ty: { get: function() { return this._ty; }, configurable: true },
-    // MoVe Point
-    mvp: { get: function() { return this.move(); }, configurable: true }
+    ty: { get: function() { return this._ty; }, configurable: true }
 });
 
 TEW.MEMORY.gameBattlerInitMembers = Game_Battler.prototype.initMembers;
@@ -81,11 +79,8 @@ Game_Battler.prototype.initMembers = function() {
     this._ty = 0;
     this._eventId = 0;
     this._char = new Game_Character();  // it's used to calculate the shortest path
-    this._actionIndex = 0;
-    this._moveIndex = 0;
-    this._moves = []; // legacy per-tile move actions (player input)
     this._movePath = []; // directions of the move being performed by a decision (see setMovePath)
-    this._canAction = true;
+    this._moveStepsBuffer = [];
     this._active = false;
     this._requestImage = false;
     this._channellingLevel = 0;
@@ -147,15 +142,12 @@ Game_Battler.prototype.tparam = function(paramString: string) {
 };
 
 Game_Battler.prototype.onTurnStart = function() {
-    if (this.isRestricted) { // What have you smoked
-        this._canAction = true;
-        this.event().setStepAnime(true);
-    }
+    this.event().setStepAnime(true);
     this._moveCount = 1;
     this._actionCount = 1;
     this.applyConditionsOnTurnStart();
-    this.makeActions();
-    this.makeMoves(false);
+    this.syncTacticalPosition();
+    this.clearMovePath();
 };
 
 // ----------------------
@@ -368,7 +360,7 @@ Game_Battler.prototype.clearMovePath = function() {
 };
 
 Game_Battler.prototype.onActionEnd = function() {
-    this._canAction = false;
+    // Override
 };
 
 Game_Battler.prototype.isMoving = function() {
@@ -417,158 +409,12 @@ Game_Battler.prototype.doChannelling = function() {
     }
 };
 
-Game_Battler.prototype.nextAction = function() {
-    this._actionIndex++;
-    if (this._actionIndex < this.numActions()) {
-        return true;
-    } else {
-        return false;
-    }
-};
-
-TEW.MEMORY.gameBattlerCurrentAction = Game_Battler.prototype.currentAction;
-Game_Battler.prototype.currentAction = function() {
-    if ($gamePartyTs.inBattle()) {
-        return this._actions[this._actionIndex];
-    } else {
-        return TEW.MEMORY.gameBattlerCurrentAction.call(this);
-    }
-};
-
-TEW.MEMORY.gameBattlerClearAction  = Game_Battler.prototype.clearActions;
-Game_Battler.prototype.clearActions = function() {
-    TEW.MEMORY.gameBattlerClearAction.call(this);
-    this._actionIndex = 0;
-};
-
-Game_Battler.prototype.currentMove = function() {
-    return this._moves[this._moveIndex];
-};
-
-Game_Battler.prototype.nextMove = function() {
-    this._moveIndex++;
-    if (this._moveIndex <= this.numMoves()) {
-        return true;
-    } else {
-        return false;
-    }
-};
-
-Game_Battler.prototype.numMoves = function() {
-    return this._moves.length;
-};
-
-Game_Battler.prototype.makeMoves = function(displayTiles = true) {
-    this.clearMoves();
-    if (this.canMove()) {
-        var moveTimes = this.makeMoveTimes();
-        this._moves = [];
-        for (var i = 0; i < moveTimes; i++) {
-            this._moves.push(new Game_Action(this));
-        }
-    }
-    if (displayTiles) {
-        this.makeRange();
-    }
-    // TODO should never happen
-    if (this.isRestricted()) {
-        this.makeConfusionMove()
-    }
-};
-
-Game_Battler.prototype.makeMoveTimes = function() {
-    return this.mvp;
-};
-
-Game_Battler.prototype.clearMoves = function() {
+/**
+ * Tactical position = event position (they only differ while a move is planned or performed)
+ */
+Game_Battler.prototype.syncTacticalPosition = function() {
     this._tx = this.x;
     this._ty = this.y;
-    this._moves = [];
-    this._moveIndex = 0;
-};
-
-Game_Battler.prototype.refreshMovesAction = function(x, y) {
-    if ($gameMap.isOnTiles(x, y)) {
-        this.makeMoves(false);
-        this._tx = x;
-        this._ty = y;
-        this.makeShortestMoves();
-    } else {
-        this.makeMoves(false);
-    }
-};
-
-Game_Battler.prototype.makeShortestMoves = function() {
-    this._char.setPosition(this.x, this.y);
-    var index = 0;
-    while (!this.tpos() && index < this.numMoves()) {
-        var d = this._char.findDirectionTo(this.tx, this.ty);
-        this._char.moveStraight(d);
-        this._moves[index].setMove(d / 2);
-        index++;
-    }
-    this._tx = this._char.x;
-    this._ty = this._char.y;
-};
-
-Game_Battler.prototype.moveAlongPredefinedPath = function(path: Point[]) {
-    this._char.setPosition(this.x, this.y);
-    this._moves = [];
-    for (let i = 0; i < path.length; i++) {
-        var d = this._char.findDirectionTo(path[i].x, path[i].y);
-        this._char.moveStraight(d);
-        this._moves.push(new Game_Action(this));
-        this._moves[i].setMove(d / 2);
-    }
-    this._tx = this._char.x;
-    this._ty = this._char.y;
-};
-
-Game_Battler.prototype.tpos = function() {
-    return this.tx === this._char.x && this.ty === this._char.y;
-}
-
-Game_Battler.prototype.canAction = function() {
-    return $gamePartyTs.inBattle() ? this._canAction : true;
-};
-
-Game_Battler.prototype.makeRange = function() {
-    $gameMap.makeRange(this.numMoves(), this.event());
-};
-
-Game_Battler.prototype.makeConfusionMove = function() {
-    var action = new Game_Action(this);
-    action.setConfusion();
-    $gameMap.makeRange(this.mvp, this.event());
-    var targets = [new Point(this.x, this.y)];
-    for (var i = 0; i < $gameMap.tiles().length; i++) {
-        var tile = $gameMap.tiles()[i];
-        this._tx = $gameMap.positionTileX(tile);
-        this._ty = $gameMap.positionTileY(tile);
-        if (this.canUse(action.item())) {
-            // actor can't use action in another actor
-            if ($gameMap.eventsXy(this.tx, this.ty).length === 0) {
-                targets.push({'x': this.tx, 'y': this.ty});
-            }
-        }
-    }
-    $gameMap.clearTiles();
-    var target = targets[Math.floor(Math.random() * targets.length)]
-    //var target = targets[Math.randomInt(targets.length)];
-    this._tx = target['x'];
-    this._ty = target['y'];
-};
-
-Game_Battler.prototype.isConfusedRangeOk = function(action) {
-    switch (this.confusionLevel()) {
-        case 1:
-            return action.combatOpponentsUnit(this).length > 0;
-        case 2:
-            return action.combatOpponentsUnit(this).length > 0 ||
-                action.combatFriendsUnit(this).length > 1;  // don't count self
-        default:
-            return action.combatFriendsUnit(this).length > 1;
-    }
 };
 
 Game_Battler.prototype.performCollapse = function() {
@@ -583,11 +429,6 @@ Game_Battler.prototype.setPosition = function(x, y) {
     this.event().setPosition(x, y);
     this._tx = x;
     this._ty = y;
-};
-
-Game_Battler.prototype.canNextAction = function() {
-    // next action in first for game enemy get next action!
-    return this.nextAction() && this.isActor() && !this.isAutoBattle();
 };
 
 Game_Battler.prototype.onClear = function() {
