@@ -5959,18 +5959,18 @@ TEW.DATABASE.NPCS.UTILITIES.checkRangeWeaponEquipped = (initiator) => {
 };
 TEW.DATABASE.NPCS.UTILITIES.checkReloadableWeaponEquipped = (initiator) => {
     const mainHand = initiator.mainHand();
-    return mainHand.isReloadable;
+    return !!mainHand && mainHand.isReloadable;
 };
 TEW.DATABASE.NPCS.UTILITIES.checkLoadedWeaponEquipped = (initiator) => {
     const mainHand = initiator.mainHand();
-    return mainHand.ammo > 0;
+    return !!mainHand && mainHand.ammo > 0;
 };
 TEW.DATABASE.NPCS.UTILITIES.manhattanDistance = (a, b) => {
     return Math.abs(a.tx - b.tx) + Math.abs(a.ty - b.ty);
 };
 // Checks if an enemy is in melee range and returns the closest one
 TEW.DATABASE.NPCS.UTILITIES.checkEnemyInMeleeRangeAndChooseAtRandom = (initiator, enemies) => {
-    const dummyMeleeAttack = new Game_Action(initiator, false, { weapon: { range: 1 } });
+    const dummyMeleeAttack = new Game_Action(initiator, false, { initiator, option: 6 /* BattleOption.MELEE_ATTACK */, target: undefined, weapon: { range: 1 } });
     const enemiesInRange = dummyMeleeAttack.findBattlersInRange(enemies);
     if (enemiesInRange.length === 0) {
         return undefined;
@@ -5979,11 +5979,12 @@ TEW.DATABASE.NPCS.UTILITIES.checkEnemyInMeleeRangeAndChooseAtRandom = (initiator
 };
 // Checks if an enemy is in shooting range and returns the closest one
 TEW.DATABASE.NPCS.UTILITIES.checkEnemyInShootingRangeAndReturnClosest = (initiator, enemies) => {
-    const rangedWeapon = TEW.DATABASE.WEAPONS.RANGED_SET[initiator.mainHand().id]; // TODO second hand
+    var _a;
+    const rangedWeapon = TEW.DATABASE.WEAPONS.RANGED_SET[(_a = initiator.mainHand()) === null || _a === void 0 ? void 0 : _a.id]; // TODO second hand
     if (!rangedWeapon) {
         return undefined;
     }
-    const dummyRangedAttack = new Game_Action(initiator, false, { weapon: rangedWeapon });
+    const dummyRangedAttack = new Game_Action(initiator, false, { initiator, option: 7 /* BattleOption.RANGED_ATTACK */, target: undefined, weapon: rangedWeapon });
     // TODO maybe random tie break here, otherwise the first character in party order will be selected
     const enemiesSortedByProximity = enemies.sort((a, b) => TEW.DATABASE.NPCS.UTILITIES.manhattanDistance(a, initiator)
         - TEW.DATABASE.NPCS.UTILITIES.manhattanDistance(b, initiator));
@@ -5995,14 +5996,13 @@ TEW.DATABASE.NPCS.UTILITIES.checkEnemyInShootingRangeAndReturnClosest = (initiat
 };
 // Checks where is the closest enemy in charge range and returns it, if there is one
 TEW.DATABASE.NPCS.UTILITIES.checkEnemyInChargeRangeAndReturnClosest = (initiator, enemies) => {
-    $gameMap._flexibleMovement = false; // Enable computing maximum charge range
-    const maxMove = initiator.move();
-    $gameMap._flexibleMovement = true;
+    const maxMove = initiator.maxChargeDistance();
     // TODO maybe random tie break here, otherwise the first character in party order will be selected
     const enemiesSortedByProximity = enemies.sort((a, b) => TEW.DATABASE.NPCS.UTILITIES.manhattanDistance(a, initiator)
         - TEW.DATABASE.NPCS.UTILITIES.manhattanDistance(b, initiator));
-    const targettableEnemies = $gameMap.chargeRangeForAI(maxMove, initiator.event(), enemiesSortedByProximity);
-    console.log(targettableEnemies);
+    // Only keep targets whose charge path can actually be followed (tile edges included)
+    const targettableEnemies = $gameMap.chargeRangeForAI(maxMove, initiator.event(), enemiesSortedByProximity)
+        .filter((enemy) => initiator.canFollowPath($gameMap.loadOrComputeChargeRangeForAI({ x: initiator.tx, y: initiator.ty }, { x: enemy.tx, y: enemy.ty }, initiator.event())));
     if (targettableEnemies.length === 0) {
         return undefined;
     }
@@ -6014,9 +6014,12 @@ TEW.DATABASE.NPCS.UTILITIES.checkEnemyAndReturnClosest = (initiator, enemies) =>
     const enemiesSortedByProximity = enemies
         .map(enemy => ({ enemy, distance: TEW.DATABASE.NPCS.UTILITIES.manhattanDistance(enemy, initiator) }))
         .sort((a, b) => a.distance - b.distance);
+    if (enemiesSortedByProximity.length === 0) {
+        return undefined;
+    }
     const minimumDistance = enemiesSortedByProximity[0].distance;
     const closestEnemies = enemiesSortedByProximity.filter(enemy => enemy.distance === minimumDistance);
-    return closestEnemies[Math.floor(Math.random() * closestEnemies.length)];
+    return closestEnemies[Math.floor(Math.random() * closestEnemies.length)].enemy;
 };
 // Checks if the initiatior is out of charging range of all enemies
 TEW.DATABASE.NPCS.UTILITIES.checkOutOfEnnemyChargingRange = (initiator, enemies) => {
@@ -6174,7 +6177,6 @@ TEW.DATABASE.NPCS.AI = {
             }
             // if the closest enemy is in charge range, charge it
             const closestEnemyInChargeRange = TEW.DATABASE.NPCS.UTILITIES.checkEnemyInChargeRangeAndReturnClosest(initiator, enemies);
-            console.log(closestEnemyInChargeRange);
             if (actionAvailable && moveAvailable && closestEnemyInChargeRange) {
                 return TEW.DATABASE.NPCS.UTILITIES.doCharge(initiator, closestEnemyInChargeRange.tx, closestEnemyInChargeRange.ty);
             }
@@ -6229,7 +6231,7 @@ TEW.DATABASE.NPCS.AI = {
             const canMoveOutOfChargeRange = TEW.DATABASE.NPCS.UTILITIES.checkCanMoveOutOfEnnemyChargingRange(initiator, enemies);
             if (canMoveOutOfChargeRange && moveAvailable) {
                 const position = TEW.DATABASE.NPCS.UTILITIES.getPositionOutOfEnnemyChargingRange(initiator, enemies);
-                return TEW.DATABASE.NPCS.UTILITIES.doMove(initiator, position.x, position.y);
+                return TEW.DATABASE.NPCS.UTILITIES.doWalk(initiator, position.x, position.y);
             }
             // Else, it switches weapons to melee
             return TEW.DATABASE.NPCS.UTILITIES.doSwitchToMelee(initiator);
