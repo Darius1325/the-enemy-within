@@ -72,6 +72,7 @@ declare global {
     var Scene_Gameover: any;
     var Scene_Map: any;
     var Scene_Save: any;
+    var Scene_Shop: any;
     var Window_Base: any;
     var Window_Status: any;
     var Window_MenuStatus: any;

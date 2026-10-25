@@ -370,3 +370,21 @@ export const enum GameActionUsableObject {
     SPELL,
     ITEM
 }
+
+
+/**
+ * Sort orders of the shop lists, cycled with the sort key
+ */
+export const enum ShopSortOrder {
+    NAME = "NAME",
+    WEIGHT = "WEIGHT",
+    PRICE = "PRICE"
+}
+
+/**
+ * Tabs of the shop menu
+ */
+export const enum ShopMode {
+    BUY = "BUY",
+    SELL = "SELL"
+}

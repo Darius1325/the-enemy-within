@@ -477,18 +477,6 @@ TEW.DATABASE.ITEMS.SET = {
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
         description: "Contains a small knife, herbs, and a jar of leeches. A successful Heal Test with an antitoxin kit removes all Poisoned Conditions. Treatment takes at least two Rounds."
     },
-    BOAT_HOOK: {
-        name: "Boat Hook",
-        group: ItemGroup.TOOLS,
-        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_TOOLS,
-        groupLabel: ItemGroupLabel.TOOLS,
-        nb: 1,
-        price: 60,
-        enc: 1,
-        availability: Availability.COMMON,
-        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
-        description: "Tool used to catch boats from shore."
-    },
     BROOM: {
         name: "Broom",
         group: ItemGroup.TOOLS,
@@ -740,18 +728,6 @@ TEW.DATABASE.ITEMS.SET = {
         availability: Availability.COMMON,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
         description: "Tools used by an apothecary."
-    },
-    PICK: {
-        name: "Pick",
-        group: ItemGroup.TOOLS,
-        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_TOOLS,
-        groupLabel: ItemGroupLabel.TOOLS,
-        nb: 1,
-        price: 216,
-        enc: 1,
-        availability: Availability.COMMON,
-        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
-        description: "Tool used by minors."
     },
     POLE: {
         name: "Pole (3 yards)",

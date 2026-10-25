@@ -32,6 +32,8 @@ import { Career, CareerPath } from "./career";
 import { SpecialisationGroup, SpecialisationPick } from "./specialisation";
 import { BattlerAI } from "./battlerAI";
 import { Combat } from "./combat";
+import { MerchantState, Shop, ShopEntry, ShopGood } from "./shop";
+import { Availability, ShopSortOrder } from "./enum";
 
 /** Storage object for all TEW plugins */
 const TEW: {
@@ -194,6 +196,12 @@ const TEW: {
 
         /**Combats*/
         COMBATS?: Record<string, Combat>;
+
+        /** Merchants' goods and prices */
+        SHOPS?: {
+            /** All shops by merchant NPC ID (from TEW.DATABASE.NPCS.SET) */
+            SET?: Record<string, Shop>;
+        };
     };
 
     /**
@@ -669,6 +677,110 @@ const TEW: {
          * @returns A weapon object
          */
         getWeaponFromId?: (weaponId: string) => MeleeWeapon | RangedWeapon;
+    };
+
+    /** Shopping rules and utilities */
+    SHOPS?: {
+        /** Copper coins in a silver shilling */
+        COPPER_PER_SILVER?: number;
+        /** Copper coins in a gold crown (20 silver shillings) */
+        COPPER_PER_GOLD?: number;
+        /** Labels of each coin, used to display money (G, S and C) */
+        GOLD_LABEL?: string;
+        SILVER_LABEL?: string;
+        COPPER_LABEL?: string;
+
+        /** Game variable holding the NPC ID of the merchant opened by command302 */
+        MERCHANT_VARIABLE_ID?: number;
+        /** Game variable holding the haggling modifier of the current shop (percentage) */
+        HAGGLE_VARIABLE_ID?: number;
+        /** Competence used to haggle */
+        HAGGLE_COMP?: string;
+        /** Haggling modifiers (percentage, positive is in the player's favour) */
+        HAGGLE_WIN?: number;
+        HAGGLE_CRITICAL_WIN?: number;
+        HAGGLE_LOSS?: number;
+        HAGGLE_CRITICAL_LOSS?: number;
+        /** Frames waited after the haggling roll, so the player can see the dice */
+        HAGGLE_DICE_WAIT?: number;
+
+        /** Share of a good's price a merchant pays when buying it from the party (percentage) */
+        SELL_RATIO?: number;
+        /** Chance (percentage) for a good to be in stock, by availability */
+        AVAILABILITY_CHANCES?: Record<Availability, number>;
+        /** ShopItem quantity meaning the good can be bought without limit */
+        UNLIMITED?: number;
+        /** Label displayed instead of an unlimited quantity */
+        UNLIMITED_LABEL?: string;
+        /** Max units traded in a single transaction */
+        MAX_TRANSACTION?: number;
+
+        /** Input key cycling through the sort orders */
+        SORT_KEY?: string;
+        /** Human-readable name of SORT_KEY, displayed in the shop topbar */
+        SORT_KEY_LABEL?: string;
+        /** Sort orders, in cycling order */
+        SORT_ORDERS?: ShopSortOrder[];
+
+        /**
+         * Display an amount of money
+         * @param copper amount in copper coins
+         * @returns readable amount, such as "1G 4S 6C"
+         */
+        formatMoney?: (copper: number) => string;
+        /** Whether an ID belongs to TEW.DATABASE.ITEMS.SET */
+        isItem?: (id: string) => boolean;
+        /** Whether an ID belongs to TEW.DATABASE.WEAPONS.MELEE_SET or RANGED_SET */
+        isWeapon?: (id: string) => boolean;
+        /** Whether an ID belongs to TEW.DATABASE.ARMORS.SET */
+        isArmor?: (id: string) => boolean;
+        /** Whether an ID belongs to TEW.DATABASE.WEAPONS.AMMO_SET */
+        isAmmo?: (id: string) => boolean;
+        /**
+         * Find a good in the sellable databases (items, weapons, armors, ammunition)
+         * @param id ID of the good, unique across these databases
+         * @returns the good's data, undefined if not found
+         */
+        goodData?: (id: string) => ShopGood;
+        /**
+         * Icon of a good (group icon for items and ammunition)
+         */
+        goodIcon?: (id: string) => number;
+        /**
+         * Encumbrance of a good (0 for ammunition)
+         */
+        goodEnc?: (id: string) => number;
+        /**
+         * Price of a single unit, as items and ammunition are priced by batch
+         * @returns price in copper coins
+         */
+        unitPrice?: (id: string) => number;
+        /**
+         * IDs shared by several sellable databases, checked when the menus load
+         */
+        duplicateIds?: () => string[];
+        /**
+         * Price paid by the party to buy one unit
+         * @param basePrice unit price
+         * @param multiplier merchant's multiplier (percentage)
+         * @param haggle haggling modifier (percentage)
+         */
+        buyPrice?: (basePrice: number, multiplier: number, haggle: number) => number;
+        /**
+         * Price paid by the merchant to buy one unit from the party
+         * @param basePrice unit price
+         * @param multiplier merchant's multiplier (percentage)
+         * @param haggle haggling modifier (percentage)
+         */
+        sellPrice?: (basePrice: number, multiplier: number, haggle: number) => number;
+        /**
+         * Sort shop entries
+         */
+        sortEntries?: (entries: ShopEntry[], order: ShopSortOrder) => ShopEntry[];
+        /**
+         * Create the saved progression of a merchant
+         */
+        newMerchantState?: () => MerchantState;
     };
 
     /** RMMV base functions stored for overriding */
