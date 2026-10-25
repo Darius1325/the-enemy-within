@@ -7025,18 +7025,6 @@ TEW.DATABASE.ITEMS.SET = {
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
         description: "Contains a small knife, herbs, and a jar of leeches. A successful Heal Test with an antitoxin kit removes all Poisoned Conditions. Treatment takes at least two Rounds."
     },
-    BOAT_HOOK: {
-        name: "Boat Hook",
-        group: 2 /* ItemGroup.TOOLS */,
-        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_TOOLS,
-        groupLabel: "Tools" /* ItemGroupLabel.TOOLS */,
-        nb: 1,
-        price: 60,
-        enc: 1,
-        availability: 0 /* Availability.COMMON */,
-        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
-        description: "Tool used to catch boats from shore."
-    },
     BROOM: {
         name: "Broom",
         group: 2 /* ItemGroup.TOOLS */,
@@ -7288,18 +7276,6 @@ TEW.DATABASE.ITEMS.SET = {
         availability: 0 /* Availability.COMMON */,
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
         description: "Tools used by an apothecary."
-    },
-    PICK: {
-        name: "Pick",
-        group: 2 /* ItemGroup.TOOLS */,
-        groupIcon: TEW.DATABASE.ICONS.SET.ITEM_TOOLS,
-        groupLabel: "Tools" /* ItemGroupLabel.TOOLS */,
-        nb: 1,
-        price: 216,
-        enc: 1,
-        availability: 0 /* Availability.COMMON */,
-        availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
-        description: "Tool used by minors."
     },
     POLE: {
         name: "Pole (3 yards)",
@@ -8746,6 +8722,37 @@ TEW.DATABASE.QUESTS = [{
             }]
     }];
 // #endregion =========================== TEW_Quests ============================== //
+// ============================== //
+// #region ============================== TEW_Shops ============================== //
+// ----------------------
+TEW.DATABASE.SHOPS = {};
+// #region ====== SHOPS SET === //
+// quantity: number of purchases allowed (saved), -1 for unlimited
+// id: any ID from TEW_Items.ts, TEW_Weapons.ts (melee, ranged or ammunition) or TEW_Armors.ts
+// Rare and exotic goods are only in stock if they pass an availability roll (see TEW.SHOPS.AVAILABILITY_CHANCES)
+TEW.DATABASE.SHOPS.SET = {
+    // TODO placeholder shop, to be replaced by actual merchants
+    GUSTAV_FONDLEBURGER: {
+        multiplier: 100,
+        items: [
+            { id: "BOOTS", quantity: -1 },
+            { id: "COAT", quantity: -1 },
+            { id: "HAT", quantity: -1 },
+            { id: "CANDLE", quantity: -1 },
+            { id: "ROPE", quantity: -1 },
+            { id: "RATIONS_ONE_DAY", quantity: -1 },
+            { id: "HEALING_POULTICE", quantity: 5 },
+            { id: "HEALING_DRAUGHT", quantity: 2 },
+            { id: "SIGNET_RING", quantity: 1 },
+            { id: "HAND_MIRROR", quantity: 1 },
+            { id: "DAGGER", quantity: -1 },
+            { id: "LEATHER_JACK", quantity: 2 },
+            { id: "ARROW", quantity: -1 }
+        ]
+    }
+};
+// #endregion === SHOPS SET === //
+// #endregion =========================== TEW_Shops ============================== //
 // ============================== //
 // #region ============================== TEW_Spells ============================== //
 // ----------------------
