@@ -31,12 +31,12 @@ TEW.DATABASE.NPCS.UTILITIES.checkRangeWeaponEquipped = (initiator: CompleteBattl
 
 TEW.DATABASE.NPCS.UTILITIES.checkReloadableWeaponEquipped = (initiator: CompleteBattler) => {
     const mainHand = initiator.mainHand();
-    return mainHand.isReloadable;
+    return !!mainHand && mainHand.isReloadable;
 };
 
 TEW.DATABASE.NPCS.UTILITIES.checkLoadedWeaponEquipped = (initiator: CompleteBattler) => {
     const mainHand = initiator.mainHand();
-    return mainHand.ammo > 0;
+    return !!mainHand && mainHand.ammo > 0;
 };
 
 TEW.DATABASE.NPCS.UTILITIES.manhattanDistance = (a: Game_Battler, b: Game_Battler) => {
@@ -59,7 +59,7 @@ TEW.DATABASE.NPCS.UTILITIES.checkEnemyInMeleeRangeAndChooseAtRandom = (initiator
 
 // Checks if an enemy is in shooting range and returns the closest one
 TEW.DATABASE.NPCS.UTILITIES.checkEnemyInShootingRangeAndReturnClosest = (initiator: CompleteBattler, enemies: Game_Battler[]) => {
-    const rangedWeapon = TEW.DATABASE.WEAPONS.RANGED_SET[initiator.mainHand().id]; // TODO second hand
+    const rangedWeapon = TEW.DATABASE.WEAPONS.RANGED_SET[initiator.mainHand()?.id]; // TODO second hand
     if (!rangedWeapon) {
         return undefined;
     }
@@ -82,17 +82,20 @@ TEW.DATABASE.NPCS.UTILITIES.checkEnemyInShootingRangeAndReturnClosest = (initiat
 
 // Checks where is the closest enemy in charge range and returns it, if there is one
 TEW.DATABASE.NPCS.UTILITIES.checkEnemyInChargeRangeAndReturnClosest = (initiator: CompleteBattler, enemies: Game_Battler[]) => {
-    $gameMap._flexibleMovement = false; // Enable computing maximum charge range
-    const maxMove = initiator.move();
-    $gameMap._flexibleMovement = true;
+    const maxMove = initiator.maxChargeDistance();
 
     // TODO maybe random tie break here, otherwise the first character in party order will be selected
     const enemiesSortedByProximity = enemies.sort((a, b) =>
         TEW.DATABASE.NPCS.UTILITIES.manhattanDistance(a, initiator)
         - TEW.DATABASE.NPCS.UTILITIES.manhattanDistance(b, initiator)
     );
-    const targettableEnemies = $gameMap.chargeRangeForAI(maxMove, initiator.event(), enemiesSortedByProximity);
-    console.log(targettableEnemies);
+    // Only keep targets whose charge path can actually be followed (tile edges included)
+    const targettableEnemies = $gameMap.chargeRangeForAI(maxMove, initiator.event(), enemiesSortedByProximity)
+        .filter((enemy: Game_Battler) => initiator.canFollowPath($gameMap.loadOrComputeChargeRangeForAI(
+            { x: initiator.tx, y: initiator.ty },
+            { x: enemy.tx, y: enemy.ty },
+            initiator.event()
+        )));
     if (targettableEnemies.length === 0) {
         return undefined;
     }
@@ -105,9 +108,12 @@ TEW.DATABASE.NPCS.UTILITIES.checkEnemyAndReturnClosest = (initiator: CompleteBat
     const enemiesSortedByProximity = enemies
         .map(enemy => ({ enemy, distance: TEW.DATABASE.NPCS.UTILITIES.manhattanDistance(enemy, initiator) }))
         .sort((a, b) => a.distance - b.distance );
+    if (enemiesSortedByProximity.length === 0) {
+        return undefined;
+    }
     const minimumDistance = enemiesSortedByProximity[0].distance;
     const closestEnemies = enemiesSortedByProximity.filter(enemy => enemy.distance === minimumDistance);
-    return closestEnemies[Math.floor(Math.random() * closestEnemies.length)];
+    return closestEnemies[Math.floor(Math.random() * closestEnemies.length)].enemy;
 }
 
 // Checks if the initiatior is out of charging range of all enemies
@@ -278,7 +284,6 @@ TEW.DATABASE.NPCS.AI = {
 
             // if the closest enemy is in charge range, charge it
             const closestEnemyInChargeRange = TEW.DATABASE.NPCS.UTILITIES.checkEnemyInChargeRangeAndReturnClosest(initiator, enemies);
-            console.log(closestEnemyInChargeRange);
             if (actionAvailable && moveAvailable && closestEnemyInChargeRange) {
                 return TEW.DATABASE.NPCS.UTILITIES.doCharge(initiator, closestEnemyInChargeRange.tx, closestEnemyInChargeRange.ty);
             }
@@ -341,7 +346,7 @@ TEW.DATABASE.NPCS.AI = {
             const canMoveOutOfChargeRange: boolean = TEW.DATABASE.NPCS.UTILITIES.checkCanMoveOutOfEnnemyChargingRange(initiator, enemies)
             if (canMoveOutOfChargeRange && moveAvailable) {
                 const position = TEW.DATABASE.NPCS.UTILITIES.getPositionOutOfEnnemyChargingRange(initiator, enemies);
-                return TEW.DATABASE.NPCS.UTILITIES.doMove(initiator, position.x, position.y);
+                return TEW.DATABASE.NPCS.UTILITIES.doWalk(initiator, position.x, position.y);
             }
 
             // Else, it switches weapons to melee

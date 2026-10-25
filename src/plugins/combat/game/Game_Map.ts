@@ -643,6 +643,33 @@ Game_Map.prototype.samePoint = function(p1: Point, p2: Point) {
     return p1.x == p2.x && p1.y == p2.y;
 };
 
+/**
+ * Walking distance from (x, y) to every tile of the map that can reach it, as { tile: distance }.
+ * Only the map's passability is considered (not events), so occupied tiles can be targets.
+ */
+Game_Map.prototype.walkingDistancesFrom = function(x: number, y: number) {
+    const start = this.tile(x, y);
+    const distances = { [start]: 0 };
+    const queue = [start];
+    while (queue.length > 0) {
+        const tile = queue.shift();
+        const tx = this.positionTileX(tile);
+        const ty = this.positionTileY(tile);
+        for (const d of [2, 4, 6, 8]) {
+            const nx = this.roundXWithDirection(tx, d);
+            const ny = this.roundYWithDirection(ty, d);
+            const next = this.tile(nx, ny);
+            // Moving from next to tile: next's border toward tile and tile's border toward next must be passable
+            if (distances[next] === undefined && this.isValid(nx, ny)
+                && this.isPassable(nx, ny, this.reverseDirection(d)) && this.isPassable(tx, ty, d)) {
+                distances[next] = distances[tile] + 1;
+                queue.push(next);
+            }
+        }
+    }
+    return distances;
+};
+
 Game_Map.prototype.eventsRangeXy = function(tx, ty) {
     return this.events().filter(function(event) {
         var x = event.x;

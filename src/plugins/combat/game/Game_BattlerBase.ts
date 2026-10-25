@@ -15,6 +15,25 @@ Game_BattlerBase.TPARAM = {
     'move': 0,
 };
 
+/**
+ * Distances used by decisions, independent from the player's move menu (BattleManager.moveMultiplier)
+ */
+Game_BattlerBase.prototype.walkDistance = function() {
+    return Number(this.tparam('move')) || TEW.COMBAT.SYSTEM.mvp;
+};
+
+Game_BattlerBase.prototype.runDistance = function() {
+    return this.walkDistance() * TEW.COMBAT.SYSTEM.runMultiplier;
+};
+
+/**
+ * Charging distance is the run distance plus the charge (athletics) test SL,
+ * maxChargeDistance being the highest reachable value (Easy athletics test, best roll)
+ */
+Game_BattlerBase.prototype.maxChargeDistance = function() {
+    return this.runDistance() + Math.floor(this.comp('ATHLETICS') / 10) + 2;
+};
+
 Game_BattlerBase.prototype.baseMove = function() {
     return (Number(this.tparam('move')) || TEW.COMBAT.SYSTEM.mvp) * BattleManager.moveMultiplier;
 };

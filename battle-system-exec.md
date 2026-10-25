@@ -73,3 +73,28 @@ No unit tests exist, so each step is checked by:
 - The "INFO Legacy ... look into it" traces are kept, centralised in `Game_Action.logLegacyCall`.
 - `BattleDecision` / `BattleTarget` are now exported from `_types/battlerAI.ts`. The AI's range-probe actions pass a full decision.
 - Runtime check: player wait over 3 full rounds; player walk, then legacy attack targeting (now accepted; the legacy resolution is still a no-op, as before); enemy melee attack resolved by the decision code.
+
+### Step 3 - Transform enemy actions (done)
+- **Single entry point**: `BattleManager.executeDecision(decision)` completes the decision (weapon), builds the decision `Game_Action` and applies it. If the action moved its subject, the battle goes to `ProcessMove`, where `updateDecisionMove` moves the event one tile at a time. Otherwise, or once the move is over (`action.onMoveEnd()`, e.g. the charge attack), `onDecisionEnd` runs.
+- `onDecisionEnd` (question 1): an enemy is asked for a new decision while it is alive, still has points, didn't `WAIT`, and its last decision spent something. Otherwise its turn ends (`endAction`).
+- **No more per-tile Game_Action for decisions**: `Game_Battler.setMovePath(tiles)` stores a list of directions (`_movePath`), consumed by `processMoveStep()`. `Game_Enemy.makeMoves` no longer builds legacy moves at all.
+- Every `BattleOption` is handled in `Game_Action.applyDecision`. Points are spent by the action itself, only when it actually does something (question 4):
+
+| Option | Cost | Effect |
+|---|---|---|
+| `WAIT` | - | ends the turn |
+| `WALK` / `RUN` | move (or action) / move + action | walks `walkDistance()` / `runDistance()` tiles toward the target tile or battler |
+| `CHARGE` | move + action | athletics test (`chargeTestModifier`), runs `runDistance() + SL` tiles along the charge path, then attacks the target (+10 if the test succeeded) if adjacent |
+| `MELEE_ATTACK` / `RANGED_ATTACK` | action | `resolveWeaponAttack(isMelee)` (ranged: `RANGED_<group>` vs Dodge, consumes 1 ammo of a reloadable weapon) |
+| `RELOAD` | action | ammo = 1 (TODO `RELOAD_X`, ammunition from the inventory) |
+| `SWITCH_WEAPONS` | move (or action) | equips `decision.weapon`, or the first melee weapon |
+| `USE_SPELL` | action | `applySpell` on the target, or on every battler in the area of effect around the target tile |
+| `USE_ITEM`, `DISENGAGE` | - | TODO, logged |
+
+- **Movement**: `Game_Battler.computePathTowards(x, y, maxSteps)` replaces RMMV's `findDirectionTo` (32-node search) for decisions. A breadth-first search finds the reachable tile, within the move allowance, that has the shortest *walking* distance to the target (`Game_Map.walkingDistancesFrom`). Battlers block the way, and the path never ends on an occupied tile. Without it, the debug map's second enemy got stuck in a dead end.
+- **Distances no longer depend on the player's menu (B5)**: `walkDistance()`, `runDistance()` (`TEW.COMBAT.SYSTEM.runMultiplier`) and `maxChargeDistance()` on `Game_BattlerBase`. `baseMove()`/`move()` (with `BattleManager.moveMultiplier`) are still used by the player's tile display until step 4.
+- **Damage now applies**: decision attacks and spells call `Game_Action.dealDamage`, which removes HP (`executeHpDamage`) and makes dead battlers collapse. Before, `executeDamage` silently did nothing because `checkDamageType` always returns false in TEW, so no attack ever changed HP.
+- AI fixes (`TEW_EnemyAI.ts`): `checkEnemyAndReturnClosest` returns the battler (B2) and handles an empty list; `SMART_RANGED` uses `doWalk` (B6); weapon checks handle unarmed battlers. Charge targets now use `maxChargeDistance()` and are kept only if `canFollowPath` says the charge path can really be followed: the ray-traced path ignores the start tile's borders, so an enemy on a one-way tile kept "charging" without moving. The AI now gets the *alive* members of each side.
+- A charge whose path can't be followed, or a walk with nowhere to go, spends nothing.
+- Runtime check (debug map): enemies walk, charge (path, test, attack), attack in melee, kill actors, and switch to the next target. With crossbows given to both enemies in the harness, `LAZY_RANGED`/`SMART_RANGED` reload, shoot, reload. No error over 40 player inputs.
+- Note: on the debug map, the second enemy starts in a pocket (12,13-12,15) with no walkable connection to the party, so it can only edge closer. That's a level design matter.

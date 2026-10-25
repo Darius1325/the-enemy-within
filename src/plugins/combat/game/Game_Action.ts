@@ -6,7 +6,6 @@ import { MeleeWeapon } from "../../_types/meleeWeapon";
 import { RangedWeapon } from "../../_types/rangedWeapon";
 import { Spell } from "../../_types/spell";
 import TEW from "../../_types/tew";
-import { BattlePhase } from "./BattleManager";
 import Game_Battler from "./Game_Battler";
 
 // $StartCompilation
@@ -227,45 +226,248 @@ Game_Action.prototype.apply = function(target?: Game_Battler) {
 };
 
 Game_Action.prototype.applyDecision = function() {
-    // TODO refactor + check that _targets is not empty
-    if (this._option === BattleOption.CHARGE) {
-        this.applyCharge();
-    } else if (this._option === BattleOption.MELEE_ATTACK) {
-        this.applyMeleeWeaponAttack();
-    } else if (this._option === BattleOption.USE_SPELL) {
-        this.applySpell(this._targets[0]);
-    } else {
-        // WALK and RUN are not handled yet (see BattleManager.updateMove), other options do nothing for now
-        console.log("TODO Game_Action decision option not handled:", this._option);
+    switch (this._option) {
+        case BattleOption.WAIT:
+            break; // Ends the battler's turn, see BattleManager.onDecisionEnd
+        case BattleOption.WALK:
+            this.applyWalk(false);
+            break;
+        case BattleOption.RUN:
+            this.applyWalk(true);
+            break;
+        case BattleOption.CHARGE:
+            this.applyCharge();
+            break;
+        case BattleOption.SWITCH_WEAPONS:
+            this.applySwitchWeapons();
+            break;
+        case BattleOption.MELEE_ATTACK:
+            this.applyAttack(true);
+            break;
+        case BattleOption.RANGED_ATTACK:
+            this.applyAttack(false);
+            break;
+        case BattleOption.RELOAD:
+            this.applyReload();
+            break;
+        case BattleOption.USE_SPELL:
+            this.applySpellDecision();
+            break;
+        case BattleOption.USE_ITEM: // TODO
+        case BattleOption.DISENGAGE: // TODO
+        default:
+            console.log("TODO Game_Action decision option not handled:", this._option);
+            break;
     }
 };
 
-Game_Action.prototype.applyCharge = function() {
-    // TODO update here or not?
-    BattleManager.spendMove();
-    BattleManager.spendAction();
-
-    // TODO constant
-    // TODO handle crit fail?
-    const chargeTestResult = TEW.DICE.skillTest(this._subject, 'ATHLETICS', 20, !this._subject.isActor());
-    const maxMove = this._subject.baseMove() + chargeTestResult.sl;
-
-    const path = $gameMap.loadOrComputeChargeRangeForAI(
-        { x: this._subject.tx, y: this._subject.ty },
-        { ...this._targetTile },
-        this._subject.event()
-    ).slice(0, maxMove);
-
-    this._subject.moveAlongPredefinedPath(path);
-    $gameMap._flexibleMovement = true; // Go back to free movement range for next action
-    BattleManager.setBattlePhase(BattlePhase.ProcessCharge);
-    $gameMap.clearTiles();
+/**
+ * Whether the decision moves its subject, i.e. BattleManager must wait for the move to end
+ */
+Game_Action.prototype.hasPendingMove = function() {
+    return this._subject.hasPendingMoveStep();
 };
 
-Game_Action.prototype.applyMeleeWeaponAttack = function() {
+/**
+ * Called by BattleManager once the subject has finished moving
+ */
+Game_Action.prototype.onMoveEnd = function() {
+    if (this._option === BattleOption.CHARGE) {
+        this.applyChargeAttack();
+    }
+};
+
+/**
+ * Walk (1 move point, or 1 action point if no move point is left) or run (1 move and 1 action point)
+ * toward the target tile, as far as the subject's movement allows
+ */
+Game_Action.prototype.applyWalk = function(run: boolean) {
+    const subject = this._subject;
+    if (run ? !(subject.hasMovePoint() && subject.hasActionPoint()) : !(subject.hasMovePoint() || subject.hasActionPoint())) {
+        return;
+    }
+    const target = this.targetPosition();
+    if (!target) {
+        return;
+    }
+    const distance = run ? subject.runDistance() : subject.walkDistance();
+    const path = subject.computePathTowards(target.x, target.y, distance);
+    if (path.length === 0) {
+        return; // Nowhere to go: nothing is spent
+    }
+    if (run) {
+        subject.spendMovePoint();
+        subject.spendActionPoint();
+    } else {
+        subject.spendMoveOrActionPoint();
+    }
+    subject.setMovePath(path);
+};
+
+/**
+ * Charge (1 move and 1 action point) in a straight line toward the target, then attack it if it is reached
+ */
+Game_Action.prototype.applyCharge = function() {
+    const subject = this._subject;
+    if (!subject.hasMovePoint() || !subject.hasActionPoint()) {
+        return;
+    }
+    const targetTile = this.targetPosition();
+    if (!targetTile) {
+        return;
+    }
+    const path = $gameMap.loadOrComputeChargeRangeForAI(
+        { x: subject.tx, y: subject.ty },
+        { x: targetTile.x, y: targetTile.y },
+        subject.event()
+    );
+    if (!subject.canFollowPath(path)) {
+        return; // No clear charge path: nothing is spent
+    }
+    subject.spendMovePoint();
+    subject.spendActionPoint();
+
+    // TODO handle crit fail?
+    this._chargeTestResult = TEW.DICE.skillTest(subject, 'ATHLETICS', TEW.COMBAT.SYSTEM.chargeTestModifier, !subject.isActor());
+    const maxMove = subject.runDistance() + this._chargeTestResult.sl;
+
+    this._chargeTarget = this._targets[0] || this.opponentAt(targetTile.x, targetTile.y);
+
+    subject.setMovePath(path.slice(0, Math.max(maxMove, 0)));
+    $gameMap._flexibleMovement = true; // Go back to free movement range for next action
+};
+
+/**
+ * Attack at the end of a charge: no point is spent (the charge already spent them),
+ * and a successful charge test gives a bonus
+ */
+Game_Action.prototype.applyChargeAttack = function() {
+    const target: CompleteBattler = this._chargeTarget;
+    if (target && target.isAlive() && this._subject.isAdjacentTo(target)) {
+        const attack = Game_Action.chargeAttack(this._subject, target, this._chargeTestResult?.success);
+        attack.resolveWeaponAttack(true);
+    }
+};
+
+/**
+ * Equip the decision's weapon, or the first melee weapon available (1 move point, or 1 action point)
+ */
+Game_Action.prototype.applySwitchWeapons = function() {
+    const subject = this._subject;
+    if (!subject.hasMovePoint() && !subject.hasActionPoint()) {
+        return;
+    }
+    const weapons = subject._weapons || [];
+    const weaponId = this._object && this._objectType === GameActionUsableObject.WEAPON
+        ? Object.keys(TEW.DATABASE.WEAPONS.MELEE_SET).concat(Object.keys(TEW.DATABASE.WEAPONS.RANGED_SET))
+            .find(id => TEW.DATABASE.WEAPONS.MELEE_SET[id] === this._object || TEW.DATABASE.WEAPONS.RANGED_SET[id] === this._object)
+        : undefined;
+    const index = weapons.findIndex(weapon => weaponId
+        ? weapon.id === weaponId
+        : TEW.DATABASE.WEAPONS.MELEE_SET[weapon.id] !== undefined);
+    if (index < 0 || weapons[index].isInMainHand) {
+        return;
+    }
+    subject.equipMainHand(index);
+    subject.spendMoveOrActionPoint();
+};
+
+/**
+ * Weapon attack against the decision's target (1 action point)
+ */
+Game_Action.prototype.applyAttack = function(isMelee: boolean) {
+    const subject = this._subject;
+    const target: CompleteBattler = this._targets[0];
+    if (!subject.hasActionPoint() || !target || !target.isAlive() || !this._object) {
+        return;
+    }
+    if (!isMelee) {
+        const mainHand = subject.mainHand();
+        if (mainHand && mainHand.isReloadable) {
+            if (mainHand.ammo <= 0) {
+                return;
+            }
+            mainHand.ammo -= 1;
+        }
+    }
+    subject.spendActionPoint();
+    this.resolveWeaponAttack(isMelee);
+};
+
+/**
+ * Load the equipped ranged weapon (1 action point)
+ */
+Game_Action.prototype.applyReload = function() {
+    const subject = this._subject;
+    const mainHand = subject.mainHand();
+    if (!subject.hasActionPoint() || !mainHand || !mainHand.isReloadable || mainHand.ammo > 0) {
+        return;
+    }
+    // TODO RELOAD_X qualities (several actions), ammunition from the inventory
+    mainHand.ammo = 1;
+    subject.spendActionPoint();
+};
+
+/**
+ * Cast the decision's spell on its target battler, or on every battler in the area of effect around its target tile (1 action point)
+ */
+Game_Action.prototype.applySpellDecision = function() {
+    const subject = this._subject;
+    if (!subject.hasActionPoint() || !this._object) {
+        return;
+    }
+    let targets: CompleteBattler[] = this._targets;
+    const tile = this.targetPosition();
+    const aoe = this.extractAoeData();
+    if (aoe > 0 && tile) {
+        const aoeTiles = this.computeEuclideanRange(aoe, tile.x, tile.y);
+        targets = BattleManager.allBattleMembers().filter((battler: CompleteBattler) =>
+            battler.isAlive() && aoeTiles.some(pos => battler.pos(pos[0], pos[1])));
+    }
+    subject.spendActionPoint();
+    targets.forEach(target => this.applySpell(target));
+};
+
+/**
+ * Tile targeted by the decision: the target tile, or the target battler's position
+ */
+Game_Action.prototype.targetPosition = function(): { x: number, y: number } {
+    if (this._targetTile && this._targetTile.x !== undefined && this._targetTile.y !== undefined) {
+        return this._targetTile;
+    }
+    const target = this._targets[0];
+    if (target) {
+        return { x: target.x, y: target.y };
+    }
+    return undefined;
+};
+
+Game_Action.prototype.opponentAt = function(x: number, y: number) {
+    return this._subject.opponentsUnitTS().aliveMembers().find((battler: Game_Battler) => battler.pos(x, y));
+};
+
+/**
+ * Remove HP from the target, and make it collapse if it dies.
+ * RMMV's executeDamage can't be used: it checks the RMMV item damage type, which TEW does not use (see checkDamageType)
+ */
+Game_Action.prototype.dealDamage = function(target: CompleteBattler, value: number) {
+    this.executeHpDamage(target, value);
+    console.log(`Damage: ${target.name()} loses ${value} HP (${target.hp} left)`);
+    if (target.isDead()) {
+        target.performCollapse();
+    }
+};
+
+/**
+ * Roll and resolve a weapon attack against the first target. Does not spend any point.
+ * TODO ranged attack rules (no parry, range bands, aiming)
+ */
+Game_Action.prototype.resolveWeaponAttack = function(isMelee: boolean) {
     const attacker = this._subject;
     const attackerWeapon: MeleeWeapon | RangedWeapon = this._object;
     const target = this._targets[0];
+    attacker.turnTowardCharacter(target);
+    target.turnTowardCharacter(attacker);
     // TODO attack with second hand
     const attackerWeaponEffects = TEW.COMBAT.getWeaponQualityEffects(attackerWeapon);
 
@@ -279,7 +481,7 @@ Game_Action.prototype.applyMeleeWeaponAttack = function() {
     const attackerCombatSkill = TEW.COMBAT.getAttackCompOrDefault(
         attacker,
         attackerWeapon.group,
-        true
+        isMelee
     );
 
     // TODO Get (best) weapon from defender
@@ -289,7 +491,7 @@ Game_Action.prototype.applyMeleeWeaponAttack = function() {
         target,
         defenderWeapon.group,
         0, // TODO cc bonus
-        TEW.COMBAT.isMeleeWeapon(defenderWeapon)
+        isMelee && TEW.COMBAT.isMeleeWeapon(defenderWeapon) // Ranged attacks are dodged
     );
 
     // TODO Check for opponent's defensive tools (shield)
@@ -378,7 +580,7 @@ Game_Action.prototype.applyMeleeWeaponAttack = function() {
             damage += (combatResult.rollAttacker % 10) || 10;
         }
 
-        this.executeDamage(target, Math.max(damage, 1));
+        this.dealDamage(target, Math.max(damage, 1));
 
         //   Check weapon effects based on location (make a list)
         if (attackerWeaponEffects.effects.PUMMEL && hitLocation === BodyLocation.HEAD) {
@@ -437,7 +639,7 @@ Game_Action.prototype.applySpell = function(target: CompleteBattler) {
             case SpellEffectType.MAGIC_MISSILE:
                 const damage = this._subjectAbilityRoll.sl + spell.effect.damage
                     - target.paramBonus(Stat.TOUG);
-                this.executeDamage(target, Math.max(damage, 1));
+                this.dealDamage(target, Math.max(damage, 1));
                 break;
             case SpellEffectType.SCALING_DAMAGE:
                 break;
@@ -466,7 +668,7 @@ Game_Action.chargeAttack = function(subject: CompleteBattler, target: Game_Battl
                 type: BattleTargetType.BATTLER,
                 target,
             },
-            weapon: TEW.DATABASE.WEAPONS.MELEE_SET[subject.mainHand().id]
+            weapon: TEW.DATABASE.WEAPONS.MELEE_SET[subject.equippedWeapon().id] || TEW.DATABASE.WEAPONS.MELEE_SET.UNARMED
         },
         { attackRoll: success ? 10 : 0 }
     );
