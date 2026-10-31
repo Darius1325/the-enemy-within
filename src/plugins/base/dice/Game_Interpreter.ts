@@ -211,6 +211,9 @@ TEW.DICE.combatOpposedSkillTest = function(
         success = (compValueAttacker >= compValueDefender);
     }
 
+    console.log("MELEE_ATTACK");
+    console.log(`Attacker comp value: ${compValueAttacker}`);
+    console.log(`Defender comp value: ${compValueDefender}`);
     console.log(`Attacker roll: ${rollAttacker} (SL: ${slAttacker}, Critical: ${criticalAttacker})`);
     console.log(`Defender roll: ${rollDefender} (SL: ${slDefender}, Critical: ${criticalDefender})`);
     console.log(`Combat result: ${success ? "Attacker wins" : "Defender wins"}`);

@@ -550,21 +550,19 @@ TEW.COMBAT.getDefenceCompOrDefault = (battler, weaponGroup, ccBonus, isMelee) =>
     const dodgeValue = battler.comp('DODGE');
     if (!isMelee) {
         return {
+            compId: 'DODGE',
             match: true,
             value: dodgeValue
         };
     }
-    const compName = 'MELEE' + '_' + TEW.DATABASE.WEAPONS.GROUP_IDS[weaponGroup];
-    if (battler.hasComp(compName)) {
-        const compValue = battler.comp(compName);
-        return {
-            match: true,
-            value: Math.max(compValue, dodgeValue) // TODO opt out if shield
-        };
-    }
+    const meleeCompName = 'MELEE' + '_' + TEW.DATABASE.WEAPONS.GROUP_IDS[weaponGroup];
+    const hasMeleeComp = battler.hasComp(meleeCompName);
+    const meleeCompValue = hasMeleeComp ? battler.comp(meleeCompName) : battler.weas;
+    const maxCompValue = Math.max(meleeCompValue, dodgeValue);
     return {
-        match: false,
-        value: Math.max(battler.weas, dodgeValue)
+        compId: maxCompValue === meleeCompValue ? meleeCompName : 'DODGE',
+        match: hasMeleeComp,
+        value: maxCompValue // TODO opt out if shield
     };
 };
 // Get weapon data defined in TEW_Weapons.js from its ID
@@ -742,6 +740,7 @@ Game_Action.logLegacyCall = function (functionName) {
     console.log("INFO Legacy Game_Action call " + functionName + ", look into it");
 };
 Game_Action.prototype.initializeLegacy = function (forcing) {
+    console.log("INFO Legacy Game_Action init, look into it");
     this._forcing = forcing || false;
     this._modifiers = {};
 };
@@ -2020,12 +2019,14 @@ Game_Action.prototype.resolveWeaponAttack = function (isMelee) {
     // Choose weapon (elsewhere)
     //   Get combat characteristic associated with weapon
     const attackerCombatSkill = TEW.COMBAT.getAttackCompOrDefault(attacker, attackerWeapon.group, isMelee);
+    console.log(`Attacker ${attacker._name} competence:`, attackerCombatSkill);
     // TODO Get (best) weapon from defender
     // TODO ranged attacks must be dodged
     //   Get combat characteristic associated with weapon
     const defenderCombatSkill = TEW.COMBAT.getDefenceCompOrDefault(target, defenderWeapon.group, 0, // TODO cc bonus
     isMelee && TEW.COMBAT.isMeleeWeapon(defenderWeapon) // Ranged attacks are dodged
     );
+    console.log(`Defender ${target._name} competence:`, defenderCombatSkill);
     // TODO Check for opponent's defensive tools (shield)
     // TODO Check attacker's talents for modifiers (make a list)
     // TODO Check defender's talents for modifiers (make a list)
@@ -2046,8 +2047,7 @@ Game_Action.prototype.resolveWeaponAttack = function (isMelee) {
     // Defender condition modifiers
     const defenderConditionMod = target.totalConditionModifier();
     // Roll dice
-    const combatResult = TEW.DICE.combatOpposedSkillTest(attackerCombatSkill.value + attackerWeaponEffects.attackMod + this.attackRollModifier() + attackerConditionMod, defenderCombatSkill.value + defenderWeaponEffects.defenceMod + defenderConditionMod, true, false // GIGA TODO
-    );
+    const combatResult = TEW.DICE.combatOpposedSkillTest(attackerCombatSkill.value + attackerWeaponEffects.attackMod + this.attackRollModifier() + attackerConditionMod, defenderCombatSkill.value + defenderWeaponEffects.defenceMod + defenderConditionMod, attacker._char.isActor(), target._char.isActor());
     // Special weapon quality checks
     // Impale - critical hit on tens
     if (attackerWeaponEffects.effects.IMPALE) {
@@ -2776,6 +2776,9 @@ Game_Enemy.prototype.initialize = function (enemyId, x, y, ai) {
     const data = TEW.DATABASE.NPCS.SET[enemyId];
     for (let weapon of data.weapons) {
         this.addWeapon(weapon);
+    }
+    for (let comp in data.comps) {
+        this._competences[comp] = data.comps[comp];
     }
 };
 Game_Enemy.prototype.currentBattler = function () {

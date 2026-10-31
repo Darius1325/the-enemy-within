@@ -248,6 +248,7 @@ Game_BattlerBase.prototype.compPlus = function(compId: string) {
 };
 
 Game_BattlerBase.prototype.comp = function(compId: string) {
+    console.log("Here lies the bugged stat calculation");
     const associatedStat = TEW.DATABASE.COMPS.SET[compId].stat;
     return this.compPlus(compId) + this.paramByName(associatedStat);
 };

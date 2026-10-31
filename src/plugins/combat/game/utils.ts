@@ -178,21 +178,19 @@ TEW.COMBAT.getDefenceCompOrDefault = (battler: Game_BattlerBase, weaponGroup: We
     const dodgeValue = battler.comp('DODGE');
     if (!isMelee) {
         return {
+            compId: 'DODGE',
             match: true,
             value: dodgeValue
         };
     }
-    const compName = 'MELEE' + '_' + TEW.DATABASE.WEAPONS.GROUP_IDS[weaponGroup];
-    if (battler.hasComp(compName)) {
-        const compValue = battler.comp(compName);
-        return {
-            match: true,
-            value: Math.max(compValue, dodgeValue) // TODO opt out if shield
-        };
-    }
+    const meleeCompName = 'MELEE' + '_' + TEW.DATABASE.WEAPONS.GROUP_IDS[weaponGroup];
+    const hasMeleeComp = battler.hasComp(meleeCompName);
+    const meleeCompValue = hasMeleeComp ? battler.comp(meleeCompName) : battler.weas;
+    const maxCompValue = Math.max(meleeCompValue, dodgeValue);
     return {
-        match: false,
-        value: Math.max(battler.weas, dodgeValue)
+        compId: maxCompValue === meleeCompValue ? meleeCompName : 'DODGE',
+        match: hasMeleeComp,
+        value: maxCompValue // TODO opt out if shield
     };
 };
 
