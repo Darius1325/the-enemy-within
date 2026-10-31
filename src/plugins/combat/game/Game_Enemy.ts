@@ -21,6 +21,17 @@ Game_Enemy.prototype.initialize = function(enemyId: string, x: number, y: number
     for (let weapon of data.weapons) {
         this.addWeapon(weapon);
     }
+    for (let armor of data.armor) {
+        this.equipArmor(armor);
+    }
+    for (let itemOrAmmo in data.trappings) {
+        const isAmmo = TEW.DATABASE.WEAPONS.AMMO_SET[itemOrAmmo] !== undefined;
+        if (isAmmo) {
+            this.addAmmo(itemOrAmmo, data.trappings[itemOrAmmo]);
+        } else {
+            this.addItem(itemOrAmmo, data.trappings[itemOrAmmo]);
+        }
+    }
     for (let comp in data.comps) {
         this._competences[comp] = data.comps[comp];
     }
@@ -51,8 +62,8 @@ Game_Enemy.prototype.paramBase = function(paramId: number) {
     // mhp
     if (paramId === 0) {
         return TEW.DATABASE.NPCS.SET[this._enemyId].wounds;
-    }
-    return TEW.DATABASE.NPCS.SET[this._enemyId].stats[paramId];
+    } // stat array starts at 0 for weapon skill
+    return TEW.DATABASE.NPCS.SET[this._enemyId].stats[paramId - 1];
 }
 
 // MHP is handled separately

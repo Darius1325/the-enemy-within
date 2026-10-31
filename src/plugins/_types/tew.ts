@@ -665,6 +665,8 @@ const TEW: {
          * @returns A weapon object
          */
         getWeaponFromId?: (weaponId: string) => MeleeWeapon | RangedWeapon;
+
+        getWeaponReloadLevel?: (weaponData: RangedWeapon) => number;
     };
 
     /** Shopping rules and utilities */

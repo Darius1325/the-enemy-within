@@ -9,6 +9,7 @@ export type ActorWeapon = {
     isInMainHand: boolean;
     isInSecondHand: boolean;
     isReloadable: boolean;
+    currentReloadLevel: number;
     ammo: number;
     ammoType: AmmunitionGroup;
 };
@@ -480,6 +481,7 @@ Game_BattlerBase.prototype.addWeapon = function(weaponId: string) {
             rangedWeapon.group === WeaponGroup.BLACKPOWDER ||
             rangedWeapon.group === WeaponGroup.ENGINEERING ||
             rangedWeapon.group === WeaponGroup.CROSSBOW),
+        currentReloadLevel: 0,
         ammo: 0,
         ammoType: undefined // Ammo ID
     });
@@ -535,6 +537,7 @@ Game_BattlerBase.prototype.equippedWeapon = function() {
         isInMainHand: true,
         isInSecondHand: false,
         isReloadable: false,
+        currentReloadLevel: 0,
         ammo: 0,
         ammoType: undefined
     };
