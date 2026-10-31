@@ -1,11 +1,12 @@
 // $PluginCompiler TEW_Combat.js
 
 import { BattleDecision, CompleteBattler } from "../../_types/battlerAI";
-import { BattleOption, BattleTargetType, BodyLocation, ConditionId, GameActionUsableObject, SpellEffectType, SpellRange, SpellTarget, SpellTargetRadius, Stat } from "../../_types/enum";
+import { BattleOption, BattleTargetType, BodyLocation, ConditionId, GameActionUsableObject, SpellEffectType, SpellRange, SpellTarget, SpellTargetRadius, Stat, WeaponQuality } from "../../_types/enum";
 import { MeleeWeapon } from "../../_types/meleeWeapon";
 import { RangedWeapon } from "../../_types/rangedWeapon";
 import { Spell } from "../../_types/spell";
 import TEW from "../../_types/tew";
+import { ActorWeapon } from "../../base/stats/Game_BattlerBase";
 import Game_Battler from "./Game_Battler";
 
 // $StartCompilation
@@ -395,14 +396,62 @@ Game_Action.prototype.applyAttack = function(isMelee: boolean) {
  * Load the equipped ranged weapon (1 action point)
  */
 Game_Action.prototype.applyReload = function() {
-    const subject = this._subject;
-    const mainHand = subject.mainHand();
-    if (!subject.hasActionPoint() || !mainHand || !mainHand.isReloadable || mainHand.ammo > 0) {
-        return;
+    const mainHand = this._subject.mainHand();
+    if (!mainHand || !mainHand.isReloadable) {
+        return; // TODO
     }
-    // TODO RELOAD_X qualities (several actions), ammunition from the inventory
-    mainHand.ammo = 1;
-    subject.spendActionPoint();
+    const weaponData: RangedWeapon & ActorWeapon = {
+        ...mainHand,
+        ...TEW.DATABASE.WEAPONS.RANGED_SET[mainHand.id]
+    };
+    
+    let maxReload = 1;
+    if (weaponData.qualities.includes(WeaponQuality.REPEATER)) {
+        maxReload = 2;
+    } else if (weaponData.qualities.includes(WeaponQuality.REPEATER_4)) {
+        maxReload = 5;
+    }
+
+    // Repeater weapon with some ammo still loaded: always 1 action to fully reload with same ammo type
+    if (weaponData.ammo > 0 && weaponData.ammo < maxReload && weaponData.ammoType) {
+        const availableAmmo = this._subject.ammo(weaponData.ammoType);
+        if (availableAmmo > 0) {
+            const reloadedAmount = Math.min(availableAmmo, maxReload - weaponData.ammo);
+            this._subject.removeAmmo(weaponData.ammoType, reloadedAmount);
+            mainHand.ammo = weaponData.ammo + reloadedAmount;
+        } else {
+            // TODO failure message/sound effect
+        }
+        
+        this._subject.spendActionPoint();
+
+    // Empty weapon, spend X actions according to reload level
+    } else if (weaponData.ammo === 0) { // TODO take the first valid ammunition type from inventory for now
+        let reloadLevel = TEW.COMBAT.getWeaponReloadLevel(weaponData);
+        if (this._subject.hasTalent("RAPID_RELOAD")) {
+            reloadLevel -= 1;
+        }
+
+        mainHand.currentReloadLevel += 1;
+        if (mainHand.currentReloadLevel >= reloadLevel) {
+            const validAmmo = weaponData.ammunition;
+            for (let ammoGroup of validAmmo) {
+                const firstAvailableAmmoType = this._subject.firstAmmoFromGroup(ammoGroup);
+                const availableAmmo = this._subject.ammo(firstAvailableAmmoType);
+                if (availableAmmo > 0) {
+                    const reloadedAmount = Math.min(availableAmmo, maxReload);
+                    this._subject.removeAmmo(firstAvailableAmmoType, reloadedAmount);
+                    mainHand.ammo = reloadedAmount;
+                    mainHand.ammoType = firstAvailableAmmoType;
+                    break; // TODO success message/sound effect
+                }
+            }
+        }
+
+        if (reloadLevel > 0) {
+            this._subject.spendActionPoint();
+        }
+    }
 };
 
 /**

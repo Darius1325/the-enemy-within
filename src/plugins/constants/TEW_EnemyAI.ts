@@ -232,23 +232,26 @@ TEW.DATABASE.NPCS.AI = {
     DEBUG: (initiator, allies, enemies) => {
         const actionAvailable: boolean = initiator._actionCount > 0;
         const moveAvailable: boolean = initiator._moveCount > 0;
-        const equippedMeleeWeapon: boolean = TEW.DATABASE.NPCS.UTILITIES.checkMeleeWeaponEquipped(initiator);
-        const closestEnemy = TEW.DATABASE.NPCS.UTILITIES.checkEnemyInMeleeRangeAndChooseAtRandom(initiator, enemies);
+        // const equippedMeleeWeapon: boolean = TEW.DATABASE.NPCS.UTILITIES.checkMeleeWeaponEquipped(initiator);
+        // const closestEnemy = TEW.DATABASE.NPCS.UTILITIES.checkEnemyInMeleeRangeAndChooseAtRandom(initiator, enemies);
         const equippedRangedWeapon: boolean = TEW.DATABASE.NPCS.UTILITIES.checkRangeWeaponEquipped(initiator);
         console.log("=====");
         console.log("DEBUG AI: ");
         console.log("-----");
         console.log("initiator :", initiator);
-        console.log("allies :", allies);
-        console.log("enemies :", enemies);
+        // console.log("allies :", allies);
+        // console.log("enemies :", enemies);
         console.log("-----");
         console.log("actionAvailable :", actionAvailable);
         console.log("moveAvailable :", moveAvailable);
-        console.log("equippedMeleeWeapon :", equippedMeleeWeapon);
-        console.log("closestEnemy :", closestEnemy);
+        // console.log("equippedMeleeWeapon :", equippedMeleeWeapon);
+        // console.log("closestEnemy :", closestEnemy);
         console.log("equippedRangedWeapon :", equippedRangedWeapon);
         console.log("=====");
-        return TEW.DATABASE.NPCS.UTILITIES.doWait(initiator);
+        if (actionAvailable) {
+            return TEW.DATABASE.NPCS.UTILITIES.doReload(initiator);
+        }
+        return TEW.DATABASE.NPCS.UTILITIES.doWait();
     },
 
     // LAZY AI :

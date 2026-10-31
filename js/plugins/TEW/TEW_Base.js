@@ -1394,6 +1394,7 @@ Game_BattlerBase.prototype.addWeapon = function (weaponId) {
         isReloadable: rangedWeapon && (rangedWeapon.group === 14 /* WeaponGroup.BLACKPOWDER */ ||
             rangedWeapon.group === 15 /* WeaponGroup.ENGINEERING */ ||
             rangedWeapon.group === 9 /* WeaponGroup.CROSSBOW */),
+        currentReloadLevel: 0,
         ammo: 0,
         ammoType: undefined // Ammo ID
     });
@@ -1439,6 +1440,7 @@ Game_BattlerBase.prototype.equippedWeapon = function () {
         isInMainHand: true,
         isInSecondHand: false,
         isReloadable: false,
+        currentReloadLevel: 0,
         ammo: 0,
         ammoType: undefined
     };

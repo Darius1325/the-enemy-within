@@ -577,6 +577,39 @@ TEW.COMBAT.getWeaponFromId = (weaponId) => {
     }
     return meleeWeapon;
 };
+TEW.COMBAT.getWeaponReloadLevel = (weaponData) => {
+    for (let quality of weaponData.qualities) {
+        let reloadLevel;
+        switch (quality) {
+            case 27 /* WeaponQuality.RELOAD_1 */:
+                reloadLevel = 1;
+                break;
+            case 28 /* WeaponQuality.RELOAD_2 */:
+                reloadLevel = 2;
+                break;
+            case 29 /* WeaponQuality.RELOAD_3 */:
+                reloadLevel = 3;
+                break;
+            case 30 /* WeaponQuality.RELOAD_4 */:
+                reloadLevel = 4;
+                break;
+            case 31 /* WeaponQuality.RELOAD_5 */:
+                reloadLevel = 5;
+                break;
+            case 32 /* WeaponQuality.RELOAD_6 */:
+                reloadLevel = 6;
+                break;
+            default: reloadLevel = undefined;
+        }
+        console.log("Qualities: ", weaponData.qualities);
+        console.log("Reload: ", reloadLevel);
+        if (reloadLevel !== undefined) {
+            return reloadLevel;
+        }
+    }
+    console.log("WHAT THE FU- BOOOOOOOM");
+    return;
+};
 // #endregion =========================== utils ============================== //
 // ============================== //
 // #region ============================== Window_TacticsCommandBase ============================== //
@@ -1946,14 +1979,56 @@ Game_Action.prototype.applyAttack = function (isMelee) {
  * Load the equipped ranged weapon (1 action point)
  */
 Game_Action.prototype.applyReload = function () {
-    const subject = this._subject;
-    const mainHand = subject.mainHand();
-    if (!subject.hasActionPoint() || !mainHand || !mainHand.isReloadable || mainHand.ammo > 0) {
-        return;
+    const mainHand = this._subject.mainHand();
+    if (!mainHand || !mainHand.isReloadable) {
+        return; // TODO
     }
-    // TODO RELOAD_X qualities (several actions), ammunition from the inventory
-    mainHand.ammo = 1;
-    subject.spendActionPoint();
+    const weaponData = Object.assign(Object.assign({}, mainHand), TEW.DATABASE.WEAPONS.RANGED_SET[mainHand.id]);
+    let maxReload = 1;
+    if (weaponData.qualities.includes(35 /* WeaponQuality.REPEATER */)) {
+        maxReload = 2;
+    }
+    else if (weaponData.qualities.includes(37 /* WeaponQuality.REPEATER_4 */)) {
+        maxReload = 5;
+    }
+    // Repeater weapon with some ammo still loaded: always 1 action to fully reload with same ammo type
+    if (weaponData.ammo > 0 && weaponData.ammo < maxReload && weaponData.ammoType) {
+        const availableAmmo = this._subject.ammo(weaponData.ammoType);
+        if (availableAmmo > 0) {
+            const reloadedAmount = Math.min(availableAmmo, maxReload - weaponData.ammo);
+            this._subject.removeAmmo(weaponData.ammoType, reloadedAmount);
+            mainHand.ammo = weaponData.ammo + reloadedAmount;
+        }
+        else {
+            // TODO failure message/sound effect
+        }
+        this._subject.spendActionPoint();
+        // Empty weapon, spend X actions according to reload level
+    }
+    else if (weaponData.ammo === 0) { // TODO take the first valid ammunition type from inventory for now
+        let reloadLevel = TEW.COMBAT.getWeaponReloadLevel(weaponData);
+        if (this._subject.hasTalent("RAPID_RELOAD")) {
+            reloadLevel -= 1;
+        }
+        mainHand.currentReloadLevel += 1;
+        if (mainHand.currentReloadLevel >= reloadLevel) {
+            const validAmmo = weaponData.ammunition;
+            for (let ammoGroup of validAmmo) {
+                const firstAvailableAmmoType = this._subject.firstAmmoFromGroup(ammoGroup);
+                const availableAmmo = this._subject.ammo(firstAvailableAmmoType);
+                if (availableAmmo > 0) {
+                    const reloadedAmount = Math.min(availableAmmo, maxReload);
+                    this._subject.removeAmmo(firstAvailableAmmoType, reloadedAmount);
+                    mainHand.ammo = reloadedAmount;
+                    mainHand.ammoType = firstAvailableAmmoType;
+                    break; // TODO success message/sound effect
+                }
+            }
+        }
+        if (reloadLevel > 0) {
+            this._subject.spendActionPoint();
+        }
+    }
 };
 /**
  * Cast the decision's spell on its target battler, or on every battler in the area of effect around its target tile (1 action point)
@@ -2777,6 +2852,18 @@ Game_Enemy.prototype.initialize = function (enemyId, x, y, ai) {
     for (let weapon of data.weapons) {
         this.addWeapon(weapon);
     }
+    for (let armor of data.armor) {
+        this.equipArmor(armor);
+    }
+    for (let itemOrAmmo in data.trappings) {
+        const isAmmo = TEW.DATABASE.WEAPONS.AMMO_SET[itemOrAmmo] !== undefined;
+        if (isAmmo) {
+            this.addAmmo(itemOrAmmo, data.trappings[itemOrAmmo]);
+        }
+        else {
+            this.addItem(itemOrAmmo, data.trappings[itemOrAmmo]);
+        }
+    }
     for (let comp in data.comps) {
         this._competences[comp] = data.comps[comp];
     }
@@ -2801,8 +2888,8 @@ Game_Enemy.prototype.paramBase = function (paramId) {
     // mhp
     if (paramId === 0) {
         return TEW.DATABASE.NPCS.SET[this._enemyId].wounds;
-    }
-    return TEW.DATABASE.NPCS.SET[this._enemyId].stats[paramId];
+    } // stat array starts at 0 for weapon skill
+    return TEW.DATABASE.NPCS.SET[this._enemyId].stats[paramId - 1];
 };
 // MHP is handled separately
 Game_Enemy.prototype.statName = function (paramId) {
@@ -4089,7 +4176,7 @@ Game_TroopTs.prototype.addEnemy = function (enemyId, event, ai = "DEFAULT") {
     this._enemies.push(enemy);
     enemy.setupEvent(eventId);
     // temp
-    enemy.equipMainHand(1);
+    enemy.equipMainHand(0);
     // temp
 };
 Game_TroopTs.prototype.addTroop = function (index, event) {

@@ -4537,6 +4537,7 @@ TEW.DATABASE.CHARACTER_DESCRIPTIONS = [
 // ============================== //
 // #region ============================== TEW_Combats ============================== //
 // ----------------------
+// TODO indicator for battles where reloadable weapon don't start loaded
 TEW.DATABASE.COMBATS = {
     B0C0_BATTLE_TEST: {
         enemies: [
@@ -4548,6 +4549,13 @@ TEW.DATABASE.COMBATS = {
             },
             {
                 npc: "PHILLIPE_DESCARTES",
+            }
+        ]
+    },
+    B0C0_BATTLE_TEST_2: {
+        enemies: [
+            {
+                npc: "DEBUG",
             }
         ]
     },
@@ -6128,23 +6136,26 @@ TEW.DATABASE.NPCS.AI = {
     DEBUG: (initiator, allies, enemies) => {
         const actionAvailable = initiator._actionCount > 0;
         const moveAvailable = initiator._moveCount > 0;
-        const equippedMeleeWeapon = TEW.DATABASE.NPCS.UTILITIES.checkMeleeWeaponEquipped(initiator);
-        const closestEnemy = TEW.DATABASE.NPCS.UTILITIES.checkEnemyInMeleeRangeAndChooseAtRandom(initiator, enemies);
+        // const equippedMeleeWeapon: boolean = TEW.DATABASE.NPCS.UTILITIES.checkMeleeWeaponEquipped(initiator);
+        // const closestEnemy = TEW.DATABASE.NPCS.UTILITIES.checkEnemyInMeleeRangeAndChooseAtRandom(initiator, enemies);
         const equippedRangedWeapon = TEW.DATABASE.NPCS.UTILITIES.checkRangeWeaponEquipped(initiator);
         console.log("=====");
         console.log("DEBUG AI: ");
         console.log("-----");
         console.log("initiator :", initiator);
-        console.log("allies :", allies);
-        console.log("enemies :", enemies);
+        // console.log("allies :", allies);
+        // console.log("enemies :", enemies);
         console.log("-----");
         console.log("actionAvailable :", actionAvailable);
         console.log("moveAvailable :", moveAvailable);
-        console.log("equippedMeleeWeapon :", equippedMeleeWeapon);
-        console.log("closestEnemy :", closestEnemy);
+        // console.log("equippedMeleeWeapon :", equippedMeleeWeapon);
+        // console.log("closestEnemy :", closestEnemy);
         console.log("equippedRangedWeapon :", equippedRangedWeapon);
         console.log("=====");
-        return TEW.DATABASE.NPCS.UTILITIES.doWait(initiator);
+        if (actionAvailable) {
+            return TEW.DATABASE.NPCS.UTILITIES.doReload(initiator);
+        }
+        return TEW.DATABASE.NPCS.UTILITIES.doWait();
     },
     // LAZY AI :
     // Attacks the closest enemy if it has a melee weapon equipped and an enemy is in range, otherwise waits.
@@ -8365,6 +8376,40 @@ TEW.LEVELLING.spellRangeCost = function (fromKnown, toKnown, bonus, cost) {
 TEW.DATABASE.NPCS = TEW.DATABASE.NPCS || {};
 // #region ====== NPCS SET === //
 TEW.DATABASE.NPCS.SET = {
+    DEBUG: {
+        ai: "DEBUG",
+        name: "Debug NPC",
+        stats: {
+            WEAS: 30,
+            BALS: 31,
+            STRG: 32,
+            TOUG: 33,
+            INIT: 34,
+            AGIL: 35,
+            DEXT: 36,
+            INTL: 37,
+            WILL: 38,
+            FELW: 39
+        },
+        wounds: 12,
+        move: 4,
+        status: 4 /* Status.SILVER_2 */,
+        comps: {
+            ATHLETICS: 10,
+            DODGE: 10,
+            MELEE_BASIC: 10,
+            RANGED_CROSSBOW: 10
+        },
+        talents: [],
+        traits: [],
+        weapons: ["CROSSBOW"],
+        armor: [],
+        trappings: {
+            BOLT: 20
+        },
+        spells: {},
+        prayers: {}
+    },
     GUSTAV_FONDLEBURGER: {
         name: "Gustav Fondleburger",
         stats: {
@@ -8530,7 +8575,7 @@ TEW.DATABASE.NPCS.SET = {
     //TODO default equipped weapon
     PHILLIPE_DESCARTES: {
         name: "Phillipe Descartes",
-        stats: [10, 30, 32, 30, 26, 31, 34, 44, 33, 30, 29],
+        stats: [30, 32, 30, 26, 31, 34, 44, 33, 30, 29],
         wounds: 10,
         move: 4,
         status: 0 /* Status.BRASS_1 */,

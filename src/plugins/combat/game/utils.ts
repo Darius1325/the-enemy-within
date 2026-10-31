@@ -206,3 +206,37 @@ TEW.COMBAT.getWeaponFromId = (weaponId: string) => {
     }
     return meleeWeapon;
 };
+
+TEW.COMBAT.getWeaponReloadLevel = (weaponData: RangedWeapon): number => {
+    for (let quality of weaponData.qualities) {
+        let reloadLevel: number;
+        switch (quality) {
+            case WeaponQuality.RELOAD_1:
+                reloadLevel = 1;
+                break;
+            case WeaponQuality.RELOAD_2:
+                reloadLevel = 2;
+                break;
+            case WeaponQuality.RELOAD_3:
+                reloadLevel = 3;
+                break;
+            case WeaponQuality.RELOAD_4:
+                reloadLevel = 4;
+                break;
+            case WeaponQuality.RELOAD_5:
+                reloadLevel = 5;
+                break;
+            case WeaponQuality.RELOAD_6:
+                reloadLevel = 6;
+                break;
+            default: reloadLevel = undefined;
+        }
+        console.log("Qualities: ", weaponData.qualities);
+        console.log("Reload: ", reloadLevel);
+        if (reloadLevel !== undefined) {
+            return reloadLevel;
+        }
+    }
+    console.log("WHAT THE FU- BOOOOOOOM");
+    return;
+};

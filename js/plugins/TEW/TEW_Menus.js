@@ -7423,7 +7423,6 @@ Scene_Equip.prototype.reloadWeapon = function () {
             }
             actorWeaponAccessor = this._actor.mainHand();
         }
-        // TODO skill test only in combat
         let maxReload = 1;
         if (weaponData.qualities.includes("Repeater" /* WeaponQuality.REPEATER */)) {
             maxReload = 2;
