@@ -185,7 +185,7 @@ TEW.DATABASE.NPCS.SET = {
     //TODO default equipped weapon
     PHILLIPE_DESCARTES: {
         name: "Phillipe Descartes",
-        stats: [30, 32, 30, 26, 31, 34, 44, 33, 30, 29],
+        stats: [10, 30, 32, 30, 26, 31, 34, 44, 33, 30, 29],
         wounds: 10,
         move: 4,
         status: Status.BRASS_1,

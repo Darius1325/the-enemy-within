@@ -21,6 +21,9 @@ Game_Enemy.prototype.initialize = function(enemyId: string, x: number, y: number
     for (let weapon of data.weapons) {
         this.addWeapon(weapon);
     }
+    for (let comp in data.comps) {
+        this._competences[comp] = data.comps[comp];
+    }
 };
 
 Game_Enemy.prototype.currentBattler = function() {

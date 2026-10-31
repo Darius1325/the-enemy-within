@@ -18,6 +18,7 @@ Game_Action.logLegacyCall = function(functionName: string) {
 };
 
 Game_Action.prototype.initializeLegacy = function(forcing: boolean) {
+    console.log("INFO Legacy Game_Action init, look into it");
     this._forcing = forcing || false;
     this._modifiers = {};
 };

@@ -480,6 +480,7 @@ Game_Action.prototype.resolveWeaponAttack = function(isMelee: boolean) {
         attackerWeapon.group,
         isMelee
     );
+    console.log(`Attacker ${attacker._name} competence:`, attackerCombatSkill);
 
     // TODO Get (best) weapon from defender
     // TODO ranged attacks must be dodged
@@ -490,6 +491,7 @@ Game_Action.prototype.resolveWeaponAttack = function(isMelee: boolean) {
         0, // TODO cc bonus
         isMelee && TEW.COMBAT.isMeleeWeapon(defenderWeapon) // Ranged attacks are dodged
     );
+    console.log(`Defender ${target._name} competence:`, defenderCombatSkill);
 
     // TODO Check for opponent's defensive tools (shield)
     // TODO Check attacker's talents for modifiers (make a list)
@@ -517,8 +519,8 @@ Game_Action.prototype.resolveWeaponAttack = function(isMelee: boolean) {
     const combatResult = TEW.DICE.combatOpposedSkillTest(
         attackerCombatSkill.value + attackerWeaponEffects.attackMod + this.attackRollModifier() + attackerConditionMod,
         defenderCombatSkill.value + defenderWeaponEffects.defenceMod + defenderConditionMod,
-        true,
-        false // GIGA TODO
+        attacker._char.isActor(),
+        target._char.isActor()
     );
 
     // Special weapon quality checks
