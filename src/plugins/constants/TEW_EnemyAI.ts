@@ -3,9 +3,10 @@
 // ----------------------
 // Imports
 // ----------------------
-import { CompleteBattler } from "../_types/battlerAI";
-import { BattleOption, BattleTargetType } from "../_types/enum";
+import { BattleDecision, CompleteBattler } from "../_types/battlerAI";
+import { BattleOption, BattleTargetType, WeaponGroup } from "../_types/enum";
 import { MeleeWeapon } from "../_types/meleeWeapon";
+import { RangedWeapon } from "../_types/rangedWeapon";
 import TEW from "../_types/tew";
 import Game_Battler from "../combat/game/Game_Battler";
 
@@ -16,6 +17,18 @@ import Game_Battler from "../combat/game/Game_Battler";
 TEW.DATABASE.NPCS = TEW.DATABASE.NPCS || {};
 
 TEW.DATABASE.NPCS.UTILITIES = TEW.DATABASE.NPCS.UTILITIES || {};
+
+// Get battler's stat value for combat depending on the wielded weapon's group
+TEW.DATABASE.NPCS.UTILITIES.getAttackCompOrDefault = (battler: CompleteBattler, weaponGroup: WeaponGroup, isMelee: boolean): number => {
+    const compId = (isMelee ? 'MELEE' : 'RANGED') + '_' + TEW.DATABASE.WEAPONS.GROUP_IDS[weaponGroup];
+    console.log("weapon group: ", weaponGroup);
+    console.log("comp: ", compId);
+    if (battler.hasComp(compId)) {
+        return battler.comp(compId)
+    } else {
+        return isMelee ? battler.weas : battler.bals
+    }
+};
 
 TEW.DATABASE.NPCS.UTILITIES.checkMeleeWeaponEquipped = (initiator: CompleteBattler) => {
     const mainHand = initiator.mainHand();
@@ -37,6 +50,65 @@ TEW.DATABASE.NPCS.UTILITIES.checkReloadableWeaponEquipped = (initiator: Complete
 TEW.DATABASE.NPCS.UTILITIES.checkLoadedWeaponEquipped = (initiator: CompleteBattler) => {
     const mainHand = initiator.mainHand();
     return !!mainHand && mainHand.ammo > 0;
+};
+
+TEW.DATABASE.NPCS.UTILITIES.checkForUnequippedMeleeWeapon = (initiator: CompleteBattler) => {
+    const meleeWeaponsOrderedBySkill = initiator._weapons
+        .filter(weapon => TEW.DATABASE.WEAPONS.MELEE_SET[weapon.id] !== undefined)
+        .filter(weapon => !weapon.isInMainHand)
+        .map(weapon => {
+            const data = TEW.DATABASE.WEAPONS.MELEE_SET[weapon.id];
+            return {
+                ...weapon,
+                ...data,
+                skillValue: TEW.DATABASE.NPCS.UTILITIES.getAttackCompOrDefault(initiator, data.group, true)
+            };
+        })
+        .sort((a, b) => b.skillValue - a.skillValue);
+    if (meleeWeaponsOrderedBySkill.length === 0) {
+        return undefined;
+    }
+
+    const maxSkillValue = meleeWeaponsOrderedBySkill[0].skillValue;
+    const meleeWeaponsOrderedByMaxPotentialDamage = meleeWeaponsOrderedBySkill
+        .filter(weapon => weapon.skillValue === maxSkillValue)
+        .sort((a, b) => b.damage - a.damage);
+    
+    return meleeWeaponsOrderedByMaxPotentialDamage.length > 0
+        ? meleeWeaponsOrderedByMaxPotentialDamage[0]
+        : undefined;
+};
+
+TEW.DATABASE.NPCS.UTILITIES.checkForUnequippedRangedWeapon = (initiator: CompleteBattler) => {
+    const rangedWeaponsOrderedBySkill = initiator._weapons
+        .filter(weapon => TEW.DATABASE.WEAPONS.RANGED_SET[weapon.id] !== undefined)
+        .filter(weapon => !weapon.isInMainHand)
+        .map(weapon => {
+            const data = TEW.DATABASE.WEAPONS.RANGED_SET[weapon.id];
+            return {
+                ...weapon,
+                ...data,
+                skillValue: TEW.DATABASE.NPCS.UTILITIES.getAttackCompOrDefault(initiator, data.group, false)
+            };
+        })
+        .sort((a, b) => b.skillValue - a.skillValue);
+    if (rangedWeaponsOrderedBySkill.length === 0) {
+        return undefined;
+    }
+
+    const maxSkillValue = rangedWeaponsOrderedBySkill[0].skillValue;
+    const rangedWeaponsOrderedByMaxPotentialDamage = rangedWeaponsOrderedBySkill
+        .filter(weapon => weapon.skillValue === maxSkillValue)
+        .sort((a, b) => b.damage - a.damage);
+    
+    return rangedWeaponsOrderedByMaxPotentialDamage.length > 0
+        ? rangedWeaponsOrderedByMaxPotentialDamage[0]
+        : undefined;
+};
+
+TEW.DATABASE.NPCS.UTILITIES.checkCurrentAmmo = (initiator: CompleteBattler) => {
+    const mainHand = initiator.mainHand();
+    return mainHand.isReloadable ? mainHand.ammo : undefined;
 };
 
 TEW.DATABASE.NPCS.UTILITIES.manhattanDistance = (a: Game_Battler, b: Game_Battler) => {
@@ -208,16 +280,15 @@ TEW.DATABASE.NPCS.UTILITIES.doReload = (initiator: CompleteBattler) => {
     return {
         option: BattleOption.RELOAD,
         initiator,
-        target: undefined,
     };
 }
 
 // The initiator switches to a melee weapon
-TEW.DATABASE.NPCS.UTILITIES.doSwitchToMelee = (initiator: CompleteBattler) => {
+TEW.DATABASE.NPCS.UTILITIES.doSwitchToMainHand = (initiator: CompleteBattler, weapon: MeleeWeapon | RangedWeapon): BattleDecision => {
     return {
         option: BattleOption.SWITCH_WEAPONS,
         initiator,
-        target: undefined,
+        weapon,
     };
 }
 //-----------------------------------------------------------------------------
@@ -232,25 +303,35 @@ TEW.DATABASE.NPCS.AI = {
     DEBUG: (initiator, allies, enemies) => {
         const actionAvailable: boolean = initiator._actionCount > 0;
         const moveAvailable: boolean = initiator._moveCount > 0;
-        // const equippedMeleeWeapon: boolean = TEW.DATABASE.NPCS.UTILITIES.checkMeleeWeaponEquipped(initiator);
-        // const closestEnemy = TEW.DATABASE.NPCS.UTILITIES.checkEnemyInMeleeRangeAndChooseAtRandom(initiator, enemies);
         const equippedRangedWeapon: boolean = TEW.DATABASE.NPCS.UTILITIES.checkRangeWeaponEquipped(initiator);
+        const closestEnemy = TEW.DATABASE.NPCS.UTILITIES.checkEnemyInShootingRangeAndReturnClosest(initiator, enemies);
+        const unequippedRangedWeapon = TEW.DATABASE.NPCS.UTILITIES.checkForUnequippedRangedWeapon(initiator);
         console.log("=====");
         console.log("DEBUG AI: ");
         console.log("-----");
         console.log("initiator :", initiator);
         // console.log("allies :", allies);
         // console.log("enemies :", enemies);
-        console.log("-----");
-        console.log("actionAvailable :", actionAvailable);
-        console.log("moveAvailable :", moveAvailable);
+        // console.log("-----");
+        // console.log("actionAvailable :", actionAvailable);
+        // console.log("moveAvailable :", moveAvailable);
         // console.log("equippedMeleeWeapon :", equippedMeleeWeapon);
         // console.log("closestEnemy :", closestEnemy);
-        console.log("equippedRangedWeapon :", equippedRangedWeapon);
-        console.log("=====");
-        if (actionAvailable) {
-            return TEW.DATABASE.NPCS.UTILITIES.doReload(initiator);
+        // console.log("equippedRangedWeapon :", equippedRangedWeapon);
+        if (equippedRangedWeapon && closestEnemy) {
+            const ammo = TEW.DATABASE.NPCS.UTILITIES.checkCurrentAmmo(initiator);
+            if (ammo !== undefined && ammo === 0) {
+                console.log("reloading");
+                return TEW.DATABASE.NPCS.UTILITIES.doReload(initiator);
+            }
+            console.log("attacking with crossbow");
+            return TEW.DATABASE.NPCS.UTILITIES.doRangedAttack(initiator, closestEnemy);
         }
+        if (unequippedRangedWeapon) {
+            console.log("Switching to:", unequippedRangedWeapon);
+            return TEW.DATABASE.NPCS.UTILITIES.doSwitchToMainHand(initiator, unequippedRangedWeapon);
+        }
+        console.log("=====");
         return TEW.DATABASE.NPCS.UTILITIES.doWait();
     },
 
@@ -352,8 +433,8 @@ TEW.DATABASE.NPCS.AI = {
                 return TEW.DATABASE.NPCS.UTILITIES.doWalk(initiator, position.x, position.y);
             }
 
-            // Else, it switches weapons to melee
-            return TEW.DATABASE.NPCS.UTILITIES.doSwitchToMelee(initiator);
+            // Else, it switches weapons to melee // TODO invalid now bitch
+            return TEW.DATABASE.NPCS.UTILITIES.doSwitchToMainHand(initiator);
         }
         // else, just wait
         return TEW.DATABASE.NPCS.UTILITIES.doWait(initiator);

@@ -352,22 +352,17 @@ Game_Action.prototype.applyChargeAttack = function() {
  */
 Game_Action.prototype.applySwitchWeapons = function() {
     const subject = this._subject;
-    if (!subject.hasMovePoint() && !subject.hasActionPoint()) {
+    if (this._objectType !== GameActionUsableObject.WEAPON) {
         return;
     }
     const weapons = subject._weapons || [];
-    const weaponId = this._object && this._objectType === GameActionUsableObject.WEAPON
-        ? Object.keys(TEW.DATABASE.WEAPONS.MELEE_SET).concat(Object.keys(TEW.DATABASE.WEAPONS.RANGED_SET))
-            .find(id => TEW.DATABASE.WEAPONS.MELEE_SET[id] === this._object || TEW.DATABASE.WEAPONS.RANGED_SET[id] === this._object)
-        : undefined;
-    const index = weapons.findIndex(weapon => weaponId
-        ? weapon.id === weaponId
-        : TEW.DATABASE.WEAPONS.MELEE_SET[weapon.id] !== undefined);
+    // TODO pass ActorWeapon data to Game_Action to avoid this
+    const weaponId = TEW.DATABASE.WEAPONS.ARRAY.find(([_, data]) => data.name === this._object.name)[0];
+    const index = weapons.findIndex((weapon: ActorWeapon) => weapon.id === weaponId);
     if (index < 0 || weapons[index].isInMainHand) {
         return;
     }
     subject.equipMainHand(index);
-    subject.spendMoveOrActionPoint();
 };
 
 /**
@@ -376,10 +371,13 @@ Game_Action.prototype.applySwitchWeapons = function() {
 Game_Action.prototype.applyAttack = function(isMelee: boolean) {
     const subject = this._subject;
     const target: CompleteBattler = this._targets[0];
+    console.log("apply attack: ", target, );
     if (!subject.hasActionPoint() || !target || !target.isAlive() || !this._object) {
         return;
     }
+    console.log("attack valid");
     if (!isMelee) {
+        console.log("ranged attack");
         const mainHand = subject.mainHand();
         if (mainHand && mainHand.isReloadable) {
             if (mainHand.ammo <= 0) {
@@ -608,7 +606,7 @@ Game_Action.prototype.resolveWeaponAttack = function(isMelee: boolean) {
         // TODO Check for crits
 
         // Check location
-        const hitLocation: BodyLocation = BodyLocation.HEAD; // TODO location table
+        const hitLocation: BodyLocation = BodyLocation.BODY; // TODO location table
 
         // Armor and armor penetration
         let defenderArmorPoints: number = target.armorPointsAtLocation(hitLocation, attackerWeaponEffects.ignoredAP, attackerWeaponEffects.ignoreMetalArmor);
@@ -631,12 +629,12 @@ Game_Action.prototype.resolveWeaponAttack = function(isMelee: boolean) {
         this.dealDamage(target, Math.max(damage, 1));
 
         //   Check weapon effects based on location (make a list)
-        if (attackerWeaponEffects.effects.PUMMEL && hitLocation === BodyLocation.HEAD) {
-            const pummelTestResult = TEW.DICE.opposedTest(attacker.paramByName(Stat.STRG), target.paramByName(Stat.STRG));
-            if (pummelTestResult.success) {
-                target.addCondition(ConditionId.STUNNED);
-            }
-        }
+        // if (attackerWeaponEffects.effects.PUMMEL && hitLocation === BodyLocation.HEAD) {
+        //     const pummelTestResult = TEW.DICE.opposedTest(attacker.paramByName(Stat.STRG), target.paramByName(Stat.STRG));
+        //     if (pummelTestResult.success) {
+        //         target.addCondition(ConditionId.STUNNED);
+        //     }
+        // }
         if (attackerWeaponEffects.effects.ENTANGLE) {
             target.addCondition(ConditionId.ENTANGLED, 1, attacker.paramBonus(Stat.STRG));
         }
@@ -681,6 +679,7 @@ Game_Action.prototype.applySpell = function(target: CompleteBattler) {
         // TODO Prompt for spell bonus effects (e.g. additional targets, increased range... etc)
         // handled by spell effect ?
 
+        // TODO take armor into account
         // TODO Resolve spell domain effects (e.g. Chamon ignoring metal armor)
 
         switch (spell.effect.type) {

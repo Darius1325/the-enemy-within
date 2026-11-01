@@ -19,7 +19,7 @@ export type BattleTarget = {
 export type BattleDecision = {
     initiator: CompleteBattler;
     option: BattleOption;
-    target: BattleTarget;
+    target?: BattleTarget;
     weapon?: MeleeWeapon | RangedWeapon;
     spell?: Spell;
     item?: Item;
