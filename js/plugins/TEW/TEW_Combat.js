@@ -1134,6 +1134,7 @@ BattleManager.onDecisionEnd = function () {
     $gameMap.clearTiles();
     const isWait = action.option() === 0 /* BattleOption.WAIT */;
     if (this._subject.isEnemy()) {
+        // TODO blocks free actions !!!
         const hasSpentPoints = this._subject.actionAndMovePoints() < this._decisionPointsBefore;
         if (!isWait && hasSpentPoints && this._subject.isAlive() && this.canActOrMove()) {
             this.updateEnemyPhase();
@@ -1937,22 +1938,17 @@ Game_Action.prototype.applyChargeAttack = function () {
  */
 Game_Action.prototype.applySwitchWeapons = function () {
     const subject = this._subject;
-    if (!subject.hasMovePoint() && !subject.hasActionPoint()) {
+    if (this._objectType !== 0 /* GameActionUsableObject.WEAPON */) {
         return;
     }
     const weapons = subject._weapons || [];
-    const weaponId = this._object && this._objectType === 0 /* GameActionUsableObject.WEAPON */
-        ? Object.keys(TEW.DATABASE.WEAPONS.MELEE_SET).concat(Object.keys(TEW.DATABASE.WEAPONS.RANGED_SET))
-            .find(id => TEW.DATABASE.WEAPONS.MELEE_SET[id] === this._object || TEW.DATABASE.WEAPONS.RANGED_SET[id] === this._object)
-        : undefined;
-    const index = weapons.findIndex(weapon => weaponId
-        ? weapon.id === weaponId
-        : TEW.DATABASE.WEAPONS.MELEE_SET[weapon.id] !== undefined);
+    // TODO pass ActorWeapon data to Game_Action to avoid this
+    const weaponId = TEW.DATABASE.WEAPONS.ARRAY.find(([_, data]) => data.name === this._object.name)[0];
+    const index = weapons.findIndex((weapon) => weapon.id === weaponId);
     if (index < 0 || weapons[index].isInMainHand) {
         return;
     }
     subject.equipMainHand(index);
-    subject.spendMoveOrActionPoint();
 };
 /**
  * Weapon attack against the decision's target (1 action point)
@@ -1960,10 +1956,13 @@ Game_Action.prototype.applySwitchWeapons = function () {
 Game_Action.prototype.applyAttack = function (isMelee) {
     const subject = this._subject;
     const target = this._targets[0];
+    console.log("apply attack: ", target);
     if (!subject.hasActionPoint() || !target || !target.isAlive() || !this._object) {
         return;
     }
+    console.log("attack valid");
     if (!isMelee) {
+        console.log("ranged attack");
         const mainHand = subject.mainHand();
         if (mainHand && mainHand.isReloadable) {
             if (mainHand.ammo <= 0) {
@@ -2154,7 +2153,7 @@ Game_Action.prototype.resolveWeaponAttack = function (isMelee) {
         // TODO Check weapon effects on crit (make a list)
         // TODO Check for crits
         // Check location
-        const hitLocation = 2 /* BodyLocation.HEAD */; // TODO location table
+        const hitLocation = 3 /* BodyLocation.BODY */; // TODO location table
         // Armor and armor penetration
         let defenderArmorPoints = target.armorPointsAtLocation(hitLocation, attackerWeaponEffects.ignoredAP, attackerWeaponEffects.ignoreMetalArmor);
         if (attackerWeaponEffects.effects.UNDAMAGING) {
@@ -2172,12 +2171,12 @@ Game_Action.prototype.resolveWeaponAttack = function (isMelee) {
         }
         this.dealDamage(target, Math.max(damage, 1));
         //   Check weapon effects based on location (make a list)
-        if (attackerWeaponEffects.effects.PUMMEL && hitLocation === 2 /* BodyLocation.HEAD */) {
-            const pummelTestResult = TEW.DICE.opposedTest(attacker.paramByName("STRG" /* Stat.STRG */), target.paramByName("STRG" /* Stat.STRG */));
-            if (pummelTestResult.success) {
-                target.addCondition("STUNNED" /* ConditionId.STUNNED */);
-            }
-        }
+        // if (attackerWeaponEffects.effects.PUMMEL && hitLocation === BodyLocation.HEAD) {
+        //     const pummelTestResult = TEW.DICE.opposedTest(attacker.paramByName(Stat.STRG), target.paramByName(Stat.STRG));
+        //     if (pummelTestResult.success) {
+        //         target.addCondition(ConditionId.STUNNED);
+        //     }
+        // }
         if (attackerWeaponEffects.effects.ENTANGLE) {
             target.addCondition("ENTANGLED" /* ConditionId.ENTANGLED */, 1, attacker.paramBonus("STRG" /* Stat.STRG */));
         }
@@ -4176,7 +4175,7 @@ Game_TroopTs.prototype.addEnemy = function (enemyId, event, ai = "DEFAULT") {
     this._enemies.push(enemy);
     enemy.setupEvent(eventId);
     // temp
-    enemy.equipMainHand(0);
+    enemy.equipMainHand(1);
     // temp
 };
 Game_TroopTs.prototype.addTroop = function (index, event) {

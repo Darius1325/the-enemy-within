@@ -125,6 +125,7 @@ BattleManager.onDecisionEnd = function() {
     $gameMap.clearTiles();
     const isWait = action.option() === BattleOption.WAIT;
     if (this._subject.isEnemy()) {
+        // TODO blocks free actions !!!
         const hasSpentPoints = this._subject.actionAndMovePoints() < this._decisionPointsBefore;
         if (!isWait && hasSpentPoints && this._subject.isAlive() && this.canActOrMove()) {
             this.updateEnemyPhase();

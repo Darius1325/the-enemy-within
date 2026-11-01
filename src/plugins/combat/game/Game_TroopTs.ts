@@ -31,7 +31,7 @@ Game_TroopTs.prototype.addEnemy = function(enemyId, event, ai = "DEFAULT") {
     this._enemies.push(enemy);
     enemy.setupEvent(eventId);
     // temp
-    enemy.equipMainHand(0);
+    enemy.equipMainHand(1);
     // temp
 };
 
