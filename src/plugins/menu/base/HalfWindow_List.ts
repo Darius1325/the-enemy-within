@@ -29,13 +29,15 @@ function HalfWindow_List() {
     this.initialize.apply(this, arguments);
 }
 
+HalfWindow_List.MARGIN_X = 10;
+
 export default HalfWindow_List.prototype = Object.create(Window_Selectable.prototype);
 HalfWindow_List.prototype.constructor = HalfWindow_List;
 
 // Inializing the window
 HalfWindow_List.prototype.initialize = function() {
     Window_Selectable.prototype.initialize.call(this,
-        0,
+        HalfWindow_List.MARGIN_X,
         TEW.MENU.INVENTORY_WINDOW_TOPBAR_HEIGHT,
         Graphics.boxWidth / 2,
         Graphics.boxHeight

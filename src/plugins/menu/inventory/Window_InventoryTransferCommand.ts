@@ -23,8 +23,8 @@ Window_InventoryTransferCommand.WEAPON = 'weapon';
 Window_InventoryTransferCommand.ARMOR = 'armor';
 Window_InventoryTransferCommand.AMMO = 'ammo';
 
-Window_InventoryTransferCommand.LEFT_X = 300;
-Window_InventoryTransferCommand.TOP_Y = 500;
+Window_InventoryTransferCommand.LEFT_X = 380;
+Window_InventoryTransferCommand.TOP_Y = 420;
 
 // Initializing the command window
 Window_InventoryTransferCommand.prototype.initialize = function() {
@@ -67,12 +67,12 @@ Window_InventoryTransferCommand.prototype.setItemType = function(type: string) {
         default:
             break;
     }
-}
+};
 
 Window_InventoryTransferCommand.prototype.doTransfer = function(quantity = 1) {
     const removed: ActorWeapon | string = this._removeAction.call(this._actor, this.item, quantity);
     this._addAction.call(this.targetActor, removed, quantity);
-}
+};
 
 Window_InventoryTransferCommand.prototype.makeCommandList = function() {
     if (this._actor != undefined) {
@@ -84,4 +84,16 @@ Window_InventoryTransferCommand.prototype.makeCommandList = function() {
         }
         Window_Selectable.prototype.refresh.call(this);
     }
-}
+};
+
+Window_InventoryTransferCommand.prototype.drawItem = function(index) {
+    const rect = this.itemRectForText(index);
+    const halfWidth = rect.width / 2;
+    const text = this.commandName(index);
+    const textWidth = this.textWidth(text);
+    const xOffset = halfWidth - textWidth * ((2 - index) / 2); // centered staircase display
+    const align = this.itemTextAlign();
+    this.resetTextColor();
+    this.changePaintOpacity(this.isCommandEnabled(index));
+    this.drawText(text, xOffset, rect.y, rect.width - xOffset, align);
+};

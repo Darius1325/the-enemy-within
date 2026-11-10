@@ -26,9 +26,9 @@ export interface IWindow_InventoryItems extends IHalfWindow_List {
 //
 // General item list window
 
-Window_InventoryItems.RIGHT_COLUMN_WIDTH = 80;
-Window_InventoryItems.LEFT_COLUMN_WIDTH = 500;
-Window_InventoryItems.RIGHT_COLUMN_POSITION = 500;
+Window_InventoryItems.RIGHT_COLUMN_WIDTH = 70;
+Window_InventoryItems.LEFT_COLUMN_WIDTH = 490;
+Window_InventoryItems.RIGHT_COLUMN_POSITION = 490;
 
 function Window_InventoryItems() {
     this.initialize.apply(this, arguments);

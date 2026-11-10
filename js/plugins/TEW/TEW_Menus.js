@@ -690,11 +690,12 @@ HalfWindow_DetailsScrollable.prototype.verticalBorderPadding = function () {
 function HalfWindow_List() {
     this.initialize.apply(this, arguments);
 }
+HalfWindow_List.MARGIN_X = 10;
 HalfWindow_List.prototype = Object.create(Window_Selectable.prototype);
 HalfWindow_List.prototype.constructor = HalfWindow_List;
 // Inializing the window
 HalfWindow_List.prototype.initialize = function () {
-    Window_Selectable.prototype.initialize.call(this, 0, TEW.MENU.INVENTORY_WINDOW_TOPBAR_HEIGHT, Graphics.boxWidth / 2, Graphics.boxHeight
+    Window_Selectable.prototype.initialize.call(this, HalfWindow_List.MARGIN_X, TEW.MENU.INVENTORY_WINDOW_TOPBAR_HEIGHT, Graphics.boxWidth / 2, Graphics.boxHeight
         - TEW.MENU.STATUS_WINDOW_TOPBAR_HEIGHT
         - 2 * HalfWindow_DetailsCommand.MARGIN_Y
         - HalfWindow_DetailsCommand.TOTAL_HEIGHT);
@@ -745,8 +746,8 @@ Window_InventoryTransferCommand.ITEM = 'item';
 Window_InventoryTransferCommand.WEAPON = 'weapon';
 Window_InventoryTransferCommand.ARMOR = 'armor';
 Window_InventoryTransferCommand.AMMO = 'ammo';
-Window_InventoryTransferCommand.LEFT_X = 300;
-Window_InventoryTransferCommand.TOP_Y = 500;
+Window_InventoryTransferCommand.LEFT_X = 380;
+Window_InventoryTransferCommand.TOP_Y = 420;
 // Initializing the command window
 Window_InventoryTransferCommand.prototype.initialize = function () {
     this.type = 'item';
@@ -799,6 +800,17 @@ Window_InventoryTransferCommand.prototype.makeCommandList = function () {
         }
         Window_Selectable.prototype.refresh.call(this);
     }
+};
+Window_InventoryTransferCommand.prototype.drawItem = function (index) {
+    const rect = this.itemRectForText(index);
+    const halfWidth = rect.width / 2;
+    const text = this.commandName(index);
+    const textWidth = this.textWidth(text);
+    const xOffset = halfWidth - textWidth * ((2 - index) / 2); // centered staircase display
+    const align = this.itemTextAlign();
+    this.resetTextColor();
+    this.changePaintOpacity(this.isCommandEnabled(index));
+    this.drawText(text, xOffset, rect.y, rect.width - xOffset, align);
 };
 // #endregion =========================== Window_InventoryTransferCommand ============================== //
 // ============================== //
@@ -2144,15 +2156,16 @@ Window_JournalPrettyEntry.prototype.close = function () {
 function Window_ShopSpinner() {
     this.initialize.apply(this, arguments);
 }
-Window_ShopSpinner.MARGIN_Y = 20;
+Window_ShopSpinner.X_OFFSET = 450;
+Window_ShopSpinner.Y_OFFSET = 420;
 Window_ShopSpinner.prototype = Object.create(Window_InventoryTransferSpinner.prototype);
 Window_ShopSpinner.prototype.constructor = Window_ShopSpinner;
 // Centered at the bottom of the list window
 Window_ShopSpinner.prototype.initialize = function () {
     this._entry = null;
     Window_InventoryTransferSpinner.prototype.initialize.call(this);
-    this.x = (Graphics.boxWidth / 2 - this.windowWidth()) / 2;
-    this.y = Graphics.boxHeight - this.windowHeight() - Window_ShopSpinner.MARGIN_Y;
+    this.x = Window_ShopSpinner.X_OFFSET;
+    this.y = Window_ShopSpinner.Y_OFFSET;
     this.hide();
 };
 Window_ShopSpinner.prototype.setEntry = function (entry, max) {
@@ -2546,9 +2559,9 @@ Window_InventoryItemDetails.prototype.drawAmmoDetails = function (ammo) {
 // Window_InventoryItems
 //
 // General item list window
-Window_InventoryItems.RIGHT_COLUMN_WIDTH = 80;
-Window_InventoryItems.LEFT_COLUMN_WIDTH = 500;
-Window_InventoryItems.RIGHT_COLUMN_POSITION = 500;
+Window_InventoryItems.RIGHT_COLUMN_WIDTH = 70;
+Window_InventoryItems.LEFT_COLUMN_WIDTH = 490;
+Window_InventoryItems.RIGHT_COLUMN_POSITION = 490;
 function Window_InventoryItems() {
     this.initialize.apply(this, arguments);
 }
@@ -6164,7 +6177,7 @@ Window_ShopDetails.prototype.windowHeight = function () {
     return 648; // total height - topbar height
 };
 Window_ShopSpinner.prototype.backgroundImageName = function () {
-    return "bg_inventoryTransferCommand";
+    return "bg_shopTransactionCommand";
 };
 Window_ShopSpinner.prototype.windowWidth = function () {
     return 380;

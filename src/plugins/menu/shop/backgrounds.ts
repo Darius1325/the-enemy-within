@@ -41,7 +41,7 @@ Window_ShopDetails.prototype.windowHeight = function() {
 };
 
 Window_ShopSpinner.prototype.backgroundImageName = function() {
-    return "bg_inventoryTransferCommand";
+    return "bg_shopTransactionCommand";
 };
 Window_ShopSpinner.prototype.windowWidth = function() {
     return 380;

@@ -44,7 +44,8 @@ function Window_ShopSpinner() {
     this.initialize.apply(this, arguments);
 }
 
-Window_ShopSpinner.MARGIN_Y = 20;
+Window_ShopSpinner.X_OFFSET = 450;
+Window_ShopSpinner.Y_OFFSET = 420;
 
 export default Window_ShopSpinner.prototype = Object.create(Window_InventoryTransferSpinner.prototype);
 Window_ShopSpinner.prototype.constructor = Window_ShopSpinner;
@@ -53,8 +54,8 @@ Window_ShopSpinner.prototype.constructor = Window_ShopSpinner;
 Window_ShopSpinner.prototype.initialize = function() {
     this._entry = null;
     Window_InventoryTransferSpinner.prototype.initialize.call(this);
-    this.x = (Graphics.boxWidth / 2 - this.windowWidth()) / 2;
-    this.y = Graphics.boxHeight - this.windowHeight() - Window_ShopSpinner.MARGIN_Y;
+    this.x = Window_ShopSpinner.X_OFFSET;
+    this.y = Window_ShopSpinner.Y_OFFSET;
     this.hide();
 };
 
@@ -88,7 +89,7 @@ Window_ShopSpinner.prototype.drawAllItems = function() {
     this.drawText(this._entry.data.name, 0, 0, width, 'center');
     this.resetTextColor();
 
-    const quantity = '× ' + this._number;
+    const quantity = '\u00d7 ' + this._number;
     this.drawText(quantity, 0, lineHeight, width, 'center');
 
     const totalLabel = TextManager.shopTotal + " : ";
