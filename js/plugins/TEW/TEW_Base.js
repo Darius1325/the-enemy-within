@@ -1337,6 +1337,23 @@ Game_BattlerBase.prototype.compName = function (compId) {
     }
     return TEW.DATABASE.COMPS.SET[compId].name;
 };
+// Inventory
+Game_BattlerBase.prototype.totalEncumberment = function () {
+    const itemsWeight = Object.keys(this._items)
+        .map(item => TEW.DATABASE.ITEMS.SET[item].enc * this._items[item])
+        .reduce((acc, value) => acc + value, 0);
+    const weaponsWeight = this._weapons
+        .map((weapon) => (Object.assign(Object.assign({}, (TEW.DATABASE.WEAPONS.MELEE_SET[weapon.id] || TEW.DATABASE.WEAPONS.RANGED_SET[weapon.id])), { equipped: weapon.isInMainHand || weapon.isInSecondHand })))
+        .map(weapon => weapon.enc === 0 ? 0 : weapon.enc - weapon.equipped ? 1 : 0)
+        .reduce((acc, value) => acc + value, 0);
+    const armorsWeight = this._armors
+        .map((armor) => TEW.DATABASE.ARMORS.SET[armor].enc)
+        .reduce((acc, value) => acc + value, 0)
+        + this._equippedArmors
+            .map((armor) => TEW.DATABASE.ARMORS.SET[armor].enc)
+            .reduce((acc, value) => acc + (value === 0 ? 0 : value - 1), 0);
+    return itemsWeight + weaponsWeight + armorsWeight;
+};
 // Items
 Game_BattlerBase.prototype.item = function (itemId) {
     return this._items[itemId] || 0;

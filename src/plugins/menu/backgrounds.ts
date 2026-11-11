@@ -9,6 +9,10 @@ import Window_InventoryTransferCommand from "./inventory/Window_InventoryTransfe
 import Window_InventoryTransferSpinner from "./inventory/Window_InventoryTransferSpinner";
 import Window_InventoryInfo from "./inventory/info/Window_InventoryInfo";
 import Window_Journals from "./journals/Window_Journals";
+import Window_ShopDetails from "./shop/Window_ShopDetails";
+import Window_ShopList from "./shop/Window_ShopList";
+import Window_ShopSpinner from "./shop/Window_ShopSpinner";
+import Window_ShopTopbar from "./shop/Window_ShopTopbar";
 import Window_StatusCommand from "./status/Window_StatusCommand";
 import Window_StatusLevellingChoice from "./status/Window_StatusLevellingChoice";
 import Window_StatusLevellingSummary from "./status/Window_StatusLevellingSummary";
@@ -119,12 +123,14 @@ HalfWindow_DetailsCommand.prototype.windowHeight = function() {
     return 168; // line height * 3 + bg padding
 };
 
+
 Window_InventoryInfo.prototype.windowWidth = function() {
     return Graphics.boxWidth;
 };
 Window_InventoryInfo.prototype.windowHeight = function() {
     return Graphics.boxHeight - TEW.MENU.INVENTORY_WINDOW_TOPBAR_HEIGHT;
 };
+
 
 Window_InventoryTransferCommand.prototype.backgroundImageName = function() {
     return "bg_inventoryTransferCommand";
@@ -136,6 +142,7 @@ Window_InventoryTransferCommand.prototype.windowHeight = function() {
     return 168; // line height * 3 + bg padding
 };
 
+
 Window_InventoryTransferSpinner.prototype.backgroundImageName = function() {
     return "bg_numberSpinner";
 };
@@ -144,4 +151,49 @@ Window_InventoryTransferSpinner.prototype.windowWidth = function() {
 };
 Window_InventoryTransferSpinner.prototype.windowHeight = function() {
     return 96; // line height + bg padding
+};
+
+
+Window_ShopTopbar.prototype.backgroundImageName = function() {
+    return "bg_menuTopbarCommands";
+};
+Window_ShopTopbar.prototype.windowWidth = function() {
+    return Graphics.boxWidth;
+};
+Window_ShopTopbar.prototype.windowHeight = function() {
+    return TEW.MENU.INVENTORY_WINDOW_TOPBAR_HEIGHT;
+};
+
+
+// No command window below the list, it takes the whole height
+Window_ShopList.prototype.backgroundImageName = function() {
+    return "bg_menuHalfWindowFullHeight";
+};
+Window_ShopList.prototype.windowWidth = function() {
+    return Graphics.boxWidth / 2;
+};
+Window_ShopList.prototype.windowHeight = function() {
+    return 648; // total height - topbar height
+};
+
+
+Window_ShopDetails.prototype.backgroundImageName = function() {
+    return "bg_menuHalfWindowFullHeight";
+};
+Window_ShopDetails.prototype.windowWidth = function() {
+    return Graphics.boxWidth / 2;
+};
+Window_ShopDetails.prototype.windowHeight = function() {
+    return 648; // total height - topbar height
+};
+
+
+Window_ShopSpinner.prototype.backgroundImageName = function() {
+    return "bg_shopTransactionCommand";
+};
+Window_ShopSpinner.prototype.windowWidth = function() {
+    return 380;
+};
+Window_ShopSpinner.prototype.windowHeight = function() {
+    return 168; // line height * 3 + bg padding
 };

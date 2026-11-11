@@ -11389,7 +11389,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         longReach: false,
         strBonus: true,
         damage: 4,
-        qualities: [0 /* WeaponQuality.HACK */, 1 /* WeaponQuality.UNBALANCED */],
+        qualities: ["Hack" /* WeaponQuality.HACK */, "Unbalanced" /* WeaponQuality.UNBALANCED */],
         description: "Much beloved of Dwarfs, the axe is not as agile in the hand as a sword but the heavy cleaving head can make a mess of armour and shields."
     },
     BALLOCK_KNIFE: {
@@ -11404,7 +11404,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         longReach: false,
         strBonus: true,
         damage: 1,
-        qualities: [2 /* WeaponQuality.IMPALE */, 3 /* WeaponQuality.PENETRATING */, 4 /* WeaponQuality.PRECISE */],
+        qualities: ["Impale" /* WeaponQuality.IMPALE */, "Penetrating" /* WeaponQuality.PENETRATING */, "Precise" /* WeaponQuality.PRECISE */],
         description: "The short, slim blade of a ballock knife makes for a poor weapon, unless you have a heavily armoured opponent at your mercy."
     },
     CLUB: {
@@ -11419,7 +11419,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         longReach: false,
         strBonus: true,
         damage: 4,
-        qualities: [6 /* WeaponQuality.UNDAMAGING */, 1 /* WeaponQuality.UNBALANCED */],
+        qualities: ["Undamaging" /* WeaponQuality.UNDAMAGING */, "Unbalanced" /* WeaponQuality.UNBALANCED */],
         description: "Clubs are as often found as they are crafted."
     },
     DAGGER: {
@@ -11449,7 +11449,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         longReach: false,
         strBonus: true,
         damage: 1,
-        qualities: [6 /* WeaponQuality.UNDAMAGING */, 1 /* WeaponQuality.UNBALANCED */],
+        qualities: ["Undamaging" /* WeaponQuality.UNDAMAGING */, "Unbalanced" /* WeaponQuality.UNBALANCED */],
         description: "Hard and heavy items that are not intended to be used as a weapon may still serve in a desperate moment. This entry covers such items as chair legs, rocks, snooker cues, and bottles."
     },
     KNIFE: {
@@ -11464,7 +11464,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         longReach: false,
         strBonus: true,
         damage: 1,
-        qualities: [6 /* WeaponQuality.UNDAMAGING */],
+        qualities: ["Undamaging" /* WeaponQuality.UNDAMAGING */],
         description: "This entry covers short, sharp blades intended for purposes other than fighting, such as kitchen or hunting knives."
     },
     MACE: {
@@ -11479,7 +11479,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         longReach: false,
         strBonus: true,
         damage: 4,
-        qualities: [7 /* WeaponQuality.PUMMEL */, 1 /* WeaponQuality.UNBALANCED */],
+        qualities: ["Pummel" /* WeaponQuality.PUMMEL */, "Unbalanced" /* WeaponQuality.UNBALANCED */],
         description: "The typical mace is a metal shaft with a heavy head shaped in flanges or spiked protrusions. Whilst it is less wieldy than a sword it inflicts concussive blows."
     },
     MILITARY_PICK: {
@@ -11494,7 +11494,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         longReach: false,
         strBonus: true,
         damage: 4,
-        qualities: [3 /* WeaponQuality.PENETRATING */, 1 /* WeaponQuality.UNBALANCED */],
+        qualities: ["Penetrating" /* WeaponQuality.PENETRATING */, "Unbalanced" /* WeaponQuality.UNBALANCED */],
         description: "Crude picks are little more than a metal spike on the end of a stick, though better made weapons are fashioned from steel. They are not agile weapons but are well designed to crack armour."
     },
     SCIMITAR: {
@@ -11509,7 +11509,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         longReach: false,
         strBonus: true,
         damage: 4,
-        qualities: [8 /* WeaponQuality.SLASH_1 */],
+        qualities: ["Slash" /* WeaponQuality.SLASH_1 */],
         description: "Popular in the east of the Empire, Kislev and Araby, the scimitar has a curved blade which can inflict terrible cutting wounds. Its design does compromise the welder's ability to lunge and thrust, meaning that even though scimitars are a similar length to straight swords they have a shorter reach."
     },
     SWORD: {
@@ -11539,7 +11539,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         longReach: false,
         strBonus: true,
         damage: 4,
-        qualities: [3 /* WeaponQuality.PENETRATING */, 7 /* WeaponQuality.PUMMEL */, 1 /* WeaponQuality.UNBALANCED */],
+        qualities: ["Penetrating" /* WeaponQuality.PENETRATING */, "Pummel" /* WeaponQuality.PUMMEL */, "Unbalanced" /* WeaponQuality.UNBALANCED */],
         description: "Warhammers come in several designs, but typically have a flat heavy head on one side for inflicting pummelling damage, and a spiked point on the other for penetrating armour."
     },
     SHIELD_BUCKLER: {
@@ -11554,7 +11554,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         strBonus: true,
         longReach: false,
         damage: 1,
-        qualities: [10 /* WeaponQuality.SHIELD_1 */, 15 /* WeaponQuality.DEFENSIVE */, 6 /* WeaponQuality.UNDAMAGING */],
+        qualities: ["Shield" /* WeaponQuality.SHIELD_1 */, "Defensive" /* WeaponQuality.DEFENSIVE */, "Undamaging" /* WeaponQuality.UNDAMAGING */],
         description: "A small shield to save you from harm."
     },
     SHIELD: {
@@ -11569,7 +11569,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         longReach: false,
         strBonus: true,
         damage: 2,
-        qualities: [11 /* WeaponQuality.SHIELD_2 */, 15 /* WeaponQuality.DEFENSIVE */, 6 /* WeaponQuality.UNDAMAGING */],
+        qualities: ["Shield II" /* WeaponQuality.SHIELD_2 */, "Defensive" /* WeaponQuality.DEFENSIVE */, "Undamaging" /* WeaponQuality.UNDAMAGING */],
         description: "A regular shield, ideal for close combat."
     },
     SHIELD_LARGE: {
@@ -11584,7 +11584,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         longReach: false,
         strBonus: true,
         damage: 3,
-        qualities: [12 /* WeaponQuality.SHIELD_3 */, 15 /* WeaponQuality.DEFENSIVE */, 6 /* WeaponQuality.UNDAMAGING */],
+        qualities: ["Shield III" /* WeaponQuality.SHIELD_3 */, "Defensive" /* WeaponQuality.DEFENSIVE */, "Undamaging" /* WeaponQuality.UNDAMAGING */],
         description: "A large shield to protect you from all enemies"
     },
     PAVISE: {
@@ -11599,7 +11599,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         longReach: false,
         strBonus: true,
         damage: 2,
-        qualities: [14 /* WeaponQuality.SHIELD_5 */],
+        qualities: ["Shield V" /* WeaponQuality.SHIELD_5 */],
         description: "The pavise is a large shield carried by crossbowmen to provide shelter on the battlefield as they reload. Roughly 4 feet tall and often painted with the unit's coat of arms, the crossbowman plants the pavise on the ground like a personal wall."
     },
     CAVALRY_HAMMER: {
@@ -11614,7 +11614,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         longReach: true,
         strBonus: true,
         damage: 5,
-        qualities: [7 /* WeaponQuality.PUMMEL */],
+        qualities: ["Pummel" /* WeaponQuality.PUMMEL */],
         description: "Cavalry hammers are large, weighty weapons, favoured by the Knights of the White Wolf. On foot, they may be used with the Melee (Two-Handed) skill."
     },
     DEMI_LANCE: {
@@ -11629,7 +11629,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         longReach: true,
         strBonus: true,
         damage: 5,
-        qualities: [16 /* WeaponQuality.IMPACT */, 2 /* WeaponQuality.IMPALE */],
+        qualities: ["Impact" /* WeaponQuality.IMPACT */, "Impale" /* WeaponQuality.IMPALE */],
         description: "Lances resemble spears, but with a weighty grip designed to brace the weapon against the arm and chest of a charging knight. The demi-lance is similar, but shorter and lighter."
     },
     LANCE: {
@@ -11644,7 +11644,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         longReach: true,
         strBonus: true,
         damage: 6,
-        qualities: [16 /* WeaponQuality.IMPACT */, 2 /* WeaponQuality.IMPALE */],
+        qualities: ["Impact" /* WeaponQuality.IMPACT */, "Impale" /* WeaponQuality.IMPALE */],
         description: "Lances resemble spears, but with a weighty grip designed to brace the weapon against the arm and chest of a charging knight. The demi-lance is similar, but shorter and lighter."
     },
     SABRE: {
@@ -11659,7 +11659,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         longReach: false,
         strBonus: true,
         damage: 4,
-        qualities: [8 /* WeaponQuality.SLASH_1 */],
+        qualities: ["Slash" /* WeaponQuality.SLASH_1 */],
         description: "The sabre is similar to the scimitar, but a little longer and straighter. It may be used on foot with Melee (Basic)."
     },
     FOIL: {
@@ -11674,7 +11674,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         longReach: false,
         strBonus: true,
         damage: 3,
-        qualities: [17 /* WeaponQuality.FAST */, 2 /* WeaponQuality.IMPALE */, 4 /* WeaponQuality.PRECISE */, 6 /* WeaponQuality.UNDAMAGING */],
+        qualities: ["Fast" /* WeaponQuality.FAST */, "Impale" /* WeaponQuality.IMPALE */, "Precise" /* WeaponQuality.PRECISE */, "Undamaging" /* WeaponQuality.UNDAMAGING */],
         description: "The foil is a light sword with a blade like a thin sharpened spike. They are light in the hand with a balance at the hilt, but short of a dramatic lunge they tend to only inflict small prinking injuries."
     },
     RAPIER: {
@@ -11689,7 +11689,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         longReach: true,
         strBonus: true,
         damage: 4,
-        qualities: [17 /* WeaponQuality.FAST */, 2 /* WeaponQuality.IMPALE */],
+        qualities: ["Fast" /* WeaponQuality.FAST */, "Impale" /* WeaponQuality.IMPALE */],
         description: "The rapier is a long thin sword. Like the foil it comes to a fine point for thrusting, but the sharp blade retains much of the cutting power of a traditional sword."
     },
     SMALLSWORD: {
@@ -11704,7 +11704,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         longReach: false,
         strBonus: true,
         damage: 2,
-        qualities: [17 /* WeaponQuality.FAST */, 2 /* WeaponQuality.IMPALE */, 4 /* WeaponQuality.PRECISE */],
+        qualities: ["Fast" /* WeaponQuality.FAST */, "Impale" /* WeaponQuality.IMPALE */, "Precise" /* WeaponQuality.PRECISE */],
         description: "A light version of the foil. The smallsword is not considered a serious weapon and is more often employed in sporting contests or duels to first blood. Smallswords with blunt tips and blades are often used as sport weapons, gaining the Undamaging Flaw."
     },
     SPIKED_GAUNTLET: {
@@ -11719,7 +11719,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         longReach: false,
         strBonus: true,
         damage: 3,
-        qualities: [2 /* WeaponQuality.IMPALE */, 1 /* WeaponQuality.UNBALANCED */],
+        qualities: ["Impale" /* WeaponQuality.IMPALE */, "Unbalanced" /* WeaponQuality.UNBALANCED */],
         description: "A spiked gauntlet may be purchased as part of a set of plate armour for the arm. Add the price of the spiked gauntlet to that of the armour, but just use the Encumbrance of the armour itself; the spiked gauntlet does not involve significant additional weight or bulk."
     },
     BOAT_HOOK: {
@@ -11734,7 +11734,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         longReach: false,
         strBonus: true,
         damage: 4,
-        qualities: [18 /* WeaponQuality.TRIP */, 6 /* WeaponQuality.UNDAMAGING */],
+        qualities: ["Trip" /* WeaponQuality.TRIP */, "Undamaging" /* WeaponQuality.UNDAMAGING */],
         description: "Hooks are used by stevedores to help with loading and securing cargoes, but they can make vicious weapons if wielded with intent."
     },
     GARROTE: {
@@ -11749,7 +11749,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         longReach: false,
         strBonus: true,
         damage: 2,
-        qualities: [19 /* WeaponQuality.ENTANGLE */, 20 /* WeaponQuality.SLOW */, 1 /* WeaponQuality.UNBALANCED */, 6 /* WeaponQuality.UNDAMAGING */],
+        qualities: ["Entangle" /* WeaponQuality.ENTANGLE */, "Slow" /* WeaponQuality.SLOW */, "Unbalanced" /* WeaponQuality.UNBALANCED */, "Undamaging" /* WeaponQuality.UNDAMAGING */],
         description: "A garotte is a length of cord or wire intended to be slipped around the neck and drawn tight with the wielder's hands."
     },
     UNARMED: {
@@ -11764,7 +11764,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         longReach: false,
         strBonus: true,
         damage: 0,
-        qualities: [6 /* WeaponQuality.UNDAMAGING */],
+        qualities: ["Undamaging" /* WeaponQuality.UNDAMAGING */],
         description: "Your bare fists."
     },
     KNUCKLEDUSTERS: {
@@ -11794,7 +11794,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         longReach: false,
         strBonus: true,
         damage: 2,
-        qualities: [6 /* WeaponQuality.UNDAMAGING */],
+        qualities: ["Undamaging" /* WeaponQuality.UNDAMAGING */],
         description: "A locked gauntlet is formed from plates of steel that encase the fist and can be held shut with a screw or catch. Whilst the gauntlet may be used as a Brawling Weapon it is more commonly employed as a method to ensure that the wielder does not drop a weapon held in the gauntleted hand."
     },
     SAP: {
@@ -11809,7 +11809,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         longReach: false,
         strBonus: true,
         damage: 1,
-        qualities: [7 /* WeaponQuality.PUMMEL */, 1 /* WeaponQuality.UNBALANCED */, 6 /* WeaponQuality.UNDAMAGING */],
+        qualities: ["Pummel" /* WeaponQuality.PUMMEL */, "Unbalanced" /* WeaponQuality.UNBALANCED */, "Undamaging" /* WeaponQuality.UNDAMAGING */],
         description: "A well-made Sap consists of a leather or textile sheath stuffed with sand, musket balls, iron rods or similar small heavy items."
     },
     GRAIN_FLAIL: {
@@ -11824,7 +11824,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         longReach: false,
         strBonus: true,
         damage: 3,
-        qualities: [21 /* WeaponQuality.DISTRACT */, 26 /* WeaponQuality.IMPRECISE */, 22 /* WeaponQuality.WRAP */],
+        qualities: ["Distract" /* WeaponQuality.DISTRACT */, "Imprecise" /* WeaponQuality.IMPRECISE */, "Wrap" /* WeaponQuality.WRAP */],
         description: "The common adage that peasants can beat their ploughshares into weapons is overstated, but a grain flail in the right hands is dangerous. A grain flail consists of a wooden handle connected to a heavy stick, known as a swipple, by a length of chain."
     },
     FLAIL: {
@@ -11839,7 +11839,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         longReach: false,
         strBonus: true,
         damage: 5,
-        qualities: [21 /* WeaponQuality.DISTRACT */, 22 /* WeaponQuality.WRAP */],
+        qualities: ["Distract" /* WeaponQuality.DISTRACT */, "Wrap" /* WeaponQuality.WRAP */],
         description: "Flails made for the battlefield incorporate metal swipples and reinforcements to the handle, enabling them to pack a heftier punch."
     },
     MILITARY_FLAIL: {
@@ -11854,7 +11854,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         longReach: true,
         strBonus: true,
         damage: 6,
-        qualities: [21 /* WeaponQuality.DISTRACT */, 26 /* WeaponQuality.IMPRECISE */, 23 /* WeaponQuality.TIRING */, 22 /* WeaponQuality.WRAP */],
+        qualities: ["Distract" /* WeaponQuality.DISTRACT */, "Imprecise" /* WeaponQuality.IMPRECISE */, "Tiring" /* WeaponQuality.TIRING */, "Wrap" /* WeaponQuality.WRAP */],
         description: "Flails made for the battlefield incorporate metal swipples and reinforcements to the handle, enabling them to pack a heftier punch."
     },
     CLOAK: {
@@ -11869,7 +11869,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         longReach: false,
         strBonus: true,
         damage: 0,
-        qualities: [19 /* WeaponQuality.ENTANGLE */, 15 /* WeaponQuality.DEFENSIVE */, 6 /* WeaponQuality.UNDAMAGING */],
+        qualities: ["Entangle" /* WeaponQuality.ENTANGLE */, "Defensive" /* WeaponQuality.DEFENSIVE */, "Undamaging" /* WeaponQuality.UNDAMAGING */],
         description: "Some experts in fencing and parrying recommend keeping a cloak of heavy fabric handy. When bunched around the arm it can be used to distract opponents or divert their attacks. It can even be flung over an opponent in the hope that they will become lost in its folds. However, cloaks are not well suited for entangling attacks. When making a Test to see if an opponent becomes entangled in a cloak, the cloak has a Strength of 25."
     },
     MAIN_GAUCHE: {
@@ -11884,7 +11884,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         longReach: false,
         strBonus: true,
         damage: 2,
-        qualities: [15 /* WeaponQuality.DEFENSIVE */],
+        qualities: ["Defensive" /* WeaponQuality.DEFENSIVE */],
         description: "A main gauche is a specially designed dagger used in fencing. It is so called because it is typically wielded in the left hand by right-handed fighters to complement a fencing weapon used as a primary weapon. A fighter with no Melee (Parrying) Skill could still use a main gauche, though they would call it a dagger and it would lose the Defensive Quality."
     },
     SWORDBREAKER: {
@@ -11899,7 +11899,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         longReach: false,
         strBonus: true,
         damage: 3,
-        qualities: [15 /* WeaponQuality.DEFENSIVE */, 24 /* WeaponQuality.TRAP_BLADE */],
+        qualities: ["Defensive" /* WeaponQuality.DEFENSIVE */, "Trap blade" /* WeaponQuality.TRAP_BLADE */],
         description: "These weapons are designed like long daggers or sturdy shortswords. Their blades are thicker than those of swords, and along one side several deep grooves are cut into the blade. This design greatly compromises the weapon's ability to cut, but enables a skilled user to catch an opponent's blade and hold it fast."
     },
     WEIGHTED_NET: {
@@ -11914,7 +11914,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         longReach: false,
         strBonus: true,
         damage: 0,
-        qualities: [19 /* WeaponQuality.ENTANGLE */, 15 /* WeaponQuality.DEFENSIVE */, 10 /* WeaponQuality.SHIELD_1 */, 20 /* WeaponQuality.SLOW */, 6 /* WeaponQuality.UNDAMAGING */, 22 /* WeaponQuality.WRAP */],
+        qualities: ["Entangle" /* WeaponQuality.ENTANGLE */, "Defensive" /* WeaponQuality.DEFENSIVE */, "Shield" /* WeaponQuality.SHIELD_1 */, "Slow" /* WeaponQuality.SLOW */, "Undamaging" /* WeaponQuality.UNDAMAGING */, "Wrap" /* WeaponQuality.WRAP */],
         description: "A weighted net is cumbersome and clumsy, but capable of severely impeding an opponent's fighting ability when used in a timely fashion. When making a Test to see if an opponent becomes entangled in a weighted net, the net has a Strength of 55."
     },
     AHLSPIESS: {
@@ -11929,7 +11929,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         longReach: true,
         strBonus: true,
         damage: 3,
-        qualities: [2 /* WeaponQuality.IMPALE */, 3 /* WeaponQuality.PENETRATING */],
+        qualities: ["Impale" /* WeaponQuality.IMPALE */, "Penetrating" /* WeaponQuality.PENETRATING */],
         description: "The ahlspiess mounts a long thin spike on a spear shaft, compromising its ability to inflict cutting wounds in order to better penetrate armour."
     },
     BILL: {
@@ -11944,7 +11944,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         longReach: true,
         strBonus: true,
         damage: 4,
-        qualities: [15 /* WeaponQuality.DEFENSIVE */, 0 /* WeaponQuality.HACK */, 18 /* WeaponQuality.TRIP */],
+        qualities: ["Defensive" /* WeaponQuality.DEFENSIVE */, "Hack" /* WeaponQuality.HACK */, "Trip" /* WeaponQuality.TRIP */],
         description: "Derived from a farming tool the bill features a hooked blade that can be used to snag foes or chop them down."
     },
     HALBERD: {
@@ -11959,7 +11959,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         longReach: true,
         strBonus: true,
         damage: 4,
-        qualities: [15 /* WeaponQuality.DEFENSIVE */, 0 /* WeaponQuality.HACK */, 2 /* WeaponQuality.IMPALE */],
+        qualities: ["Defensive" /* WeaponQuality.DEFENSIVE */, "Hack" /* WeaponQuality.HACK */, "Impale" /* WeaponQuality.IMPALE */],
         description: "The archetypal weapon of the forces of the Empire, the halberd can be employed to similar effect as either a spear or an axe."
     },
     MANCATCHER: {
@@ -11974,7 +11974,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         longReach: true,
         strBonus: true,
         damage: 2,
-        qualities: [15 /* WeaponQuality.DEFENSIVE */, 19 /* WeaponQuality.ENTANGLE */],
+        qualities: ["Defensive" /* WeaponQuality.DEFENSIVE */, "Entangle" /* WeaponQuality.ENTANGLE */],
         description: "The mancatcher is a strange polearm with a semi-circular head festooned with short spikes. The weapon may catch a person around the neck, forcing them to cease struggling for fear of further injury. The wielder benefits from a bonus of +20 to any Strength Tests made to entangle someone with the weapon."
     },
     PARTIZAN: {
@@ -11989,7 +11989,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         longReach: true,
         strBonus: true,
         damage: 4,
-        qualities: [15 /* WeaponQuality.DEFENSIVE */, 2 /* WeaponQuality.IMPALE */, 9 /* WeaponQuality.SLASH_2 */], // TODO Impale OR Slash
+        qualities: ["Defensive" /* WeaponQuality.DEFENSIVE */, "Impale" /* WeaponQuality.IMPALE */, "Slash II" /* WeaponQuality.SLASH_2 */], // TODO Impale OR Slash
         description: "Partizans are spears with thick leafshaped blades, sacrificing some of the reach of the spear to inflict heavier cutting blows."
     },
     POLLAXE: {
@@ -12004,7 +12004,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         longReach: true,
         strBonus: true,
         damage: 4,
-        qualities: [15 /* WeaponQuality.DEFENSIVE */, 0 /* WeaponQuality.HACK */, 2 /* WeaponQuality.IMPALE */, 7 /* WeaponQuality.PUMMEL */], // TODO Hack OR Impale OR Pummel
+        qualities: ["Defensive" /* WeaponQuality.DEFENSIVE */, "Hack" /* WeaponQuality.HACK */, "Impale" /* WeaponQuality.IMPALE */, "Pummel" /* WeaponQuality.PUMMEL */], // TODO Hack OR Impale OR Pummel
         description: "The pollaxe takes many forms, but the archetypal design features a head with a short spike on the top for thrusting, an axe head to one side for cutting, and a hammer head on the other side for pummelling."
     },
     SPEAR: {
@@ -12019,7 +12019,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         longReach: true,
         strBonus: true,
         damage: 4,
-        qualities: [2 /* WeaponQuality.IMPALE */],
+        qualities: ["Impale" /* WeaponQuality.IMPALE */],
         description: "Besides the club, the spear is probably the most ubiquitous weapon in the Old World. Almost all species and nations employ troops armed with spears, aside from the Dwarfs who tend to eschew polearms in general."
     },
     PIKE: {
@@ -12034,7 +12034,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         longReach: true,
         strBonus: true,
         damage: 4,
-        qualities: [2 /* WeaponQuality.IMPALE */],
+        qualities: ["Impale" /* WeaponQuality.IMPALE */],
         description: "These very long heavy spears are not commonly employed outside of specially trained regiments. Tilean mercenaries are particularly famed for their mastery of pikes and pike formations."
     },
     QUARTERSTAFF: {
@@ -12049,7 +12049,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         longReach: true,
         strBonus: true,
         damage: 4,
-        qualities: [15 /* WeaponQuality.DEFENSIVE */, 7 /* WeaponQuality.PUMMEL */],
+        qualities: ["Defensive" /* WeaponQuality.DEFENSIVE */, "Pummel" /* WeaponQuality.PUMMEL */],
         description: "Quarterstaffs are straight lengths of wood about as tall as their wielder. They are as often found as they are crafted."
     },
     ENCHANTED_STAFF: {
@@ -12064,7 +12064,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         longReach: true,
         strBonus: true,
         damage: 4,
-        qualities: [15 /* WeaponQuality.DEFENSIVE */, 7 /* WeaponQuality.PUMMEL */],
+        qualities: ["Defensive" /* WeaponQuality.DEFENSIVE */, "Pummel" /* WeaponQuality.PUMMEL */],
         description: "Wizards typically bear staffs. They are badges of a Wizard's office as well as magical tools. A Wizard's staff is typically designed and decorated in a manner that attracts the Winds of Magic the Wizard works with. Staffs work by attracting the Winds with which they are associated. If a spellcaster bears a staff made to attract a Wind of Magic, spells from the corresponding Lore have their CN reduced by 1 (to a minimum of 0)."
     },
     BASTARD_SWORD: {
@@ -12079,7 +12079,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         longReach: true,
         strBonus: true,
         damage: 5,
-        qualities: [5 /* WeaponQuality.DAMAGING */, 15 /* WeaponQuality.DEFENSIVE */],
+        qualities: ["Damaging" /* WeaponQuality.DAMAGING */, "Defensive" /* WeaponQuality.DEFENSIVE */],
         description: "Also known as a hand-and-a-half sword, the bastard sword is longer and heavier than a typical blade, but shorter and lighter than a zweihander. A fighter with Melee (Basic) could use a bastard sword as a singlehanded weapon, but it gains the Tiring and Slow Flaws."
     },
     GREAT_AXE: {
@@ -12094,7 +12094,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         longReach: true,
         strBonus: true,
         damage: 6,
-        qualities: [0 /* WeaponQuality.HACK */, 16 /* WeaponQuality.IMPACT */, 23 /* WeaponQuality.TIRING */],
+        qualities: ["Hack" /* WeaponQuality.HACK */, "Impact" /* WeaponQuality.IMPACT */, "Tiring" /* WeaponQuality.TIRING */],
         description: "Rarely used by the Empire, but often employed by Norse tribes as a counter to heavy armour."
     },
     FLAMBERGE_ZWEIHANDER: {
@@ -12109,7 +12109,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         longReach: true,
         strBonus: true,
         damage: 5,
-        qualities: [5 /* WeaponQuality.DAMAGING */, 0 /* WeaponQuality.HACK */, 9 /* WeaponQuality.SLASH_2 */],
+        qualities: ["Damaging" /* WeaponQuality.DAMAGING */, "Hack" /* WeaponQuality.HACK */, "Slash II" /* WeaponQuality.SLASH_2 */],
         description: "The Empire's famous greatsword regiments are armed with massive steel blades, as long as many polearms. Certain master armourers go to even greater lengths in adding waves and serrated edges to their swords. These weapons are known as flamberge blades, and the wounds they inflict can be deeper as a result of their cutting power."
     },
     PICK: {
@@ -12124,7 +12124,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         longReach: false,
         strBonus: true,
         damage: 5,
-        qualities: [5 /* WeaponQuality.DAMAGING */, 2 /* WeaponQuality.IMPALE */, 20 /* WeaponQuality.SLOW */],
+        qualities: ["Damaging" /* WeaponQuality.DAMAGING */, "Impale" /* WeaponQuality.IMPALE */, "Slow" /* WeaponQuality.SLOW */],
         description: "Two-handed military picks are rarely seen, their use being superseded by various forms of polearm. Certain subterranean species are known to employ them."
     },
     WARHAMMER_TH: {
@@ -12139,7 +12139,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         longReach: false,
         strBonus: true,
         damage: 6,
-        qualities: [5 /* WeaponQuality.DAMAGING */, 7 /* WeaponQuality.PUMMEL */, 20 /* WeaponQuality.SLOW */],
+        qualities: ["Damaging" /* WeaponQuality.DAMAGING */, "Pummel" /* WeaponQuality.PUMMEL */, "Slow" /* WeaponQuality.SLOW */],
         description: "The two-handed warhammer is a difficult weapon to master, but it is associated with the Dwarfs and the Sigmarite cult."
     },
     ZWEIHANDER: {
@@ -12154,7 +12154,7 @@ TEW.DATABASE.WEAPONS.MELEE_SET = {
         longReach: true,
         strBonus: true,
         damage: 5,
-        qualities: [5 /* WeaponQuality.DAMAGING */, 0 /* WeaponQuality.HACK */],
+        qualities: ["Damaging" /* WeaponQuality.DAMAGING */, "Hack" /* WeaponQuality.HACK */],
         description: "The Empire's famous greatsword regiments are armed with massive steel blades, as long as many polearms. Certain master armourers go to even greater lengths in adding waves and serrated edges to their swords."
     }
 };
@@ -12176,7 +12176,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         range: 150,
         strBonus: true,
         damage: 4,
-        qualities: [5 /* WeaponQuality.DAMAGING */, 4 /* WeaponQuality.PRECISE */],
+        qualities: ["Damaging" /* WeaponQuality.DAMAGING */, "Precise" /* WeaponQuality.PRECISE */],
         description: "A bow made with the finests materials by the finests elven hands on Ulthuan."
     },
     LONGBOW: {
@@ -12193,7 +12193,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         range: 100,
         strBonus: true,
         damage: 4,
-        qualities: [5 /* WeaponQuality.DAMAGING */],
+        qualities: ["Damaging" /* WeaponQuality.DAMAGING */],
         description: "A bow often used by bretonnian archers for better range."
     },
     BOW: {
@@ -12244,7 +12244,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         range: 10,
         strBonus: false,
         damage: 7,
-        qualities: [34 /* WeaponQuality.PISTOL */],
+        qualities: ["Pistol" /* WeaponQuality.PISTOL */],
         description: "A small crossbow whitch can be used in close combat and has no need to reload."
     },
     HEAVY_CROSSBOW: {
@@ -12261,7 +12261,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         range: 100,
         strBonus: false,
         damage: 9,
-        qualities: [5 /* WeaponQuality.DAMAGING */, 28 /* WeaponQuality.RELOAD_2 */],
+        qualities: ["Damaging" /* WeaponQuality.DAMAGING */, "Reload II" /* WeaponQuality.RELOAD_2 */],
         description: "A heavy crossbow, hard to reload but devastating."
     },
     CROSSBOW: {
@@ -12278,7 +12278,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         range: 60,
         strBonus: false,
         damage: 9,
-        qualities: [27 /* WeaponQuality.RELOAD_1 */],
+        qualities: ["Reload" /* WeaponQuality.RELOAD_1 */],
         description: "A classic crossbow to shoot bolts."
     },
     LASSO: {
@@ -12295,7 +12295,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         range: 6,
         strBonus: false,
         damage: 0,
-        qualities: [19 /* WeaponQuality.ENTANGLE */],
+        qualities: ["Entangle" /* WeaponQuality.ENTANGLE */],
         description: "A rope with a sliding knot, often used to catch livestock."
     },
     WHIP: {
@@ -12312,7 +12312,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         range: 6,
         strBonus: true,
         damage: 2,
-        qualities: [19 /* WeaponQuality.ENTANGLE */],
+        qualities: ["Entangle" /* WeaponQuality.ENTANGLE */],
         description: "A whip, often used by tamers."
     },
     SLING: {
@@ -12363,7 +12363,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         range: 9,
         strBonus: true,
         damage: 0,
-        qualities: [19 /* WeaponQuality.ENTANGLE */],
+        qualities: ["Entangle" /* WeaponQuality.ENTANGLE */],
         description: "A weighted rope used to entangle people from a distance."
     },
     DART: {
@@ -12380,7 +12380,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         range: 6,
         strBonus: true,
         damage: 1,
-        qualities: [2 /* WeaponQuality.IMPALE */],
+        qualities: ["Impale" /* WeaponQuality.IMPALE */],
         description: "A dart, mostly used in tavern games."
     },
     JAVELIN: {
@@ -12397,7 +12397,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         range: 9,
         strBonus: true,
         damage: 3,
-        qualities: [2 /* WeaponQuality.IMPALE */],
+        qualities: ["Impale" /* WeaponQuality.IMPALE */],
         description: "A weapon whitch could be used for sports."
     },
     ROCK: {
@@ -12431,7 +12431,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         range: 6,
         strBonus: true,
         damage: 3,
-        qualities: [0 /* WeaponQuality.HACK */],
+        qualities: ["Hack" /* WeaponQuality.HACK */],
         description: "An axe balanced to be thrown rather than being used in close combat."
     },
     THROWING_KNIFE: {
@@ -12465,7 +12465,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         range: 3,
         strBonus: false,
         damage: 12,
-        qualities: [42 /* WeaponQuality.BLAST_5 */, 25 /* WeaponQuality.DANGEROUS */, 16 /* WeaponQuality.IMPACT */],
+        qualities: ["Blast V" /* WeaponQuality.BLAST_5 */, "Dangerous" /* WeaponQuality.DANGEROUS */, "Impact" /* WeaponQuality.IMPACT */],
         description: "Goes BOOM !"
     },
     INCENDIARY: {
@@ -12482,7 +12482,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         range: 3,
         strBonus: false,
         damage: 0, // TODO
-        qualities: [41 /* WeaponQuality.BLAST_4 */, 25 /* WeaponQuality.DANGEROUS */],
+        qualities: ["Blast IV" /* WeaponQuality.BLAST_4 */, "Dangerous" /* WeaponQuality.DANGEROUS */],
         description: "A throwing bomb that sprays fire."
     },
     BLUNDERBUSS: {
@@ -12499,7 +12499,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         range: 20,
         strBonus: false,
         damage: 8,
-        qualities: [25 /* WeaponQuality.DANGEROUS */, 28 /* WeaponQuality.RELOAD_2 */],
+        qualities: ["Dangerous" /* WeaponQuality.DANGEROUS */, "Reload II" /* WeaponQuality.RELOAD_2 */],
         description: "An early form of firearm, the Blunderbuss features a wide bore that exchanges accuracy for ease of operation. It is typically loaded with powder, wadding, and many small projectiles to improve the chance of scoring a hit. It may be loaded with either Small Shot and Powder or Scrap and Powder."
     },
     HOCHLAND_LONG_RIFLE: {
@@ -12516,7 +12516,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         range: 100,
         strBonus: false,
         damage: 9,
-        qualities: [40 /* WeaponQuality.ACCURATE */, 4 /* WeaponQuality.PRECISE */, 30 /* WeaponQuality.RELOAD_4 */],
+        qualities: ["Accurate" /* WeaponQuality.ACCURATE */, "Precise" /* WeaponQuality.PRECISE */, "Reload IV" /* WeaponQuality.RELOAD_4 */],
         description: "One of the legendary and incredibly precise weapons used by the hunters of Hochland, such rifles are incredibly prized. Often used to target enemy officers, such weapons are considered unsporting by many nobles and enemy soldiers caught with when them are summarily hanged."
     },
     HANDGUN: {
@@ -12533,7 +12533,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         range: 50,
         strBonus: false,
         damage: 9,
-        qualities: [25 /* WeaponQuality.DANGEROUS */, 29 /* WeaponQuality.RELOAD_3 */],
+        qualities: ["Dangerous" /* WeaponQuality.DANGEROUS */, "Reload III" /* WeaponQuality.RELOAD_3 */],
         description: "A simple two-handed firearm, typically using a wheellock or flintlock design. Thousands of these are employed by the Empire state troops."
     },
     PISTOL: {
@@ -12550,7 +12550,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         range: 20,
         strBonus: false,
         damage: 8,
-        qualities: [34 /* WeaponQuality.PISTOL */, 27 /* WeaponQuality.RELOAD_1 */],
+        qualities: ["Pistol" /* WeaponQuality.PISTOL */, "Reload" /* WeaponQuality.RELOAD_1 */],
         description: "A smaller blackpowder weapon designed to be fired with one hand, these are often used in duels or by cavalry soldiers such as Outriders who require one hand to hold the reins of their mount. Wealthy individuals sometimes carry a brace pistols in lieue of reloading."
     },
     MATCHLOCK_HANDGUN: {
@@ -12567,7 +12567,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         range: 50,
         strBonus: false,
         damage: 8,
-        qualities: [25 /* WeaponQuality.DANGEROUS */, 30 /* WeaponQuality.RELOAD_4 */],
+        qualities: ["Dangerous" /* WeaponQuality.DANGEROUS */, "Reload IV" /* WeaponQuality.RELOAD_4 */],
         description: "An earlier design of handgun, a few of these relics persist around the Empire, and can often be had quite cheaply. Before use, a user must spend one action to light the fuse on their weapon. A lit fuse will burn for quite a while unless doused by rain or wind."
     },
     MATCHLOCK_BLUNDERBUSS: {
@@ -12584,7 +12584,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         range: 20,
         strBonus: false,
         damage: 7,
-        qualities: [38 /* WeaponQuality.SPREAD_3 */, 25 /* WeaponQuality.DANGEROUS */, 29 /* WeaponQuality.RELOAD_3 */],
+        qualities: ["Spread III" /* WeaponQuality.SPREAD_3 */, "Dangerous" /* WeaponQuality.DANGEROUS */, "Reload III" /* WeaponQuality.RELOAD_3 */],
         description: "An earlier design of Blunderbuss, this weapon has the same drawbacks as the Matchlock Handgun, above."
     },
     ARQUEBUS: {
@@ -12601,7 +12601,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         range: 40,
         strBonus: false,
         damage: 9,
-        qualities: [25 /* WeaponQuality.DANGEROUS */, 26 /* WeaponQuality.IMPRECISE */, 31 /* WeaponQuality.RELOAD_5 */],
+        qualities: ["Dangerous" /* WeaponQuality.DANGEROUS */, "Imprecise" /* WeaponQuality.IMPRECISE */, "Reload V" /* WeaponQuality.RELOAD_5 */],
         description: "Little more than a scaled down cannon, the Arquebus is an ancient design indeed, often eschewing such innovations as sights, a trigger, or even a handle or grip. While early examples fired shot similar to or smaller than that used in modern blackpowder weapons, those surviving into current use in the Empire are typically larger bore weapons kept by nobles seeking to impress visitors. However, the sheer size of these relics renders them useful when the calibre of newer designs leaves something to be desired."
     },
     DOUBLE_BARRELLED_HANDGUN: {
@@ -12618,7 +12618,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         range: 50,
         strBonus: false,
         damage: 9,
-        qualities: [25 /* WeaponQuality.DANGEROUS */, 35 /* WeaponQuality.REPEATER */, 30 /* WeaponQuality.RELOAD_4 */],
+        qualities: ["Dangerous" /* WeaponQuality.DANGEROUS */, "Repeater" /* WeaponQuality.REPEATER */, "Reload IV" /* WeaponQuality.RELOAD_4 */],
         description: "If one barrel is good, surely two is better? About as complex as a firearm can be while still being used by the common soldier, a double-barrelled handgun has two barrels and two triggers. Though heavy, most come with a device for reloading both barrels at once, allowing the user to fire more frequently."
     },
     GRIFFONSFOOT_PISTOL: {
@@ -12635,7 +12635,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         range: 10,
         strBonus: false,
         damage: 7,
-        qualities: [26 /* WeaponQuality.IMPRECISE */, 39 /* WeaponQuality.SPREAD_5 */, 32 /* WeaponQuality.RELOAD_6 */],
+        qualities: ["Imprecise" /* WeaponQuality.IMPRECISE */, "Spread V" /* WeaponQuality.SPREAD_5 */, "Reload VI" /* WeaponQuality.RELOAD_6 */],
         description: "This weapon is best employed against a tight group of enemies. A single trigger discharges all six barrels, and reloading requires six shots and commensurate amount of powder."
     },
     GUN_AXE: {
@@ -12652,7 +12652,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         range: 30,
         strBonus: false,
         damage: 9,
-        qualities: [25 /* WeaponQuality.DANGEROUS */, 26 /* WeaponQuality.IMPRECISE */, 30 /* WeaponQuality.RELOAD_4 */],
+        qualities: ["Dangerous" /* WeaponQuality.DANGEROUS */, "Imprecise" /* WeaponQuality.IMPRECISE */, "Reload IV" /* WeaponQuality.RELOAD_4 */],
         description: "This weapon is much as one might imagine - a handgun combined with an axe. It may be used as either a Hand Weapon or a Handgun. However, if used as an axe while loaded, any critical fumble will discharge the weapon into the torso of the user."
     },
     GUN_HALBERD: {
@@ -12669,7 +12669,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         range: 30,
         strBonus: false,
         damage: 9,
-        qualities: [25 /* WeaponQuality.DANGEROUS */, 26 /* WeaponQuality.IMPRECISE */, 30 /* WeaponQuality.RELOAD_4 */],
+        qualities: ["Dangerous" /* WeaponQuality.DANGEROUS */, "Imprecise" /* WeaponQuality.IMPRECISE */, "Reload IV" /* WeaponQuality.RELOAD_4 */],
         description: "Employing the same principles as the Gun Axe, this weapon functions both as a halberd and as a handgun, with the firearm's barrel built into the haft of the Halberd. If used as a halberd while loaded, any critical fumble will discharge the weapon into anyone unlucky enough to be standing directly behind the user."
     },
     REPEATER_HANDGUN: {
@@ -12686,7 +12686,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         range: 30,
         strBonus: false,
         damage: 9,
-        qualities: [25 /* WeaponQuality.DANGEROUS */, 31 /* WeaponQuality.RELOAD_5 */, 37 /* WeaponQuality.REPEATER_4 */],
+        qualities: ["Dangerous" /* WeaponQuality.DANGEROUS */, "Reload V" /* WeaponQuality.RELOAD_5 */, "Repeater IV" /* WeaponQuality.REPEATER_4 */],
         description: "A Repeater Handgun uses a cunning method, often involving clockwork or other intricate mechanisms, to place fresh ammunition into a position to fire each time the weapon is discharged. Rarely are two such weapons identical, though rotating mechanisms are a common feature."
     },
     REPEATER_PISTOL: {
@@ -12703,7 +12703,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         range: 10,
         strBonus: false,
         damage: 8,
-        qualities: [25 /* WeaponQuality.DANGEROUS */, 34 /* WeaponQuality.PISTOL */, 30 /* WeaponQuality.RELOAD_4 */, 37 /* WeaponQuality.REPEATER_4 */],
+        qualities: ["Dangerous" /* WeaponQuality.DANGEROUS */, "Pistol" /* WeaponQuality.PISTOL */, "Reload IV" /* WeaponQuality.RELOAD_4 */, "Repeater IV" /* WeaponQuality.REPEATER_4 */],
         description: "Even more challenging to create than a Repeater Handgun due to their smaller size, RepeaterPistols otherwise share much in common with their larger cousins. Clockwork mechanisms are common, as are rotating chambers filled with ammunition. Minute adjustments are required constantly, and in the hands of an untrained user such weapons often misfire spectacularly."
     },
     HAND_MORTAR: {
@@ -12720,7 +12720,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         range: 30,
         strBonus: false,
         damage: 7,
-        qualities: [25 /* WeaponQuality.DANGEROUS */, 26 /* WeaponQuality.IMPRECISE */, 28 /* WeaponQuality.RELOAD_2 */],
+        qualities: ["Dangerous" /* WeaponQuality.DANGEROUS */, "Imprecise" /* WeaponQuality.IMPRECISE */, "Reload II" /* WeaponQuality.RELOAD_2 */],
         description: "Looking like a short, squat Blunderbuss, the Hand Mortar is a scaled down mortar designed to lob bombs and other large items in a desired direction. It is quite dangerous to use, as loading a little too much powder, or mistiming the fuse on a loaded bomb, will see the weapon explode quite spectacularly. Any fumble while reloading the weapon causes it to explode. However, the device does open up many opportunities for those willing to risk its use."
     },
     CANE_PISTOL: {
@@ -12737,7 +12737,7 @@ TEW.DATABASE.WEAPONS.RANGED_SET = {
         range: 10,
         strBonus: false,
         damage: 8,
-        qualities: [25 /* WeaponQuality.DANGEROUS */, 26 /* WeaponQuality.IMPRECISE */, 32 /* WeaponQuality.RELOAD_6 */],
+        qualities: ["Dangerous" /* WeaponQuality.DANGEROUS */, "Imprecise" /* WeaponQuality.IMPRECISE */, "Reload VI" /* WeaponQuality.RELOAD_6 */],
         description: "A small-bore pistol concealed in a walking stick or cane, this weapon is somewhat impractical, but very hard to spot."
     }
 };
@@ -12756,7 +12756,7 @@ TEW.DATABASE.WEAPONS.AMMO_SET = {
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
         range: "+0",
         damage: "+0",
-        qualities: [2 /* WeaponQuality.IMPALE */],
+        qualities: ["Impale" /* WeaponQuality.IMPALE */],
         description: "A classic arrow to use with a bow."
     },
     BARBED_ARROW: {
@@ -12770,7 +12770,7 @@ TEW.DATABASE.WEAPONS.AMMO_SET = {
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
         range: "+0",
         damage: "+0",
-        qualities: [2 /* WeaponQuality.IMPALE */, 8 /* WeaponQuality.SLASH_1 */],
+        qualities: ["Impale" /* WeaponQuality.IMPALE */, "Slash" /* WeaponQuality.SLASH_1 */],
         description: "A sharp arrow designed to remain in the flesh of the target."
     },
     BODKIN_ARROW: {
@@ -12784,7 +12784,7 @@ TEW.DATABASE.WEAPONS.AMMO_SET = {
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
         range: "+0",
         damage: "+0",
-        qualities: [2 /* WeaponQuality.IMPALE */, 3 /* WeaponQuality.PENETRATING */],
+        qualities: ["Impale" /* WeaponQuality.IMPALE */, "Penetrating" /* WeaponQuality.PENETRATING */],
         description: "A square-based arrow, used to penetrate heavy armor."
     },
     ELF_ARROW: {
@@ -12798,7 +12798,7 @@ TEW.DATABASE.WEAPONS.AMMO_SET = {
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_EXOTIC,
         range: "+50",
         damage: "+1",
-        qualities: [40 /* WeaponQuality.ACCURATE */, 2 /* WeaponQuality.IMPALE */, 3 /* WeaponQuality.PENETRATING */],
+        qualities: ["Accurate" /* WeaponQuality.ACCURATE */, "Impale" /* WeaponQuality.IMPALE */, "Penetrating" /* WeaponQuality.PENETRATING */],
         description: "A perfectly balanced an sharpened arrow, designed by the High Elves."
     },
     SHARP_STICK: {
@@ -12812,7 +12812,7 @@ TEW.DATABASE.WEAPONS.AMMO_SET = {
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
         range: "/2",
         damage: "-2",
-        qualities: [25 /* WeaponQuality.DANGEROUS */, 26 /* WeaponQuality.IMPRECISE */, 6 /* WeaponQuality.UNDAMAGING */],
+        qualities: ["Dangerous" /* WeaponQuality.DANGEROUS */, "Imprecise" /* WeaponQuality.IMPRECISE */, "Undamaging" /* WeaponQuality.UNDAMAGING */],
         description: "Just a pointy stick."
     },
     BOLT: {
@@ -12826,7 +12826,7 @@ TEW.DATABASE.WEAPONS.AMMO_SET = {
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
         range: "+0",
         damage: "+0",
-        qualities: [2 /* WeaponQuality.IMPALE */],
+        qualities: ["Impale" /* WeaponQuality.IMPALE */],
         description: "A simple bolt to use with a crossbow."
     },
     LEAD_BULLET: {
@@ -12840,7 +12840,7 @@ TEW.DATABASE.WEAPONS.AMMO_SET = {
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
         range: "-10",
         damage: "+1",
-        qualities: [7 /* WeaponQuality.PUMMEL */],
+        qualities: ["Pummel" /* WeaponQuality.PUMMEL */],
         description: "A bullet made of lead to throw with a sling."
     },
     PEBBLE: {
@@ -12854,7 +12854,7 @@ TEW.DATABASE.WEAPONS.AMMO_SET = {
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
         range: "-10",
         damage: "-2",
-        qualities: [26 /* WeaponQuality.IMPRECISE */, 6 /* WeaponQuality.UNDAMAGING */],
+        qualities: ["Imprecise" /* WeaponQuality.IMPRECISE */, "Undamaging" /* WeaponQuality.UNDAMAGING */],
         description: "A simple pebble picked up from the ground."
     },
     STONE_BULLET: {
@@ -12868,7 +12868,7 @@ TEW.DATABASE.WEAPONS.AMMO_SET = {
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
         range: "+0",
         damage: "+0",
-        qualities: [7 /* WeaponQuality.PUMMEL */],
+        qualities: ["Pummel" /* WeaponQuality.PUMMEL */],
         description: "A projectile made of stone to be throwned by a sling."
     },
     BULLET_AND_POWDER: {
@@ -12882,7 +12882,7 @@ TEW.DATABASE.WEAPONS.AMMO_SET = {
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
         range: "+0",
         damage: "+1",
-        qualities: [2 /* WeaponQuality.IMPALE */, 3 /* WeaponQuality.PENETRATING */],
+        qualities: ["Impale" /* WeaponQuality.IMPALE */, "Penetrating" /* WeaponQuality.PENETRATING */],
         description: "Fired from most Pistols, Handguns and their variants, bullets come in a small oiled sack and are typically sold with enough powder to fire them under normal circumstances."
     },
     PAPER_CARTRIDGE: {
@@ -12896,7 +12896,7 @@ TEW.DATABASE.WEAPONS.AMMO_SET = {
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
         range: "+0",
         damage: "+1",
-        qualities: [2 /* WeaponQuality.IMPALE */, 3 /* WeaponQuality.PENETRATING */, 33 /* WeaponQuality.FASTER_RELOAD */],
+        qualities: ["Impale" /* WeaponQuality.IMPALE */, "Penetrating" /* WeaponQuality.PENETRATING */, "Faster reload" /* WeaponQuality.FASTER_RELOAD */],
         description: "These are pre prepared packages of shot, powder, and wadding, making reloading blackpowder weapons far easier. Tests made to reload a suitable weapon with this ammunition benefit from a +10 bonus."
     },
     AQSHY_INFUSED_POWDER: {
@@ -12910,7 +12910,7 @@ TEW.DATABASE.WEAPONS.AMMO_SET = {
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_EXOTIC,
         range: "+10",
         damage: "+2",
-        qualities: [2 /* WeaponQuality.IMPALE */, 3 /* WeaponQuality.PENETRATING */],
+        qualities: ["Impale" /* WeaponQuality.IMPALE */, "Penetrating" /* WeaponQuality.PENETRATING */],
         description: "For the very brave or foolish, this powder is created from sand from the Nehekeran desert, infused with additional Aqshy by means known only to the Bright College in Altdorf. It is more explosive than normal powder but does wear down barrels far more quickly than its mundane counterpart. Any failed Test that includes either an 8 or 9 on either the 10s or units die counts as a Fumble when using this powder."
     },
     PRECISION_SHOT_AND_POWDER: {
@@ -12924,7 +12924,7 @@ TEW.DATABASE.WEAPONS.AMMO_SET = {
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
         range: "+0",
         damage: "+1",
-        qualities: [2 /* WeaponQuality.IMPALE */, 3 /* WeaponQuality.PENETRATING */, 4 /* WeaponQuality.PRECISE */],
+        qualities: ["Impale" /* WeaponQuality.IMPALE */, "Penetrating" /* WeaponQuality.PENETRATING */, "Precise" /* WeaponQuality.PRECISE */],
         description: "Expertly prepared powder and carefully smoothed and rounded bullets can be combined to allow for more reliable, precise shots with any suitable Blackpowder weapon."
     },
     IMPROVISED_SHOT_AND_POWDER: {
@@ -12952,7 +12952,7 @@ TEW.DATABASE.WEAPONS.AMMO_SET = {
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
         range: "+0",
         damage: "+0",
-        qualities: [38 /* WeaponQuality.SPREAD_3 */],
+        qualities: ["Spread III" /* WeaponQuality.SPREAD_3 */],
         description: "Often used for hunting birds and other small, fast moving creatures, Small Shot is far smaller than the barrels of most weapons, and the user is expected to use a dozen or so for each load."
     },
     SCRAP_AND_POWDER: {
@@ -12966,7 +12966,7 @@ TEW.DATABASE.WEAPONS.AMMO_SET = {
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_COMMON,
         range: "/2",
         damage: "-1",
-        qualities: [38 /* WeaponQuality.SPREAD_3 */, 43 /* WeaponQuality.INFECTED */],
+        qualities: ["Spread III" /* WeaponQuality.SPREAD_3 */, "Infected" /* WeaponQuality.INFECTED */],
         description: "Scrap is a catch-all term for old roofing nails, used horseshoe fragments, arrow heads, and other bits of sharp and pointy material scavenged from whatever pile or rust or slag can be found. Attacks made using this shot benefit from the Infected Creature Trait."
     },
     LARGE_BULLET_AND_POWDER: {
@@ -12980,7 +12980,7 @@ TEW.DATABASE.WEAPONS.AMMO_SET = {
         availabilityIcon: TEW.DATABASE.ICONS.SET.AVAILABILITY_SCARCE,
         range: "+0",
         damage: "+2",
-        qualities: [2 /* WeaponQuality.IMPALE */, 16 /* WeaponQuality.IMPACT */, 3 /* WeaponQuality.PENETRATING */],
+        qualities: ["Impale" /* WeaponQuality.IMPALE */, "Impact" /* WeaponQuality.IMPACT */, "Penetrating" /* WeaponQuality.PENETRATING */],
         description: "Technically a small cannonball, these shots are loaded into large bore weapons such as an Arquebus or Hand Mortar. Those firing such a device, or standing within 2 yards of the user, must make a Challenging (+0) Endurance Test or gain a Deafened Condition."
     }
 };

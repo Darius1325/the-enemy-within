@@ -2392,23 +2392,74 @@ Window_InventoryArmors.prototype.processOk = function () {
 //-----------------------------------------------------------------------------
 // Window_InventoryInfo
 //
-// TODO
+// TODO contentsWidth calls
 function Window_InventoryInfo() {
     this.initialize.apply(this, arguments);
 }
+Window_InventoryInfo.ENC_LABEL = "Total encumberment: ";
+Window_InventoryInfo.ENC_X_OFFSET = 98;
+Window_InventoryInfo.ENC_Y_OFFSET = 10;
+Window_InventoryInfo.DAMAGE_LABEL = "Damage: ";
+Window_InventoryInfo.AMMO_LABEL = "Available ammo: ";
+Window_InventoryInfo.QUALITY_JOINER = ", ";
+Window_InventoryInfo.WEAPONS_X_OFFSET = 500;
+Window_InventoryInfo.WEAPONS_Y_OFFSET = 10;
+Window_InventoryInfo.WEAPON_TRAITS_X_OFFSET = 580;
+Window_InventoryInfo.ARMORS_X_OFFSET = 540;
+Window_InventoryInfo.ARMORS_Y_OFFSET = 194;
+Window_InventoryInfo.ARMOR_POINTS_FONT_SIZE = 48;
+Window_InventoryInfo.ARMOR_POINTS_OFFSETS = {
+    HEAD: {
+        x: 228,
+        y: 182
+    },
+    BODY: {
+        x: 228,
+        y: 358
+    },
+    LEFT_ARM: {
+        x: 48,
+        y: 358
+    },
+    RIGHT_ARM: {
+        x: 408,
+        y: 358
+    },
+    LEFT_LEG: {
+        x: 138,
+        y: 534
+    },
+    RIGHT_LEG: {
+        x: 318,
+        y: 534
+    }
+};
 Window_InventoryInfo.prototype = Object.create(Window_Base.prototype);
 Window_InventoryInfo.prototype.constructor = Window_InventoryInfo;
 Window_InventoryInfo.prototype.initialize = function () {
     Window_Base.prototype.initialize.call(this, 0, TEW.MENU.INVENTORY_WINDOW_TOPBAR_HEIGHT, this.windowWidth(), this.windowHeight());
     this._iconPadding = 5;
+    this._encumberment = 0;
+    this._armorPoints = {};
 };
 Window_InventoryInfo.prototype.setActor = function (actor) {
     if (this._actor !== actor) {
         this._actor = actor;
-        this._bgSprite = new Sprite(ImageManager.loadSystem("bg_menuStats_" + actor.name()));
+        this._bgSprite = new Sprite(ImageManager.loadSystem("bg_menuInventoryInfo_" + actor.name()));
         this.addChildAt(this._bgSprite, 0);
-        this.refresh();
+        this.syncActor();
     }
+};
+Window_InventoryInfo.prototype.syncActor = function () {
+    this._encumberment = this._actor.totalEncumberment();
+    const sumArmorPoints = (armors) => armors.reduce((acc, armor) => acc + armor.ap, 0);
+    this._armorPoints = {
+        [2 /* BodyLocation.HEAD */]: sumArmorPoints(this._actor.armorsAtLocation(2 /* BodyLocation.HEAD */)),
+        [3 /* BodyLocation.BODY */]: sumArmorPoints(this._actor.armorsAtLocation(3 /* BodyLocation.BODY */)),
+        [0 /* BodyLocation.ARMS */]: sumArmorPoints(this._actor.armorsAtLocation(0 /* BodyLocation.ARMS */)),
+        [1 /* BodyLocation.LEGS */]: sumArmorPoints(this._actor.armorsAtLocation(1 /* BodyLocation.LEGS */))
+    };
+    this.refresh();
 };
 Window_InventoryInfo.prototype.refresh = function () {
     if (this.contents) {
@@ -2419,8 +2470,13 @@ Window_InventoryInfo.prototype.refresh = function () {
     }
 };
 Window_InventoryInfo.prototype.drawAllItems = function () {
+    this.drawEncumberment();
     this.drawWeapons();
+    this.drawArmorPoints();
     this.drawArmors();
+};
+Window_InventoryInfo.prototype.drawEncumberment = function () {
+    this.drawText(Window_InventoryInfo.ENC_LABEL + this._encumberment, Window_InventoryInfo.ENC_X_OFFSET, Window_InventoryInfo.ENC_Y_OFFSET, this.contentsWidth());
 };
 Window_InventoryInfo.prototype.drawWeapons = function () {
     const mainHand = this._actor.mainHand();
@@ -2428,40 +2484,62 @@ Window_InventoryInfo.prototype.drawWeapons = function () {
     if (mainHand) {
         const mainHandInfo = TEW.DATABASE.WEAPONS.ARRAY.find(w => w[0] === mainHand.id);
         const isRanged = Object.keys(TEW.DATABASE.WEAPONS.RANGED_SET).includes(mainHand.id);
-        this.drawWeapon(mainHandInfo[1], isRanged, 60); // TODO y
+        this.drawWeapon(mainHandInfo[1], isRanged, Window_InventoryInfo.WEAPONS_Y_OFFSET);
     }
     if (secondHand) {
         const secondHandInfo = TEW.DATABASE.WEAPONS.ARRAY.find(w => w[0] === secondHand.id);
         const isRanged = Object.keys(TEW.DATABASE.WEAPONS.RANGED_SET).includes(secondHand.id);
-        this.drawWeapon(secondHandInfo[1], isRanged, 96); // TODO y
+        this.drawWeapon(secondHandInfo[1], isRanged, Window_InventoryInfo.WEAPONS_Y_OFFSET + 2 * TEW.MENU.LINE_HEIGHT);
     }
 };
 Window_InventoryInfo.prototype.drawWeapon = function (weapon, isRanged, y) {
+    let x = Window_InventoryInfo.WEAPONS_X_OFFSET;
     this.changeTextColor(this.systemColor());
-    this.drawIcon(weapon.icon, 30, y); // TODO x
-    this.drawText(weapon.name, 30 + 32 + this._iconPadding, y, this.contentsWidth()); // TODO width
+    this.drawIcon(weapon.icon, x, y);
+    x += 32 + this._iconPadding;
+    const nameWidth = this.textWidth(weapon.name);
+    this.drawText(weapon.name, x, y, nameWidth);
+    x += nameWidth + 48; // TODO constant
     this.resetTextColor();
-    const damageExcludingSL = weapon.damage + (weapon.strBonus ? this._actor.paramBonus("STRG" /* Stat.STRG */) : 0); // TODO weapon qualities ?
-    this.drawText("Damage: " + damageExcludingSL, 220, y, this.contentsWidth()); // TODO y & width
+    const damageExcludingSL = weapon.damage + (weapon.strBonus ? this._actor.paramBonus("STRG" /* Stat.STRG */) : 0);
+    const damageText = Window_InventoryInfo.DAMAGE_LABEL + damageExcludingSL;
+    const damageWidth = this.textWidth(damageText);
+    this.drawText(damageText, x, y, damageWidth);
+    x += damageWidth + 48;
     if (isRanged) {
-        const ammoInInventory = this._actor.ammoFromGroup(weapon.ammunition[0]);
-        this.drawText("Available ammo: " + ammoInInventory, 380, y, this.contentsWidth()); // TODO ammo name ?
+        const ammoInInventory = this._actor.ammoFromGroup(weapon.ammunition[0]); // TODO ammo qualities ?
+        this.drawText(Window_InventoryInfo.AMMO_LABEL + ammoInInventory, x, y, this.contentsWidth()); // TODO ammo name ?
     }
+    if (weapon.qualities.length > 0) {
+        this.drawText(weapon.qualities.join(Window_InventoryInfo.QUALITY_JOINER), Window_InventoryInfo.WEAPON_TRAITS_X_OFFSET, y + TEW.MENU.LINE_HEIGHT, this.contentsWidth());
+    }
+};
+Window_InventoryInfo.prototype.drawArmorPoints = function () {
+    this.contents.fontSize = Window_InventoryInfo.ARMOR_POINTS_FONT_SIZE;
+    this.drawText(this._armorPoints[2 /* BodyLocation.HEAD */], Window_InventoryInfo.ARMOR_POINTS_OFFSETS.HEAD.x, Window_InventoryInfo.ARMOR_POINTS_OFFSETS.HEAD.y, this.contentsWidth());
+    this.drawText(this._armorPoints[3 /* BodyLocation.BODY */], Window_InventoryInfo.ARMOR_POINTS_OFFSETS.BODY.x, Window_InventoryInfo.ARMOR_POINTS_OFFSETS.BODY.y, this.contentsWidth());
+    this.drawText(this._armorPoints[0 /* BodyLocation.ARMS */], Window_InventoryInfo.ARMOR_POINTS_OFFSETS.LEFT_ARM.x, Window_InventoryInfo.ARMOR_POINTS_OFFSETS.LEFT_ARM.y, this.contentsWidth());
+    this.drawText(this._armorPoints[0 /* BodyLocation.ARMS */], Window_InventoryInfo.ARMOR_POINTS_OFFSETS.RIGHT_ARM.x, Window_InventoryInfo.ARMOR_POINTS_OFFSETS.RIGHT_ARM.y, this.contentsWidth());
+    this.drawText(this._armorPoints[1 /* BodyLocation.LEGS */], Window_InventoryInfo.ARMOR_POINTS_OFFSETS.LEFT_LEG.x, Window_InventoryInfo.ARMOR_POINTS_OFFSETS.LEFT_LEG.y, this.contentsWidth());
+    this.drawText(this._armorPoints[1 /* BodyLocation.LEGS */], Window_InventoryInfo.ARMOR_POINTS_OFFSETS.RIGHT_LEG.x, Window_InventoryInfo.ARMOR_POINTS_OFFSETS.RIGHT_LEG.y, this.contentsWidth());
+    this.contents.fontSize = this.standardFontSize();
 };
 Window_InventoryInfo.prototype.drawArmors = function () {
     const equippedArmors = this._actor._equippedArmors;
     for (let i = 0; i < equippedArmors.length; i++) {
-        this.drawArmor(equippedArmors[i], 170 + (i * TEW.MENU.LINE_HEIGHT)); // TODO height
+        this.drawArmor(equippedArmors[i], Window_InventoryInfo.ARMORS_Y_OFFSET + (i * TEW.MENU.LINE_HEIGHT));
     }
 };
 Window_InventoryInfo.prototype.drawArmor = function (armorId, y) {
     const armorDetails = TEW.DATABASE.ARMORS.ARRAY.find(a => a[0] === armorId);
-    const x = 30; // TODO x
+    const x = Window_InventoryInfo.ARMORS_X_OFFSET;
     if (armorDetails) {
+        const nameWidth = this.textWidth(armorDetails[1].name);
         this.changeTextColor(this.systemColor());
         this.drawIcon(armorDetails[1].icon, x, y);
-        this.drawText(armorDetails[1].name, x + 32 + this._iconPadding, y, this.contentsWidth() - (x + 32 + this._iconPadding));
+        this.drawText(armorDetails[1].name, x + 32 + this._iconPadding, y, nameWidth);
         this.resetTextColor();
+        this.drawText(armorDetails[1].qualities.join(Window_InventoryInfo.QUALITY_JOINER), x + nameWidth, y, this.contentsWidth());
     }
 };
 // #endregion =========================== Window_InventoryInfo ============================== //
@@ -4772,8 +4850,7 @@ Window_StatusStats.prototype.initialize = function () {
 Window_StatusStats.prototype.setActor = function (actor) {
     if (this._actor !== actor) {
         this._actor = actor;
-        // this._bgSprite = new Sprite(ImageManager.loadSystem("bg_menuStats_" + actor.name()));
-        this._bgSprite = new Sprite(ImageManager.loadSystem("bg_menuStats"));
+        this._bgSprite = new Sprite(ImageManager.loadSystem("bg_menuStats_" + actor.name()));
         this.addChildAt(this._bgSprite, 0);
         this.refresh();
     }
@@ -5832,6 +5909,43 @@ Window_InventoryTransferSpinner.prototype.windowWidth = function () {
 Window_InventoryTransferSpinner.prototype.windowHeight = function () {
     return 96; // line height + bg padding
 };
+Window_ShopTopbar.prototype.backgroundImageName = function () {
+    return "bg_menuTopbarCommands";
+};
+Window_ShopTopbar.prototype.windowWidth = function () {
+    return Graphics.boxWidth;
+};
+Window_ShopTopbar.prototype.windowHeight = function () {
+    return TEW.MENU.INVENTORY_WINDOW_TOPBAR_HEIGHT;
+};
+// No command window below the list, it takes the whole height
+Window_ShopList.prototype.backgroundImageName = function () {
+    return "bg_menuHalfWindowFullHeight";
+};
+Window_ShopList.prototype.windowWidth = function () {
+    return Graphics.boxWidth / 2;
+};
+Window_ShopList.prototype.windowHeight = function () {
+    return 648; // total height - topbar height
+};
+Window_ShopDetails.prototype.backgroundImageName = function () {
+    return "bg_menuHalfWindowFullHeight";
+};
+Window_ShopDetails.prototype.windowWidth = function () {
+    return Graphics.boxWidth / 2;
+};
+Window_ShopDetails.prototype.windowHeight = function () {
+    return 648; // total height - topbar height
+};
+Window_ShopSpinner.prototype.backgroundImageName = function () {
+    return "bg_shopTransactionCommand";
+};
+Window_ShopSpinner.prototype.windowWidth = function () {
+    return 380;
+};
+Window_ShopSpinner.prototype.windowHeight = function () {
+    return 168; // line height * 3 + bg padding
+};
 // #endregion =========================== backgrounds ============================== //
 // ============================== //
 // #region ============================== Scene_Equip ============================== //
@@ -6146,46 +6260,6 @@ Scene_Journals.prototype.openJournal = function () {
     }
 };
 // #endregion =========================== Scene_Journals ============================== //
-// ============================== //
-// #region ============================== backgrounds ============================== //
-Window_ShopTopbar.prototype.backgroundImageName = function () {
-    return "bg_menuTopbarCommands";
-};
-Window_ShopTopbar.prototype.windowWidth = function () {
-    return Graphics.boxWidth;
-};
-Window_ShopTopbar.prototype.windowHeight = function () {
-    return TEW.MENU.INVENTORY_WINDOW_TOPBAR_HEIGHT;
-};
-// No command window below the list, it takes the whole height
-Window_ShopList.prototype.backgroundImageName = function () {
-    return "bg_menuHalfWindowFullHeight";
-};
-Window_ShopList.prototype.windowWidth = function () {
-    return Graphics.boxWidth / 2;
-};
-Window_ShopList.prototype.windowHeight = function () {
-    return 648; // total height - topbar height
-};
-Window_ShopDetails.prototype.backgroundImageName = function () {
-    return "bg_menuHalfWindowFullHeight";
-};
-Window_ShopDetails.prototype.windowWidth = function () {
-    return Graphics.boxWidth / 2;
-};
-Window_ShopDetails.prototype.windowHeight = function () {
-    return 648; // total height - topbar height
-};
-Window_ShopSpinner.prototype.backgroundImageName = function () {
-    return "bg_shopTransactionCommand";
-};
-Window_ShopSpinner.prototype.windowWidth = function () {
-    return 380;
-};
-Window_ShopSpinner.prototype.windowHeight = function () {
-    return 168; // line height * 3 + bg padding
-};
-// #endregion =========================== backgrounds ============================== //
 // ============================== //
 // #region ============================== Scene_Shop ============================== //
 // ----------------------
@@ -7302,11 +7376,11 @@ Scene_Equip.prototype.showWeaponDetails = function () {
 Scene_Equip.prototype.equipWeapon = function () {
     const weapon = this._weaponsWindow.item();
     if (weapon.group === 5 /* WeaponGroup.PARRY */
-        || weapon.qualities.some((quality) => quality === 10 /* WeaponQuality.SHIELD_1 */
-            || quality === 11 /* WeaponQuality.SHIELD_2 */
-            || quality === 12 /* WeaponQuality.SHIELD_3 */
-            || quality === 13 /* WeaponQuality.SHIELD_4 */
-            || quality === 14 /* WeaponQuality.SHIELD_5 */)) {
+        || weapon.qualities.some((quality) => quality === "Shield" /* WeaponQuality.SHIELD_1 */
+            || quality === "Shield II" /* WeaponQuality.SHIELD_2 */
+            || quality === "Shield III" /* WeaponQuality.SHIELD_3 */
+            || quality === "Shield IV" /* WeaponQuality.SHIELD_4 */
+            || quality === "Shield V" /* WeaponQuality.SHIELD_5 */)) {
         this._actor.unequipSecondHand();
         this._actor.equipSecondHand(weapon.equipIndex);
     }
@@ -7351,12 +7425,12 @@ Scene_Equip.prototype.reloadWeapon = function () {
         }
         // TODO skill test only in combat
         let maxReload = 1;
-        if (weaponData.qualities.includes(35 /* WeaponQuality.REPEATER */)) {
+        if (weaponData.qualities.includes("Repeater" /* WeaponQuality.REPEATER */)) {
             maxReload = 2;
             // } else if (weapon.qualities.includes(WeaponQuality.REPEATER_2)) {
             //     reloadAmount = 3;
         }
-        else if (weaponData.qualities.includes(37 /* WeaponQuality.REPEATER_4 */)) {
+        else if (weaponData.qualities.includes("Repeater IV" /* WeaponQuality.REPEATER_4 */)) {
             maxReload = 5;
         }
         if (weaponData.ammo > 0 && weaponData.ammo < maxReload && weaponData.ammoType) { // Reload with same ammo type or fail

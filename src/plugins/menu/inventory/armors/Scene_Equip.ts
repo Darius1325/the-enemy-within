@@ -134,6 +134,7 @@ Scene_Equip.prototype.equipArmor = function() {
     } else {
         this._actor.equipArmor(armor[0]);
         this._armorsWindow.syncActor();
+        this._infosWindow.syncActor();
         // TODO play BGM
         this._armorsCommandWindow.callHandler('cancel');
     }
@@ -151,7 +152,8 @@ Scene_Equip.prototype.unequipArmor = function() {
     }
 
     this._armorsWindow.syncActor();
-    // play BGM
+    this._infosWindow.syncActor();
+    // TODO play BGM
     this._armorsCommandWindow.callHandler('cancel');
 }
 

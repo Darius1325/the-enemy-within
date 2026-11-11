@@ -398,86 +398,86 @@ TEW.COMBAT.getWeaponQualityEffects = (weapon) => {
     let ignoreMetalArmor = false;
     let effects = {};
     weapon.qualities.forEach(quality => {
-        if (quality === 2 /* WeaponQuality.IMPALE */) {
+        if (quality === "Impale" /* WeaponQuality.IMPALE */) {
             effects.IMPALE = true;
         }
-        else if (quality === 5 /* WeaponQuality.DAMAGING */) {
+        else if (quality === "Damaging" /* WeaponQuality.DAMAGING */) {
             effects.DAMAGING = true;
         }
-        else if (quality === 6 /* WeaponQuality.UNDAMAGING */) {
+        else if (quality === "Undamaging" /* WeaponQuality.UNDAMAGING */) {
             effects.UNDAMAGING = true;
         }
-        else if (quality === 10 /* WeaponQuality.SHIELD_1 */) {
+        else if (quality === "Shield" /* WeaponQuality.SHIELD_1 */) {
             bonusAP += 1;
         }
-        else if (quality === 11 /* WeaponQuality.SHIELD_2 */) {
+        else if (quality === "Shield II" /* WeaponQuality.SHIELD_2 */) {
             bonusAP += 2;
         }
-        else if (quality === 12 /* WeaponQuality.SHIELD_3 */) {
+        else if (quality === "Shield III" /* WeaponQuality.SHIELD_3 */) {
             bonusAP += 3;
         }
-        else if (quality === 13 /* WeaponQuality.SHIELD_4 */) {
+        else if (quality === "Shield IV" /* WeaponQuality.SHIELD_4 */) {
             bonusAP += 4;
         }
-        else if (quality === 14 /* WeaponQuality.SHIELD_5 */) {
+        else if (quality === "Shield V" /* WeaponQuality.SHIELD_5 */) {
             bonusAP += 5;
         }
-        else if (quality === 15 /* WeaponQuality.DEFENSIVE */) {
+        else if (quality === "Defensive" /* WeaponQuality.DEFENSIVE */) {
             defenceMod += 10;
         }
-        else if (quality === 0 /* WeaponQuality.HACK */) {
+        else if (quality === "Hack" /* WeaponQuality.HACK */) {
             ignoredAP += 1;
         }
-        else if (quality === 3 /* WeaponQuality.PENETRATING */) {
+        else if (quality === "Penetrating" /* WeaponQuality.PENETRATING */) {
             ignoreMetalArmor = true;
             ignoredAP += 1;
         }
-        else if (quality === 4 /* WeaponQuality.PRECISE */) {
+        else if (quality === "Precise" /* WeaponQuality.PRECISE */) {
             attackBonusSL += 1;
         }
-        else if (quality === 7 /* WeaponQuality.PUMMEL */) {
+        else if (quality === "Pummel" /* WeaponQuality.PUMMEL */) {
             effects.PUMMEL = true;
         }
-        else if (quality === 8 /* WeaponQuality.SLASH_1 */) {
+        else if (quality === "Slash" /* WeaponQuality.SLASH_1 */) {
             slashLevel = 1;
         }
-        else if (quality === 9 /* WeaponQuality.SLASH_2 */) {
+        else if (quality === "Slash II" /* WeaponQuality.SLASH_2 */) {
             slashLevel = 2;
         }
-        else if (quality === 1 /* WeaponQuality.UNBALANCED */) {
+        else if (quality === "Unbalanced" /* WeaponQuality.UNBALANCED */) {
             defenceBonusSL -= 1;
         }
-        else if (quality === 16 /* WeaponQuality.IMPACT */) {
+        else if (quality === "Impact" /* WeaponQuality.IMPACT */) {
             effects.IMPACT = true;
         }
-        else if (quality === 17 /* WeaponQuality.FAST */) {
+        else if (quality === "Fast" /* WeaponQuality.FAST */) {
             attackBonusSL += 1;
         }
-        else if (quality === 18 /* WeaponQuality.TRIP */) {
+        else if (quality === "Trip" /* WeaponQuality.TRIP */) {
             effects.TRIP = true;
         }
-        else if (quality === 19 /* WeaponQuality.ENTANGLE */) {
+        else if (quality === "Entangle" /* WeaponQuality.ENTANGLE */) {
             effects.ENTANGLE = true;
         }
-        else if (quality === 20 /* WeaponQuality.SLOW */) {
+        else if (quality === "Slow" /* WeaponQuality.SLOW */) {
             attackBonusSL -= 1;
         }
-        else if (quality === 22 /* WeaponQuality.WRAP */) {
+        else if (quality === "Wrap" /* WeaponQuality.WRAP */) {
             attackBonusSL += 1;
         }
-        else if (quality === 26 /* WeaponQuality.IMPRECISE */) {
+        else if (quality === "Imprecise" /* WeaponQuality.IMPRECISE */) {
             attackBonusSL -= 1;
         }
-        else if (quality === 23 /* WeaponQuality.TIRING */) {
+        else if (quality === "Tiring" /* WeaponQuality.TIRING */) {
             effects.TIRING = true;
         }
-        else if (quality === 24 /* WeaponQuality.TRAP_BLADE */) {
+        else if (quality === "Trap blade" /* WeaponQuality.TRAP_BLADE */) {
             effects.TRAP_BLADE = true;
         }
-        else if (quality === 25 /* WeaponQuality.DANGEROUS */) {
+        else if (quality === "Dangerous" /* WeaponQuality.DANGEROUS */) {
             effects.DANGEROUS = true;
         }
-        else if (quality === 40 /* WeaponQuality.ACCURATE */) {
+        else if (quality === "Accurate" /* WeaponQuality.ACCURATE */) {
             attackMod += 10;
         }
     });
@@ -6970,11 +6970,11 @@ Scene_Battle.prototype.showSpellDetails = function () {
 Scene_Battle.prototype.equipWeapon = function () {
     const weapon = this._weaponsWindow.item();
     if (weapon.group === 5 /* WeaponGroup.PARRY */
-        || weapon.qualities.some((quality) => quality === 10 /* WeaponQuality.SHIELD_1 */
-            || quality === 11 /* WeaponQuality.SHIELD_2 */
-            || quality === 12 /* WeaponQuality.SHIELD_3 */
-            || quality === 13 /* WeaponQuality.SHIELD_4 */
-            || quality === 14 /* WeaponQuality.SHIELD_5 */)) {
+        || weapon.qualities.some((quality) => quality === "Shield" /* WeaponQuality.SHIELD_1 */
+            || quality === "Shield II" /* WeaponQuality.SHIELD_2 */
+            || quality === "Shield III" /* WeaponQuality.SHIELD_3 */
+            || quality === "Shield IV" /* WeaponQuality.SHIELD_4 */
+            || quality === "Shield V" /* WeaponQuality.SHIELD_5 */)) {
         BattleManager.actor().unequipSecondHand();
         BattleManager.actor().equipSecondHand(weapon.equipIndex);
     }
