@@ -364,5 +364,211 @@ TEW.DATABASE.TUTORIALS = [
                 ]
             }
         ]
+    },
+    {
+        category: "Combat - Attacking",
+        subTutorials: [
+            {
+                title: "Roll to Hit",
+                paragraphs: [
+                    {
+                        content: "Melee: Make an Opposed Melee Test using your weapon against your target. The combatant with the higher SL wins."
+                    },
+                    {
+                        content: "Ranged : Make a Ranged Test using your weapon. On a success, you hit. On a failure, your attack misses."
+                    },
+                    {
+                        content: "In both Melee and Ranged combat, rolling double on a success is a Critical Hit, while a failed double is a Fumble."
+                    },
+                    {
+                        content: "Modifiers might apply to these tests depending on the situation. For example if you fire at short range or point blank, it will be easyer to hit your target but if you try to attck with your off-hand, it will be harder to hit."
+                    }
+                ]
+            },
+            {
+                title: "Determine Hit Location",
+                paragraphs: [
+                    {
+                        content: "If your attack hits, reverse the digits of your successful hit roll and compare the result to the Hit Locations table. For example, a roll of 23 becomes 32, striking the right arm. When rolling with Advantage, reverse the final result not the original dice roll. Creatures with unusual anatomies may use different Hit Location tables."
+                    },
+                    {
+                        content: "01-09 Head, 10-24 Left Arm, 25-44 Right Arm, 45-79 Body, 80-89 Left Leg, 90-00 Right Leg."
+                    }
+                ]
+            },
+            {
+                title: "Determine Damage",
+                paragraphs: [
+                    {
+                        content: "Each weapon has a Weapon Damage. This is usually your modified Strength Bonus for melee weapons, or a fixed number for ranged weapons."
+                    },
+                    {
+                        content: "The Damage you deal on a successful attack is your weapon’s Weapon Damage plus the SL of your attack. For Melee Attacks, use the final SL of the Opposed Melee Test. For Ranged Attacks, use the SL of your successful Ranged Test."
+                    }
+                ]
+            },
+            {
+                title: "Apply Damage",
+                paragraphs: [
+                    {
+                        content: "Subtract your target’s Toughness Bonus and the Armour Points protecting the struck Hit Location from your Damage. The remainder is the number of Wounds they lose."
+                    },
+                    {
+                        content: "An attack that inflicts Damage always causes at least 1 Wound, even if Toughness Bonus and Armour reduce the total to 0 or less."
+                    },
+                    {
+                        content: "You cannot reduce Wounds below 0. If the Wounds lost exceed the target’s remaining Wounds, they suffer a Critical Wound."
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        category: "Combat - Momentum",
+        subTutorials: [
+            {
+                title: "Gaining Momentum",
+                paragraphs: [
+                    {
+                        content: "Whenever you make a successful Opposed Melee Test against an opponent in combat, you gain Momentum. You either have Momentum or you don’t, so gaining Momentum twice has no additional effect."
+                    },
+                    {
+                        content: "When you have Momentum, you gain Advantage on any Melee Test you make. You gain this benefit even if you are attacking a character other than the one you gained Momentum ‘from’. The benefits of Momentum do not apply to any other Tests."
+                    }
+                ]
+            },
+            {
+                title: "Loosing Momentum",
+                paragraphs: [
+                    {
+                        content: "You lose Momentum when you fail a Melee Test — including losing an Opposed Test where you gained some SL, but not enough to beat your opponent — suffer Damage, or have a Condition inflicted upon you. You also lose any Momentum when combat ends, or there is otherwise a pause in fighting. Some Talents and Creature Traits also allow you to spend Momentum to gain certain benefits, such as making an attack with a secondary weapon or vomiting acidic bile upon one’s foes."
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        category: "Combat - Particularities",
+        subTutorials: [
+            {
+                title: "Aimed Shots",
+                paragraphs: [
+                    {
+                        content: "If you spend an Action aiming at your target, you gain +1 SL on your next ranged attack against them. You must have your ranged weapon in hand to aim, and the bonus is lost if you do anything else before taking your shot, such as moving or defending yourself."
+                    }
+                ]
+            },
+            {
+                title: "Outnumbering",
+                paragraphs: [
+                    {
+                        content: "A character is outnumbered if he has at least two enemies in adjacent squares. The two enemies must be attacking the character to count in outnumbering him."
+                    },
+                    {
+                        content: "Outnumbering an enemy with two characters adds +1 SL to Melee Attacks, while outnumbering an enemy with three or more characters adds +2 SL to Melee Attacks."
+                    }
+                ]
+            },
+            {
+                title: "Helpless Taget",
+                paragraphs: [
+                    {
+                        content: "A target is considered helpless while uncounscious, sleeping or focusing on another character than the attacker." //TODO
+                    },
+                    {
+                        content: "Attacking a Helpless Target guaranties the best possible attack roll (most of the time 11)."
+                    }
+                ]
+            },
+            {
+                title: "Shooting into a Group",
+                paragraphs: [
+                    {
+                        content: "Shooting into a group of half a dozen or more grants Advantage, but you cannot choose which member of the group you hit, including any allies mixed into the fray. On a successful attack, the target is determined randomly among the likely candidates."
+                    }
+                ]
+            },
+            {
+                title: "Shooting into Melee",
+                paragraphs: [
+                    {
+                        content: "Ranged attacks against Engaged targets suffer Disadvantage. If this causes an attack that would otherwise have hit to miss, you instead hit a combatant engaged in the melee chosen at random."
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        category: "Injury, Healing, and Death",
+        subTutorials: [
+            {
+                title: "Wounds",
+                paragraphs: [
+                    {
+                        content: "Wound loss represents minor cuts, bruises, and depleted reserves of energy. Wounds are lost by sustaining Damage. The lowest number of Wounds you can ever have is 0. If you would be taken to negative Wounds, you instead suffer a Critical Wound."
+                    }
+                ]
+            },
+            {
+                title: "Healing Wounds",
+                paragraphs: [
+                    {
+                        content: "At the end of each day, make an Average (+2 SL) Endurance Test. If successful, you recover Wounds equal to the SL + your Toughness Bonus. If the day was spent restfully, you recover a further number of Wounds equal to your Toughness Bonus even if you failed this Test."
+                    }
+                ]
+            },
+            {
+                title: "Using the Hal Skill",
+                paragraphs: [
+                    {
+                        content: "A Character, can use the Heal skill to recover more Wounds, so long as they have access to bandages, poultices, or other medical supplies. A successful Heal Test recovers Intelligence Bonus + SL Wounds. The difficulty of the Test is determined by the circumstances and the nature of the injury."
+                    },
+                    {
+                        content: "A patient can only benefit from one Heal roll per incident in which they lost Wounds, such as a fight, fall, or unfortunate accident involving the graf ’s horse."
+                    },
+                    {
+                        content: "Characters remove one Bleeding Condition for each Wound they recover. While the Heal Skill can only be used to recover Wounds once per incident, you can still use it to remove Bleeding Conditions — simply remove one for each Wound that would have been recovered."
+                    },
+                    {
+                        content: "A fumbled Heal Test inflicts 1d10 Wounds, but cannot reduce the target below 1 Wound."
+                    }
+                ]
+            },
+            {
+                title: "Critical Wounds",
+                paragraphs: [
+                    {
+                        content: "Critical Wounds are severe, and include broken bones, torn muscles, internal injuries, and sundered flesh. Critical Wounds are debilitating and dangerous. Gain too many and you risk death."
+                    },
+                    {
+                        content: "There are two ways to receive a Critical Wound. One is to incur any Damage that would reduce your Wounds below 0, the other is to suffer a Critical Hit."
+                    }
+                ]
+            },
+            {
+                title: "Healing Critical Wounds",
+                paragraphs: [
+                    {
+                        content: "Several Critical Wound results and conditions cannot be resolved until you receive some kind of Medical Attention. The follownig may be considered Medical Attention : the successful use of the Heal Skill, the application of a Bandage, Healing Poultice or similar, the successful use of a Prayer or Spell that heal Wounds."
+                    }
+                ]
+            },
+            {
+                title: "Surgery",
+                paragraphs: [
+                    {
+                        content: "Some wounds are beyond simple stitching and foul-smelling poultices. If you suffer a Critical Wound where surgery is required to attend to it, you suffer the marked penalties until you visit an appropriately trained doktor or barber-surgeon, or somehow source a magical or divine surgery equivalent. A character with the Surgery Talent can treat such a Critical Wound by making a Challenging (+0 SL) Heal Test."
+                    }
+                ]
+            },
+            {
+                title: "Death",
+                paragraphs: [
+                    {
+                        content: "Death can result directly from a Critical Wound or if a Character succumbs to many injuries. If you have more Critical Wounds than your Toughness Bonus, you are at risk of death. In such circumstances, should you incur the Unconscious Condition from an attack, Spell, Bleeding Condition, or the effects of a Critical Wound, you begin to succumb to your injuries. You will perish after Toughness Bonus rounds unless you are healed of one or more Critical Wounds or the Unconscious Condition is removed."
+                    }
+                ]
+            }
+        ]
     }
 ];
