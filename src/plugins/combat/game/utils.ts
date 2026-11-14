@@ -34,8 +34,6 @@ Array.prototype.addItemsAt = function(index: number, items: any[]) {
 
 // Retrieve weapon info
 TEW.COMBAT.getWeaponQualityEffects = (weapon: MeleeWeapon | RangedWeapon) => {
-    let attackMod: number = 0;
-    let defenceMod: number = 0;
     let slashLevel: number = 0;
     let attackBonusSL: number = 0;
     let defenceBonusSL: number = 0;
@@ -61,7 +59,7 @@ TEW.COMBAT.getWeaponQualityEffects = (weapon: MeleeWeapon | RangedWeapon) => {
         } else if (quality === WeaponQuality.SHIELD_5) {
             bonusAP += 5;
         } else if (quality === WeaponQuality.DEFENSIVE) {
-            defenceMod += 10;
+            defenceBonusSL += 1;
         } else if (quality === WeaponQuality.HACK) {
             ignoredAP += 1;
         } else if (quality === WeaponQuality.PENETRATING) {
@@ -98,13 +96,11 @@ TEW.COMBAT.getWeaponQualityEffects = (weapon: MeleeWeapon | RangedWeapon) => {
         } else if (quality === WeaponQuality.DANGEROUS) {
             effects.DANGEROUS = true;
         } else if (quality === WeaponQuality.ACCURATE) {
-            attackMod += 10;
+            attackBonusSL += 1;
         }
     });
 
     return {
-        attackMod,
-        defenceMod,
         attackBonusSL,
         defenceBonusSL,
         bonusAP,
@@ -174,7 +170,7 @@ TEW.COMBAT.getAttackCompOrDefault = (battler: Game_BattlerBase, weaponGroup: Wea
 
 // Get battler's stat value for combat depending on the wielded weapon's group
 // TODO is Dodge
-TEW.COMBAT.getDefenceCompOrDefault = (battler: Game_BattlerBase, weaponGroup: WeaponGroup, ccBonus: number, isMelee: boolean) => {
+TEW.COMBAT.getDefenceCompOrDefault = (battler: Game_BattlerBase, weaponGroup: WeaponGroup, isMelee: boolean) => {
     const dodgeValue = battler.comp('DODGE');
     if (!isMelee) {
         return {

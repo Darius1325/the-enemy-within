@@ -63,8 +63,8 @@ TEW.DATABASE.CONDITIONS = {
         description: "You are blinded and suffer a penalty to all tests that depend on sight.",
         maxStacks: Infinity,
         testModifier: {
-            mod: -10,
-            comps: ['EVALUATE', 'NAVIGATION', 'PERCEPTION', 'TRACK', 'MELEE_BASIC', 'MELEE_BRAWLING', 'MELEE_CAVALRY', 'MELEE_FENCING', 'MELEE_PARRY', 'MELEE_FLAIL', 'MELEE_POLE_ARM', 'MELEE_TWO_HANDED', 'RANGED_BOW', 'RANGED_BLACKPOWDER', 'RANGED_CROSSBOW', 'RANGED_ENGINEERING', 'RANGED_ENTANGLING', 'RANGED_EXPLOSIVES', 'RANGED_SLING', 'RANGED_THROWING'],
+            mod: -1,
+            comps: ['DODGE', 'EVALUATE', 'NAVIGATION', 'PERCEPTION', 'TRACK', 'MELEE_BASIC', 'MELEE_BRAWLING', 'MELEE_CAVALRY', 'MELEE_FENCING', 'MELEE_PARRY', 'MELEE_FLAIL', 'MELEE_POLE_ARM', 'MELEE_TWO_HANDED', 'RANGED_BOW', 'RANGED_BLACKPOWDER', 'RANGED_CROSSBOW', 'RANGED_ENGINEERING', 'RANGED_ENTANGLING', 'RANGED_EXPLOSIVES', 'RANGED_SLING', 'RANGED_THROWING'],
         },
         removal: ConditionRemoval.AUTO,
     },
@@ -75,7 +75,7 @@ TEW.DATABASE.CONDITIONS = {
         description: "You are deafened and suffer a penalty to all tests that depend on hearing.",
         maxStacks: Infinity,
         testModifier: {
-            mod: -10,
+            mod: -1,
             comps: ['LANGUAGE_BATTLE', 'LANGUAGE_BRETONNIAN', 'LANGUAGE_CLASSICAL', 'LANGUAGE_ELTHARIN', 'LANGUAGE_GUILDER', 'LANGUAGE_KHAZALID', 'CASTING_MAGICK', 'LANGUAGE_MIDDENLANDER', 'LANGUAGE_WASTELANDER'],
         },
         removal: ConditionRemoval.AUTO,
@@ -91,7 +91,7 @@ TEW.DATABASE.CONDITIONS = {
         description: "You are caught in a net, rope, or similar restraint. You cannot move voluntarily. You suffer −20 to all Tests. You may spend your Action attempting a Strength Test (SL 0) to free yourself.",
         maxStacks: Infinity,
         testModifier: {
-            mod: -10,
+            mod: -1,
             comps: ['ATHLETICS', 'DODGE'],
         },
         removal: ConditionRemoval.TEST,
@@ -108,7 +108,7 @@ TEW.DATABASE.CONDITIONS = {
         description: "You are exhausted. You suffer −10 to all Tests per stack. Resting for at least 1 hour removes 1 stack.",
         maxStacks: Infinity,
         testModifier: {
-            mod: -10,
+            mod: -1,
         },
         removal: ConditionRemoval.NONE,
     },
@@ -125,7 +125,7 @@ TEW.DATABASE.CONDITIONS = {
         description: "Venom courses through your veins. You suffer −10 to all Tests and 1 Wound per stack at the start of your turn. An antidote or successful First Aid Test (SL 1+) removes 1 stack.",
         maxStacks: Infinity,
         testModifier: {
-            mod: -10,
+            mod: -1,
         },
         removal: ConditionRemoval.TEST,
         removalTest: {
@@ -144,10 +144,10 @@ TEW.DATABASE.CONDITIONS = {
     PRONE: {
         id: ConditionId.PRONE,
         name: "Prone",
-        description: "You have been knocked down. Ranged attacks against you suffer −20; melee attacks against you gain +20. You must spend your full Movement to stand up.",
+        description: "You have been knocked down. Ranged attacks against you suffer −2 SL; melee attacks against you gain +2 SL. You must spend your full Movement to stand up.",
         maxStacks: 1,
         testModifier: {
-            mod: -20,
+            mod: -2,
             comps: ['ATHLETICS', 'DODGE'],
         },
         removal: ConditionRemoval.AUTO,
@@ -164,7 +164,7 @@ TEW.DATABASE.CONDITIONS = {
         description: "You are dazed. You lose your Action each turn. Remove 1 stack at the end of your turn.",
         maxStacks: Infinity,
         testModifier: {
-            mod: -10,
+            mod: -1,
         },
         removal: ConditionRemoval.TEST,
         removalTest: {

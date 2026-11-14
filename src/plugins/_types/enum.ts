@@ -65,6 +65,15 @@ export const enum BodyLocation {
     BODY
 }
 
+export const enum HitLocation {
+    LEFT_ARM, 
+    RIGHT_ARM,
+    LEFT_LEG,
+    RIGHT_LEG,
+    HEAD,
+    BODY
+}
+
 export const enum ArmorQuality {
     PARTIAL,
     REINFORCED,

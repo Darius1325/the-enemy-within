@@ -256,19 +256,16 @@ Game_BattlerBase.prototype.comp = function(compId: string) {
     return this.compPlus(compId) + this.paramByName(associatedStat);
 };
 
+// GIGA TODO talents & advantages
 Game_BattlerBase.prototype.compWithModifiers = function(compId: string) {
-    let conditionId: string;
-    let compFinal: number;
-    const associatedStat = TEW.DATABASE.COMPS.SET[compId].stat;
-    compFinal = this.compPlus(compId) + this.paramByName(associatedStat);
-    for (conditionId in this._conditions) {
-        const condition = TEW.DATABASE.CONDITIONS[conditionId];
-        if (!condition) continue;
-        if (condition.testModifier && (condition.testModifier.comps === undefined || condition.testModifier.comps.includes(conditionId))) {
-            compFinal += condition.testModifier.mod;
-        }
-    }
-    return compFinal;
+    const baseValue = this.comp(compId);
+    const modifier = this.totalConditionModifier(compId);
+    return {
+        name: this._name,
+        baseValue,
+        totalValue: baseValue + modifier * 10,
+        modifier,
+    };
 };
 
 Game_BattlerBase.prototype.anyCompOfCategory = function(compCategory: string) {
@@ -801,7 +798,11 @@ Game_BattlerBase.prototype.applyConditionsOnTurnStart = function(): number {
         } else if (condition.removal === ConditionRemoval.TEST) {
             let removalTestResult: { success: boolean; sl: number; };
             if (condition.id === ConditionId.ENTANGLED) {
-                removalTestResult = TEW.DICE.opposedTest(this.paramByName(Stat.STRG), this._conditions[conditionId].entangledStrength);
+                removalTestResult = TEW.DICE.opposedTest(
+                    this.paramByName(Stat.STRG),
+                    this._conditions[conditionId].entangledStrength,
+                    this.totalConditionModifier()
+                );
             } else {
                 removalTestResult = TEW.DICE.skillTest(this, condition.removalTest.comp, 0, false);
             }

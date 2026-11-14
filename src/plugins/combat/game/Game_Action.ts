@@ -1,7 +1,7 @@
 // $PluginCompiler TEW_Combat.js
 
 import { BattleDecision, CompleteBattler } from "../../_types/battlerAI";
-import { BattleOption, BattleTargetType, BodyLocation, ConditionId, GameActionUsableObject, SpellEffectType, SpellRange, SpellTarget, SpellTargetRadius, Stat, WeaponQuality } from "../../_types/enum";
+import { BattleOption, BattleTargetType, BodyLocation, ConditionId, GameActionUsableObject, HitLocation, SpellEffectType, SpellRange, SpellTarget, SpellTargetRadius, Stat, WeaponQuality } from "../../_types/enum";
 import { MeleeWeapon } from "../../_types/meleeWeapon";
 import { RangedWeapon } from "../../_types/rangedWeapon";
 import { Spell } from "../../_types/spell";
@@ -530,12 +530,10 @@ Game_Action.prototype.resolveWeaponAttack = function(isMelee: boolean) {
     console.log(`Attacker ${attacker._name} competence:`, attackerCombatSkill);
 
     // TODO Get (best) weapon from defender
-    // TODO ranged attacks must be dodged
     //   Get combat characteristic associated with weapon
     const defenderCombatSkill = TEW.COMBAT.getDefenceCompOrDefault(
         target,
         defenderWeapon.group,
-        0, // TODO cc bonus
         isMelee && TEW.COMBAT.isMeleeWeapon(defenderWeapon) // Ranged attacks are dodged
     );
     console.log(`Defender ${target._name} competence:`, defenderCombatSkill);
@@ -543,31 +541,30 @@ Game_Action.prototype.resolveWeaponAttack = function(isMelee: boolean) {
     // TODO Check for opponent's defensive tools (shield)
     // TODO Check attacker's talents for modifiers (make a list)
     // TODO Check defender's talents for modifiers (make a list)
-    // TODO Check weapon effects on bonus (PRECISE)
     // TODO Check sizes
     // TODO Check outnumberment
 
     // Attacker condition modifiers
-    let attackerConditionMod = attacker.totalConditionModifier(attackerCombatSkill.compId);
+    const attackerBaseConditionMod = attacker.totalConditionModifier(attackerCombatSkill.compId);
+    let attackerConditionMod = attackerBaseConditionMod;
     if (target.hasCondition(ConditionId.SURPRISED)) {
-        attackerConditionMod += 20;
+        attackerConditionMod += 2;
         target.removeCondition(ConditionId.SURPRISED);
-    }
-    if (target.hasCondition(ConditionId.BLINDED)) {
-        attackerConditionMod += 10;
     }
     // TODO deafened
     // TODO prone
 
     // Defender condition modifiers
-    const defenderConditionMod = target.totalConditionModifier();
+    const defenderBaseConditionMod = target.totalConditionModifier(defenderCombatSkill.compId);
 
     // Roll dice
     const combatResult = TEW.DICE.combatOpposedSkillTest(
-        attackerCombatSkill.value + attackerWeaponEffects.attackMod + this.attackRollModifier() + attackerConditionMod,
-        defenderCombatSkill.value + defenderWeaponEffects.defenceMod + defenderConditionMod,
+        attackerCombatSkill.value,
+        defenderCombatSkill.value,
         attacker._char.isActor(),
-        target._char.isActor()
+        target._char.isActor(),
+        attackerWeaponEffects.attackBonusSL + attackerConditionMod + this.attackRollModifier(),
+        defenderWeaponEffects.defenceBonusSL + defenderBaseConditionMod
     );
 
     // Special weapon quality checks
@@ -591,25 +588,21 @@ Game_Action.prototype.resolveWeaponAttack = function(isMelee: boolean) {
         }
     }
 
-    // FIXME do we add bonus SL before or after hit check ?
-    combatResult.slAttacker += attackerWeaponEffects.attackBonusSL;
-    combatResult.slDefender += attackerWeaponEffects.defenceBonusSL;
-
     // TODO wait X seconds here for player input (fortune points)
 
     // TODO Check attacker's talents on dice roll (make a list)
     // TODO Check weapon effects on dice roll (make a list)
-    // TODO miss
 
     if (combatResult.slAttacker >= 0 && combatResult.success) {
         // TODO Check weapon effects on crit (make a list)
         // TODO Check for crits
 
-        // Check location
-        const hitLocation: BodyLocation = BodyLocation.BODY; // TODO location table
-
         // Armor and armor penetration
-        let defenderArmorPoints: number = target.armorPointsAtLocation(hitLocation, attackerWeaponEffects.ignoredAP, attackerWeaponEffects.ignoreMetalArmor);
+        let defenderArmorPoints: number = target.armorPointsAtLocation(
+            combatResult.hitLocation,
+            attackerWeaponEffects.ignoredAP,
+            attackerWeaponEffects.ignoreMetalArmor
+        );
         if (attackerWeaponEffects.effects.UNDAMAGING) {
             defenderArmorPoints *= 2;
         }
@@ -629,12 +622,17 @@ Game_Action.prototype.resolveWeaponAttack = function(isMelee: boolean) {
         this.dealDamage(target, Math.max(damage, 1));
 
         //   Check weapon effects based on location (make a list)
-        // if (attackerWeaponEffects.effects.PUMMEL && hitLocation === BodyLocation.HEAD) {
-        //     const pummelTestResult = TEW.DICE.opposedTest(attacker.paramByName(Stat.STRG), target.paramByName(Stat.STRG));
-        //     if (pummelTestResult.success) {
-        //         target.addCondition(ConditionId.STUNNED);
-        //     }
-        // }
+        if (attackerWeaponEffects.effects.PUMMEL && combatResult.hitLocation === HitLocation.HEAD) {
+            const pummelTestResult = TEW.DICE.opposedTest(
+                attacker.paramByName(Stat.STRG),
+                target.paramByName(Stat.STRG),
+                attackerBaseConditionMod,
+                defenderBaseConditionMod
+            );
+            if (pummelTestResult.success) {
+                target.addCondition(ConditionId.STUNNED);
+            }
+        }
         if (attackerWeaponEffects.effects.ENTANGLE) {
             target.addCondition(ConditionId.ENTANGLED, 1, attacker.paramBonus(Stat.STRG));
         }
@@ -648,6 +646,8 @@ Game_Action.prototype.resolveWeaponAttack = function(isMelee: boolean) {
         // }
 
         // TODO Lookup crit table (help me)
+    } else {
+        // TODO miss
     }
 };
 
@@ -717,7 +717,7 @@ Game_Action.chargeAttack = function(subject: CompleteBattler, target: Game_Battl
             },
             weapon: TEW.DATABASE.WEAPONS.MELEE_SET[subject.equippedWeapon().id] || TEW.DATABASE.WEAPONS.MELEE_SET.UNARMED
         },
-        { attackRoll: success ? 10 : 0 }
+        { attackRoll: success ? 1 : 0 }
     );
 };
 

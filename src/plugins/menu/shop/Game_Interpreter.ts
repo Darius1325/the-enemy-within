@@ -13,6 +13,7 @@
 
 import TEW from "../../_types/tew";
 import { NPC } from "../../_types/npc";
+import { Game_BattlerBase } from "../../base/stats/Game_BattlerBase";
 
 // ----------------------
 // $StartCompilation
@@ -49,17 +50,22 @@ Game_Interpreter.prototype.merchantHaggleValue = function(npcId: string) {
  */
 Game_Interpreter.prototype.haggle = function(npcId: string) {
     if (!$gameParty.hasHaggledWith(npcId)) {
-        let modifier = TEW.SHOPS.HAGGLE_LOSS;
-        const partyValue = Math.max(...$gameParty.allMembers().map((actor: any) =>
-            actor.compWithModifiers(TEW.SHOPS.HAGGLE_COMP)));
-        const result = TEW.DICE.opposedTest(partyValue, this.merchantHaggleValue(npcId));
+        let loss = TEW.SHOPS.HAGGLE_LOSS;
+
+        const partyBestComp = $gameParty.allMembers()
+            .map((actor: Game_BattlerBase) => actor.compWithModifiers(TEW.SHOPS.HAGGLE_COMP))
+            .sort((a, b) => b.totalValue - a .totalValue)[0];
+
+        const result = TEW.DICE.opposedTest(partyBestComp.baseValue, this.merchantHaggleValue(npcId), partyBestComp.modifier);
+
         if (result.success) {
-            modifier = result.criticalPlayer ? TEW.SHOPS.HAGGLE_CRITICAL_WIN : TEW.SHOPS.HAGGLE_WIN;
+            loss = result.criticalPlayer ? TEW.SHOPS.HAGGLE_CRITICAL_WIN : TEW.SHOPS.HAGGLE_WIN;
         } else if (result.criticalPlayer) {
-            modifier = TEW.SHOPS.HAGGLE_CRITICAL_LOSS;
+            loss = TEW.SHOPS.HAGGLE_CRITICAL_LOSS;
         }
-        console.log(`Haggling with ${npcId}: SL ${result.sl}, success ${result.success}, critical ${result.criticalPlayer} => ${modifier}%`);
-        $gameParty.setMerchantHaggle(npcId, modifier);
+
+        console.log(`Haggling with ${npcId}: SL ${result.sl}, success ${result.success}, critical ${result.criticalPlayer} => ${loss}%`);
+        $gameParty.setMerchantHaggle(npcId, loss);
     }
     const haggle = $gameParty.merchantHaggle(npcId);
     $gameVariables.setValue(TEW.SHOPS.HAGGLE_VARIABLE_ID, haggle);

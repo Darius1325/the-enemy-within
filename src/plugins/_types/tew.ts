@@ -18,7 +18,7 @@ import { Talent } from "./talent";
 import { MeleeWeapon } from "./meleeWeapon";
 import { RangedWeapon } from "./rangedWeapon";
 import { Ammunition } from "./ammunition";
-import { ArmorGroup, BattlerAIType, SpellDomain, WeaponGroup, WeaponQuality, Wind, WindName } from "./enum";
+import { ArmorGroup, BattlerAIType, HitLocation, SpellDomain, WeaponGroup, WeaponQuality, Wind, WindName } from "./enum";
 import {Game_BattlerBase} from "../base/stats/Game_BattlerBase";
 import { Troop } from "./troop";
 import { Quest } from "./quest";
@@ -202,6 +202,8 @@ const TEW: {
             /** All shops by merchant NPC ID (from TEW.DATABASE.NPCS.SET) */
             SET?: Record<string, Shop>;
         };
+
+        HIT_LOCATION_TABLE?: Record<number, { min: number; max: number }>;
     };
 
     /**
@@ -405,6 +407,9 @@ const TEW: {
          * @returns the result between 1 and range included
          */
         roll?: (range?: number) => number;
+
+        invertRoll?: (roll: number) => number;
+
         /**
          * Roll a 10-sided die and add the result to the actor's initiative bonus.
          * Used to determine turn order
@@ -416,8 +421,9 @@ const TEW: {
         skillTest?: (
             battler: Game_BattlerBase,
             compId: string,
-            modifier?: number,
-            hidden?: boolean
+            slModifier?: number,
+            hidden?: boolean,
+            advantages?: number
         ) => {
             sl: number,
             success: boolean,
@@ -427,8 +433,9 @@ const TEW: {
         opposedTest?: (
             value: number,
             opposedValue: number,
-            modifier?: number,
-            opposedModifier?: number
+            slModifier?: number,
+            opposedSLModifier?: number,
+            advantages?: number
         ) => {
             sl: number,
             success: boolean,
@@ -439,7 +446,11 @@ const TEW: {
             compValueAttacker: number,
             compValueDefender: number,
             isAttackerPlayer: boolean,
-            isDefenderPlayer: boolean
+            isDefenderPlayer: boolean,
+            slModifierAttacker?: number,
+            slModifierDefender?: number,
+            advantagesAttacker?: number,
+            advantagesDefender?: number
         ) => {
             rollAttacker: number,
             rollDefender: number,
@@ -447,7 +458,8 @@ const TEW: {
             slDefender: number,
             success: boolean,
             criticalAttacker: boolean,
-            criticalDefender: boolean
+            criticalDefender: boolean,
+            hitLocation: HitLocation
         };
     };
 
@@ -563,12 +575,6 @@ const TEW: {
          * @returns Weapon's in-battle effects
          */
         getWeaponQualityEffects?: (weapon: MeleeWeapon | RangedWeapon) => {
-            /** Modifier applied to dice rolls when attacking (before success/failure) */
-            attackMod: number;
-
-            /** Modifier applied to dice rolls when defending (before success/failure) */
-            defenceMod: number;
-
             /** Modifier applied to SL when attacking (after success) */
             attackBonusSL: number;
 
@@ -648,7 +654,11 @@ const TEW: {
          * @param isMelee true if the weapon is melee, false if it is ranged
          * @returns Whether the battler has the right competence and the effective value
          */
-        getDefenceCompOrDefault?: (battler: Game_BattlerBase, weaponGroup: WeaponGroup, ccBonus: number, isMelee: boolean) => {
+        getDefenceCompOrDefault?: (battler: Game_BattlerBase, weaponGroup: WeaponGroup, isMelee: boolean) => {
+            /**
+             * Best competence to use against this weapon group
+             */
+            compId: string;
             /**
              * True if the battler has the competence matching weaponGroup
              */

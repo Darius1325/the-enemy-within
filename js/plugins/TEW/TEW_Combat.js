@@ -384,8 +384,6 @@ Array.prototype.addItemsAt = function (index, items) {
 };
 // Retrieve weapon info
 TEW.COMBAT.getWeaponQualityEffects = (weapon) => {
-    let attackMod = 0;
-    let defenceMod = 0;
     let slashLevel = 0;
     let attackBonusSL = 0;
     let defenceBonusSL = 0;
@@ -419,7 +417,7 @@ TEW.COMBAT.getWeaponQualityEffects = (weapon) => {
             bonusAP += 5;
         }
         else if (quality === "Defensive" /* WeaponQuality.DEFENSIVE */) {
-            defenceMod += 10;
+            defenceBonusSL += 1;
         }
         else if (quality === "Hack" /* WeaponQuality.HACK */) {
             ignoredAP += 1;
@@ -474,12 +472,10 @@ TEW.COMBAT.getWeaponQualityEffects = (weapon) => {
             effects.DANGEROUS = true;
         }
         else if (quality === "Accurate" /* WeaponQuality.ACCURATE */) {
-            attackMod += 10;
+            attackBonusSL += 1;
         }
     });
     return {
-        attackMod,
-        defenceMod,
         attackBonusSL,
         defenceBonusSL,
         bonusAP,
@@ -546,7 +542,7 @@ TEW.COMBAT.getAttackCompOrDefault = (battler, weaponGroup, isMelee) => {
 };
 // Get battler's stat value for combat depending on the wielded weapon's group
 // TODO is Dodge
-TEW.COMBAT.getDefenceCompOrDefault = (battler, weaponGroup, ccBonus, isMelee) => {
+TEW.COMBAT.getDefenceCompOrDefault = (battler, weaponGroup, isMelee) => {
     const dodgeValue = battler.comp('DODGE');
     if (!isMelee) {
         return {
@@ -581,22 +577,22 @@ TEW.COMBAT.getWeaponReloadLevel = (weaponData) => {
     for (let quality of weaponData.qualities) {
         let reloadLevel;
         switch (quality) {
-            case 27 /* WeaponQuality.RELOAD_1 */:
+            case "Reload" /* WeaponQuality.RELOAD_1 */:
                 reloadLevel = 1;
                 break;
-            case 28 /* WeaponQuality.RELOAD_2 */:
+            case "Reload II" /* WeaponQuality.RELOAD_2 */:
                 reloadLevel = 2;
                 break;
-            case 29 /* WeaponQuality.RELOAD_3 */:
+            case "Reload III" /* WeaponQuality.RELOAD_3 */:
                 reloadLevel = 3;
                 break;
-            case 30 /* WeaponQuality.RELOAD_4 */:
+            case "Reload IV" /* WeaponQuality.RELOAD_4 */:
                 reloadLevel = 4;
                 break;
-            case 31 /* WeaponQuality.RELOAD_5 */:
+            case "Reload V" /* WeaponQuality.RELOAD_5 */:
                 reloadLevel = 5;
                 break;
-            case 32 /* WeaponQuality.RELOAD_6 */:
+            case "Reload VI" /* WeaponQuality.RELOAD_6 */:
                 reloadLevel = 6;
                 break;
             default: reloadLevel = undefined;
@@ -1984,10 +1980,10 @@ Game_Action.prototype.applyReload = function () {
     }
     const weaponData = Object.assign(Object.assign({}, mainHand), TEW.DATABASE.WEAPONS.RANGED_SET[mainHand.id]);
     let maxReload = 1;
-    if (weaponData.qualities.includes(35 /* WeaponQuality.REPEATER */)) {
+    if (weaponData.qualities.includes("Repeater" /* WeaponQuality.REPEATER */)) {
         maxReload = 2;
     }
-    else if (weaponData.qualities.includes(37 /* WeaponQuality.REPEATER_4 */)) {
+    else if (weaponData.qualities.includes("Repeater IV" /* WeaponQuality.REPEATER_4 */)) {
         maxReload = 5;
     }
     // Repeater weapon with some ammo still loaded: always 1 action to fully reload with same ammo type
@@ -2095,33 +2091,28 @@ Game_Action.prototype.resolveWeaponAttack = function (isMelee) {
     const attackerCombatSkill = TEW.COMBAT.getAttackCompOrDefault(attacker, attackerWeapon.group, isMelee);
     console.log(`Attacker ${attacker._name} competence:`, attackerCombatSkill);
     // TODO Get (best) weapon from defender
-    // TODO ranged attacks must be dodged
     //   Get combat characteristic associated with weapon
-    const defenderCombatSkill = TEW.COMBAT.getDefenceCompOrDefault(target, defenderWeapon.group, 0, // TODO cc bonus
-    isMelee && TEW.COMBAT.isMeleeWeapon(defenderWeapon) // Ranged attacks are dodged
+    const defenderCombatSkill = TEW.COMBAT.getDefenceCompOrDefault(target, defenderWeapon.group, isMelee && TEW.COMBAT.isMeleeWeapon(defenderWeapon) // Ranged attacks are dodged
     );
     console.log(`Defender ${target._name} competence:`, defenderCombatSkill);
     // TODO Check for opponent's defensive tools (shield)
     // TODO Check attacker's talents for modifiers (make a list)
     // TODO Check defender's talents for modifiers (make a list)
-    // TODO Check weapon effects on bonus (PRECISE)
     // TODO Check sizes
     // TODO Check outnumberment
     // Attacker condition modifiers
-    let attackerConditionMod = attacker.totalConditionModifier(attackerCombatSkill.compId);
+    const attackerBaseConditionMod = attacker.totalConditionModifier(attackerCombatSkill.compId);
+    let attackerConditionMod = attackerBaseConditionMod;
     if (target.hasCondition("SURPRISED" /* ConditionId.SURPRISED */)) {
-        attackerConditionMod += 20;
+        attackerConditionMod += 2;
         target.removeCondition("SURPRISED" /* ConditionId.SURPRISED */);
-    }
-    if (target.hasCondition("BLINDED" /* ConditionId.BLINDED */)) {
-        attackerConditionMod += 10;
     }
     // TODO deafened
     // TODO prone
     // Defender condition modifiers
-    const defenderConditionMod = target.totalConditionModifier();
+    const defenderBaseConditionMod = target.totalConditionModifier(defenderCombatSkill.compId);
     // Roll dice
-    const combatResult = TEW.DICE.combatOpposedSkillTest(attackerCombatSkill.value + attackerWeaponEffects.attackMod + this.attackRollModifier() + attackerConditionMod, defenderCombatSkill.value + defenderWeaponEffects.defenceMod + defenderConditionMod, attacker._char.isActor(), target._char.isActor());
+    const combatResult = TEW.DICE.combatOpposedSkillTest(attackerCombatSkill.value, defenderCombatSkill.value, attacker._char.isActor(), target._char.isActor(), attackerWeaponEffects.attackBonusSL + attackerConditionMod + this.attackRollModifier(), defenderWeaponEffects.defenceBonusSL + defenderBaseConditionMod);
     // Special weapon quality checks
     // Impale - critical hit on tens
     if (attackerWeaponEffects.effects.IMPALE) {
@@ -2142,20 +2133,14 @@ Game_Action.prototype.resolveWeaponAttack = function (isMelee) {
             // TODO maladresse ??
         }
     }
-    // FIXME do we add bonus SL before or after hit check ?
-    combatResult.slAttacker += attackerWeaponEffects.attackBonusSL;
-    combatResult.slDefender += attackerWeaponEffects.defenceBonusSL;
     // TODO wait X seconds here for player input (fortune points)
     // TODO Check attacker's talents on dice roll (make a list)
     // TODO Check weapon effects on dice roll (make a list)
-    // TODO miss
     if (combatResult.slAttacker >= 0 && combatResult.success) {
         // TODO Check weapon effects on crit (make a list)
         // TODO Check for crits
-        // Check location
-        const hitLocation = 3 /* BodyLocation.BODY */; // TODO location table
         // Armor and armor penetration
-        let defenderArmorPoints = target.armorPointsAtLocation(hitLocation, attackerWeaponEffects.ignoredAP, attackerWeaponEffects.ignoreMetalArmor);
+        let defenderArmorPoints = target.armorPointsAtLocation(combatResult.hitLocation, attackerWeaponEffects.ignoredAP, attackerWeaponEffects.ignoreMetalArmor);
         if (attackerWeaponEffects.effects.UNDAMAGING) {
             defenderArmorPoints *= 2;
         }
@@ -2171,12 +2156,12 @@ Game_Action.prototype.resolveWeaponAttack = function (isMelee) {
         }
         this.dealDamage(target, Math.max(damage, 1));
         //   Check weapon effects based on location (make a list)
-        // if (attackerWeaponEffects.effects.PUMMEL && hitLocation === BodyLocation.HEAD) {
-        //     const pummelTestResult = TEW.DICE.opposedTest(attacker.paramByName(Stat.STRG), target.paramByName(Stat.STRG));
-        //     if (pummelTestResult.success) {
-        //         target.addCondition(ConditionId.STUNNED);
-        //     }
-        // }
+        if (attackerWeaponEffects.effects.PUMMEL && combatResult.hitLocation === 4 /* HitLocation.HEAD */) {
+            const pummelTestResult = TEW.DICE.opposedTest(attacker.paramByName("STRG" /* Stat.STRG */), target.paramByName("STRG" /* Stat.STRG */), attackerBaseConditionMod, defenderBaseConditionMod);
+            if (pummelTestResult.success) {
+                target.addCondition("STUNNED" /* ConditionId.STUNNED */);
+            }
+        }
         if (attackerWeaponEffects.effects.ENTANGLE) {
             target.addCondition("ENTANGLED" /* ConditionId.ENTANGLED */, 1, attacker.paramBonus("STRG" /* Stat.STRG */));
         }
@@ -2189,6 +2174,9 @@ Game_Action.prototype.resolveWeaponAttack = function (isMelee) {
         //     }
         // }
         // TODO Lookup crit table (help me)
+    }
+    else {
+        // TODO miss
     }
 };
 /**
@@ -2213,6 +2201,7 @@ Game_Action.prototype.applySpell = function (target) {
     if (this._subjectAbilityRoll.sl >= spell.cn) {
         // TODO Prompt for spell bonus effects (e.g. additional targets, increased range... etc)
         // handled by spell effect ?
+        // TODO take armor into account
         // TODO Resolve spell domain effects (e.g. Chamon ignoring metal armor)
         switch (spell.effect.type) {
             case 0 /* SpellEffectType.MAGIC_MISSILE */:
@@ -2244,7 +2233,7 @@ Game_Action.chargeAttack = function (subject, target, success) {
             target,
         },
         weapon: TEW.DATABASE.WEAPONS.MELEE_SET[subject.equippedWeapon().id] || TEW.DATABASE.WEAPONS.MELEE_SET.UNARMED
-    }, { attackRoll: success ? 10 : 0 });
+    }, { attackRoll: success ? 1 : 0 });
 };
 // ----------------------
 // Tile display
