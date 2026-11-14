@@ -15,16 +15,23 @@ Game_BattlerBase.TPARAM = {
     'move': 0,
 };
 
-Game_BattlerBase.prototype.baseMove = function() {
-    return (Number(this.tparam('move')) || TEW.COMBAT.SYSTEM.mvp) * BattleManager.moveMultiplier;
+/**
+ * Walking distance in tiles: <move:n> note tag, TEW.COMBAT.SYSTEM.mvp by default
+ */
+Game_BattlerBase.prototype.walkDistance = function() {
+    return Number(this.tparam('move')) || TEW.COMBAT.SYSTEM.mvp;
 };
 
-Game_BattlerBase.prototype.move = function() {
-    let totalMove = this.baseMove();
-    if (!$gameMap._flexibleMovement) { // Charge command selected
-        totalMove += Math.floor(this.comp('ATHLETICS') / 10) + 2; // Easy athletics test max possible roll
-    }
-    return totalMove;
+Game_BattlerBase.prototype.runDistance = function() {
+    return this.walkDistance() * TEW.COMBAT.SYSTEM.runMultiplier;
+};
+
+/**
+ * Charging distance is the run distance plus the charge (athletics) test SL,
+ * maxChargeDistance being the highest reachable value (Easy athletics test, best roll)
+ */
+Game_BattlerBase.prototype.maxChargeDistance = function() {
+    return this.runDistance() + Math.floor(this.comp('ATHLETICS') / 10) + 2;
 };
 
 Game_BattlerBase.prototype.tparamCode = function(tparam) {

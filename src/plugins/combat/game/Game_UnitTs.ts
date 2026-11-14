@@ -41,16 +41,6 @@ Game_UnitTs.prototype.onTurnStart = function() {
     });
 };
 
-Game_UnitTs.prototype.canActionMembers = function() {
-    return this.aliveMembers().filter(function(member) {
-        return member.canAction();
-    });
-};
-
-Game_UnitTs.prototype.isPhase = function() {
-    return this.canActionMembers().length > 0;
-};
-
 Game_UnitTs.prototype.onClear = function() {
     this.members().forEach(function(member) {
         member.onClear();

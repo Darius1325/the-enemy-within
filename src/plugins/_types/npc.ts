@@ -25,7 +25,7 @@ export type NPC = {
      * NPC Stats
      * Array of 9 stats : [WEAS, BALS, STRG, TOUG, INIT, AGIL, DEXT, INTL, WILL, FELW]
      */
-    stats: number[] | any;
+    stats: number[];
     /**
      * NPC Health Points
      * @example 13

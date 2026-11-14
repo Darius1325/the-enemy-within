@@ -8,7 +8,7 @@ import { Spell } from "./spell";
 
 export type CompleteBattler = Game_Battler & Game_BattlerBase;
 
-type BattleTarget = {
+export type BattleTarget = {
     type: BattleTargetType.BATTLER;
     target: Game_Battler;
 } | {
@@ -16,10 +16,10 @@ type BattleTarget = {
     target: { x: number; y: number; };
 }
 
-type BattleDecision = {
+export type BattleDecision = {
     initiator: CompleteBattler;
     option: BattleOption;
-    target: BattleTarget;
+    target?: BattleTarget;
     weapon?: MeleeWeapon | RangedWeapon;
     spell?: Spell;
     item?: Item;

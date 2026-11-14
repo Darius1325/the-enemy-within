@@ -20,20 +20,32 @@ import { Status } from "../_types/enum";
 TEW.DATABASE.NPCS = TEW.DATABASE.NPCS || {};
 // #region ====== NPCS SET === //
 TEW.DATABASE.NPCS.SET = {
+    DEBUG: {
+        ai: "DEBUG",
+        name: "Debug NPC",
+        stats: [30, 31, 32, 33, 34, 35, 36, 37, 38, 39],
+        wounds: 12,
+        move: 4,
+        status: Status.SILVER_2,
+        comps: {
+            ATHLETICS: 10,
+            DODGE: 10,
+            MELEE_BASIC: 10,
+            RANGED_CROSSBOW: 10
+        },
+        talents: [],
+        traits: [],
+        weapons: ["DAGGER", "CROSSBOW"],
+        armor: [],
+        trappings: {
+            BOLT: 20
+        },
+        spells: {},
+        prayers: {}
+    },
     GUSTAV_FONDLEBURGER: {
         name: "Gustav Fondleburger",
-        stats: {
-            WEAS: 28, 
-            BALS: 32, 
-            STRG: 31,
-            TOUG: 41, 
-            INIT: 38, 
-            AGIL: 34, 
-            DEXT: 35, 
-            INTL: 39, 
-            WILL: 29, 
-            FELW: 52
-        },
+        stats: [28, 32, 31, 41, 38, 34, 35, 39, 29, 52],
         wounds: 2, // 13
         move: 4,
         status: Status.SILVER_2,

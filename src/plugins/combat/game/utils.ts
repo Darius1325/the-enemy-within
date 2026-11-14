@@ -178,21 +178,19 @@ TEW.COMBAT.getDefenceCompOrDefault = (battler: Game_BattlerBase, weaponGroup: We
     const dodgeValue = battler.comp('DODGE');
     if (!isMelee) {
         return {
+            compId: 'DODGE',
             match: true,
             value: dodgeValue
         };
     }
-    const compName = 'MELEE' + '_' + TEW.DATABASE.WEAPONS.GROUP_IDS[weaponGroup];
-    if (battler.hasComp(compName)) {
-        const compValue = battler.comp(compName);
-        return {
-            match: true,
-            value: Math.max(compValue, dodgeValue) // TODO opt out if shield
-        };
-    }
+    const meleeCompName = 'MELEE' + '_' + TEW.DATABASE.WEAPONS.GROUP_IDS[weaponGroup];
+    const hasMeleeComp = battler.hasComp(meleeCompName);
+    const meleeCompValue = hasMeleeComp ? battler.comp(meleeCompName) : battler.weas;
+    const maxCompValue = Math.max(meleeCompValue, dodgeValue);
     return {
-        match: false,
-        value: Math.max(battler.weas, dodgeValue)
+        compId: maxCompValue === meleeCompValue ? meleeCompName : 'DODGE',
+        match: hasMeleeComp,
+        value: maxCompValue // TODO opt out if shield
     };
 };
 
@@ -207,4 +205,38 @@ TEW.COMBAT.getWeaponFromId = (weaponId: string) => {
         return rangedWeapon;
     }
     return meleeWeapon;
+};
+
+TEW.COMBAT.getWeaponReloadLevel = (weaponData: RangedWeapon): number => {
+    for (let quality of weaponData.qualities) {
+        let reloadLevel: number;
+        switch (quality) {
+            case WeaponQuality.RELOAD_1:
+                reloadLevel = 1;
+                break;
+            case WeaponQuality.RELOAD_2:
+                reloadLevel = 2;
+                break;
+            case WeaponQuality.RELOAD_3:
+                reloadLevel = 3;
+                break;
+            case WeaponQuality.RELOAD_4:
+                reloadLevel = 4;
+                break;
+            case WeaponQuality.RELOAD_5:
+                reloadLevel = 5;
+                break;
+            case WeaponQuality.RELOAD_6:
+                reloadLevel = 6;
+                break;
+            default: reloadLevel = undefined;
+        }
+        console.log("Qualities: ", weaponData.qualities);
+        console.log("Reload: ", reloadLevel);
+        if (reloadLevel !== undefined) {
+            return reloadLevel;
+        }
+    }
+    console.log("WHAT THE FU- BOOOOOOOM");
+    return;
 };

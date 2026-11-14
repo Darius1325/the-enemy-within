@@ -309,6 +309,9 @@ TEW.DICE.combatOpposedSkillTest = function (compValueAttacker, compValueDefender
     else {
         success = (compValueAttacker >= compValueDefender);
     }
+    console.log("MELEE_ATTACK");
+    console.log(`Attacker comp value: ${compValueAttacker}`);
+    console.log(`Defender comp value: ${compValueDefender}`);
     console.log(`Attacker roll: ${rollAttacker} (SL: ${slAttacker}, Critical: ${criticalAttacker})`);
     console.log(`Defender roll: ${rollDefender} (SL: ${slDefender}, Critical: ${criticalDefender})`);
     console.log(`Combat result: ${success ? "Attacker wins" : "Defender wins"}`);
@@ -1181,6 +1184,7 @@ Game_BattlerBase.prototype.compPlus = function (compId) {
     return this._competences[compId] || 0;
 };
 Game_BattlerBase.prototype.comp = function (compId) {
+    console.log("Here lies the bugged stat calculation");
     const associatedStat = TEW.DATABASE.COMPS.SET[compId].stat;
     return this.compPlus(compId) + this.paramByName(associatedStat);
 };
@@ -1390,6 +1394,7 @@ Game_BattlerBase.prototype.addWeapon = function (weaponId) {
         isReloadable: rangedWeapon && (rangedWeapon.group === 14 /* WeaponGroup.BLACKPOWDER */ ||
             rangedWeapon.group === 15 /* WeaponGroup.ENGINEERING */ ||
             rangedWeapon.group === 9 /* WeaponGroup.CROSSBOW */),
+        currentReloadLevel: 0,
         ammo: 0,
         ammoType: undefined // Ammo ID
     });
@@ -1435,6 +1440,7 @@ Game_BattlerBase.prototype.equippedWeapon = function () {
         isInMainHand: true,
         isInSecondHand: false,
         isReloadable: false,
+        currentReloadLevel: 0,
         ammo: 0,
         ammoType: undefined
     };

@@ -4537,6 +4537,7 @@ TEW.DATABASE.CHARACTER_DESCRIPTIONS = [
 // ============================== //
 // #region ============================== TEW_Combats ============================== //
 // ----------------------
+// TODO indicator for battles where reloadable weapon don't start loaded
 TEW.DATABASE.COMBATS = {
     B0C0_BATTLE_TEST: {
         enemies: [
@@ -4548,6 +4549,13 @@ TEW.DATABASE.COMBATS = {
             },
             {
                 npc: "PHILLIPE_DESCARTES",
+            }
+        ]
+    },
+    B0C0_BATTLE_TEST_2: {
+        enemies: [
+            {
+                npc: "DEBUG",
             }
         ]
     },
@@ -5947,6 +5955,18 @@ TEW.DATABASE.CONDITIONS = {
 // ----------------------
 TEW.DATABASE.NPCS = TEW.DATABASE.NPCS || {};
 TEW.DATABASE.NPCS.UTILITIES = TEW.DATABASE.NPCS.UTILITIES || {};
+// Get battler's stat value for combat depending on the wielded weapon's group
+TEW.DATABASE.NPCS.UTILITIES.getAttackCompOrDefault = (battler, weaponGroup, isMelee) => {
+    const compId = (isMelee ? 'MELEE' : 'RANGED') + '_' + TEW.DATABASE.WEAPONS.GROUP_IDS[weaponGroup];
+    console.log("weapon group: ", weaponGroup);
+    console.log("comp: ", compId);
+    if (battler.hasComp(compId)) {
+        return battler.comp(compId);
+    }
+    else {
+        return isMelee ? battler.weas : battler.bals;
+    }
+};
 TEW.DATABASE.NPCS.UTILITIES.checkMeleeWeaponEquipped = (initiator) => {
     const mainHand = initiator.mainHand();
     console.log("Main hand:", mainHand);
@@ -5959,18 +5979,62 @@ TEW.DATABASE.NPCS.UTILITIES.checkRangeWeaponEquipped = (initiator) => {
 };
 TEW.DATABASE.NPCS.UTILITIES.checkReloadableWeaponEquipped = (initiator) => {
     const mainHand = initiator.mainHand();
-    return mainHand.isReloadable;
+    return !!mainHand && mainHand.isReloadable;
 };
 TEW.DATABASE.NPCS.UTILITIES.checkLoadedWeaponEquipped = (initiator) => {
     const mainHand = initiator.mainHand();
-    return mainHand.ammo > 0;
+    return !!mainHand && mainHand.ammo > 0;
+};
+TEW.DATABASE.NPCS.UTILITIES.checkForUnequippedMeleeWeapon = (initiator) => {
+    const meleeWeaponsOrderedBySkill = initiator._weapons
+        .filter(weapon => TEW.DATABASE.WEAPONS.MELEE_SET[weapon.id] !== undefined)
+        .filter(weapon => !weapon.isInMainHand)
+        .map(weapon => {
+        const data = TEW.DATABASE.WEAPONS.MELEE_SET[weapon.id];
+        return Object.assign(Object.assign(Object.assign({}, weapon), data), { skillValue: TEW.DATABASE.NPCS.UTILITIES.getAttackCompOrDefault(initiator, data.group, true) });
+    })
+        .sort((a, b) => b.skillValue - a.skillValue);
+    if (meleeWeaponsOrderedBySkill.length === 0) {
+        return undefined;
+    }
+    const maxSkillValue = meleeWeaponsOrderedBySkill[0].skillValue;
+    const meleeWeaponsOrderedByMaxPotentialDamage = meleeWeaponsOrderedBySkill
+        .filter(weapon => weapon.skillValue === maxSkillValue)
+        .sort((a, b) => b.damage - a.damage);
+    return meleeWeaponsOrderedByMaxPotentialDamage.length > 0
+        ? meleeWeaponsOrderedByMaxPotentialDamage[0]
+        : undefined;
+};
+TEW.DATABASE.NPCS.UTILITIES.checkForUnequippedRangedWeapon = (initiator) => {
+    const rangedWeaponsOrderedBySkill = initiator._weapons
+        .filter(weapon => TEW.DATABASE.WEAPONS.RANGED_SET[weapon.id] !== undefined)
+        .filter(weapon => !weapon.isInMainHand)
+        .map(weapon => {
+        const data = TEW.DATABASE.WEAPONS.RANGED_SET[weapon.id];
+        return Object.assign(Object.assign(Object.assign({}, weapon), data), { skillValue: TEW.DATABASE.NPCS.UTILITIES.getAttackCompOrDefault(initiator, data.group, false) });
+    })
+        .sort((a, b) => b.skillValue - a.skillValue);
+    if (rangedWeaponsOrderedBySkill.length === 0) {
+        return undefined;
+    }
+    const maxSkillValue = rangedWeaponsOrderedBySkill[0].skillValue;
+    const rangedWeaponsOrderedByMaxPotentialDamage = rangedWeaponsOrderedBySkill
+        .filter(weapon => weapon.skillValue === maxSkillValue)
+        .sort((a, b) => b.damage - a.damage);
+    return rangedWeaponsOrderedByMaxPotentialDamage.length > 0
+        ? rangedWeaponsOrderedByMaxPotentialDamage[0]
+        : undefined;
+};
+TEW.DATABASE.NPCS.UTILITIES.checkCurrentAmmo = (initiator) => {
+    const mainHand = initiator.mainHand();
+    return mainHand.isReloadable ? mainHand.ammo : undefined;
 };
 TEW.DATABASE.NPCS.UTILITIES.manhattanDistance = (a, b) => {
     return Math.abs(a.tx - b.tx) + Math.abs(a.ty - b.ty);
 };
 // Checks if an enemy is in melee range and returns the closest one
 TEW.DATABASE.NPCS.UTILITIES.checkEnemyInMeleeRangeAndChooseAtRandom = (initiator, enemies) => {
-    const dummyMeleeAttack = new Game_Action(initiator, false, { weapon: { range: 1 } });
+    const dummyMeleeAttack = new Game_Action(initiator, false, { initiator, option: 6 /* BattleOption.MELEE_ATTACK */, target: undefined, weapon: { range: 1 } });
     const enemiesInRange = dummyMeleeAttack.findBattlersInRange(enemies);
     if (enemiesInRange.length === 0) {
         return undefined;
@@ -5979,11 +6043,12 @@ TEW.DATABASE.NPCS.UTILITIES.checkEnemyInMeleeRangeAndChooseAtRandom = (initiator
 };
 // Checks if an enemy is in shooting range and returns the closest one
 TEW.DATABASE.NPCS.UTILITIES.checkEnemyInShootingRangeAndReturnClosest = (initiator, enemies) => {
-    const rangedWeapon = TEW.DATABASE.WEAPONS.RANGED_SET[initiator.mainHand().id]; // TODO second hand
+    var _a;
+    const rangedWeapon = TEW.DATABASE.WEAPONS.RANGED_SET[(_a = initiator.mainHand()) === null || _a === void 0 ? void 0 : _a.id]; // TODO second hand
     if (!rangedWeapon) {
         return undefined;
     }
-    const dummyRangedAttack = new Game_Action(initiator, false, { weapon: rangedWeapon });
+    const dummyRangedAttack = new Game_Action(initiator, false, { initiator, option: 7 /* BattleOption.RANGED_ATTACK */, target: undefined, weapon: rangedWeapon });
     // TODO maybe random tie break here, otherwise the first character in party order will be selected
     const enemiesSortedByProximity = enemies.sort((a, b) => TEW.DATABASE.NPCS.UTILITIES.manhattanDistance(a, initiator)
         - TEW.DATABASE.NPCS.UTILITIES.manhattanDistance(b, initiator));
@@ -5995,14 +6060,13 @@ TEW.DATABASE.NPCS.UTILITIES.checkEnemyInShootingRangeAndReturnClosest = (initiat
 };
 // Checks where is the closest enemy in charge range and returns it, if there is one
 TEW.DATABASE.NPCS.UTILITIES.checkEnemyInChargeRangeAndReturnClosest = (initiator, enemies) => {
-    $gameMap._flexibleMovement = false; // Enable computing maximum charge range
-    const maxMove = initiator.move();
-    $gameMap._flexibleMovement = true;
+    const maxMove = initiator.maxChargeDistance();
     // TODO maybe random tie break here, otherwise the first character in party order will be selected
     const enemiesSortedByProximity = enemies.sort((a, b) => TEW.DATABASE.NPCS.UTILITIES.manhattanDistance(a, initiator)
         - TEW.DATABASE.NPCS.UTILITIES.manhattanDistance(b, initiator));
-    const targettableEnemies = $gameMap.chargeRangeForAI(maxMove, initiator.event(), enemiesSortedByProximity);
-    console.log(targettableEnemies);
+    // Only keep targets whose charge path can actually be followed (tile edges included)
+    const targettableEnemies = $gameMap.chargeRangeForAI(maxMove, initiator.event(), enemiesSortedByProximity)
+        .filter((enemy) => initiator.canFollowPath($gameMap.loadOrComputeChargeRangeForAI({ x: initiator.tx, y: initiator.ty }, { x: enemy.tx, y: enemy.ty }, initiator.event())));
     if (targettableEnemies.length === 0) {
         return undefined;
     }
@@ -6014,9 +6078,12 @@ TEW.DATABASE.NPCS.UTILITIES.checkEnemyAndReturnClosest = (initiator, enemies) =>
     const enemiesSortedByProximity = enemies
         .map(enemy => ({ enemy, distance: TEW.DATABASE.NPCS.UTILITIES.manhattanDistance(enemy, initiator) }))
         .sort((a, b) => a.distance - b.distance);
+    if (enemiesSortedByProximity.length === 0) {
+        return undefined;
+    }
     const minimumDistance = enemiesSortedByProximity[0].distance;
     const closestEnemies = enemiesSortedByProximity.filter(enemy => enemy.distance === minimumDistance);
-    return closestEnemies[Math.floor(Math.random() * closestEnemies.length)];
+    return closestEnemies[Math.floor(Math.random() * closestEnemies.length)].enemy;
 };
 // Checks if the initiatior is out of charging range of all enemies
 TEW.DATABASE.NPCS.UTILITIES.checkOutOfEnnemyChargingRange = (initiator, enemies) => {
@@ -6102,15 +6169,14 @@ TEW.DATABASE.NPCS.UTILITIES.doReload = (initiator) => {
     return {
         option: 10 /* BattleOption.RELOAD */,
         initiator,
-        target: undefined,
     };
 };
 // The initiator switches to a melee weapon
-TEW.DATABASE.NPCS.UTILITIES.doSwitchToMelee = (initiator) => {
+TEW.DATABASE.NPCS.UTILITIES.doSwitchToMainHand = (initiator, weapon) => {
     return {
         option: 5 /* BattleOption.SWITCH_WEAPONS */,
         initiator,
-        target: undefined,
+        weapon,
     };
 };
 //-----------------------------------------------------------------------------
@@ -6125,23 +6191,36 @@ TEW.DATABASE.NPCS.AI = {
     DEBUG: (initiator, allies, enemies) => {
         const actionAvailable = initiator._actionCount > 0;
         const moveAvailable = initiator._moveCount > 0;
-        const equippedMeleeWeapon = TEW.DATABASE.NPCS.UTILITIES.checkMeleeWeaponEquipped(initiator);
-        const closestEnemy = TEW.DATABASE.NPCS.UTILITIES.checkEnemyInMeleeRangeAndChooseAtRandom(initiator, enemies);
         const equippedRangedWeapon = TEW.DATABASE.NPCS.UTILITIES.checkRangeWeaponEquipped(initiator);
+        const closestEnemy = TEW.DATABASE.NPCS.UTILITIES.checkEnemyInShootingRangeAndReturnClosest(initiator, enemies);
+        const unequippedRangedWeapon = TEW.DATABASE.NPCS.UTILITIES.checkForUnequippedRangedWeapon(initiator);
         console.log("=====");
         console.log("DEBUG AI: ");
         console.log("-----");
         console.log("initiator :", initiator);
-        console.log("allies :", allies);
-        console.log("enemies :", enemies);
-        console.log("-----");
-        console.log("actionAvailable :", actionAvailable);
-        console.log("moveAvailable :", moveAvailable);
-        console.log("equippedMeleeWeapon :", equippedMeleeWeapon);
-        console.log("closestEnemy :", closestEnemy);
-        console.log("equippedRangedWeapon :", equippedRangedWeapon);
+        // console.log("allies :", allies);
+        // console.log("enemies :", enemies);
+        // console.log("-----");
+        // console.log("actionAvailable :", actionAvailable);
+        // console.log("moveAvailable :", moveAvailable);
+        // console.log("equippedMeleeWeapon :", equippedMeleeWeapon);
+        // console.log("closestEnemy :", closestEnemy);
+        // console.log("equippedRangedWeapon :", equippedRangedWeapon);
+        if (equippedRangedWeapon && closestEnemy) {
+            const ammo = TEW.DATABASE.NPCS.UTILITIES.checkCurrentAmmo(initiator);
+            if (ammo !== undefined && ammo === 0) {
+                console.log("reloading");
+                return TEW.DATABASE.NPCS.UTILITIES.doReload(initiator);
+            }
+            console.log("attacking with crossbow");
+            return TEW.DATABASE.NPCS.UTILITIES.doRangedAttack(initiator, closestEnemy);
+        }
+        if (unequippedRangedWeapon) {
+            console.log("Switching to:", unequippedRangedWeapon);
+            return TEW.DATABASE.NPCS.UTILITIES.doSwitchToMainHand(initiator, unequippedRangedWeapon);
+        }
         console.log("=====");
-        return TEW.DATABASE.NPCS.UTILITIES.doWait(initiator);
+        return TEW.DATABASE.NPCS.UTILITIES.doWait();
     },
     // LAZY AI :
     // Attacks the closest enemy if it has a melee weapon equipped and an enemy is in range, otherwise waits.
@@ -6174,7 +6253,6 @@ TEW.DATABASE.NPCS.AI = {
             }
             // if the closest enemy is in charge range, charge it
             const closestEnemyInChargeRange = TEW.DATABASE.NPCS.UTILITIES.checkEnemyInChargeRangeAndReturnClosest(initiator, enemies);
-            console.log(closestEnemyInChargeRange);
             if (actionAvailable && moveAvailable && closestEnemyInChargeRange) {
                 return TEW.DATABASE.NPCS.UTILITIES.doCharge(initiator, closestEnemyInChargeRange.tx, closestEnemyInChargeRange.ty);
             }
@@ -6229,10 +6307,10 @@ TEW.DATABASE.NPCS.AI = {
             const canMoveOutOfChargeRange = TEW.DATABASE.NPCS.UTILITIES.checkCanMoveOutOfEnnemyChargingRange(initiator, enemies);
             if (canMoveOutOfChargeRange && moveAvailable) {
                 const position = TEW.DATABASE.NPCS.UTILITIES.getPositionOutOfEnnemyChargingRange(initiator, enemies);
-                return TEW.DATABASE.NPCS.UTILITIES.doMove(initiator, position.x, position.y);
+                return TEW.DATABASE.NPCS.UTILITIES.doWalk(initiator, position.x, position.y);
             }
-            // Else, it switches weapons to melee
-            return TEW.DATABASE.NPCS.UTILITIES.doSwitchToMelee(initiator);
+            // Else, it switches weapons to melee // TODO invalid now bitch
+            return TEW.DATABASE.NPCS.UTILITIES.doSwitchToMainHand(initiator);
         }
         // else, just wait
         return TEW.DATABASE.NPCS.UTILITIES.doWait(initiator);
@@ -8363,20 +8441,32 @@ TEW.LEVELLING.spellRangeCost = function (fromKnown, toKnown, bonus, cost) {
 TEW.DATABASE.NPCS = TEW.DATABASE.NPCS || {};
 // #region ====== NPCS SET === //
 TEW.DATABASE.NPCS.SET = {
+    DEBUG: {
+        ai: "DEBUG",
+        name: "Debug NPC",
+        stats: [30, 31, 32, 33, 34, 35, 36, 37, 38, 39],
+        wounds: 12,
+        move: 4,
+        status: 4 /* Status.SILVER_2 */,
+        comps: {
+            ATHLETICS: 10,
+            DODGE: 10,
+            MELEE_BASIC: 10,
+            RANGED_CROSSBOW: 10
+        },
+        talents: [],
+        traits: [],
+        weapons: ["DAGGER", "CROSSBOW"],
+        armor: [],
+        trappings: {
+            BOLT: 20
+        },
+        spells: {},
+        prayers: {}
+    },
     GUSTAV_FONDLEBURGER: {
         name: "Gustav Fondleburger",
-        stats: {
-            WEAS: 28,
-            BALS: 32,
-            STRG: 31,
-            TOUG: 41,
-            INIT: 38,
-            AGIL: 34,
-            DEXT: 35,
-            INTL: 39,
-            WILL: 29,
-            FELW: 52
-        },
+        stats: [28, 32, 31, 41, 38, 34, 35, 39, 29, 52],
         wounds: 2, // 13
         move: 4,
         status: 4 /* Status.SILVER_2 */,

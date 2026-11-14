@@ -53,11 +53,3 @@ Game_Temp.prototype.positionX = function() {
 Game_Temp.prototype.positionY = function() {
     return this._positionY;
 };
-
-Game_Temp.prototype.canCancel = function() {
-    return this._canCancel;
-};
-
-Game_Temp.prototype.setCancel = function(canCancel) {
-    this._canCancel = canCancel;
-};

@@ -461,6 +461,12 @@ const TEW: {
             /** Max movement in one turn */
             mvp?: number;
 
+            /** Run distance = walk distance * runMultiplier */
+            runMultiplier?: number;
+
+            /** Modifier of the athletics test rolled when charging */
+            chargeTestModifier?: number;
+
             /** ??? */
             durationStartSprite?: number;
 
@@ -541,24 +547,6 @@ const TEW: {
 
             /** ??? */
             battleStartId?: number;
-
-            /** ??? */
-            enemyPhaseId?: number;
-
-            /** ??? */
-            playerPhaseId?: number;
-
-            /** Which game variable stores ??? */
-            phaseVarId?: number;
-
-            /** Which game variable stores ??? */
-            battlePhaseVarId?: number;
-
-            /** ??? */
-            playerPhaseVarId?: number;
-
-            /** Which game variable stores the ongoing/last battle's turn count */
-            turnCountVarId?: number;
 
             /** Whether the battle is lost */
             isDefeated?: boolean;
@@ -677,6 +665,8 @@ const TEW: {
          * @returns A weapon object
          */
         getWeaponFromId?: (weaponId: string) => MeleeWeapon | RangedWeapon;
+
+        getWeaponReloadLevel?: (weaponData: RangedWeapon) => number;
     };
 
     /** Shopping rules and utilities */
