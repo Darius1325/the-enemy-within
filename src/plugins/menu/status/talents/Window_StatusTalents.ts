@@ -5,7 +5,7 @@
 // File: Window_StatusTalents.ts
 // Author: Ersokili, 7evy, Sebibebi67
 // Date: 01/05/2025
-// Description: This file contains the implementation of the Window_StatusTalents class, which lists the talents an actor has acquired along with their level. While levelling mode is active, the talents belonging to the actor's career which have not been acquired yet are added at the top of the list, and can be bought and refunded with the left and right arrows.
+// Description: This file contains the implementation of the Window_StatusTalents class, which lists the talents an actor has acquired. While levelling mode is active, the talents belonging to the actor's career which have not been acquired yet are added at the top of the list, and can be bought and refunded with the left and right arrows.
 
 // ----------------------
 // Imports
@@ -250,12 +250,12 @@ Window_StatusTalents.prototype.talentLevel = function(talentId: string) {
 };
 
 /**
- * Talents which are not acquired yet display their price instead of a level of 0.
+ * A talent may only be taken once, so it has no level to display: an acquired talent, or one
+ * about to be bought, reads as learnt, and one which is not acquired yet displays its price.
  */
 Window_StatusTalents.prototype.talentLevelText = function(talentId: string) {
-    const level = this.talentLevel(talentId);
-    if (level > 0 || !this.isLevellingMode()) {
-        return `lvl${level}`;
+    if (this.talentLevel(talentId) > 0 || !this.isLevellingMode()) {
+        return TextManager.statusTalentLearned;
     }
     return `${this._levelling.talentCost()} ${TextManager.expA}`;
 };

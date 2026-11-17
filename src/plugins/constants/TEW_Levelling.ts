@@ -5,7 +5,7 @@
 // File: TEW_Levelling.ts
 // Author: Ersokili, 7evy, Sebibebi67
 // Date: 15/08/2026
-// Description: This file contains the experience costs used to buy advances. Characteristics and competences share the same bracket structure: the first bracket covers the first six advances (0 through 5), every following bracket covers five advances, and every advance past the last bracket costs the same. Costs are given per advance, and the bracket is determined by the number of advances already bought.
+// Description: This file contains the experience costs used to buy advances, following the Advancement XP Costs table of the 5th edition rules (wfrp5e.pdf, p191). Every characteristic or competence advance adds +5 to its value, and costs more than the one before it: the price of an advance is read from the number of advances already taken. Talents have a flat price, and spells are priced in brackets of five spells already known in their pool.
 
 // ----------------------
 // Imports
@@ -17,74 +17,90 @@ import TEW from "../_types/tew";
 // $StartCompilation
 // ----------------------
 
-// #region ====== COST BRACKETS === //
-TEW.LEVELLING.BRACKET_SIZE = 5;
-TEW.LEVELLING.LAST_BRACKET = 14;
+// #region ====== COSTS === //
+// Every advance raises a characteristic or a competence by this much
+TEW.LEVELLING.ADVANCE_STEP = 5;
 
-// Talents have a flat cost for now, as buying one several times is not implemented yet
+// Talents have a flat cost, and each one may only be taken once
 TEW.LEVELLING.TALENT_COST = 100;
 
 /**
- * Spells do not use the brackets below: their cost is a flat amount per bracket, and a bracket
- * is worth as many spells as the caster's relevant characteristic bonus.
- * Petty Magic uses the Willpower bonus and 50 XP, Arcane Magic the Intelligence bonus and
- * 100 XP (see Petty Magic and Arcane Magic (Lore) in wfrp4e.pdf, Chapter 4: Skills and Talents).
+ * A new spell is priced on the number of spells already known in its pool, in brackets of five:
+ * up to 5 known, 6 to 10, 11 to 15, 16 to 20, and 21 and up. Each bracket costs one more time the
+ * pool's base cost, 50 XP for Petty Magic and 100 XP for Arcane Magic (see Petty Magic, p123,
+ * and Arcane Magic (Lore), p115, in wfrp5e.pdf).
+ * The generic arcane spells count as lore spells "in all ways" (p242), so they share the arcane
+ * pool with the caster's lore.
  */
 TEW.LEVELLING.PETTY_SPELL_COST = 50;
 TEW.LEVELLING.ARCANE_SPELL_COST = 100;
+TEW.LEVELLING.SPELL_BRACKET_SIZE = 5;
+TEW.LEVELLING.SPELL_LAST_BRACKET = 4; // 21 and up
 
-// Brackets: 0-5, 6-10, 11-15, ..., 66-70, 71+
+// Learning Arcane Magic grants one spell of the chosen lore, as Petty Magic manifests Willpower bonus spells
+TEW.LEVELLING.FREE_ARCANE_SPELLS = 1;
+
+/**
+ * Cost of each advance, indexed by the number of advances already taken. The rules list costs up
+ * to +75 only, "for even the most ambitious campaigns", so nothing past the last entry may be bought.
+ * The two 850 of the competence column (+40 and +45) are printed as such in the rulebook, and its
+ * cumulative column agrees with them.
+ */
 TEW.LEVELLING.CHARACTERISTIC_COSTS = [
-    25,  // 0 - 5
-    30,  // 6 - 10
-    40,  // 11 - 15
-    50,  // 16 - 20
-    70,  // 21 - 25
-    90,  // 26 - 30
-    120, // 31 - 35
-    150, // 36 - 40
-    190, // 41 - 45
-    230, // 46 - 50
-    280, // 51 - 55
-    330, // 56 - 60
-    390, // 61 - 65
-    450, // 66 - 70
-    520  // 71 +
+    125,   // +5
+    175,   // +10
+    250,   // +15
+    350,   // +20
+    500,   // +25
+    700,   // +30
+    950,   // +35
+    1300,  // +40
+    1800,  // +45
+    2550,  // +50
+    3600,  // +55
+    5025,  // +60
+    6950,  // +65
+    9000,  // +70
+    11250  // +75
 ];
 
 TEW.LEVELLING.COMPETENCE_COSTS = [
-    10,  // 0 - 5
-    15,  // 6 - 10
-    20,  // 11 - 15
-    30,  // 16 - 20
-    40,  // 21 - 25
-    60,  // 26 - 30
-    80,  // 31 - 35
-    110, // 36 - 40
-    140, // 41 - 45
-    180, // 46 - 50
-    220, // 51 - 55
-    270, // 56 - 60
-    320, // 61 - 65
-    380, // 66 - 70
-    440  // 71 +
+    50,    // +5
+    75,    // +10
+    100,   // +15
+    150,   // +20
+    250,   // +25
+    400,   // +30
+    600,   // +35
+    850,   // +40
+    850,   // +45
+    1700,  // +50
+    2500,  // +55
+    3500,  // +60
+    4750,  // +65
+    6500,  // +70
+    8500   // +75
 ];
-// #endregion === COST BRACKETS === //
+// #endregion === COSTS === //
 // === //
 // #region ====== COST COMPUTATION === //
-TEW.LEVELLING.bracket = function(advances: number) {
-    return Math.min(
-        Math.ceil((advances + 1) / TEW.LEVELLING.BRACKET_SIZE) - 1,
-        TEW.LEVELLING.LAST_BRACKET
-    );
+/**
+ * Number of advances a value stands for. Values are stored as points, so that tests keep reading
+ * them directly; a value which is not a multiple of the step only counts its full advances.
+ */
+TEW.LEVELLING.advancesFromValue = function(value: number) {
+    return Math.floor(Math.max(0, value) / TEW.LEVELLING.ADVANCE_STEP);
 };
 
+// Past the last listed advance there is no price, which no amount of experience can pay
 TEW.LEVELLING.characteristicCost = function(advances: number) {
-    return TEW.LEVELLING.CHARACTERISTIC_COSTS[TEW.LEVELLING.bracket(advances)];
+    const cost = TEW.LEVELLING.CHARACTERISTIC_COSTS[advances];
+    return cost === undefined ? Infinity : cost;
 };
 
 TEW.LEVELLING.competenceCost = function(advances: number) {
-    return TEW.LEVELLING.COMPETENCE_COSTS[TEW.LEVELLING.bracket(advances)];
+    const cost = TEW.LEVELLING.COMPETENCE_COSTS[advances];
+    return cost === undefined ? Infinity : cost;
 };
 
 TEW.LEVELLING.characteristicRangeCost = function(fromAdvances: number, toAdvances: number) {
@@ -104,30 +120,39 @@ TEW.LEVELLING.competenceRangeCost = function(fromAdvances: number, toAdvances: n
 };
 
 /**
- * Cost of one more spell in a pool.
- * The first bracket covers everything up to one bonus worth of spells, the second up to two,
- * and so on, so a caster with a Willpower bonus of 3 holding 3 petty spells still pays the
- * first bracket and pays the second for the next three.
- * A bonus of 0 would leave no bracket to fall in, so it counts as 1.
+ * Bracket a number of known spells falls in. The first one covers up to 5 spells, so it holds
+ * six values (0 through 5) where every following one holds five.
  * @param known number of spells already known in the pool
- * @param bonus Willpower bonus for petty spells, Intelligence bonus for arcane ones
- * @param cost XP cost of one bracket
  */
-TEW.LEVELLING.spellCost = function(known: number, bonus: number, cost: number) {
-    return Math.max(1, Math.ceil((known + 1) / Math.max(1, bonus))) * cost;
+TEW.LEVELLING.spellBracket = function(known: number) {
+    if (known <= TEW.LEVELLING.SPELL_BRACKET_SIZE) {
+        return 0;
+    }
+    return Math.min(
+        Math.ceil(known / TEW.LEVELLING.SPELL_BRACKET_SIZE) - 1,
+        TEW.LEVELLING.SPELL_LAST_BRACKET
+    );
+};
+
+/**
+ * Cost of one more spell in a pool
+ * @param known number of spells already known in the pool
+ * @param cost the pool's base cost, paid once per bracket
+ */
+TEW.LEVELLING.spellCost = function(known: number, cost: number) {
+    return (TEW.LEVELLING.spellBracket(known) + 1) * cost;
 };
 
 /**
  * Total cost of every spell bought between two pool sizes
  * @param fromKnown number of spells already known in the pool
  * @param toKnown targeted number of spells
- * @param bonus Willpower bonus for petty spells, Intelligence bonus for arcane ones
- * @param cost XP cost of one bracket
+ * @param cost the pool's base cost, paid once per bracket
  */
-TEW.LEVELLING.spellRangeCost = function(fromKnown: number, toKnown: number, bonus: number, cost: number) {
+TEW.LEVELLING.spellRangeCost = function(fromKnown: number, toKnown: number, cost: number) {
     let total = 0;
     for (let known = fromKnown; known < toKnown; known++) {
-        total += TEW.LEVELLING.spellCost(known, bonus, cost);
+        total += TEW.LEVELLING.spellCost(known, cost);
     }
     return total;
 };

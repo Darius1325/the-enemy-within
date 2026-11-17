@@ -102,3 +102,10 @@ Per the rules, some talents can be bought several times for an increasing cost, 
 
 In `Window_StatusSpells`, levelling mode should change the list to include buyable spells that have not been acquired. Buyable spells should appear in blue (`textColor(1)`) and at the top of the list. Unlike the other levelling windows, a spell should be bought using the confirmation key (C or Enter) rather than an arrow key (because spells have no level).
 These are determined by the character's magical talents (`PETTY_MAGIC` and `ARCANE_MAGIC_<WIND>`). The EXP cost of spells is computed from the number of already known spells of that domain, and the Willpower (for petty spells) or Intelligence (for arcane) bonus. See the wfrp4e.pdf rules for details.
+
+## V5 update
+
+Warhammer Fantasy 5th edition rules are out, and we have some changes to make to match them:
+ - Stats and competences can only be advanced by increments of 5. Incidentally, there is a new table for XP costs in wfrp5eRedux.pdf (p191).
+ - Talents can only be taken one time each, no exception (so no more lvl1 display in the talent window, we will display 'Learned' instead).
+ - Buying spells, prayers and career advances will be implemented at a later date.

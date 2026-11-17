@@ -179,13 +179,13 @@ Window_StatusLevellingChoice.prototype.specialisationName = function(specialisat
         : TEW.DATABASE.TALENTS.SET[specialisationId].name;
 };
 
-// Advances already held on a competence, nothing for a talent the actor does not have
+// Value already held on a competence, nothing for a talent the actor does not have
 Window_StatusLevellingChoice.prototype.specialisationValueText = function(specialisationId: string) {
     if (!this.isCompetenceSlot()) {
         return '';
     }
-    const advances = this._actor.compAdvances(specialisationId);
-    return advances > 0 ? `${advances}` : '';
+    const value = this._actor.compPlus(specialisationId);
+    return value > 0 ? `${value}` : '';
 };
 
 // Binding the slot to the selected specialisation, which the session holds until confirmation

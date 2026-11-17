@@ -42,9 +42,9 @@ export interface Game_Actor extends Game_BattlerBase {
     anySlotPool: (slot: AnySlot) => string[];
     bindAnySlot: (slotIndex: number, specialisationId: string) => void;
 
-    grantFreePettySpells: () => void;
-    freePettySpells: () => number;
-    spellPoolBonus: (pool: string) => number;
+    grantFreeSpells: (pool: string, count: number) => void;
+    freeSpells: (pool: string) => number;
+    isArcaneLoreTalent: (talentId: string) => boolean;
     spellPoolCost: (pool: string) => number;
     spellCost: (pool: string, known: number, free: number) => number;
     buyableSpells: () => string[];
@@ -119,14 +119,21 @@ Game_Actor.prototype.spendExp = function(amount: number) {
     this._exp -= amount;
 };
 
-// Number of advances already bought for a characteristic (base values are not advances)
+/**
+ * Number of advances already bought for a characteristic.
+ * Base values are not advances, and every advance is worth TEW.LEVELLING.ADVANCE_STEP points of
+ * the bonus held in paramPlus.
+ */
 Game_Actor.prototype.statAdvances = function(paramId: number) {
-    return this.paramPlus(paramId);
+    return TEW.LEVELLING.advancesFromValue(this.paramPlus(paramId));
 };
 
-// Number of advances already bought for a competence (competences have no base value)
+/**
+ * Number of advances already bought for a competence.
+ * Competences have no base value, so their whole value is made of advances.
+ */
 Game_Actor.prototype.compAdvances = function(compId: string) {
-    return this.compPlus(compId);
+    return TEW.LEVELLING.advancesFromValue(this.compPlus(compId));
 };
 
 // Experience cost of the next characteristic advance
@@ -144,7 +151,7 @@ Game_Actor.prototype.applyStatAdvances = function(paramId: number, advances: num
     if (advances <= 0) {
         return;
     }
-    this.addParam(paramId, advances);
+    this.addParam(paramId, advances * TEW.LEVELLING.ADVANCE_STEP);
     this._paramBase[0] = this.calculateMHP();
 };
 
@@ -154,7 +161,7 @@ Game_Actor.prototype.applyCompAdvances = function(compId: string, advances: numb
         return;
     }
     this.learnComp(compId);
-    this.addComp(compId, advances);
+    this.addComp(compId, advances * TEW.LEVELLING.ADVANCE_STEP);
 };
 // #endregion =========================== Levelling ============================== //
 
@@ -164,39 +171,53 @@ Game_Actor.prototype.applyCompAdvances = function(compId: string, advances: numb
  * The bare Arcane Magic talent stands for whichever Arcane Lore the actor's wind draws on, and
  * is transformed into it on purchase. Channelling follows along on its own, as its name is
  * derived from the talents held rather than stored.
+ * A talent may only be taken once, so acquiring one again changes nothing, and in particular
+ * does not grant the free spells of a magical talent a second time.
+ * Petty Magic manifests a number of spells equal to the actor's Willpower bonus, and an Arcane
+ * Magic talent one spell of its lore. Which ones is the player's choice, so the allowance is
+ * stored and spent one spell at a time in levelling mode rather than picked here.
  */
 Game_Actor.prototype.addTalent = function(talentId: string) {
     const acquiredId = talentId === TEW.MAGIC.ARCANE_TALENT && this.arcaneTalent()
         ? this.arcaneTalent()
         : talentId;
+    if (this.hasTalent(acquiredId)) {
+        return;
+    }
     Game_Battler.prototype.addTalent.call(this, acquiredId);
     if (acquiredId === TEW.MAGIC.PETTY_TALENT) {
-        this.grantFreePettySpells();
+        this.grantFreeSpells(TEW.MAGIC.PETTY_POOL, this.paramBonus(Stat.WILL));
+    } else if (this.isArcaneLoreTalent(acquiredId)) {
+        this.grantFreeSpells(TEW.MAGIC.ARCANE_POOL, TEW.LEVELLING.FREE_ARCANE_SPELLS);
     }
 };
 
+// Whether a talent is an Arcane Lore, one of the eight keyed on a wind or a lesser one
+Game_Actor.prototype.isArcaneLoreTalent = function(talentId: string) {
+    return TEW.MAGIC.isWindArcaneTalent(talentId)
+        || TEW.MAGIC.LESSER_ARCANE_TALENTS.indexOf(talentId) >= 0;
+};
+
 /**
- * Petty Magic manifests a number of spells equal to the actor's Willpower bonus. Which ones is
- * the player's choice, so the allowance is stored and spent one spell at a time in levelling
- * mode rather than picked here.
+ * Adding to the free spells of a pool.
+ * Petty spells keep their own field, which saves made before arcane spells could be free hold.
  */
-Game_Actor.prototype.grantFreePettySpells = function() {
-    this._freePettySpells = this.freePettySpells() + this.paramBonus(Stat.WILL);
+Game_Actor.prototype.grantFreeSpells = function(pool: string, count: number) {
+    if (pool === TEW.MAGIC.PETTY_POOL) {
+        this._freePettySpells = this.freeSpells(pool) + count;
+    } else {
+        this._freeArcaneSpells = this.freeSpells(pool) + count;
+    }
 };
 
-// Petty spells granted by Petty Magic and not picked yet
-Game_Actor.prototype.freePettySpells = function() {
-    return this._freePettySpells || 0;
-};
-
-// Characteristic bonus setting the width of a pool's cost bracket
-Game_Actor.prototype.spellPoolBonus = function(pool: string) {
+// Spells of a pool granted by a magical talent and not picked yet
+Game_Actor.prototype.freeSpells = function(pool: string) {
     return pool === TEW.MAGIC.PETTY_POOL
-        ? this.paramBonus(Stat.WILL)
-        : this.paramBonus(Stat.INTL);
+        ? this._freePettySpells || 0
+        : this._freeArcaneSpells || 0;
 };
 
-// XP cost of one bracket of the pool
+// XP cost of a spell of the pool in the first bracket
 Game_Actor.prototype.spellPoolCost = function(pool: string) {
     return pool === TEW.MAGIC.PETTY_POOL
         ? TEW.LEVELLING.PETTY_SPELL_COST
@@ -207,13 +228,13 @@ Game_Actor.prototype.spellPoolCost = function(pool: string) {
  * Cost of one more spell in a pool
  * @param pool the spell's cost pool
  * @param known number of spells already known in that pool
- * @param free petty spells still granted by Petty Magic, which cost nothing
+ * @param free spells of that pool still granted by a magical talent, which cost nothing
  */
 Game_Actor.prototype.spellCost = function(pool: string, known: number, free: number) {
-    if (pool === TEW.MAGIC.PETTY_POOL && free > 0) {
+    if (free > 0) {
         return 0;
     }
-    return TEW.LEVELLING.spellCost(known, this.spellPoolBonus(pool), this.spellPoolCost(pool));
+    return TEW.LEVELLING.spellCost(known, this.spellPoolCost(pool));
 };
 
 // IDs of the spells the actor's talents open and which are not memorised yet
@@ -223,17 +244,18 @@ Game_Actor.prototype.buyableSpells = function() {
 };
 
 /**
- * Memorising a spell, spending one of the free petty spells if the actor still holds any
+ * Memorising a spell, spending one of the free spells of its pool if the actor still holds any
  * @param spellId ID of the spell to memorise
- * @param free whether the spell is paid for by the Petty Magic allowance
+ * @param free whether the spell is paid for by the allowance of a magical talent
  */
 Game_Actor.prototype.learnSpell = function(spellId: string, free = false) {
     if (this.hasSpell(spellId)) {
         return;
     }
     this.addSpell(spellId);
-    if (free && this.freePettySpells() > 0) {
-        this._freePettySpells = this.freePettySpells() - 1;
+    const pool = TEW.MAGIC.spellPool(TEW.DATABASE.SPELLS.SET[spellId].domain);
+    if (free && this.freeSpells(pool) > 0) {
+        this.grantFreeSpells(pool, -1);
     }
 };
 // #endregion =========================== Magic ============================== //

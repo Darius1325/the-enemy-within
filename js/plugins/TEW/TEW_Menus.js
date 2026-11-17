@@ -135,6 +135,7 @@ Object.defineProperties(TextManager, {
     statusCompBase: TextManager.getter('command', 61),
     statusCompUnlearned: TextManager.getter('command', 62),
     statusSpellLearned: TextManager.getter('command', 63),
+    statusTalentLearned: TextManager.getter('command', 63),
     statusSpellFree: TextManager.getter('command', 64),
     statusAnySpecialisation: TextManager.getter('command', 65),
     statusAnyChoose: TextManager.getter('command', 66),
@@ -1136,13 +1137,17 @@ Game_Levelling.prototype.releasePickOf = function (specialisationId) {
 Game_Levelling.prototype.compAdvances = function (compId) {
     return this._compAdvances[compId] || 0;
 };
-// Competence value including pending advances
-Game_Levelling.prototype.compValue = function (compId) {
+// Total number of advances, used to price the next one
+Game_Levelling.prototype.compAdvanceCount = function (compId) {
     return this._actor.compAdvances(compId) + this.compAdvances(compId);
+};
+// Competence value including pending advances, each worth TEW.LEVELLING.ADVANCE_STEP points
+Game_Levelling.prototype.compValue = function (compId) {
+    return this._actor.compPlus(compId) + this.compAdvances(compId) * TEW.LEVELLING.ADVANCE_STEP;
 };
 // Experience cost of the next competence advance
 Game_Levelling.prototype.nextCompCost = function (compId) {
-    return TEW.LEVELLING.competenceCost(this.compValue(compId));
+    return TEW.LEVELLING.competenceCost(this.compAdvanceCount(compId));
 };
 // Whether the career allows the advance and the remaining experience covers it
 Game_Levelling.prototype.canIncreaseComp = function (compId) {
@@ -1187,9 +1192,9 @@ Game_Levelling.prototype.statAdvances = function (paramId) {
 Game_Levelling.prototype.statAdvanceCount = function (paramId) {
     return this._actor.statAdvances(paramId) + this._statAdvances[paramId];
 };
-// Characteristic value including pending advances
+// Characteristic value including pending advances, each worth TEW.LEVELLING.ADVANCE_STEP points
 Game_Levelling.prototype.statValue = function (paramId) {
-    return this._actor.param(paramId) + this._statAdvances[paramId];
+    return this._actor.param(paramId) + this._statAdvances[paramId] * TEW.LEVELLING.ADVANCE_STEP;
 };
 // Experience cost of the next characteristic advance
 Game_Levelling.prototype.nextStatCost = function (paramId) {
@@ -1233,7 +1238,7 @@ Game_Levelling.prototype.talentCost = function () {
 Game_Levelling.prototype.isTalentBought = function (talentId) {
     return this._talentPurchases.indexOf(talentId) >= 0;
 };
-// Buying a talent twice is not implemented yet, so only new talents may be bought
+// A talent may only be taken once, so only new talents may be bought
 Game_Levelling.prototype.canBuyMoreTalent = function (talentId) {
     return this.canBuyTalent(talentId)
         && !this.isTalentBought(talentId)
@@ -1303,20 +1308,30 @@ Game_Levelling.prototype.spellPool = function (spellId) {
     return TEW.MAGIC.spellPool(TEW.DATABASE.SPELLS.SET[spellId].domain);
 };
 /**
- * Petty spells manifested by the Petty Magic talent and not picked yet, counting the talent
- * about to be bought. They cost nothing, and are spent oldest first.
+ * Free spells the magical talents about to be bought would grant in a pool: Willpower bonus
+ * petty spells for Petty Magic, and one spell of the lore for Arcane Magic.
  */
-Game_Levelling.prototype.totalFreePettySpells = function () {
-    const granted = this.isTalentBought(TEW.MAGIC.PETTY_TALENT)
-        ? this._actor.paramBonus('WILL')
+Game_Levelling.prototype.grantedFreeSpells = function (pool) {
+    if (pool === TEW.MAGIC.PETTY_POOL) {
+        return this.isTalentBought(TEW.MAGIC.PETTY_TALENT) ? this._actor.paramBonus('WILL') : 0;
+    }
+    return this.isTalentBought(TEW.MAGIC.ARCANE_TALENT) && this._actor.arcaneTalent()
+        ? TEW.LEVELLING.FREE_ARCANE_SPELLS
         : 0;
-    return this._actor.freePettySpells() + granted;
 };
-Game_Levelling.prototype.freePettySpells = function () {
+/**
+ * Spells of a pool granted by a magical talent and not picked yet, counting the talents about
+ * to be bought. They cost nothing, and are spent first.
+ */
+Game_Levelling.prototype.totalFreeSpells = function (pool) {
+    return this._actor.freeSpells(pool) + this.grantedFreeSpells(pool);
+};
+// Free spells of a pool left once the pending purchases have spent theirs
+Game_Levelling.prototype.freeSpells = function (pool) {
     const pending = this._spellPurchases
-        .filter((spellId) => this.spellPool(spellId) === TEW.MAGIC.PETTY_POOL)
+        .filter((spellId) => this.spellPool(spellId) === pool)
         .length;
-    return Math.max(0, this.totalFreePettySpells() - pending);
+    return Math.max(0, this.totalFreeSpells(pool) - pending);
 };
 // Number of spells in a pool, including the ones about to be memorised
 Game_Levelling.prototype.spellPoolSize = function (pool) {
@@ -1328,7 +1343,7 @@ Game_Levelling.prototype.spellPoolSize = function (pool) {
 // Experience cost of the next spell of a pool
 Game_Levelling.prototype.nextSpellCost = function (spellId) {
     const pool = this.spellPool(spellId);
-    return this._actor.spellCost(pool, this.spellPoolSize(pool), this.freePettySpells());
+    return this._actor.spellCost(pool, this.spellPoolSize(pool), this.freeSpells(pool));
 };
 /**
  * Total cost of the pending spells.
@@ -1344,15 +1359,16 @@ Game_Levelling.prototype.spellExp = function () {
 // Cost of each pending spell, in purchase order, as the confirmation summary displays them
 Game_Levelling.prototype.spellCosts = function () {
     const poolSizes = {};
-    let free = this.totalFreePettySpells();
+    const free = {};
     return this._spellPurchases.map((spellId) => {
         const pool = this.spellPool(spellId);
         if (poolSizes[pool] === undefined) {
             poolSizes[pool] = this._actor.spellsInPool(pool).length;
+            free[pool] = this.totalFreeSpells(pool);
         }
-        const cost = this._actor.spellCost(pool, poolSizes[pool], free);
-        if (pool === TEW.MAGIC.PETTY_POOL && free > 0) {
-            free--;
+        const cost = this._actor.spellCost(pool, poolSizes[pool], free[pool]);
+        if (free[pool] > 0) {
+            free[pool]--;
         }
         poolSizes[pool]++;
         return cost;
@@ -1417,6 +1433,7 @@ Game_Levelling.prototype.summary = function () {
             text: this.specialisationName(slot.kind, this._pendingPicks[slotIndex])
         });
     });
+    // Values are displayed in points, while costs are priced on the number of advances
     for (let paramId = 0; paramId < this._statAdvances.length; paramId++) {
         const pending = this._statAdvances[paramId];
         if (pending > 0) {
@@ -1424,7 +1441,7 @@ Game_Levelling.prototype.summary = function () {
             advances.push({
                 name: TEW.CHARACTERS.STATS_VERBOSE[paramId],
                 from: this._actor.param(paramId),
-                to: this._actor.param(paramId) + pending,
+                to: this.statValue(paramId),
                 cost: TEW.LEVELLING.characteristicRangeCost(bought, bought + pending)
             });
         }
@@ -1436,21 +1453,22 @@ Game_Levelling.prototype.summary = function () {
         const pending = this.compAdvances(compId);
         advances.push({
             name: this._actor.compName(compId),
-            from: bought,
-            to: bought + pending,
+            from: this._actor.compPlus(compId),
+            to: this.compValue(compId),
             cost: TEW.LEVELLING.competenceRangeCost(bought, bought + pending)
         });
     });
+    // A talent is either held or not, so it reads as learnt rather than as a level
     this._talentPurchases
         .slice()
         .sort((a, b) => TEW.DATABASE.TALENTS.SET[a].name.localeCompare(TEW.DATABASE.TALENTS.SET[b].name))
         .forEach(talentId => {
-        const bought = this._actor.talent(talentId);
         advances.push({
             name: TEW.DATABASE.TALENTS.SET[talentId].name,
-            from: bought,
-            to: bought + 1,
-            cost: this.talentCost()
+            from: 0,
+            to: 0,
+            cost: this.talentCost(),
+            text: TextManager.statusTalentLearned
         });
     });
     // Spells keep their purchase order, as each one is priced by how many came before it
@@ -1468,8 +1486,8 @@ Game_Levelling.prototype.summary = function () {
 };
 /**
  * Writing every pending advance to the actor and consuming the experience points.
- * Talents are applied before spells, so that the free petty spells the Petty Magic talent
- * manifests are already granted when the spells bought with them are memorised.
+ * Talents are applied before spells, so that the free spells Petty Magic and Arcane Magic grant
+ * are already held when the spells bought with them are memorised.
  */
 Game_Levelling.prototype.apply = function () {
     if (!this._actor) {
@@ -1489,8 +1507,9 @@ Game_Levelling.prototype.apply = function () {
     this._talentPurchases.forEach(talentId => {
         this._actor.addTalent(talentId);
     });
+    // Each spell spends a free spell of its pool while any remain, as spellCosts priced them
     this._spellPurchases.forEach((spellId) => {
-        this._actor.learnSpell(spellId, this.spellPool(spellId) === TEW.MAGIC.PETTY_POOL);
+        this._actor.learnSpell(spellId, true);
     });
     this._actor.spendExp(spentExp);
     this.clear();
@@ -1621,13 +1640,13 @@ Window_StatusLevellingChoice.prototype.specialisationName = function (specialisa
         ? this._actor.compName(specialisationId)
         : TEW.DATABASE.TALENTS.SET[specialisationId].name;
 };
-// Advances already held on a competence, nothing for a talent the actor does not have
+// Value already held on a competence, nothing for a talent the actor does not have
 Window_StatusLevellingChoice.prototype.specialisationValueText = function (specialisationId) {
     if (!this.isCompetenceSlot()) {
         return '';
     }
-    const advances = this._actor.compAdvances(specialisationId);
-    return advances > 0 ? `${advances}` : '';
+    const value = this._actor.compPlus(specialisationId);
+    return value > 0 ? `${value}` : '';
 };
 // Binding the slot to the selected specialisation, which the session holds until confirmation
 Window_StatusLevellingChoice.prototype.processOk = function () {
@@ -4754,7 +4773,7 @@ Window_StatusSpells.prototype.isLevellingMode = function () {
 };
 /**
  * Price of a spell which is not memorised yet, and nothing for the ones already known.
- * The spells manifested by the Petty Magic talent cost no experience at all.
+ * The spells granted by Petty Magic and Arcane Magic cost no experience at all.
  */
 Window_StatusSpells.prototype.spellCostText = function (spellId) {
     if (!this.isLevellingMode() || this._actor.hasSpell(spellId)) {
@@ -5279,12 +5298,12 @@ Window_StatusTalents.prototype.talentLevel = function (talentId) {
         : this._actor.talent(talentId);
 };
 /**
- * Talents which are not acquired yet display their price instead of a level of 0.
+ * A talent may only be taken once, so it has no level to display: an acquired talent, or one
+ * about to be bought, reads as learnt, and one which is not acquired yet displays its price.
  */
 Window_StatusTalents.prototype.talentLevelText = function (talentId) {
-    const level = this.talentLevel(talentId);
-    if (level > 0 || !this.isLevellingMode()) {
-        return `lvl${level}`;
+    if (this.talentLevel(talentId) > 0 || !this.isLevellingMode()) {
+        return TextManager.statusTalentLearned;
     }
     return `${this._levelling.talentCost()} ${TextManager.expA}`;
 };

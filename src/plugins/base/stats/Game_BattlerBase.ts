@@ -29,6 +29,7 @@ export interface Game_BattlerBase {
     _conditions: Record<ConditionId, { stacks: number; entangledStrength?: number }>;
     _wind: WindName;
     _freePettySpells: number;
+    _freeArcaneSpells: number;
 
     mhp: number;
     weas: number;
@@ -175,6 +176,7 @@ Game_BattlerBase.prototype.initialize = function() {
     this._career = undefined;
     this._wind = 'NONE'; // Wind of magic the battler is tied to, if any
     this._freePettySpells = 0; // Petty spells granted by the Petty Magic talent and not picked yet
+    this._freeArcaneSpells = 0; // Lore spells granted by an Arcane Magic talent and not picked yet
     this._exp = 0;
     this._fate = 0;
     this._fortune = 0;
@@ -321,8 +323,9 @@ Game_BattlerBase.prototype.hasTalent = function(talentId: string) {
     return this._talents[talentId] > 0;
 };
 
+// A talent may only be taken once, so its level is either 0 or 1
 Game_BattlerBase.prototype.addTalent = function(talentId: string) {
-    this._talents[talentId] = this.talent(talentId) + 1;
+    this._talents[talentId] = 1;
 };
 
 // Spells

@@ -207,41 +207,45 @@ const TEW: {
     };
 
     /**
-     * Experience spending rules
+     * Experience spending rules, following the 5th edition (wfrp5e.pdf, p191)
      * Costs are expressed per advance and increase with the number of advances already bought
      */
     LEVELLING?: {
-        /** Number of advances covered by a single cost bracket (past the first one) */
-        BRACKET_SIZE?: number;
-        /** Index of the last cost bracket (every advance past it costs the same) */
-        LAST_BRACKET?: number;
-        /** XP cost of one characteristic advance, indexed by cost bracket */
+        /** Value added to a characteristic or a competence by one advance */
+        ADVANCE_STEP?: number;
+        /** XP cost of one characteristic advance, indexed by the number of advances already taken */
         CHARACTERISTIC_COSTS?: number[];
-        /** XP cost of one competence advance, indexed by cost bracket */
+        /** XP cost of one competence advance, indexed by the number of advances already taken */
         COMPETENCE_COSTS?: number[];
         /** XP cost of a talent which has not been acquired yet */
         TALENT_COST?: number;
-        /** XP cost of one bracket of petty spells */
+        /** XP cost of a petty spell in the first bracket, paid once more per further bracket */
         PETTY_SPELL_COST?: number;
-        /** XP cost of one bracket of arcane spells */
+        /** XP cost of an arcane spell in the first bracket, paid once more per further bracket */
         ARCANE_SPELL_COST?: number;
+        /** Number of known spells covered by one cost bracket, past the first one */
+        SPELL_BRACKET_SIZE?: number;
+        /** Index of the last spell cost bracket, which every larger number of known spells falls in */
+        SPELL_LAST_BRACKET?: number;
+        /** Spells of the chosen lore granted for free upon learning the Arcane Magic talent */
+        FREE_ARCANE_SPELLS?: number;
 
         /**
-         * Find the cost bracket matching a number of advances
-         * @param advances number of advances already bought
-         * @returns an index in CHARACTERISTIC_COSTS / COMPETENCE_COSTS
+         * Number of advances a characteristic bonus or a competence value stands for
+         * @param value points gained through advances
+         * @returns the number of full advances, a remainder not counting as one
          */
-        bracket?: (advances: number) => number;
+        advancesFromValue?: (value: number) => number;
         /**
          * Cost of the next characteristic advance
          * @param advances number of advances already bought
-         * @returns the XP cost of the following advance
+         * @returns the XP cost of the following advance, Infinity past the end of the table
          */
         characteristicCost?: (advances: number) => number;
         /**
          * Cost of the next competence advance
          * @param advances number of advances already bought
-         * @returns the XP cost of the following advance
+         * @returns the XP cost of the following advance, Infinity past the end of the table
          */
         competenceCost?: (advances: number) => number;
         /**
@@ -259,22 +263,26 @@ const TEW: {
          */
         competenceRangeCost?: (fromAdvances: number, toAdvances: number) => number;
         /**
+         * Cost bracket a number of known spells falls in
+         * @param known number of spells already known in the pool
+         * @returns 0 for up to 5 spells, then one more per five spells, up to SPELL_LAST_BRACKET
+         */
+        spellBracket?: (known: number) => number;
+        /**
          * Cost of one more spell in a pool
          * @param known number of spells already known in the pool
-         * @param bonus Willpower bonus for petty spells, Intelligence bonus for arcane ones
-         * @param cost XP cost of one bracket
+         * @param cost the pool's base cost, paid once per bracket
          * @returns the XP cost of the following spell
          */
-        spellCost?: (known: number, bonus: number, cost: number) => number;
+        spellCost?: (known: number, cost: number) => number;
         /**
          * Total cost of every spell bought between two pool sizes
          * @param fromKnown number of spells already known in the pool
          * @param toKnown targeted number of spells
-         * @param bonus Willpower bonus for petty spells, Intelligence bonus for arcane ones
-         * @param cost XP cost of one bracket
+         * @param cost the pool's base cost, paid once per bracket
          * @returns the total XP cost
          */
-        spellRangeCost?: (fromKnown: number, toKnown: number, bonus: number, cost: number) => number;
+        spellRangeCost?: (fromKnown: number, toKnown: number, cost: number) => number;
     };
 
     /**

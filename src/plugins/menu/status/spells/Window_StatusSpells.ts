@@ -158,7 +158,7 @@ Window_StatusSpells.prototype.isLevellingMode = function() {
 
 /**
  * Price of a spell which is not memorised yet, and nothing for the ones already known.
- * The spells manifested by the Petty Magic talent cost no experience at all.
+ * The spells granted by Petty Magic and Arcane Magic cost no experience at all.
  */
 Window_StatusSpells.prototype.spellCostText = function(spellId: string) {
     if (!this.isLevellingMode() || this._actor.hasSpell(spellId)) {

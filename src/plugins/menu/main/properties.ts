@@ -141,6 +141,7 @@ Object.defineProperties(TextManager, {
     statusCompBase :            TextManager.getter('command', 61),
     statusCompUnlearned :       TextManager.getter('command', 62),
     statusSpellLearned :        TextManager.getter('command', 63),
+    statusTalentLearned :       TextManager.getter('command', 63),
     statusSpellFree :           TextManager.getter('command', 64),
     statusAnySpecialisation :   TextManager.getter('command', 65),
     statusAnyChoose :           TextManager.getter('command', 66),
