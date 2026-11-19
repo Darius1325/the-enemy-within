@@ -354,8 +354,23 @@ TEW.COMBAT.SYSTEM.action = 'Action';
 TEW.COMBAT.SYSTEM.actionAttack = 'Attack';
 TEW.COMBAT.SYSTEM.actionSpell = 'Spell';
 TEW.COMBAT.SYSTEM.actionChannelling = 'Channelling';
-TEW.COMBAT.SYSTEM.advantage = 'Advantages';
+TEW.COMBAT.SYSTEM.momentum = 'Momentum';
+TEW.COMBAT.SYSTEM.momentumTransfer = 'Transfer';
+TEW.COMBAT.SYSTEM.momentumDisengage = 'Disengage';
+TEW.COMBAT.SYSTEM.momentumOffHandAttack = 'Off-hand attack';
 TEW.COMBAT.SYSTEM.wait = 'Wait';
+// Momentum (WFRP 5th edition, replaces 4th edition advantages)
+TEW.COMBAT.SYSTEM.momentumTransferComp = 'LEADERSHIP'; // Free action: lose momentum to grant it to an ally on a successful test
+TEW.COMBAT.SYSTEM.momentumTransferModifier = 0; // Challenging leadership test
+TEW.COMBAT.SYSTEM.momentumTransferSuccess = '%1 rallies %2, who gains momentum!';
+TEW.COMBAT.SYSTEM.momentumTransferFailure = '%1 fails to rally %2, and loses momentum.';
+// Critical Hits, Fumbles and Miscasts (see TEW_Criticals.ts): %1 is the battler suffering it, %2 the entry name
+TEW.COMBAT.SYSTEM.criticalWoundMessage = '%1 suffers a critical wound: %2!';
+TEW.COMBAT.SYSTEM.fumbleMessage = '%1 fumbles: %2';
+TEW.COMBAT.SYSTEM.minorMiscastMessage = '%1 suffers a minor miscast: %2!';
+TEW.COMBAT.SYSTEM.majorMiscastMessage = '%1 suffers a major miscast: %2!';
+TEW.COMBAT.SYSTEM.fumbleDie = 10; // Oops! table
+TEW.COMBAT.SYSTEM.channellingFumbleMiscastBonus = 10; // Per SL of channelled power lost
 TEW.COMBAT.SYSTEM.waitSkillId = 7;
 TEW.COMBAT.SYSTEM.battleStartId = 1;
 const StatArray = ['MHP', 'WEAS', 'BALS', 'STRG', 'TOUG', 'INIT', 'AGIL', 'DEXT', 'INTL', 'FELW', 'WILL'];
@@ -560,6 +575,14 @@ TEW.COMBAT.getDefenceCompOrDefault = (battler, weaponGroup, isMelee) => {
         match: hasMeleeComp,
         value: maxCompValue // TODO opt out if shield
     };
+};
+// Find the entry of a critical table (TEW_Criticals.ts) matching a roll
+TEW.COMBAT.findCritical = (table, roll) => {
+    const entry = table.find(critical => roll >= critical.interval.min && roll <= critical.interval.max);
+    if (entry) {
+        return entry;
+    }
+    return roll < table[0].interval.min ? table[0] : table[table.length - 1];
 };
 // Get weapon data defined in TEW_Weapons.js from its ID
 TEW.COMBAT.getWeaponFromId = (weaponId) => {
@@ -788,6 +811,7 @@ Game_Action.prototype.applyLegacy = function (_target) {
 //  - BattleManager_Turns.ts: initiative order and turn start of each battler
 //  - BattleManager_Decisions.ts: execution of battle decisions (AI and player), action/move points
 //  - BattleManager_Input.ts: player command input, targetting and map tiles display
+//  - BattleManager_Momentum.ts: momentum free actions availability and momentum reset
 //  - BattleManager_End.ts: victory, defeat and battle termination
 var Phase;
 (function (Phase) {
@@ -841,6 +865,7 @@ BattleManager.initMembers = function () {
     this._decisionPointsBefore = 0;
     // Player input
     this._pendingDecision = null;
+    this._pendingModifiers = {}; // Game_Action modifiers of the pending decision (e.g. momentum free action)
     this._targettingAction = null;
     this._previewMoveOption = 1 /* BattleOption.WALK */;
 };
@@ -884,6 +909,7 @@ BattleManager.startBattle = function () {
     $gameTroopTs.onBattleStart();
     $gameScreen.onBattleStart();
     $gameSystem.onBattleStart();
+    this.clearAllMomentum();
 };
 // ----------------------
 // Main loop
@@ -1028,7 +1054,7 @@ BattleManager.setEventCallback = function (callback) {
 // BattleManager - decisions
 //
 // Every action of a battle goes through a BattleDecision (see _types/battlerAI.ts):
-//  - enemies get theirs from their AI (TEW_EnemyAI.ts) in updateEnemyPhase
+//  - enemies get theirs from their AI (TEW_EnemyAI.ts) in updateEnemyPhase, after a chance to spend their momentum
 //  - players build theirs through the battle menu and the targetting phases (BattleManager_Input.ts)
 // executeDecision then resolves it with a Game_Action.
 // ----------------------
@@ -1046,8 +1072,11 @@ BattleManager.canAct = function () {
 BattleManager.canActOrMove = function () {
     return !!this._subject && (this._subject.hasActionPoint() || this._subject.hasMovePoint());
 };
+/**
+ * Whether the active battler can still do something: act, move, or spend momentum on a free action
+ */
 BattleManager.canInput = function () {
-    return this.canActOrMove() || $gamePartyTs._advantages > 3;
+    return this.canActOrMove() || this.canUseMomentumAction();
 };
 BattleManager.spendMove = function () {
     if (this._subject) {
@@ -1064,20 +1093,24 @@ BattleManager.spendAction = function () {
 // ----------------------
 BattleManager.updateEnemyPhase = function () {
     $gameTroop.setupTactics([this._subject]); // TODO optimization
-    // Call custom decision algorithm
+    // Spend momentum on a free action if relevant, otherwise call custom decision algorithm
+    const allies = $gameTroopTs.aliveMembers();
+    const enemies = $gamePartyTs.aliveMembers();
     const decisionAlgorithm = this._subject.getAI();
-    const decision = decisionAlgorithm(this._subject, $gameTroopTs.aliveMembers(), $gamePartyTs.aliveMembers());
+    const decision = this._subject.momentumDecision(allies, enemies)
+        || decisionAlgorithm(this._subject, allies, enemies);
     console.log("Decision: ", decision);
     this.executeDecision(decision);
 };
 /**
  * Resolve a decision taken by the active battler. Movements are then processed in the ProcessMove phase,
  * other actions end right away.
+ * Modifiers are passed to the Game_Action (e.g. { momentumAction } for a free action paid with momentum).
  */
-BattleManager.executeDecision = function (decision) {
+BattleManager.executeDecision = function (decision, modifiers = {}) {
     this.supplementActionParameters(decision);
     this._decisionPointsBefore = this._subject.actionAndMovePoints();
-    this._decisionAction = new Game_Action(this._subject, false, decision);
+    this._decisionAction = new Game_Action(this._subject, false, decision, modifiers);
     this._decisionAction.apply();
     $gameMap.clearTiles();
     if (this._decisionAction.hasPendingMove()) {
@@ -1120,7 +1153,8 @@ BattleManager.updateMove = function () {
 };
 /**
  * After a decision is resolved:
- *  - an enemy is asked for another decision as long as it can act and its last decision did something (spent points)
+ *  - an enemy is asked for another decision as long as it can act and its last decision did something
+ *    (spent points, or momentum for free actions)
  *  - a player gets the battle menu back as long as it can act
  * Otherwise, or after a WAIT decision, the battler's turn ends.
  */
@@ -1130,21 +1164,32 @@ BattleManager.onDecisionEnd = function () {
     $gameMap.clearTiles();
     const isWait = action.option() === 0 /* BattleOption.WAIT */;
     if (this._subject.isEnemy()) {
-        // TODO blocks free actions !!!
         const hasSpentPoints = this._subject.actionAndMovePoints() < this._decisionPointsBefore;
-        if (!isWait && hasSpentPoints && this._subject.isAlive() && this.canActOrMove()) {
+        const hasActed = hasSpentPoints || action.hasSpentMomentum();
+        if (!isWait && hasActed && this._subject.isAlive() && this.canInput()) {
             this.updateEnemyPhase();
             return;
         }
     }
-    else if (!isWait && this._subject.isAlive() && this.canInput() && this._subject.canInput()) {
-        // Players keep control until they wait or have nothing left to do
-        this._previewMoveOption = 1 /* BattleOption.WALK */;
-        $gameSelector.performTransfer(this._subject.x, this._subject.y);
-        this._battlePhase = BattlePhase.InputCommand;
+    else if (!isWait && this.canPlayerKeepInput()) {
+        this.resumePlayerInput();
         return;
     }
     this.endAction();
+};
+/**
+ * Players keep control until they wait or have nothing left to do
+ */
+BattleManager.canPlayerKeepInput = function () {
+    return this._subject.isAlive() && this.canInput() && this._subject.canInput();
+};
+/**
+ * Back to the battle menu of the active player, after a decision or a free action
+ */
+BattleManager.resumePlayerInput = function () {
+    this._previewMoveOption = 1 /* BattleOption.WALK */;
+    $gameSelector.performTransfer(this._subject.x, this._subject.y);
+    this._battlePhase = BattlePhase.InputCommand;
 };
 // #endregion =========================== BattleManager_Decisions ============================== //
 // ============================== //
@@ -1205,6 +1250,7 @@ BattleManager.processDefeat = function () {
 };
 BattleManager.endBattle = function (result) {
     this.closeCommand();
+    this.clearAllMomentum(); // Momentum only exists in battle
     this._phase = Phase.BattleEnd;
     $gameMap.clearTiles();
     if (this._eventCallback) {
@@ -1321,8 +1367,12 @@ BattleManager.showMoveRange = function (battler, option) {
 // ----------------------
 // Targetting
 // ----------------------
-BattleManager.startTargetting = function (decision) {
+/**
+ * Modifiers are kept until the decision is executed (e.g. { momentumAction } for a free action paid with momentum)
+ */
+BattleManager.startTargetting = function (decision, modifiers = {}) {
     this._pendingDecision = Object.assign({ initiator: this._subject, target: undefined }, decision);
+    this._pendingModifiers = modifiers;
     this.supplementActionParameters(this._pendingDecision);
     $gameMap.clearAoeTiles();
     $gameSelector.performTransfer(this._subject.x, this._subject.y);
@@ -1337,7 +1387,7 @@ BattleManager.startTargetting = function (decision) {
             this._battlePhase = BattlePhase.InputCharge;
             break;
         default:
-            this._targettingAction = new Game_Action(this._subject, false, this._pendingDecision);
+            this._targettingAction = new Game_Action(this._subject, false, this._pendingDecision, modifiers);
             this.refreshRedCells(this._targettingAction);
             this._battlePhase = BattlePhase.Target;
             break;
@@ -1345,16 +1395,19 @@ BattleManager.startTargetting = function (decision) {
 };
 BattleManager.confirmTarget = function (target) {
     const decision = this._pendingDecision;
+    const modifiers = this._pendingModifiers;
     decision.target = target;
     this._pendingDecision = null;
+    this._pendingModifiers = {};
     this._targettingAction = null;
     $gameMap.clearAoeTiles();
     this._enemyWindow.close();
-    this.executeDecision(decision);
+    this.executeDecision(decision, modifiers);
 };
 BattleManager.cancelTargetting = function () {
     SoundManager.playCancel();
     this._pendingDecision = null;
+    this._pendingModifiers = {};
     this._targettingAction = null;
     $gameMap.clearAoeTiles();
     this._enemyWindow.close();
@@ -1481,6 +1534,57 @@ BattleManager.refreshAoeCells = function (action) {
     }
 };
 // #endregion =========================== BattleManager_Input ============================== //
+// ============================== //
+// #region ============================== BattleManager_Momentum ============================== //
+//-----------------------------------------------------------------------------
+// BattleManager - momentum
+//
+// Momentum (WFRP 5th edition) is an individual state replacing 4th edition advantages: a battler has it or not.
+// Gaining and losing it is handled by Game_Battler (damage, conditions) and Game_Action (melee tests, charges).
+//
+// The active battler can spend it on free actions, which cost no move or action point (Momentum menu):
+//  - Transfer: decision BattleOption.MOMENTUM_TRANSFER targetting an ally (see Game_Action.applyMomentumTransfer).
+//    Enemies choose it through Game_Battler.momentumDecision, before their AI profile.
+//  - Disengage: TODO, will allow to move away from melee for free
+//  - Off-hand attack: a melee attack with the second hand weapon (or bare fists), executed as a MELEE_ATTACK decision
+//    with { momentumAction } modifiers (see Game_Action.applyAttack). Only one momentum attack per turn.
+var MomentumAction;
+(function (MomentumAction) {
+    MomentumAction["OFF_HAND_ATTACK"] = "offHandAttack";
+})(MomentumAction || (MomentumAction = {}));
+/**
+ * Momentum only exists in battle: every battler loses it when a battle starts or ends
+ */
+BattleManager.clearAllMomentum = function () {
+    this.allBattleMembers().forEach((battler) => battler.clearMomentum());
+};
+// ----------------------
+// Availability (battle menu)
+// ----------------------
+BattleManager.canUseMomentum = function () {
+    return !!this._subject && this._subject.hasMomentum();
+};
+/**
+ * Whether the active battler has momentum and at least one free action to spend it on
+ */
+BattleManager.canUseMomentumAction = function () {
+    return this.canTransferMomentum() || this.canDisengageWithMomentum() || this.canMomentumAttack();
+};
+BattleManager.canTransferMomentum = function () {
+    return this.canUseMomentum() && this._subject.momentumTransferTargets().length > 0;
+};
+BattleManager.canDisengageWithMomentum = function () {
+    return false; // TODO disengage mechanic
+};
+/**
+ * Off-hand attack: once per turn, against an opponent in melee range
+ */
+BattleManager.canMomentumAttack = function () {
+    const subject = this._subject;
+    return !!subject && subject.canMomentumAttack()
+        && subject.opponentsUnitTS().aliveMembers().some((opponent) => subject.isAdjacentTo(opponent));
+};
+// #endregion =========================== BattleManager_Momentum ============================== //
 // ============================== //
 // #region ============================== BattleManager_Turns ============================== //
 //-----------------------------------------------------------------------------
@@ -1658,6 +1762,7 @@ Game_Action.prototype.initializeDecision = function (params, modifiers = {}) {
     this._option = params.option;
     this._modifiers = modifiers;
     this._subjectAbilityRoll = undefined;
+    this._totalPower = false;
     this._object = undefined;
     this._objectType = 2 /* GameActionUsableObject.ITEM */;
     this._targets = [];
@@ -1725,6 +1830,11 @@ Game_Action.prototype.findBattlersInRange = function (battlers) {
     return battlersInRange;
 };
 Game_Action.prototype.updateRange = function () {
+    // Momentum transfer has no range limit: only the allies who can receive it are targettable
+    if (this._option === 11 /* BattleOption.MOMENTUM_TRANSFER */) {
+        this._range = this._subject.momentumTransferTargets().map((ally) => [ally.tx, ally.ty]);
+        return 0;
+    }
     const range = this.extractRangeData();
     // TODO better algorithm for obstacles
     this._range = this.computeEuclideanRange(range, this._subject.tx, this._subject.ty);
@@ -1805,6 +1915,19 @@ Game_Action.prototype.attackRollModifier = function () {
     return this._modifiers.attackRoll || 0;
 };
 /**
+ * Whether this action is an attack paid with momentum (see BattleManager_Momentum.ts)
+ */
+Game_Action.prototype.isMomentumAction = function () {
+    var _a;
+    return ((_a = this._modifiers) === null || _a === void 0 ? void 0 : _a.momentumAction) !== undefined;
+};
+/**
+ * Whether the subject spent momentum on this action (free actions spend no point)
+ */
+Game_Action.prototype.hasSpentMomentum = function () {
+    return !!this._momentumSpent;
+};
+/**
  * Entry point to resolve an action. Legacy actions get their target as a parameter (RMMV flow),
  * decision-based actions already know their targets.
  */
@@ -1843,6 +1966,9 @@ Game_Action.prototype.applyDecision = function () {
             break;
         case 8 /* BattleOption.USE_SPELL */:
             this.applySpellDecision();
+            break;
+        case 11 /* BattleOption.MOMENTUM_TRANSFER */:
+            this.applyMomentumTransfer();
             break;
         case 9 /* BattleOption.USE_ITEM */: // TODO
         case 4 /* BattleOption.DISENGAGE */: // TODO
@@ -1915,17 +2041,24 @@ Game_Action.prototype.applyCharge = function () {
     const maxMove = subject.runDistance() + this._chargeTestResult.sl;
     this._chargeTarget = this._targets[0] || this.opponentAt(targetTile.x, targetTile.y);
     subject.setMovePath(path.slice(0, Math.max(maxMove, 0)));
+    this._chargeDistance = subject._movePath.length; // Steps (tiles) covered by the charge
     $gameMap._flexibleMovement = true; // Go back to free movement range for next action
 };
 /**
  * Attack at the end of a charge: no point is spent (the charge already spent them),
- * and a successful charge test gives a bonus
+ * and a successful charge test gives a bonus.
+ * A successful charge from further than the walking distance gives momentum before the attack,
+ * which is lost again if the attack fails.
  */
 Game_Action.prototype.applyChargeAttack = function () {
     var _a;
     const target = this._chargeTarget;
     if (target && target.isAlive() && this._subject.isAdjacentTo(target)) {
-        const attack = Game_Action.chargeAttack(this._subject, target, (_a = this._chargeTestResult) === null || _a === void 0 ? void 0 : _a.success);
+        const chargeSuccess = !!((_a = this._chargeTestResult) === null || _a === void 0 ? void 0 : _a.success);
+        if (chargeSuccess && this._chargeDistance > this._subject.walkDistance()) {
+            this._subject.gainMomentum();
+        }
+        const attack = Game_Action.chargeAttack(this._subject, target, chargeSuccess);
         attack.resolveWeaponAttack(true);
     }
 };
@@ -1947,13 +2080,27 @@ Game_Action.prototype.applySwitchWeapons = function () {
     subject.equipMainHand(index);
 };
 /**
- * Weapon attack against the decision's target (1 action point)
+ * Weapon attack against the decision's target (1 action point).
+ * A momentum attack (off-hand attack) is a free melee attack paid with momentum instead.
  */
 Game_Action.prototype.applyAttack = function (isMelee) {
     const subject = this._subject;
     const target = this._targets[0];
+    const isMomentumAttack = isMelee && this.isMomentumAction();
     console.log("apply attack: ", target);
-    if (!subject.hasActionPoint() || !target || !target.isAlive() || !this._object) {
+    if (!target || !target.isAlive() || !this._object) {
+        return;
+    }
+    if (isMomentumAttack) {
+        if (!subject.canMomentumAttack()) {
+            return;
+        }
+        subject.spendMomentumAttack();
+        this._momentumSpent = true;
+        this.resolveWeaponAttack(true);
+        return;
+    }
+    if (!subject.hasActionPoint()) {
         return;
     }
     console.log("attack valid");
@@ -2111,14 +2258,24 @@ Game_Action.prototype.resolveWeaponAttack = function (isMelee) {
     // TODO prone
     // Defender condition modifiers
     const defenderBaseConditionMod = target.totalConditionModifier(defenderCombatSkill.compId);
-    // Roll dice
-    const combatResult = TEW.DICE.combatOpposedSkillTest(attackerCombatSkill.value, defenderCombatSkill.value, attacker._char.isActor(), target._char.isActor(), attackerWeaponEffects.attackBonusSL + attackerConditionMod + this.attackRollModifier(), defenderWeaponEffects.defenceBonusSL + defenderBaseConditionMod);
+    // Roll dice - momentum gives advantage on melee tests only
+    const combatResult = TEW.DICE.combatOpposedSkillTest(attackerCombatSkill.value, defenderCombatSkill.value, attacker._char.isActor(), target._char.isActor(), attackerWeaponEffects.attackBonusSL + attackerConditionMod + this.attackRollModifier(), defenderWeaponEffects.defenceBonusSL + defenderBaseConditionMod, isMelee ? attacker.momentumAdvantage() : 0, isMelee ? target.momentumAdvantage() : 0);
+    // Critical Hits and Fumbles (wfrp5e.pdf p165): a double on a melee or ranged test is a Critical Hit if the test
+    // succeeds before SL modifiers, a Fumble otherwise, whoever wins the opposed test.
+    // Dodging is neither a melee nor a ranged test: a dodging defender can't crit nor fumble.
+    const defenderUsesWeapon = defenderCombatSkill.compId !== 'DODGE';
+    let attackerCriticalHit = combatResult.criticalAttacker && combatResult.rawSuccessAttacker;
+    let attackerFumble = combatResult.criticalAttacker && !combatResult.rawSuccessAttacker;
+    let defenderCriticalHit = defenderUsesWeapon && combatResult.criticalDefender && combatResult.rawSuccessDefender;
+    let defenderFumble = defenderUsesWeapon && combatResult.criticalDefender && !combatResult.rawSuccessDefender;
     // Special weapon quality checks
-    // Impale - critical hit on tens
-    if (attackerWeaponEffects.effects.IMPALE) {
-        if (combatResult.rollAttacker % 10 === 0) {
-            combatResult.criticalAttacker = true;
-        }
+    // Impale - Critical Hit on successful rolls divisible by 10
+    if (attackerWeaponEffects.effects.IMPALE && combatResult.rollAttacker % 10 === 0 && combatResult.rawSuccessAttacker) {
+        attackerCriticalHit = true;
+    }
+    if (defenderUsesWeapon && defenderWeaponEffects.effects.IMPALE
+        && combatResult.rollDefender % 10 === 0 && combatResult.rawSuccessDefender) {
+        defenderCriticalHit = true;
     }
     // Damaging - SL can be replaced with unit die if higher
     if (attackerWeaponEffects.effects.DAMAGING) {
@@ -2127,18 +2284,22 @@ Game_Action.prototype.resolveWeaponAttack = function (isMelee) {
             combatResult.slAttacker = damagingSL;
         }
     }
-    // Dangerous - ??? on a failed roll ending in 9
-    if (attackerWeaponEffects.effects.DANGEROUS) {
-        if (!combatResult.success && combatResult.rollAttacker % 10 === 9) {
-            // TODO maladresse ??
-        }
+    // Dangerous - Fumble on failed rolls with a 9 on either die
+    if (attackerWeaponEffects.effects.DANGEROUS && !combatResult.rawSuccessAttacker && this.rollHasNine(combatResult.rollAttacker)) {
+        attackerFumble = true;
+    }
+    if (defenderUsesWeapon && defenderWeaponEffects.effects.DANGEROUS
+        && !combatResult.rawSuccessDefender && this.rollHasNine(combatResult.rollDefender)) {
+        defenderFumble = true;
+    }
+    // Momentum: the winner of an opposed melee test gains it, the loser loses it
+    if (isMelee) {
+        this.updateMomentumAfterMeleeTest(attacker, target, combatResult.success);
     }
     // TODO wait X seconds here for player input (fortune points)
     // TODO Check attacker's talents on dice roll (make a list)
     // TODO Check weapon effects on dice roll (make a list)
     if (combatResult.slAttacker >= 0 && combatResult.success) {
-        // TODO Check weapon effects on crit (make a list)
-        // TODO Check for crits
         // Armor and armor penetration
         let defenderArmorPoints = target.armorPointsAtLocation(combatResult.hitLocation, attackerWeaponEffects.ignoredAP, attackerWeaponEffects.ignoreMetalArmor);
         if (attackerWeaponEffects.effects.UNDAMAGING) {
@@ -2173,11 +2334,122 @@ Game_Action.prototype.resolveWeaponAttack = function (isMelee) {
         //         }
         //     }
         // }
-        // TODO Lookup crit table (help me)
     }
     else {
         // TODO miss
     }
+    // Critical Wounds and Fumbles are resolved after normal damage (wfrp5e.pdf p171).
+    // A Critical Hit from a double already struck a random location (see TEW.DICE.combatOpposedSkillTest),
+    // any other one strikes a random location
+    if (attackerCriticalHit) {
+        const criticalLocation = combatResult.criticalAttacker ? combatResult.hitLocation : this.rollCriticalLocation();
+        this.applyCriticalWound(target, criticalLocation);
+    }
+    if (defenderCriticalHit) {
+        this.applyCriticalWound(attacker, this.rollCriticalLocation());
+    }
+    if (attackerFumble) {
+        this.applyFumble(attacker);
+    }
+    if (defenderFumble) {
+        this.applyFumble(target);
+    }
+};
+// ----------------------
+// Critical hits, fumbles and miscasts
+// ----------------------
+// Tables and their effects are defined in TEW_Criticals.ts
+/**
+ * Whether a d100 roll shows a 9 on its tens or units die (Dangerous weapon quality)
+ */
+Game_Action.prototype.rollHasNine = function (roll) {
+    return roll % 10 === 9 || Math.floor(roll / 10) % 10 === 9;
+};
+Game_Action.prototype.rollCriticalLocation = function () {
+    return TEW.DICE.hitLocationFromRoll(TEW.DICE.roll());
+};
+/**
+ * Critical Wound (wfrp5e.pdf p171-176): d100 roll on the table of the struck location
+ * @param rollModifier added to the roll, e.g. +10 per Wound beyond 0 (not used yet)
+ */
+Game_Action.prototype.applyCriticalWound = function (target, hitLocation, rollModifier = 0) {
+    if (!target.isAlive()) {
+        return;
+    }
+    const table = TEW.DATABASE.WEAPON_CRITICALS[TEW.DATABASE.HIT_LOCATION_CRITICALS[hitLocation]];
+    const critical = TEW.COMBAT.findCritical(table, TEW.DICE.roll() + rollModifier);
+    Game_Action.applyCritical(target, critical, TEW.COMBAT.SYSTEM.criticalWoundMessage);
+};
+/**
+ * Fumble (wfrp5e.pdf p165): d10 roll on the Oops! table
+ * TODO Misfire table for blackpowder, engineering and explosive weapons rolling 99 or 00
+ */
+Game_Action.prototype.applyFumble = function (battler) {
+    if (!battler.isAlive()) {
+        return;
+    }
+    const critical = TEW.COMBAT.findCritical(TEW.DATABASE.WEAPON_FUMBLES, TEW.DICE.roll(TEW.COMBAT.SYSTEM.fumbleDie));
+    Game_Action.applyCritical(battler, critical, TEW.COMBAT.SYSTEM.fumbleMessage);
+};
+/**
+ * Miscast (wfrp5e.pdf p238-239): d100 roll on the Minor or Major Miscast table.
+ * Static, as channelling is not resolved through a Game_Action yet (see Game_Battler.doChannelling)
+ * TODO Malignant Influences turn Minor Miscasts into Major ones
+ * @param rollModifier added to the roll, e.g. +10 per SL lost on a fumbled Channelling test
+ */
+Game_Action.applyMiscast = function (caster, major, rollModifier = 0) {
+    if (!caster.isAlive()) {
+        return;
+    }
+    const table = major ? TEW.DATABASE.MAGIC_CRITICALS.MAJOR : TEW.DATABASE.MAGIC_CRITICALS.MINOR;
+    const critical = TEW.COMBAT.findCritical(table, TEW.DICE.roll() + rollModifier);
+    const message = major ? TEW.COMBAT.SYSTEM.majorMiscastMessage : TEW.COMBAT.SYSTEM.minorMiscastMessage;
+    Game_Action.applyCritical(caster, critical, message);
+};
+/**
+ * Apply a critical table entry: its effect first, then its Wounds, ignoring Toughness Bonus and Armour Points
+ * (Wounds lost this way trigger no further Critical Wound)
+ */
+Game_Action.applyCritical = function (battler, critical, message) {
+    console.log(`Critical: ${battler.name()} suffers ${critical.name}`
+        + (critical.implemented ? '' : ' (not implemented yet, placeholder effect applied)'));
+    $gameMessage.add(message.format(battler.name(), critical.name));
+    critical.handler(battler);
+    if (critical.wounds > 0 && battler.isAlive()) {
+        battler.gainHp(-critical.wounds);
+        console.log(`Damage: ${battler.name()} loses ${critical.wounds} HP (${battler.hp} left)`);
+    }
+    if (battler.isDead()) {
+        battler.performCollapse();
+    }
+};
+/**
+ * Free action: the subject loses momentum to make a Leadership test (whatever its result),
+ * and the target ally gains momentum on a success
+ */
+Game_Action.prototype.applyMomentumTransfer = function () {
+    const subject = this._subject;
+    const ally = this._targets[0];
+    if (!subject.canTransferMomentumTo(ally)) {
+        return;
+    }
+    subject.loseMomentum();
+    this._momentumSpent = true;
+    subject.turnTowardCharacter(ally);
+    const testResult = TEW.DICE.skillTest(subject, TEW.COMBAT.SYSTEM.momentumTransferComp, TEW.COMBAT.SYSTEM.momentumTransferModifier, !subject.isActor());
+    if (testResult.success) {
+        ally.gainMomentum();
+        $gameMessage.add(TEW.COMBAT.SYSTEM.momentumTransferSuccess.format(subject.name(), ally.name()));
+    }
+    else {
+        $gameMessage.add(TEW.COMBAT.SYSTEM.momentumTransferFailure.format(subject.name(), ally.name()));
+    }
+};
+Game_Action.prototype.updateMomentumAfterMeleeTest = function (attacker, defender, attackerWins) {
+    const winner = attackerWins ? attacker : defender;
+    const loser = attackerWins ? defender : attacker;
+    winner.gainMomentum();
+    loser.loseMomentum();
 };
 /**
  * TODO
@@ -2194,11 +2466,10 @@ Game_Action.prototype.applySpell = function (target) {
         // Add channelled SL
         this._subjectAbilityRoll.sl += attacker._channellingLevel;
         attacker._channellingLevel = 0;
-        // TODO handle criticals
-        // TODO critical failure
+        this.resolveCastingCritical(attacker, spell);
     }
     // Resolve spell
-    if (this._subjectAbilityRoll.sl >= spell.cn) {
+    if (this._subjectAbilityRoll.sl >= spell.cn || this._totalPower) {
         // TODO Prompt for spell bonus effects (e.g. additional targets, increased range... etc)
         // handled by spell effect ?
         // TODO take armor into account
@@ -2220,6 +2491,33 @@ Game_Action.prototype.applySpell = function (target) {
         }
     }
     // GIGA TODO counterspell
+};
+/**
+ * Doubles on a Casting test (wfrp5e.pdf p235):
+ *  - Fumbled Casting (failed test): Minor Miscast
+ *  - Critical Casting (successful test): Minor Miscast, unless the spell is a Petty Spell or the caster has
+ *    the Instinctive Diction talent, and an extra effect for non-Petty spells.
+ *    The extra effect is always Total Power for now: the spell is cast whatever its CN, and the tens die of the test
+ *    is added to the SL (meant for Overcasting, which is not implemented: the SL bonus applies to the spell's effect instead)
+ *    TODO let the player/AI choose between Critical Damage, Total Power and Unstoppable Force
+ */
+Game_Action.prototype.resolveCastingCritical = function (caster, spell) {
+    const castingTest = this._subjectAbilityRoll;
+    if (!castingTest.critical) {
+        return;
+    }
+    if (!castingTest.success) {
+        Game_Action.applyMiscast(caster, false);
+        return;
+    }
+    if (spell.domain === "Petty" /* SpellDomain.PETTY */) {
+        return;
+    }
+    this._totalPower = true;
+    castingTest.sl += Math.floor(castingTest.roll / 10);
+    if (!caster.hasTalent('INSTINCTIVE_DICTION')) {
+        Game_Action.applyMiscast(caster, false);
+    }
 };
 /**
  * Melee attack performed at the end of a charge, with the charge bonus
@@ -2257,6 +2555,9 @@ Game_Action.prototype.isInRange = function (x, y) {
     return this._range.some(pos => pos[0] === x && pos[1] === y);
 };
 Game_Action.prototype.color = function () {
+    if (this._option === 11 /* BattleOption.MOMENTUM_TRANSFER */) {
+        return TEW.COMBAT.SYSTEM.allyScopeColor;
+    }
     return TEW.COMBAT.SYSTEM.enemyScopeColor; // TODO ally color for supportive spells and items
 };
 Game_Action.prototype.isTargetValid = function (battler) {
@@ -2389,6 +2690,8 @@ Game_Battler.prototype.initMembers = function () {
     this._active = false;
     this._requestImage = false;
     this._channellingLevel = 0;
+    this._momentum = false;
+    this._momentumAttackUsed = false; // Only one extra attack per turn can be paid with momentum
 };
 Game_Battler.prototype.setupEvent = function (eventId) {
     this._eventId = eventId;
@@ -2439,6 +2742,7 @@ Game_Battler.prototype.onTurnStart = function () {
     this.event().setStepAnime(true);
     this._moveCount = 1;
     this._actionCount = 1;
+    this._momentumAttackUsed = false;
     this.applyConditionsOnTurnStart();
     this.syncTacticalPosition();
     this.clearMovePath();
@@ -2471,6 +2775,115 @@ Game_Battler.prototype.spendMoveOrActionPoint = function () {
 };
 Game_Battler.prototype.actionAndMovePoints = function () {
     return this._actionCount + this._moveCount;
+};
+// ----------------------
+// Momentum
+// ----------------------
+// WFRP 5th edition: a battler either has momentum or does not. It is gained by winning an opposed melee test
+// (see Game_Action.resolveWeaponAttack) or by a successful long charge (see Game_Action.applyChargeAttack),
+// and lost when losing an opposed melee test, taking damage, suffering a condition, or when the battle ends.
+// It gives advantage on melee tests, and can be spent on free actions (see BattleManager_Momentum.ts):
+// a transfer to an ally (BattleOption.MOMENTUM_TRANSFER) or an off-hand attack.
+Game_Battler.prototype.hasMomentum = function () {
+    return !!this._momentum;
+};
+/**
+ * Momentum only exists in battle
+ */
+Game_Battler.prototype.gainMomentum = function () {
+    if ($gamePartyTs.inBattle() && this.isAlive() && !this._momentum) {
+        this._momentum = true;
+        console.log(`Momentum: ${this.name()} gains momentum`);
+    }
+};
+Game_Battler.prototype.loseMomentum = function () {
+    if (this._momentum) {
+        this._momentum = false;
+        console.log(`Momentum: ${this.name()} loses momentum`);
+    }
+};
+/**
+ * Reset at the start and end of a battle
+ */
+Game_Battler.prototype.clearMomentum = function () {
+    this._momentum = false;
+    this._momentumAttackUsed = false;
+};
+/**
+ * Advantage given by momentum to melee tests (see TEW.DICE.combatOpposedSkillTest)
+ */
+Game_Battler.prototype.momentumAdvantage = function () {
+    return this.hasMomentum() ? 1 : 0;
+};
+/**
+ * Momentum can pay for one extra attack per turn, even if it is gained again afterwards
+ */
+Game_Battler.prototype.canMomentumAttack = function () {
+    return this.hasMomentum() && !this._momentumAttackUsed;
+};
+Game_Battler.prototype.spendMomentumAttack = function () {
+    this.loseMomentum();
+    this._momentumAttackUsed = true;
+};
+/**
+ * Melee weapon held in the second hand, or bare fists (MELEE_BRAWLING) if there is none
+ * TODO off-hand attack rules (penalty, ambidextrous...)
+ */
+Game_Battler.prototype.offHandWeapon = function () {
+    const secondHand = this.secondHand();
+    return (secondHand && TEW.DATABASE.WEAPONS.MELEE_SET[secondHand.id]) || TEW.DATABASE.WEAPONS.MELEE_SET.UNARMED;
+};
+/**
+ * Allies that can receive momentum (BattleOption.MOMENTUM_TRANSFER): alive, and without momentum already.
+ * There is no range limit.
+ */
+Game_Battler.prototype.momentumTransferTargets = function () {
+    return this.friendsUnitTS().aliveMembers()
+        .filter((ally) => ally !== this && !ally.hasMomentum());
+};
+Game_Battler.prototype.canTransferMomentumTo = function (ally) {
+    return this.hasMomentum() && !!ally && this.momentumTransferTargets().includes(ally);
+};
+/**
+ * AI decision to spend momentum, considered before the battler's AI profile (see BattleManager.updateEnemyPhase).
+ * Momentum is only useful in melee: a battler that is not engaged gives it to an engaged ally.
+ * Returns undefined when momentum is better kept (or there is none).
+ */
+Game_Battler.prototype.momentumDecision = function (allies, enemies) {
+    const isEngaged = (battler) => enemies.some((enemy) => battler.isAdjacentTo(enemy));
+    if (!this.hasMomentum() || isEngaged(this)) {
+        return undefined;
+    }
+    const engagedAlly = this.momentumTransferTargets()
+        .find((ally) => allies.includes(ally) && isEngaged(ally));
+    if (!engagedAlly) {
+        return undefined;
+    }
+    return {
+        initiator: this,
+        option: 11 /* BattleOption.MOMENTUM_TRANSFER */,
+        target: { type: 0 /* BattleTargetType.BATTLER */, target: engagedAlly },
+    };
+};
+/**
+ * Taking damage makes the battler lose momentum
+ */
+TEW.MEMORY.gameBattlerGainHp = Game_Battler.prototype.gainHp;
+Game_Battler.prototype.gainHp = function (value) {
+    TEW.MEMORY.gameBattlerGainHp.call(this, value);
+    if (value < 0) {
+        this.loseMomentum();
+    }
+};
+/**
+ * Suffering a condition makes the battler lose momentum
+ */
+TEW.MEMORY.gameBattlerAddCondition = Game_Battler.prototype.addCondition;
+Game_Battler.prototype.addCondition = function (conditionId, stacks = 1, entangledStrength = undefined) {
+    TEW.MEMORY.gameBattlerAddCondition.call(this, conditionId, stacks, entangledStrength);
+    if (stacks > 0 && TEW.DATABASE.CONDITIONS[conditionId]) {
+        this.loseMomentum();
+    }
 };
 // ----------------------
 // Decision moves
@@ -2647,6 +3060,11 @@ Game_Battler.prototype.isMoving = function () {
 Game_Battler.prototype.turnTowardCharacter = function (character) {
     this.event().turnTowardCharacter(character);
 };
+/**
+ * Channelling test (wfrp5e.pdf p236). Doubles:
+ *  - on a success, add an extra Willpower Bonus SL to the pool of power
+ *  - on a failure, lose 1d10 SL of power, then suffer a Minor Miscast with +10 to the roll per SL lost
+ */
 Game_Battler.prototype.doChannelling = function () {
     const channellingCompId = this.anyCompOfCategory('CHANNELLING');
     const womModifier = $gameVariables.value(15);
@@ -2655,9 +3073,6 @@ Game_Battler.prototype.doChannelling = function () {
     if (testResult.success) {
         if (testResult.critical) {
             this._channellingLevel += testResult.sl + this.paramBonus('WILL');
-            if (!this.hasTalent('AETHYRIC_ATTUNEMENT')) {
-                // minor magical crit
-            }
         }
         else {
             if (testResult.sl === 0) {
@@ -2669,20 +3084,15 @@ Game_Battler.prototype.doChannelling = function () {
         }
         $gameMessage.add("You gained " + String(this._channellingLevel - previousChannellingLevel) + " channelling levels.");
     }
+    else if (testResult.critical) {
+        this._channellingLevel = Math.max(this._channellingLevel - TEW.DICE.roll(10), 0);
+        const lostLevels = previousChannellingLevel - this._channellingLevel;
+        $gameMessage.add("You lost " + String(lostLevels) + " channelling levels.");
+        Game_Action.applyMiscast(this, false, lostLevels * TEW.COMBAT.SYSTEM.channellingFumbleMiscastBonus);
+    }
     else {
-        if (testResult.critical) {
-            this._channellingLevel = 0;
-            if (this._channellingLevel > this.paramBonus('WILL')) {
-                // major magical crit
-            }
-            else {
-                // minor magical crit
-            }
-        }
-        else {
-            this._channellingLevel += testResult.sl;
-            this._channellingLevel = Math.max(this._channellingLevel, 0);
-        }
+        this._channellingLevel += testResult.sl;
+        this._channellingLevel = Math.max(this._channellingLevel, 0);
         $gameMessage.add("You lost " + String(previousChannellingLevel - this._channellingLevel) + " channelling levels.");
     }
 };
@@ -4212,11 +4622,9 @@ Game_Unit.prototype.onBattleStart = function () {
 // Game_UnitTs
 //
 // The superclass of Game_PartyTs and Game_TroopTs.
+// The 4th edition shared advantages pool is replaced by each battler's momentum (see Game_Battler.ts)
 function Game_UnitTs() {
     this.initialize.apply(this, arguments);
-    // Advantages accumulated by winning combat rounds or using the Observe action
-    // Common pool for all battlers that can be spent to get better rolls or extra actions
-    this._advantages = 0;
 }
 Game_UnitTs.prototype.initialize = function () {
     this._inBattle = false;
@@ -4710,6 +5118,70 @@ Window_TacticsLastUsedCommand.prototype.imageCacheRid = function () {
 };
 // #endregion =========================== Window_TacticsLastUsedCommand ============================== //
 // ============================== //
+// #region ============================== Window_TacticsMomentumCommand ============================== //
+//-----------------------------------------------------------------------------
+// Window_TacticsMomentumCommand
+//
+// The window for selecting a free action paid with momentum on the tactics screen.
+function Window_TacticsMomentumCommand() {
+    this.initialize.apply(this, arguments);
+}
+Window_TacticsMomentumCommand.IMAGE_CACHE_RID = 'battleMomentumCommand';
+Window_TacticsMomentumCommand.X_POS = 458;
+Window_TacticsMomentumCommand.Y_POS = 467;
+Window_TacticsMomentumCommand.EXTENDED_WIDTH = 220;
+Window_TacticsMomentumCommand.TEXT_MAX_WIDTH = 150;
+// TODO dedicated momentum icons: existing icons are used as placeholders
+Window_TacticsMomentumCommand.ICONS = ['icon_battleCommand_action', 'icon_battleCommand_move', 'icon_battleCommand_attack'];
+Window_TacticsMomentumCommand.prototype = Object.create(Window_TacticsCommandBase.prototype);
+Window_TacticsMomentumCommand.prototype.constructor = Window_TacticsMomentumCommand;
+Window_TacticsMomentumCommand.prototype.initialize = function () {
+    Window_TacticsCommandBase.prototype.initialize.call(this);
+    this._iconOrder = Window_TacticsMomentumCommand.ICONS;
+    this.loadIcons();
+};
+Window_TacticsMomentumCommand.prototype.loadIcons = function () {
+    Window_TacticsMomentumCommand.ICONS.forEach((icon) => {
+        ImageManager.reserveSystem(icon, 0, Window_TacticsMomentumCommand.IMAGE_CACHE_RID);
+        ImageManager.reserveSystem(icon + '_selected', 0, Window_TacticsMomentumCommand.IMAGE_CACHE_RID);
+    });
+    const readyCheck = resolve => {
+        if (ImageManager.isReady()) {
+            resolve();
+        }
+        else {
+            setTimeout(() => readyCheck(resolve), 100);
+        }
+    };
+    new Promise(readyCheck).then(() => {
+        this._imagesReady = true;
+        this.refresh();
+    });
+};
+Window_TacticsMomentumCommand.prototype.makeCommandList = function () {
+    if (this._actor) {
+        this.addCommand(TEW.COMBAT.SYSTEM.momentumTransfer, TEW.COMBAT.SYSTEM.momentumTransfer, BattleManager.canTransferMomentum());
+        this.addCommand(TEW.COMBAT.SYSTEM.momentumDisengage, TEW.COMBAT.SYSTEM.momentumDisengage, BattleManager.canDisengageWithMomentum());
+        this.addCommand(TEW.COMBAT.SYSTEM.momentumOffHandAttack, TEW.COMBAT.SYSTEM.momentumOffHandAttack, BattleManager.canMomentumAttack());
+    }
+};
+Window_TacticsMomentumCommand.prototype.xPos = function () {
+    return Window_TacticsMomentumCommand.X_POS;
+};
+Window_TacticsMomentumCommand.prototype.yPos = function () {
+    return Window_TacticsMomentumCommand.Y_POS;
+};
+Window_TacticsMomentumCommand.prototype.textMaxWidth = function () {
+    return Window_TacticsMomentumCommand.TEXT_MAX_WIDTH;
+};
+Window_TacticsMomentumCommand.prototype.extendedWidth = function () {
+    return Window_TacticsMomentumCommand.EXTENDED_WIDTH;
+};
+Window_TacticsMomentumCommand.prototype.imageCacheRid = function () {
+    return Window_TacticsMomentumCommand.IMAGE_CACHE_RID;
+};
+// #endregion =========================== Window_TacticsMomentumCommand ============================== //
+// ============================== //
 // #region ============================== Window_TacticsMoveCommand ============================== //
 //-----------------------------------------------------------------------------
 // Window_MoveCommand
@@ -5164,6 +5636,7 @@ Window_TacticsCommand.prototype = Object.create(Window_TacticsCommandBase.protot
 Window_TacticsCommand.prototype.constructor = Window_TacticsCommand;
 Window_TacticsCommand.prototype.initialize = function () {
     Window_TacticsCommandBase.prototype.initialize.call(this);
+    // TODO dedicated momentum icon (the "last used" icon is a placeholder)
     this._iconOrder = ['icon_battleCommand_move', 'icon_battleCommand_action', 'icon_battleCommand_lastUsed', 'icon_battleCommand_wait'];
     this.loadIcons();
 };
@@ -5191,7 +5664,7 @@ Window_TacticsCommand.prototype.makeCommandList = function () {
     if (this._actor) {
         this.addMoveCommand();
         this.addActionCommand();
-        this.addAdvantageCommand(); // TODO replace with last used
+        this.addMomentumCommand();
         this.addWaitCommand();
     }
 };
@@ -5208,8 +5681,8 @@ Window_TacticsCommand.prototype.addMoveCommand = function () {
 Window_TacticsCommand.prototype.addActionCommand = function () {
     this.addCommand(TEW.COMBAT.SYSTEM.action, TEW.COMBAT.SYSTEM.action, true);
 };
-Window_TacticsCommand.prototype.addAdvantageCommand = function () {
-    this.addCommand(TEW.COMBAT.SYSTEM.advantage, TEW.COMBAT.SYSTEM.advantage, false);
+Window_TacticsCommand.prototype.addMomentumCommand = function () {
+    this.addCommand(TEW.COMBAT.SYSTEM.momentum, TEW.COMBAT.SYSTEM.momentum, BattleManager.canUseMomentumAction());
 };
 Window_TacticsCommand.prototype.addWaitCommand = function () {
     this.addCommand(TEW.COMBAT.SYSTEM.wait, TEW.COMBAT.SYSTEM.wait, true);
@@ -5305,6 +5778,7 @@ Window_TacticsStatus.prototype.drawActorSimpleStatus = function (actor, x, y, wi
     this.drawActorName(actor, x, y);
     this.drawActorLevel(actor, x, y + lineHeight * 1);
     this.drawActorIcons(actor, x, y + lineHeight * 2);
+    this.drawMomentum(actor, x, y + lineHeight * 3, 150);
     this.drawActorClass(actor, x2, y);
     if ($dataSystem.optDisplayTp) {
         this.drawActorHp(actor, x2, y + lineHeight * 1, width2);
@@ -5323,6 +5797,14 @@ Window_TacticsStatus.prototype.drawEnemySimpleStatus = function (enemy, x, y, wi
     this.drawActorName(enemy, x2, y);
     this.drawActorHp(enemy, x2, y + lineHeight * 1, width2);
     this.drawActorMp(enemy, x2, y + lineHeight * 2, width2);
+    this.drawMomentum(enemy, x2, y + lineHeight * 3, width2);
+};
+Window_TacticsStatus.prototype.drawMomentum = function (battler, x, y, width) {
+    if (battler.hasMomentum()) {
+        this.changeTextColor(this.powerUpColor());
+        this.drawText(TEW.COMBAT.SYSTEM.momentum, x, y, width);
+        this.resetTextColor();
+    }
 };
 // #endregion =========================== Window_TacticsStatus ============================== //
 // ============================== //
@@ -6178,6 +6660,7 @@ Scene_Battle.prototype.createAllWindows = function () {
     this.createMessageWindow();
     this.createMoveCommandWindow();
     this.createActionCommandWindow();
+    this.createMomentumCommandWindow();
     this.createWeaponCommandWindow();
     this.createWeaponListWindow();
     this.createWeaponDetailsWindow();
@@ -6209,6 +6692,7 @@ Scene_Battle.prototype.createActorCommandWindow = function () {
     this._tacticsCommandWindow = new Window_TacticsCommand();
     this._tacticsCommandWindow.setHandler(TEW.COMBAT.SYSTEM.move, this.commandMove.bind(this));
     this._tacticsCommandWindow.setHandler(TEW.COMBAT.SYSTEM.action, this.commandAction.bind(this));
+    this._tacticsCommandWindow.setHandler(TEW.COMBAT.SYSTEM.momentum, this.commandMomentum.bind(this));
     this._tacticsCommandWindow.setHandler(TEW.COMBAT.SYSTEM.wait, this.commandWait.bind(this));
     this.addWindow(this._tacticsCommandWindow);
 };
@@ -6251,6 +6735,21 @@ Scene_Battle.prototype.createActionCommandWindow = function () {
         this.changeBackground(1);
     });
     this.addWindow(this._actionCommandWindow);
+};
+Scene_Battle.prototype.createMomentumCommandWindow = function () {
+    this._momentumCommandWindow = new Window_TacticsMomentumCommand();
+    this._momentumCommandWindow.setHandler(TEW.COMBAT.SYSTEM.momentumTransfer, this.commandMomentumTransfer.bind(this));
+    this._momentumCommandWindow.setHandler(TEW.COMBAT.SYSTEM.momentumOffHandAttack, this.commandMomentumOffHandAttack.bind(this));
+    // Disengage: TODO, the command is disabled for now
+    this._momentumCommandWindow.setHandler('cancel', () => {
+        $gameMap.clearTiles();
+        this._tacticsCommandWindow.extend();
+        this._tacticsCommandWindow.activate();
+        this._momentumCommandWindow.deactivate();
+        this._momentumCommandWindow.hide();
+        this.changeBackground(1);
+    });
+    this.addWindow(this._momentumCommandWindow);
 };
 Scene_Battle.prototype.createWeaponCommandWindow = function () {
     this._weaponsCommandWindow = new Window_TacticsWeaponCommand();
@@ -6424,7 +6923,7 @@ Scene_Battle.prototype.processMapTouch = function () {
 Scene_Battle.prototype.updateBattleProcess = function () {
     if (!this.isAnyInputWindowActive() || BattleManager.isBattleEnd()) {
         $gameSelector.updateMoveByInput();
-        if (BattleManager.isInputting() && !$gameMap.isEventRunning()) {
+        if (BattleManager.isInputting() && !$gameMap.isEventRunning() && !$gameMessage.isBusy()) {
             this.startActorCommandSelection();
         }
         BattleManager.update();
@@ -6438,6 +6937,7 @@ Scene_Battle.prototype.isAnyInputWindowActive = function () {
     return (this._tacticsCommandWindow.active ||
         this._moveCommandWindow.active ||
         this._actionCommandWindow.active ||
+        this._momentumCommandWindow.active ||
         this._weaponsWindow.active ||
         this._weaponsCommandWindow.active ||
         this._windowSpellList.active);
@@ -6487,9 +6987,14 @@ Scene_Battle.prototype.commandCharge = function () {
     }
 };
 /**
- * Close the command windows and let the player select a target for the decision on the map
+ * Close the command windows and let the player select a target for the decision on the map.
+ * Modifiers are passed to the decision's Game_Action (e.g. { momentumAction } for a free action paid with momentum)
  */
-Scene_Battle.prototype.startTargetting = function (decision) {
+Scene_Battle.prototype.startTargetting = function (decision, modifiers = {}) {
+    this.closeCommandWindows();
+    BattleManager.startTargetting(decision, modifiers);
+};
+Scene_Battle.prototype.closeCommandWindows = function () {
     this.changeBackground();
     this._windowSpellList.close();
     this._windowSpellDetails.close();
@@ -6497,9 +7002,10 @@ Scene_Battle.prototype.startTargetting = function (decision) {
     this._moveCommandWindow.deactivate();
     this._actionCommandWindow.close();
     this._actionCommandWindow.deactivate();
+    this._momentumCommandWindow.close();
+    this._momentumCommandWindow.deactivate();
     this._tacticsCommandWindow.close();
     this._tacticsCommandWindow.deactivate();
-    BattleManager.startTargetting(decision);
 };
 Scene_Battle.prototype.commandSwitchWeapon = function () {
     // Spend a movement if possible or spend an action to move
@@ -6585,6 +7091,30 @@ Scene_Battle.prototype.commandChannelling = function () {
     // TODO animation + sound
     BattleManager.actor().doChannelling();
     BattleManager.endAction();
+};
+Scene_Battle.prototype.commandMomentum = function () {
+    this._actorWindow.hide();
+    this._momentumCommandWindow.setActor(BattleManager.actor());
+    this._momentumCommandWindow.refresh();
+    this.changeBackground(2);
+    this._momentumCommandWindow.show();
+    this._momentumCommandWindow.activate();
+    this._tacticsCommandWindow.deactivate();
+    this._tacticsCommandWindow.collapse();
+    $gameSelector.performTransfer(BattleManager._subject.x, BattleManager._subject.y);
+    BattleManager.refreshMoveTiles();
+};
+/**
+ * Free action: lose momentum to grant it to an ally on a successful Leadership test
+ */
+Scene_Battle.prototype.commandMomentumTransfer = function () {
+    this.startTargetting({ option: 11 /* BattleOption.MOMENTUM_TRANSFER */ });
+};
+/**
+ * Free action: lose momentum to attack with the off-hand weapon (or bare fists), once per turn
+ */
+Scene_Battle.prototype.commandMomentumOffHandAttack = function () {
+    this.startTargetting({ option: 6 /* BattleOption.MELEE_ATTACK */, weapon: BattleManager.actor().offHandWeapon() }, { momentumAction: MomentumAction.OFF_HAND_ATTACK });
 };
 Scene_Battle.prototype.onSpellOk = function () {
     const spellId = this._windowSpellList.item();

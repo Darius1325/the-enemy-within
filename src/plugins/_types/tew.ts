@@ -26,7 +26,7 @@ import { Glossary } from "./glossary";
 import { TutorialCategory } from "./tutorial";
 import { CharacterDescription } from "./characterDescription";
 import { JournalDocument } from "./journalDocument";
-import { Critical } from "./critical";
+import { Critical, CriticalLocation, CriticalUtilities } from "./critical";
 import { Condition } from "./condition";
 import { Career, CareerPath } from "./career";
 import { SpecialisationGroup, SpecialisationPick } from "./specialisation";
@@ -165,13 +165,28 @@ const TEW: {
 
         CONDITIONS?: Record<string, Condition>;
 
-        WEAPON_CRITICALS?: {
-            HEAD?: Critical[];
-            BODY?: Critical[];
-            ARMS?: Critical[];
-            LEGS?: Critical[];
-        };
+        /** Building blocks for the handlers of critical tables */
+        CRITICAL_UTILITIES?: CriticalUtilities;
 
+        /**
+         * Critical wound tables by body location, rolled on with a d100 (wfrp5e.pdf p173-176)
+         * Inflicted by a Critical Hit: a double on a successful melee or ranged test
+         */
+        WEAPON_CRITICALS?: Record<CriticalLocation, Critical[]>;
+
+        /** Critical wound table used for each hit location */
+        HIT_LOCATION_CRITICALS?: Record<number, CriticalLocation>;
+
+        /**
+         * Oops! table, rolled on with a d10 (wfrp5e.pdf p165)
+         * Triggered by a Fumble: a double on a failed melee or ranged test
+         */
+        WEAPON_FUMBLES?: Critical[];
+
+        /**
+         * Miscast tables, rolled on with a d100 (wfrp5e.pdf p238-239)
+         * Triggered by a double on a Casting test, or on a failed Channelling test
+         */
         MAGIC_CRITICALS?: {
             MINOR?: Critical[];
             MAJOR?: Critical[];
@@ -419,6 +434,11 @@ const TEW: {
         invertRoll?: (roll: number) => number;
 
         /**
+         * Hit location matching a d100 roll (see TEW.DATABASE.HIT_LOCATION_TABLE)
+         */
+        hitLocationFromRoll?: (roll: number) => HitLocation;
+
+        /**
          * Roll a 10-sided die and add the result to the actor's initiative bonus.
          * Used to determine turn order
          * @param battler the battler to roll initiative for
@@ -435,8 +455,27 @@ const TEW: {
         ) => {
             sl: number,
             success: boolean,
-            critical: boolean
+            /**
+             * Whether a double was rolled. On a critical roll, success is decided before SL modifiers:
+             * a critical success (critical && success) or a critical failure (critical && !success)
+             */
+            critical: boolean,
+            /** Final d100 roll, after advantage or disadvantage */
+            roll: number
         };
+
+        /**
+         * Whether a d100 roll is a success before any SL modifier applies,
+         * which decides between a critical success and a critical failure (5th edition)
+         * @param compValue tested value
+         * @param roll d100 roll
+         */
+        isRawSuccess?: (compValue: number, roll: number) => boolean;
+
+        /**
+         * Whether a d100 roll is a double (11, 22... 99, and 100 as 00)
+         */
+        isDouble?: (roll: number) => boolean;
 
         opposedTest?: (
             value: number,
@@ -465,8 +504,14 @@ const TEW: {
             slAttacker: number,
             slDefender: number,
             success: boolean,
+            /** Whether the attacker rolled a double */
             criticalAttacker: boolean,
+            /** Whether the defender rolled a double */
             criticalDefender: boolean,
+            /** Whether the attacker's test succeeded before SL modifiers (decides between Critical Hit and Fumble) */
+            rawSuccessAttacker: boolean,
+            /** Whether the defender's test succeeded before SL modifiers (decides between Critical Hit and Fumble) */
+            rawSuccessDefender: boolean,
             hitLocation: HitLocation
         };
     };
@@ -575,8 +620,42 @@ const TEW: {
 
             action?: string;
 
-            advantage?: string;
+            /** Momentum menu and free actions names */
+            momentum?: string;
+            momentumTransfer?: string;
+            momentumDisengage?: string;
+            momentumOffHandAttack?: string;
+
+            /** Competence tested to transfer momentum to an ally */
+            momentumTransferComp?: string;
+
+            /** Modifier of the momentum transfer test */
+            momentumTransferModifier?: number;
+
+            /** Messages after a momentum transfer: %1 is the giver, %2 the ally */
+            momentumTransferSuccess?: string;
+            momentumTransferFailure?: string;
+
+            /** Messages for critical effects: %1 is the battler suffering it, %2 the name of the critical entry */
+            criticalWoundMessage?: string;
+            fumbleMessage?: string;
+            minorMiscastMessage?: string;
+            majorMiscastMessage?: string;
+
+            /** Die rolled on the Oops! table (fumbles) */
+            fumbleDie?: number;
+
+            /** Miscast roll bonus for each SL of channelled power lost on a fumbled Channelling test */
+            channellingFumbleMiscastBonus?: number;
         }
+
+        /**
+         * Find the entry of a critical table matching a roll
+         * @param table critical wound, fumble or miscast table
+         * @param roll the (possibly modified) roll
+         * @returns the matching entry, or the closest end of the table if none matches
+         */
+        findCritical?: (table: Critical[], roll: number) => Critical;
         /**
          * Extract effects from a weapon's qualities.
          * @param weaponId from TEW.DATABASE.WEAPONS.IDS

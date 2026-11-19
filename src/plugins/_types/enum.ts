@@ -366,7 +366,8 @@ export const enum BattleOption {
     RANGED_ATTACK,
     USE_SPELL,
     USE_ITEM,
-    RELOAD
+    RELOAD,
+    MOMENTUM_TRANSFER // Free action: lose momentum to grant it to an ally on a successful leadership test
 }
 
 export const enum BattleTargetType {

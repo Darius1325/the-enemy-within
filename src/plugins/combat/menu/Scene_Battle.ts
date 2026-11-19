@@ -13,6 +13,8 @@ import { Sprite } from "../../../rmmv/core/Sprite";
 import Window_TurnOrder from "./Window_TurnOrder";
 import Window_TacticsSpellList from "./spell/Window_TacticsSpellList";
 import Window_TacticsSpellDetails from "./spell/Window_TacticsSpellDetails";
+import Window_TacticsMomentumCommand from "./momentum/Window_TacticsMomentumCommand";
+import { MomentumAction } from "../game/BattleManager_Momentum";
 
 // $StartCompilation
 
@@ -76,6 +78,7 @@ Scene_Battle.prototype.createAllWindows = function() {
 
     this.createMoveCommandWindow();
     this.createActionCommandWindow();
+    this.createMomentumCommandWindow();
 
     this.createWeaponCommandWindow();
     this.createWeaponListWindow();
@@ -115,6 +118,7 @@ Scene_Battle.prototype.createActorCommandWindow = function() {
     this._tacticsCommandWindow = new Window_TacticsCommand();
     this._tacticsCommandWindow.setHandler(TEW.COMBAT.SYSTEM.move, this.commandMove.bind(this));
     this._tacticsCommandWindow.setHandler(TEW.COMBAT.SYSTEM.action, this.commandAction.bind(this));
+    this._tacticsCommandWindow.setHandler(TEW.COMBAT.SYSTEM.momentum, this.commandMomentum.bind(this));
     this._tacticsCommandWindow.setHandler(TEW.COMBAT.SYSTEM.wait, this.commandWait.bind(this));
     this.addWindow(this._tacticsCommandWindow);
 };
@@ -160,6 +164,22 @@ Scene_Battle.prototype.createActionCommandWindow = function() {
         this.changeBackground(1);
     });
     this.addWindow(this._actionCommandWindow);
+};
+
+Scene_Battle.prototype.createMomentumCommandWindow = function() {
+    this._momentumCommandWindow = new Window_TacticsMomentumCommand();
+    this._momentumCommandWindow.setHandler(TEW.COMBAT.SYSTEM.momentumTransfer, this.commandMomentumTransfer.bind(this));
+    this._momentumCommandWindow.setHandler(TEW.COMBAT.SYSTEM.momentumOffHandAttack, this.commandMomentumOffHandAttack.bind(this));
+    // Disengage: TODO, the command is disabled for now
+    this._momentumCommandWindow.setHandler('cancel', () => {
+        $gameMap.clearTiles();
+        this._tacticsCommandWindow.extend();
+        this._tacticsCommandWindow.activate();
+        this._momentumCommandWindow.deactivate();
+        this._momentumCommandWindow.hide();
+        this.changeBackground(1);
+    });
+    this.addWindow(this._momentumCommandWindow);
 };
 
 Scene_Battle.prototype.createWeaponCommandWindow = function() {
@@ -354,7 +374,7 @@ Scene_Battle.prototype.processMapTouch = function() {
 Scene_Battle.prototype.updateBattleProcess = function() {
     if (!this.isAnyInputWindowActive() || BattleManager.isBattleEnd()) {
         $gameSelector.updateMoveByInput();
-        if (BattleManager.isInputting() && !$gameMap.isEventRunning()) {
+        if (BattleManager.isInputting() && !$gameMap.isEventRunning() && !$gameMessage.isBusy()) {
             this.startActorCommandSelection();
         }
         BattleManager.update();
@@ -370,6 +390,7 @@ Scene_Battle.prototype.isAnyInputWindowActive = function() {
     return (this._tacticsCommandWindow.active ||
         this._moveCommandWindow.active ||
         this._actionCommandWindow.active ||
+        this._momentumCommandWindow.active ||
         this._weaponsWindow.active ||
         this._weaponsCommandWindow.active ||
         this._windowSpellList.active
@@ -425,9 +446,15 @@ Scene_Battle.prototype.commandCharge = function() {
 };
 
 /**
- * Close the command windows and let the player select a target for the decision on the map
+ * Close the command windows and let the player select a target for the decision on the map.
+ * Modifiers are passed to the decision's Game_Action (e.g. { momentumAction } for a free action paid with momentum)
  */
-Scene_Battle.prototype.startTargetting = function(decision: { option: BattleOption, weapon?: any, spell?: any }) {
+Scene_Battle.prototype.startTargetting = function(decision: { option: BattleOption, weapon?: any, spell?: any }, modifiers = {}) {
+    this.closeCommandWindows();
+    BattleManager.startTargetting(decision, modifiers);
+};
+
+Scene_Battle.prototype.closeCommandWindows = function() {
     this.changeBackground();
     this._windowSpellList.close();
     this._windowSpellDetails.close();
@@ -435,9 +462,10 @@ Scene_Battle.prototype.startTargetting = function(decision: { option: BattleOpti
     this._moveCommandWindow.deactivate();
     this._actionCommandWindow.close();
     this._actionCommandWindow.deactivate();
+    this._momentumCommandWindow.close();
+    this._momentumCommandWindow.deactivate();
     this._tacticsCommandWindow.close();
     this._tacticsCommandWindow.deactivate();
-    BattleManager.startTargetting(decision);
 };
 
 Scene_Battle.prototype.commandSwitchWeapon = function() {
@@ -535,6 +563,38 @@ Scene_Battle.prototype.commandChannelling = function() {
     BattleManager.endAction();
 };
 
+
+Scene_Battle.prototype.commandMomentum = function() {
+    this._actorWindow.hide();
+    this._momentumCommandWindow.setActor(BattleManager.actor());
+    this._momentumCommandWindow.refresh();
+    this.changeBackground(2);
+    this._momentumCommandWindow.show();
+    this._momentumCommandWindow.activate();
+
+    this._tacticsCommandWindow.deactivate();
+    this._tacticsCommandWindow.collapse();
+
+    $gameSelector.performTransfer(BattleManager._subject.x, BattleManager._subject.y);
+    BattleManager.refreshMoveTiles();
+};
+
+/**
+ * Free action: lose momentum to grant it to an ally on a successful Leadership test
+ */
+Scene_Battle.prototype.commandMomentumTransfer = function() {
+    this.startTargetting({ option: BattleOption.MOMENTUM_TRANSFER });
+};
+
+/**
+ * Free action: lose momentum to attack with the off-hand weapon (or bare fists), once per turn
+ */
+Scene_Battle.prototype.commandMomentumOffHandAttack = function() {
+    this.startTargetting(
+        { option: BattleOption.MELEE_ATTACK, weapon: BattleManager.actor().offHandWeapon() },
+        { momentumAction: MomentumAction.OFF_HAND_ATTACK }
+    );
+};
 
 Scene_Battle.prototype.onSpellOk = function() {
     const spellId: string = this._windowSpellList.item();

@@ -17,6 +17,8 @@ declare global {
     }
     interface String {
         toBoolean() : boolean;
+        /** RMMV: replaces %1, %2... with the arguments */
+        format(...args: any[]) : string;
     }
     interface Array<T> {
         last() : T;

@@ -91,12 +91,16 @@ BattleManager.showMoveRange = function(battler: Game_Battler, option: BattleOpti
 // Targetting
 // ----------------------
 
-BattleManager.startTargetting = function(decision: { option: BattleOption, weapon?: any, spell?: any, item?: any }) {
+/**
+ * Modifiers are kept until the decision is executed (e.g. { momentumAction } for a free action paid with momentum)
+ */
+BattleManager.startTargetting = function(decision: { option: BattleOption, weapon?: any, spell?: any, item?: any }, modifiers = {}) {
     this._pendingDecision = {
         initiator: this._subject,
         target: undefined,
         ...decision
     };
+    this._pendingModifiers = modifiers;
     this.supplementActionParameters(this._pendingDecision);
     $gameMap.clearAoeTiles();
     $gameSelector.performTransfer(this._subject.x, this._subject.y);
@@ -111,7 +115,7 @@ BattleManager.startTargetting = function(decision: { option: BattleOption, weapo
             this._battlePhase = BattlePhase.InputCharge;
             break;
         default:
-            this._targettingAction = new Game_Action(this._subject, false, this._pendingDecision);
+            this._targettingAction = new Game_Action(this._subject, false, this._pendingDecision, modifiers);
             this.refreshRedCells(this._targettingAction);
             this._battlePhase = BattlePhase.Target;
             break;
@@ -120,17 +124,20 @@ BattleManager.startTargetting = function(decision: { option: BattleOption, weapo
 
 BattleManager.confirmTarget = function(target: BattleTarget) {
     const decision = this._pendingDecision;
+    const modifiers = this._pendingModifiers;
     decision.target = target;
     this._pendingDecision = null;
+    this._pendingModifiers = {};
     this._targettingAction = null;
     $gameMap.clearAoeTiles();
     this._enemyWindow.close();
-    this.executeDecision(decision);
+    this.executeDecision(decision, modifiers);
 };
 
 BattleManager.cancelTargetting = function() {
     SoundManager.playCancel();
     this._pendingDecision = null;
+    this._pendingModifiers = {};
     this._targettingAction = null;
     $gameMap.clearAoeTiles();
     this._enemyWindow.close();

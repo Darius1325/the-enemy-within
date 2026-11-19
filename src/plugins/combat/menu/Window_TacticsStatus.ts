@@ -83,6 +83,7 @@ Window_TacticsStatus.prototype.drawActorSimpleStatus = function(actor, x, y, wid
     this.drawActorName(actor, x, y);
     this.drawActorLevel(actor, x, y + lineHeight * 1);
     this.drawActorIcons(actor, x, y + lineHeight * 2);
+    this.drawMomentum(actor, x, y + lineHeight * 3, 150);
     this.drawActorClass(actor, x2, y);
     if ($dataSystem.optDisplayTp) {
         this.drawActorHp(actor, x2, y + lineHeight * 1, width2);
@@ -101,4 +102,13 @@ Window_TacticsStatus.prototype.drawEnemySimpleStatus = function(enemy, x, y, wid
     this.drawActorName(enemy, x2, y);
     this.drawActorHp(enemy, x2, y + lineHeight * 1, width2);
     this.drawActorMp(enemy, x2, y + lineHeight * 2, width2);
+    this.drawMomentum(enemy, x2, y + lineHeight * 3, width2);
+};
+
+Window_TacticsStatus.prototype.drawMomentum = function(battler, x, y, width) {
+    if (battler.hasMomentum()) {
+        this.changeTextColor(this.powerUpColor());
+        this.drawText(TEW.COMBAT.SYSTEM.momentum, x, y, width);
+        this.resetTextColor();
+    }
 };

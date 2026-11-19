@@ -5,6 +5,7 @@ import { ArmorGroup, WeaponGroup, WeaponQuality } from "../../_types/enum";
 import {Game_BattlerBase} from "../../base/stats/Game_BattlerBase";
 import { MeleeWeapon } from "../../_types/meleeWeapon";
 import { RangedWeapon } from "../../_types/rangedWeapon";
+import { Critical } from "../../_types/critical";
 
 // $StartCompilation
 
@@ -188,6 +189,15 @@ TEW.COMBAT.getDefenceCompOrDefault = (battler: Game_BattlerBase, weaponGroup: We
         match: hasMeleeComp,
         value: maxCompValue // TODO opt out if shield
     };
+};
+
+// Find the entry of a critical table (TEW_Criticals.ts) matching a roll
+TEW.COMBAT.findCritical = (table: Critical[], roll: number): Critical => {
+    const entry = table.find(critical => roll >= critical.interval.min && roll <= critical.interval.max);
+    if (entry) {
+        return entry;
+    }
+    return roll < table[0].interval.min ? table[0] : table[table.length - 1];
 };
 
 // Get weapon data defined in TEW_Weapons.js from its ID

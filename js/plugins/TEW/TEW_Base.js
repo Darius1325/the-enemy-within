@@ -145,6 +145,23 @@ TEW.DICE.invertRoll = function (roll) {
         ? 100
         : Math.floor(roll / 10) + (roll % 10) * 10;
 };
+TEW.DICE.isDouble = function (roll) {
+    return roll % 11 === 0 || roll === 100;
+};
+// 5th edition: whether a roll is a success is decided before SL modifiers, which tells a critical success from a critical failure
+TEW.DICE.isRawSuccess = function (compValue, roll) {
+    if (roll <= 5) {
+        return true;
+    }
+    else if (roll >= 96) {
+        return false;
+    }
+    return compValue >= roll;
+};
+TEW.DICE.hitLocationFromRoll = function (roll) {
+    return Number.parseInt(Object.keys(TEW.DATABASE.HIT_LOCATION_TABLE).find(loca => roll >= TEW.DATABASE.HIT_LOCATION_TABLE[loca].min
+        && roll <= TEW.DATABASE.HIT_LOCATION_TABLE[loca].max));
+};
 TEW.DICE.displayDiceRoll = function (range = 100) {
     const result = TEW.DICE.roll(range);
     const windowDice = new Window_Dice(0, 0, Math.floor(result / 10), result % 10);
@@ -169,11 +186,11 @@ TEW.DICE.skillTest = function (battler, compId, slModifier = 0, hidden = false, 
         const invertedRoll = TEW.DICE.invertRoll(roll);
         roll = Math.max(roll, invertedRoll);
     }
-    const critical = roll % 11 === 0 || roll === 100;
+    const critical = TEW.DICE.isDouble(roll);
     let sl = Math.floor(compValue / 10) - Math.floor(roll / 10) + totalSLModifier + slFromAdvantage;
     let success;
     if (critical) {
-        success = compValue >= roll;
+        success = TEW.DICE.isRawSuccess(compValue, roll);
         if (success) {
             sl = Math.max(0, sl);
         }
@@ -201,7 +218,8 @@ TEW.DICE.skillTest = function (battler, compId, slModifier = 0, hidden = false, 
     return {
         sl,
         success,
-        critical
+        critical,
+        roll
     };
 };
 Game_Interpreter.prototype.partySkillTest = function (compId, slModifier, hidden = false, advantages = 0) {
@@ -293,32 +311,14 @@ TEW.DICE.opposedTest = function (skillValue, opposedSkillValue, slModifier = 0, 
     const criticalPlayer = rollPlayer % 11 === 0 || rollPlayer === 100;
     let slPlayer = Math.floor((skillValue) / 10) - Math.floor(rollPlayer / 10) + slModifier + slFromAdvantage;
     let slNPC = Math.floor((opposedSkillValue) / 10) - Math.floor(rollNPC / 10) + opposedSLModifier;
-    let successRollPlayer;
     if (criticalPlayer) {
-        successRollPlayer = skillValue >= rollPlayer;
+        const successRollPlayer = skillValue >= rollPlayer;
         if (successRollPlayer) {
             slPlayer = Math.max(0, slPlayer);
         }
         else {
             slPlayer = Math.min(0, slPlayer);
         }
-    }
-    else {
-        if (slPlayer === 0) {
-            successRollPlayer = skillValue + slModifier * 10 >= rollPlayer;
-        }
-        else {
-            successRollPlayer = slPlayer > 0;
-        }
-    }
-    // Y a ma mère qui m'appelle je reviens
-    if (rollPlayer <= 5) {
-        successRollPlayer = true;
-        slPlayer = slPlayer > 0 ? slPlayer : 0;
-    }
-    else if (rollPlayer >= 96) {
-        successRollPlayer = false;
-        slPlayer = slPlayer < 0 ? slPlayer : 0;
     }
     if (rollNPC <= 5) {
         slNPC = slNPC > 0 ? slNPC : 0;
@@ -327,14 +327,8 @@ TEW.DICE.opposedTest = function (skillValue, opposedSkillValue, slModifier = 0, 
         slNPC = slNPC < 0 ? slNPC : 0;
     }
     let success;
-    // if Player succeed && its SL is greater than the NPC SL, player wins
-    if (slPlayer > slNPC && successRollPlayer) {
-        success = true;
-        // else if SL Player is less than SL NPC or if player misses, player fails
-    }
-    else if (slPlayer < slNPC || !successRollPlayer) {
-        success = false;
-        // else draw
+    if (slPlayer != slNPC) {
+        success = slPlayer > slNPC;
     }
     else {
         success = (skillValue >= opposedSkillValue);
@@ -387,65 +381,41 @@ TEW.DICE.combatOpposedSkillTest = function (compValueAttacker, compValueDefender
     }
     let slAttacker = Math.floor(compValueAttacker / 10) - Math.floor(rollAttacker / 10) + slModifierAttacker + slFromAdvantageAttacker;
     let slDefender = Math.floor(compValueDefender / 10) - Math.floor(rollDefender / 10) + slModifierDefender + slFromAdvantageDefender;
-    const criticalAttacker = rollAttacker % 11 === 0 || rollAttacker === 100;
-    const criticalDefender = rollDefender % 11 === 0 || rollDefender === 100;
-    let successRollAttacker;
+    const criticalAttacker = TEW.DICE.isDouble(rollAttacker);
+    const criticalDefender = TEW.DICE.isDouble(rollDefender);
+    // Decides between a Critical Hit and a Fumble, see Game_Action.resolveWeaponAttack
+    const rawSuccessAttacker = TEW.DICE.isRawSuccess(compValueAttacker, rollAttacker);
+    const rawSuccessDefender = TEW.DICE.isRawSuccess(compValueDefender, rollDefender);
     if (criticalAttacker) {
-        successRollAttacker = compValueAttacker >= rollAttacker;
-        if (successRollAttacker) {
+        if (rawSuccessAttacker) {
             slAttacker = Math.max(0, slAttacker);
         }
         else {
             slAttacker = Math.min(0, slAttacker);
         }
     }
-    else {
-        if (slAttacker === 0) {
-            successRollAttacker = compValueAttacker + slModifierAttacker * 10 >= rollAttacker;
-        }
-        else {
-            successRollAttacker = slAttacker > 0;
-        }
-    }
-    let successRollDefender;
     if (criticalDefender) {
-        successRollDefender = compValueDefender >= rollDefender;
-        if (successRollDefender) {
+        if (rawSuccessDefender) {
             slDefender = Math.max(0, slDefender);
         }
         else {
             slDefender = Math.min(0, slDefender);
         }
     }
-    else {
-        if (slDefender === 0) {
-            successRollDefender = compValueDefender + slModifierDefender * 10 >= rollDefender;
-        }
-        else {
-            successRollDefender = slDefender > 0;
-        }
-    }
     if (rollAttacker <= 5) {
-        successRollAttacker = true;
         slAttacker = slAttacker > 0 ? slAttacker : 0;
     }
     else if (rollAttacker >= 96) {
-        successRollAttacker = false;
         slAttacker = slAttacker < 0 ? slAttacker : 0;
     }
     if (rollDefender <= 5) {
-        successRollDefender = true;
         slDefender = slDefender > 0 ? slDefender : 0;
     }
     else if (rollDefender >= 96) {
-        successRollDefender = false;
         slDefender = slDefender < 0 ? slDefender : 0;
     }
     let success;
-    if (!successRollAttacker) {
-        success = false;
-    }
-    else if (slAttacker != slDefender) {
+    if (slAttacker != slDefender) {
         success = slAttacker > slDefender;
     }
     else {
@@ -458,8 +428,7 @@ TEW.DICE.combatOpposedSkillTest = function (compValueAttacker, compValueDefender
     else { // Invert attacker roll
         locationRoll = TEW.DICE.invertRoll(rollAttacker);
     }
-    const hitLocation = Number.parseInt(Object.keys(TEW.DATABASE.HIT_LOCATION_TABLE).find(loca => locationRoll >= TEW.DATABASE.HIT_LOCATION_TABLE[loca].min
-        && locationRoll <= TEW.DATABASE.HIT_LOCATION_TABLE[loca].max));
+    const hitLocation = TEW.DICE.hitLocationFromRoll(locationRoll);
     console.log("MELEE_ATTACK");
     console.log(`Attacker comp value: ${compValueAttacker}`);
     console.log(`Defender comp value: ${compValueDefender}`);
@@ -475,6 +444,8 @@ TEW.DICE.combatOpposedSkillTest = function (compValueAttacker, compValueDefender
         success,
         criticalAttacker,
         criticalDefender,
+        rawSuccessAttacker,
+        rawSuccessDefender,
         hitLocation
     };
 };

@@ -31,3 +31,13 @@ TEW.DATABASE.HIT_LOCATION_TABLE = {
         max: 100
     },
 };
+
+// Critical wound table rolled on for each hit location (see TEW_Criticals.ts)
+TEW.DATABASE.HIT_LOCATION_CRITICALS = {
+    [HitLocation.HEAD]: 'HEAD',
+    [HitLocation.LEFT_ARM]: 'ARMS',
+    [HitLocation.RIGHT_ARM]: 'ARMS',
+    [HitLocation.BODY]: 'BODY',
+    [HitLocation.LEFT_LEG]: 'LEGS',
+    [HitLocation.RIGHT_LEG]: 'LEGS',
+};

@@ -13,6 +13,7 @@ import { BattleOption } from "../../_types/enum";
 //  - BattleManager_Turns.ts: initiative order and turn start of each battler
 //  - BattleManager_Decisions.ts: execution of battle decisions (AI and player), action/move points
 //  - BattleManager_Input.ts: player command input, targetting and map tiles display
+//  - BattleManager_Momentum.ts: momentum free actions availability and momentum reset
 //  - BattleManager_End.ts: victory, defeat and battle termination
 
 export enum Phase {
@@ -68,6 +69,7 @@ BattleManager.initMembers = function() {
     this._decisionPointsBefore = 0;
     // Player input
     this._pendingDecision = null;
+    this._pendingModifiers = {}; // Game_Action modifiers of the pending decision (e.g. momentum free action)
     this._targettingAction = null;
     this._previewMoveOption = BattleOption.WALK;
 };
@@ -114,6 +116,7 @@ BattleManager.startBattle = function() {
     $gameTroopTs.onBattleStart();
     $gameScreen.onBattleStart();
     $gameSystem.onBattleStart();
+    this.clearAllMomentum();
 };
 
 // ----------------------

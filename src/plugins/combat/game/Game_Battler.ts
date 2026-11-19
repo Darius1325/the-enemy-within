@@ -4,6 +4,9 @@ import TEW from "../../_types/tew";
 import { Point } from "../../_types/point";
 import Game_BattlerBase from "./Game_BattlerBase";
 import { Game_CharacterBase } from "../../../rmmv/objects/Game_CharacterBase";
+import { BattleOption, BattleTargetType, ConditionId } from "../../_types/enum";
+import { BattleDecision } from "../../_types/battlerAI";
+import { MeleeWeapon } from "../../_types/meleeWeapon";
 
 export default interface Game_Battler extends Game_BattlerBase {
     x: number;
@@ -28,6 +31,7 @@ export default interface Game_Battler extends Game_BattlerBase {
 
     name: () => string;
     hp: number;
+    gainHp: (value: number) => void;
     pos: (x: number, y: number) => boolean;
     isDead: () => boolean;
     performCollapse: () => void;
@@ -51,6 +55,21 @@ export default interface Game_Battler extends Game_BattlerBase {
     walkDistance: () => number;
     runDistance: () => number;
     maxChargeDistance: () => number;
+
+    _momentum: boolean;
+    _momentumAttackUsed: boolean;
+
+    hasMomentum: () => boolean;
+    gainMomentum: () => void;
+    loseMomentum: () => void;
+    clearMomentum: () => void;
+    momentumAdvantage: () => number;
+    canMomentumAttack: () => boolean;
+    spendMomentumAttack: () => void;
+    offHandWeapon: () => MeleeWeapon;
+    momentumTransferTargets: () => Game_Battler[];
+    canTransferMomentumTo: (ally: Game_Battler) => boolean;
+    momentumDecision: (allies: Game_Battler[], enemies: Game_Battler[]) => BattleDecision | undefined;
 }
 
 // $StartCompilation
@@ -84,6 +103,8 @@ Game_Battler.prototype.initMembers = function() {
     this._active = false;
     this._requestImage = false;
     this._channellingLevel = 0;
+    this._momentum = false;
+    this._momentumAttackUsed = false; // Only one extra attack per turn can be paid with momentum
 };
 
 Game_Battler.prototype.setupEvent = function(eventId) {
@@ -145,6 +166,7 @@ Game_Battler.prototype.onTurnStart = function() {
     this.event().setStepAnime(true);
     this._moveCount = 1;
     this._actionCount = 1;
+    this._momentumAttackUsed = false;
     this.applyConditionsOnTurnStart();
     this.syncTacticalPosition();
     this.clearMovePath();
@@ -183,6 +205,129 @@ Game_Battler.prototype.spendMoveOrActionPoint = function() {
 
 Game_Battler.prototype.actionAndMovePoints = function() {
     return this._actionCount + this._moveCount;
+};
+
+// ----------------------
+// Momentum
+// ----------------------
+// WFRP 5th edition: a battler either has momentum or does not. It is gained by winning an opposed melee test
+// (see Game_Action.resolveWeaponAttack) or by a successful long charge (see Game_Action.applyChargeAttack),
+// and lost when losing an opposed melee test, taking damage, suffering a condition, or when the battle ends.
+// It gives advantage on melee tests, and can be spent on free actions (see BattleManager_Momentum.ts):
+// a transfer to an ally (BattleOption.MOMENTUM_TRANSFER) or an off-hand attack.
+
+Game_Battler.prototype.hasMomentum = function() {
+    return !!this._momentum;
+};
+
+/**
+ * Momentum only exists in battle
+ */
+Game_Battler.prototype.gainMomentum = function() {
+    if ($gamePartyTs.inBattle() && this.isAlive() && !this._momentum) {
+        this._momentum = true;
+        console.log(`Momentum: ${this.name()} gains momentum`);
+    }
+};
+
+Game_Battler.prototype.loseMomentum = function() {
+    if (this._momentum) {
+        this._momentum = false;
+        console.log(`Momentum: ${this.name()} loses momentum`);
+    }
+};
+
+/**
+ * Reset at the start and end of a battle
+ */
+Game_Battler.prototype.clearMomentum = function() {
+    this._momentum = false;
+    this._momentumAttackUsed = false;
+};
+
+/**
+ * Advantage given by momentum to melee tests (see TEW.DICE.combatOpposedSkillTest)
+ */
+Game_Battler.prototype.momentumAdvantage = function() {
+    return this.hasMomentum() ? 1 : 0;
+};
+
+/**
+ * Momentum can pay for one extra attack per turn, even if it is gained again afterwards
+ */
+Game_Battler.prototype.canMomentumAttack = function() {
+    return this.hasMomentum() && !this._momentumAttackUsed;
+};
+
+Game_Battler.prototype.spendMomentumAttack = function() {
+    this.loseMomentum();
+    this._momentumAttackUsed = true;
+};
+
+/**
+ * Melee weapon held in the second hand, or bare fists (MELEE_BRAWLING) if there is none
+ * TODO off-hand attack rules (penalty, ambidextrous...)
+ */
+Game_Battler.prototype.offHandWeapon = function(): MeleeWeapon {
+    const secondHand = this.secondHand();
+    return (secondHand && TEW.DATABASE.WEAPONS.MELEE_SET[secondHand.id]) || TEW.DATABASE.WEAPONS.MELEE_SET.UNARMED;
+};
+
+/**
+ * Allies that can receive momentum (BattleOption.MOMENTUM_TRANSFER): alive, and without momentum already.
+ * There is no range limit.
+ */
+Game_Battler.prototype.momentumTransferTargets = function(): Game_Battler[] {
+    return this.friendsUnitTS().aliveMembers()
+        .filter((ally: Game_Battler) => ally !== this && !ally.hasMomentum());
+};
+
+Game_Battler.prototype.canTransferMomentumTo = function(ally: Game_Battler) {
+    return this.hasMomentum() && !!ally && this.momentumTransferTargets().includes(ally);
+};
+
+/**
+ * AI decision to spend momentum, considered before the battler's AI profile (see BattleManager.updateEnemyPhase).
+ * Momentum is only useful in melee: a battler that is not engaged gives it to an engaged ally.
+ * Returns undefined when momentum is better kept (or there is none).
+ */
+Game_Battler.prototype.momentumDecision = function(allies: Game_Battler[], enemies: Game_Battler[]): BattleDecision | undefined {
+    const isEngaged = (battler: Game_Battler) => enemies.some((enemy: Game_Battler) => battler.isAdjacentTo(enemy));
+    if (!this.hasMomentum() || isEngaged(this)) {
+        return undefined;
+    }
+    const engagedAlly = this.momentumTransferTargets()
+        .find((ally: Game_Battler) => allies.includes(ally) && isEngaged(ally));
+    if (!engagedAlly) {
+        return undefined;
+    }
+    return {
+        initiator: this,
+        option: BattleOption.MOMENTUM_TRANSFER,
+        target: { type: BattleTargetType.BATTLER, target: engagedAlly },
+    };
+};
+
+/**
+ * Taking damage makes the battler lose momentum
+ */
+TEW.MEMORY.gameBattlerGainHp = Game_Battler.prototype.gainHp;
+Game_Battler.prototype.gainHp = function(value: number) {
+    TEW.MEMORY.gameBattlerGainHp.call(this, value);
+    if (value < 0) {
+        this.loseMomentum();
+    }
+};
+
+/**
+ * Suffering a condition makes the battler lose momentum
+ */
+TEW.MEMORY.gameBattlerAddCondition = Game_Battler.prototype.addCondition;
+Game_Battler.prototype.addCondition = function(conditionId: ConditionId, stacks = 1, entangledStrength = undefined) {
+    TEW.MEMORY.gameBattlerAddCondition.call(this, conditionId, stacks, entangledStrength);
+    if (stacks > 0 && TEW.DATABASE.CONDITIONS[conditionId]) {
+        this.loseMomentum();
+    }
 };
 
 // ----------------------
@@ -371,6 +516,11 @@ Game_Battler.prototype.turnTowardCharacter = function(character) {
     this.event().turnTowardCharacter(character)
 };
 
+/**
+ * Channelling test (wfrp5e.pdf p236). Doubles:
+ *  - on a success, add an extra Willpower Bonus SL to the pool of power
+ *  - on a failure, lose 1d10 SL of power, then suffer a Minor Miscast with +10 to the roll per SL lost
+ */
 Game_Battler.prototype.doChannelling = function() {
     const channellingCompId = this.anyCompOfCategory('CHANNELLING');
     const womModifier = $gameVariables.value(15);
@@ -380,10 +530,6 @@ Game_Battler.prototype.doChannelling = function() {
     if (testResult.success) {
         if (testResult.critical) {
             this._channellingLevel += testResult.sl + this.paramBonus('WILL');
-
-            if (!this.hasTalent('AETHYRIC_ATTUNEMENT')) {
-                // minor magical crit
-            }
         } else {
             if (testResult.sl === 0) {
                 this._channellingLevel += 1;
@@ -393,18 +539,14 @@ Game_Battler.prototype.doChannelling = function() {
             }
         }
         $gameMessage.add("You gained " + String(this._channellingLevel - previousChannellingLevel) + " channelling levels.");
+    } else if (testResult.critical) {
+        this._channellingLevel = Math.max(this._channellingLevel - TEW.DICE.roll(10), 0);
+        const lostLevels = previousChannellingLevel - this._channellingLevel;
+        $gameMessage.add("You lost " + String(lostLevels) + " channelling levels.");
+        Game_Action.applyMiscast(this, false, lostLevels * TEW.COMBAT.SYSTEM.channellingFumbleMiscastBonus);
     } else {
-        if (testResult.critical) {
-            this._channellingLevel = 0;
-            if (this._channellingLevel > this.paramBonus('WILL')) {
-                // major magical crit
-            } else {
-                // minor magical crit
-            }
-        } else {
-            this._channellingLevel += testResult.sl;
-            this._channellingLevel = Math.max(this._channellingLevel, 0);
-        }
+        this._channellingLevel += testResult.sl;
+        this._channellingLevel = Math.max(this._channellingLevel, 0);
         $gameMessage.add("You lost " + String(previousChannellingLevel - this._channellingLevel) + " channelling levels.");
     }
 };

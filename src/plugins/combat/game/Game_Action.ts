@@ -1,7 +1,8 @@
 // $PluginCompiler TEW_Combat.js
 
 import { BattleDecision, CompleteBattler } from "../../_types/battlerAI";
-import { BattleOption, BattleTargetType, BodyLocation, ConditionId, GameActionUsableObject, HitLocation, SpellEffectType, SpellRange, SpellTarget, SpellTargetRadius, Stat, WeaponQuality } from "../../_types/enum";
+import { BattleOption, BattleTargetType, BodyLocation, ConditionId, GameActionUsableObject, HitLocation, SpellDomain, SpellEffectType, SpellRange, SpellTarget, SpellTargetRadius, Stat, WeaponQuality } from "../../_types/enum";
+import { Critical } from "../../_types/critical";
 import { MeleeWeapon } from "../../_types/meleeWeapon";
 import { RangedWeapon } from "../../_types/rangedWeapon";
 import { Spell } from "../../_types/spell";
@@ -49,6 +50,7 @@ Game_Action.prototype.initializeDecision = function(params: BattleDecision, modi
     this._option = params.option;
     this._modifiers = modifiers;
     this._subjectAbilityRoll = undefined;
+    this._totalPower = false;
     this._object = undefined;
     this._objectType = GameActionUsableObject.ITEM;
     this._targets = [];
@@ -128,6 +130,11 @@ Game_Action.prototype.findBattlersInRange = function(battlers: Game_Battler[]) {
 };
 
 Game_Action.prototype.updateRange = function() {
+    // Momentum transfer has no range limit: only the allies who can receive it are targettable
+    if (this._option === BattleOption.MOMENTUM_TRANSFER) {
+        this._range = this._subject.momentumTransferTargets().map((ally: Game_Battler) => [ally.tx, ally.ty]);
+        return 0;
+    }
     const range = this.extractRangeData();
     // TODO better algorithm for obstacles
     this._range = this.computeEuclideanRange(range, this._subject.tx, this._subject.ty);
@@ -212,6 +219,20 @@ Game_Action.prototype.attackRollModifier = function() {
 };
 
 /**
+ * Whether this action is an attack paid with momentum (see BattleManager_Momentum.ts)
+ */
+Game_Action.prototype.isMomentumAction = function() {
+    return this._modifiers?.momentumAction !== undefined;
+};
+
+/**
+ * Whether the subject spent momentum on this action (free actions spend no point)
+ */
+Game_Action.prototype.hasSpentMomentum = function() {
+    return !!this._momentumSpent;
+};
+
+/**
  * Entry point to resolve an action. Legacy actions get their target as a parameter (RMMV flow),
  * decision-based actions already know their targets.
  */
@@ -250,6 +271,9 @@ Game_Action.prototype.applyDecision = function() {
             break;
         case BattleOption.USE_SPELL:
             this.applySpellDecision();
+            break;
+        case BattleOption.MOMENTUM_TRANSFER:
+            this.applyMomentumTransfer();
             break;
         case BattleOption.USE_ITEM: // TODO
         case BattleOption.DISENGAGE: // TODO
@@ -332,17 +356,24 @@ Game_Action.prototype.applyCharge = function() {
     this._chargeTarget = this._targets[0] || this.opponentAt(targetTile.x, targetTile.y);
 
     subject.setMovePath(path.slice(0, Math.max(maxMove, 0)));
+    this._chargeDistance = subject._movePath.length; // Steps (tiles) covered by the charge
     $gameMap._flexibleMovement = true; // Go back to free movement range for next action
 };
 
 /**
  * Attack at the end of a charge: no point is spent (the charge already spent them),
- * and a successful charge test gives a bonus
+ * and a successful charge test gives a bonus.
+ * A successful charge from further than the walking distance gives momentum before the attack,
+ * which is lost again if the attack fails.
  */
 Game_Action.prototype.applyChargeAttack = function() {
     const target: CompleteBattler = this._chargeTarget;
     if (target && target.isAlive() && this._subject.isAdjacentTo(target)) {
-        const attack = Game_Action.chargeAttack(this._subject, target, this._chargeTestResult?.success);
+        const chargeSuccess = !!this._chargeTestResult?.success;
+        if (chargeSuccess && this._chargeDistance > this._subject.walkDistance()) {
+            this._subject.gainMomentum();
+        }
+        const attack = Game_Action.chargeAttack(this._subject, target, chargeSuccess);
         attack.resolveWeaponAttack(true);
     }
 };
@@ -366,13 +397,27 @@ Game_Action.prototype.applySwitchWeapons = function() {
 };
 
 /**
- * Weapon attack against the decision's target (1 action point)
+ * Weapon attack against the decision's target (1 action point).
+ * A momentum attack (off-hand attack) is a free melee attack paid with momentum instead.
  */
 Game_Action.prototype.applyAttack = function(isMelee: boolean) {
     const subject = this._subject;
     const target: CompleteBattler = this._targets[0];
+    const isMomentumAttack = isMelee && this.isMomentumAction();
     console.log("apply attack: ", target, );
-    if (!subject.hasActionPoint() || !target || !target.isAlive() || !this._object) {
+    if (!target || !target.isAlive() || !this._object) {
+        return;
+    }
+    if (isMomentumAttack) {
+        if (!subject.canMomentumAttack()) {
+            return;
+        }
+        subject.spendMomentumAttack();
+        this._momentumSpent = true;
+        this.resolveWeaponAttack(true);
+        return;
+    }
+    if (!subject.hasActionPoint()) {
         return;
     }
     console.log("attack valid");
@@ -557,22 +602,35 @@ Game_Action.prototype.resolveWeaponAttack = function(isMelee: boolean) {
     // Defender condition modifiers
     const defenderBaseConditionMod = target.totalConditionModifier(defenderCombatSkill.compId);
 
-    // Roll dice
+    // Roll dice - momentum gives advantage on melee tests only
     const combatResult = TEW.DICE.combatOpposedSkillTest(
         attackerCombatSkill.value,
         defenderCombatSkill.value,
         attacker._char.isActor(),
         target._char.isActor(),
         attackerWeaponEffects.attackBonusSL + attackerConditionMod + this.attackRollModifier(),
-        defenderWeaponEffects.defenceBonusSL + defenderBaseConditionMod
+        defenderWeaponEffects.defenceBonusSL + defenderBaseConditionMod,
+        isMelee ? attacker.momentumAdvantage() : 0,
+        isMelee ? target.momentumAdvantage() : 0
     );
 
+    // Critical Hits and Fumbles (wfrp5e.pdf p165): a double on a melee or ranged test is a Critical Hit if the test
+    // succeeds before SL modifiers, a Fumble otherwise, whoever wins the opposed test.
+    // Dodging is neither a melee nor a ranged test: a dodging defender can't crit nor fumble.
+    const defenderUsesWeapon = defenderCombatSkill.compId !== 'DODGE';
+    let attackerCriticalHit = combatResult.criticalAttacker && combatResult.rawSuccessAttacker;
+    let attackerFumble = combatResult.criticalAttacker && !combatResult.rawSuccessAttacker;
+    let defenderCriticalHit = defenderUsesWeapon && combatResult.criticalDefender && combatResult.rawSuccessDefender;
+    let defenderFumble = defenderUsesWeapon && combatResult.criticalDefender && !combatResult.rawSuccessDefender;
+
     // Special weapon quality checks
-    // Impale - critical hit on tens
-    if (attackerWeaponEffects.effects.IMPALE) {
-        if (combatResult.rollAttacker % 10 === 0) {
-            combatResult.criticalAttacker = true;
-        }
+    // Impale - Critical Hit on successful rolls divisible by 10
+    if (attackerWeaponEffects.effects.IMPALE && combatResult.rollAttacker % 10 === 0 && combatResult.rawSuccessAttacker) {
+        attackerCriticalHit = true;
+    }
+    if (defenderUsesWeapon && defenderWeaponEffects.effects.IMPALE
+        && combatResult.rollDefender % 10 === 0 && combatResult.rawSuccessDefender) {
+        defenderCriticalHit = true;
     }
     // Damaging - SL can be replaced with unit die if higher
     if (attackerWeaponEffects.effects.DAMAGING) {
@@ -581,11 +639,18 @@ Game_Action.prototype.resolveWeaponAttack = function(isMelee: boolean) {
             combatResult.slAttacker = damagingSL;
         }
     }
-    // Dangerous - ??? on a failed roll ending in 9
-    if (attackerWeaponEffects.effects.DANGEROUS) {
-        if (!combatResult.success && combatResult.rollAttacker % 10 === 9) {
-            // TODO maladresse ??
-        }
+    // Dangerous - Fumble on failed rolls with a 9 on either die
+    if (attackerWeaponEffects.effects.DANGEROUS && !combatResult.rawSuccessAttacker && this.rollHasNine(combatResult.rollAttacker)) {
+        attackerFumble = true;
+    }
+    if (defenderUsesWeapon && defenderWeaponEffects.effects.DANGEROUS
+        && !combatResult.rawSuccessDefender && this.rollHasNine(combatResult.rollDefender)) {
+        defenderFumble = true;
+    }
+
+    // Momentum: the winner of an opposed melee test gains it, the loser loses it
+    if (isMelee) {
+        this.updateMomentumAfterMeleeTest(attacker, target, combatResult.success);
     }
 
     // TODO wait X seconds here for player input (fortune points)
@@ -594,9 +659,6 @@ Game_Action.prototype.resolveWeaponAttack = function(isMelee: boolean) {
     // TODO Check weapon effects on dice roll (make a list)
 
     if (combatResult.slAttacker >= 0 && combatResult.success) {
-        // TODO Check weapon effects on crit (make a list)
-        // TODO Check for crits
-
         // Armor and armor penetration
         let defenderArmorPoints: number = target.armorPointsAtLocation(
             combatResult.hitLocation,
@@ -644,11 +706,135 @@ Game_Action.prototype.resolveWeaponAttack = function(isMelee: boolean) {
         //         }
         //     }
         // }
-
-        // TODO Lookup crit table (help me)
     } else {
         // TODO miss
     }
+
+    // Critical Wounds and Fumbles are resolved after normal damage (wfrp5e.pdf p171).
+    // A Critical Hit from a double already struck a random location (see TEW.DICE.combatOpposedSkillTest),
+    // any other one strikes a random location
+    if (attackerCriticalHit) {
+        const criticalLocation = combatResult.criticalAttacker ? combatResult.hitLocation : this.rollCriticalLocation();
+        this.applyCriticalWound(target, criticalLocation);
+    }
+    if (defenderCriticalHit) {
+        this.applyCriticalWound(attacker, this.rollCriticalLocation());
+    }
+    if (attackerFumble) {
+        this.applyFumble(attacker);
+    }
+    if (defenderFumble) {
+        this.applyFumble(target);
+    }
+};
+
+// ----------------------
+// Critical hits, fumbles and miscasts
+// ----------------------
+// Tables and their effects are defined in TEW_Criticals.ts
+
+/**
+ * Whether a d100 roll shows a 9 on its tens or units die (Dangerous weapon quality)
+ */
+Game_Action.prototype.rollHasNine = function(roll: number) {
+    return roll % 10 === 9 || Math.floor(roll / 10) % 10 === 9;
+};
+
+Game_Action.prototype.rollCriticalLocation = function(): HitLocation {
+    return TEW.DICE.hitLocationFromRoll(TEW.DICE.roll());
+};
+
+/**
+ * Critical Wound (wfrp5e.pdf p171-176): d100 roll on the table of the struck location
+ * @param rollModifier added to the roll, e.g. +10 per Wound beyond 0 (not used yet)
+ */
+Game_Action.prototype.applyCriticalWound = function(target: CompleteBattler, hitLocation: HitLocation, rollModifier = 0) {
+    if (!target.isAlive()) {
+        return;
+    }
+    const table = TEW.DATABASE.WEAPON_CRITICALS[TEW.DATABASE.HIT_LOCATION_CRITICALS[hitLocation]];
+    const critical = TEW.COMBAT.findCritical(table, TEW.DICE.roll() + rollModifier);
+    Game_Action.applyCritical(target, critical, TEW.COMBAT.SYSTEM.criticalWoundMessage);
+};
+
+/**
+ * Fumble (wfrp5e.pdf p165): d10 roll on the Oops! table
+ * TODO Misfire table for blackpowder, engineering and explosive weapons rolling 99 or 00
+ */
+Game_Action.prototype.applyFumble = function(battler: CompleteBattler) {
+    if (!battler.isAlive()) {
+        return;
+    }
+    const critical = TEW.COMBAT.findCritical(TEW.DATABASE.WEAPON_FUMBLES, TEW.DICE.roll(TEW.COMBAT.SYSTEM.fumbleDie));
+    Game_Action.applyCritical(battler, critical, TEW.COMBAT.SYSTEM.fumbleMessage);
+};
+
+/**
+ * Miscast (wfrp5e.pdf p238-239): d100 roll on the Minor or Major Miscast table.
+ * Static, as channelling is not resolved through a Game_Action yet (see Game_Battler.doChannelling)
+ * TODO Malignant Influences turn Minor Miscasts into Major ones
+ * @param rollModifier added to the roll, e.g. +10 per SL lost on a fumbled Channelling test
+ */
+Game_Action.applyMiscast = function(caster: CompleteBattler, major: boolean, rollModifier = 0) {
+    if (!caster.isAlive()) {
+        return;
+    }
+    const table = major ? TEW.DATABASE.MAGIC_CRITICALS.MAJOR : TEW.DATABASE.MAGIC_CRITICALS.MINOR;
+    const critical = TEW.COMBAT.findCritical(table, TEW.DICE.roll() + rollModifier);
+    const message = major ? TEW.COMBAT.SYSTEM.majorMiscastMessage : TEW.COMBAT.SYSTEM.minorMiscastMessage;
+    Game_Action.applyCritical(caster, critical, message);
+};
+
+/**
+ * Apply a critical table entry: its effect first, then its Wounds, ignoring Toughness Bonus and Armour Points
+ * (Wounds lost this way trigger no further Critical Wound)
+ */
+Game_Action.applyCritical = function(battler: CompleteBattler, critical: Critical, message: string) {
+    console.log(`Critical: ${battler.name()} suffers ${critical.name}`
+        + (critical.implemented ? '' : ' (not implemented yet, placeholder effect applied)'));
+    $gameMessage.add(message.format(battler.name(), critical.name));
+    critical.handler(battler);
+    if (critical.wounds > 0 && battler.isAlive()) {
+        battler.gainHp(-critical.wounds);
+        console.log(`Damage: ${battler.name()} loses ${critical.wounds} HP (${battler.hp} left)`);
+    }
+    if (battler.isDead()) {
+        battler.performCollapse();
+    }
+};
+
+/**
+ * Free action: the subject loses momentum to make a Leadership test (whatever its result),
+ * and the target ally gains momentum on a success
+ */
+Game_Action.prototype.applyMomentumTransfer = function() {
+    const subject = this._subject;
+    const ally: CompleteBattler = this._targets[0];
+    if (!subject.canTransferMomentumTo(ally)) {
+        return;
+    }
+    subject.loseMomentum();
+    this._momentumSpent = true;
+    subject.turnTowardCharacter(ally);
+    const testResult = TEW.DICE.skillTest(
+        subject,
+        TEW.COMBAT.SYSTEM.momentumTransferComp,
+        TEW.COMBAT.SYSTEM.momentumTransferModifier,
+        !subject.isActor()
+    );
+    if (testResult.success) {
+        ally.gainMomentum();
+        $gameMessage.add(TEW.COMBAT.SYSTEM.momentumTransferSuccess.format(subject.name(), ally.name()));
+    } else {
+        $gameMessage.add(TEW.COMBAT.SYSTEM.momentumTransferFailure.format(subject.name(), ally.name()));
+    }
+};
+
+Game_Action.prototype.updateMomentumAfterMeleeTest = function(attacker: CompleteBattler, defender: CompleteBattler, attackerWins: boolean) {
+    const winner = attackerWins ? attacker : defender;
+    const loser = attackerWins ? defender : attacker;
+    winner.gainMomentum();
+    loser.loseMomentum();
 };
 
 /**
@@ -669,13 +855,11 @@ Game_Action.prototype.applySpell = function(target: CompleteBattler) {
         this._subjectAbilityRoll.sl += attacker._channellingLevel;
         attacker._channellingLevel = 0;
 
-        // TODO handle criticals
-
-        // TODO critical failure
+        this.resolveCastingCritical(attacker, spell);
     }
 
     // Resolve spell
-    if (this._subjectAbilityRoll.sl >= spell.cn) {
+    if (this._subjectAbilityRoll.sl >= spell.cn || this._totalPower) {
         // TODO Prompt for spell bonus effects (e.g. additional targets, increased range... etc)
         // handled by spell effect ?
 
@@ -699,6 +883,34 @@ Game_Action.prototype.applySpell = function(target: CompleteBattler) {
         }
     }
     // GIGA TODO counterspell
+};
+
+/**
+ * Doubles on a Casting test (wfrp5e.pdf p235):
+ *  - Fumbled Casting (failed test): Minor Miscast
+ *  - Critical Casting (successful test): Minor Miscast, unless the spell is a Petty Spell or the caster has
+ *    the Instinctive Diction talent, and an extra effect for non-Petty spells.
+ *    The extra effect is always Total Power for now: the spell is cast whatever its CN, and the tens die of the test
+ *    is added to the SL (meant for Overcasting, which is not implemented: the SL bonus applies to the spell's effect instead)
+ *    TODO let the player/AI choose between Critical Damage, Total Power and Unstoppable Force
+ */
+Game_Action.prototype.resolveCastingCritical = function(caster: CompleteBattler, spell: Spell) {
+    const castingTest = this._subjectAbilityRoll;
+    if (!castingTest.critical) {
+        return;
+    }
+    if (!castingTest.success) {
+        Game_Action.applyMiscast(caster, false);
+        return;
+    }
+    if (spell.domain === SpellDomain.PETTY) {
+        return;
+    }
+    this._totalPower = true;
+    castingTest.sl += Math.floor(castingTest.roll / 10);
+    if (!caster.hasTalent('INSTINCTIVE_DICTION')) {
+        Game_Action.applyMiscast(caster, false);
+    }
 };
 
 /**
@@ -748,6 +960,9 @@ Game_Action.prototype.isInRange = function(x: number, y: number) {
 };
 
 Game_Action.prototype.color = function() {
+    if (this._option === BattleOption.MOMENTUM_TRANSFER) {
+        return TEW.COMBAT.SYSTEM.allyScopeColor;
+    }
     return TEW.COMBAT.SYSTEM.enemyScopeColor; // TODO ally color for supportive spells and items
 };
 

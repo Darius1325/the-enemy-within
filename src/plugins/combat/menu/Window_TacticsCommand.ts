@@ -26,6 +26,7 @@ Window_TacticsCommand.prototype.constructor = Window_TacticsCommand;
 Window_TacticsCommand.prototype.initialize = function() {
     Window_TacticsCommandBase.prototype.initialize.call(this);
 
+    // TODO dedicated momentum icon (the "last used" icon is a placeholder)
     this._iconOrder = ['icon_battleCommand_move', 'icon_battleCommand_action', 'icon_battleCommand_lastUsed', 'icon_battleCommand_wait'];
 
     this.loadIcons();
@@ -54,7 +55,7 @@ Window_TacticsCommand.prototype.makeCommandList = function() {
     if (this._actor) {
         this.addMoveCommand();
         this.addActionCommand();
-        this.addAdvantageCommand(); // TODO replace with last used
+        this.addMomentumCommand();
         this.addWaitCommand();
     }
 };
@@ -75,8 +76,8 @@ Window_TacticsCommand.prototype.addActionCommand = function() {
     this.addCommand(TEW.COMBAT.SYSTEM.action, TEW.COMBAT.SYSTEM.action, true);
 };
 
-Window_TacticsCommand.prototype.addAdvantageCommand = function() {
-    this.addCommand(TEW.COMBAT.SYSTEM.advantage, TEW.COMBAT.SYSTEM.advantage, false);
+Window_TacticsCommand.prototype.addMomentumCommand = function() {
+    this.addCommand(TEW.COMBAT.SYSTEM.momentum, TEW.COMBAT.SYSTEM.momentum, BattleManager.canUseMomentumAction());
 };
 
 Window_TacticsCommand.prototype.addWaitCommand = function() {

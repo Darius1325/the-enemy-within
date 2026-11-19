@@ -11,7 +11,7 @@ import { BattlePhase } from "./BattleManager";
 // BattleManager - decisions
 //
 // Every action of a battle goes through a BattleDecision (see _types/battlerAI.ts):
-//  - enemies get theirs from their AI (TEW_EnemyAI.ts) in updateEnemyPhase
+//  - enemies get theirs from their AI (TEW_EnemyAI.ts) in updateEnemyPhase, after a chance to spend their momentum
 //  - players build theirs through the battle menu and the targetting phases (BattleManager_Input.ts)
 // executeDecision then resolves it with a Game_Action.
 
@@ -35,8 +35,11 @@ BattleManager.canActOrMove = function() {
     return !!this._subject && (this._subject.hasActionPoint() || this._subject.hasMovePoint());
 };
 
+/**
+ * Whether the active battler can still do something: act, move, or spend momentum on a free action
+ */
 BattleManager.canInput = function() {
-    return this.canActOrMove() || $gamePartyTs._advantages > 3;
+    return this.canActOrMove() || this.canUseMomentumAction();
 };
 
 BattleManager.spendMove = function() {
@@ -58,9 +61,12 @@ BattleManager.spendAction = function() {
 BattleManager.updateEnemyPhase = function() {
     $gameTroop.setupTactics([this._subject]); // TODO optimization
 
-    // Call custom decision algorithm
+    // Spend momentum on a free action if relevant, otherwise call custom decision algorithm
+    const allies = $gameTroopTs.aliveMembers();
+    const enemies = $gamePartyTs.aliveMembers();
     const decisionAlgorithm = this._subject.getAI();
-    const decision: BattleDecision = decisionAlgorithm(this._subject, $gameTroopTs.aliveMembers(), $gamePartyTs.aliveMembers());
+    const decision: BattleDecision = this._subject.momentumDecision(allies, enemies)
+        || decisionAlgorithm(this._subject, allies, enemies);
     console.log("Decision: ", decision);
 
     this.executeDecision(decision);
@@ -69,11 +75,12 @@ BattleManager.updateEnemyPhase = function() {
 /**
  * Resolve a decision taken by the active battler. Movements are then processed in the ProcessMove phase,
  * other actions end right away.
+ * Modifiers are passed to the Game_Action (e.g. { momentumAction } for a free action paid with momentum).
  */
-BattleManager.executeDecision = function(decision: BattleDecision) {
+BattleManager.executeDecision = function(decision: BattleDecision, modifiers = {}) {
     this.supplementActionParameters(decision);
     this._decisionPointsBefore = this._subject.actionAndMovePoints();
-    this._decisionAction = new Game_Action(this._subject, false, decision);
+    this._decisionAction = new Game_Action(this._subject, false, decision, modifiers);
     this._decisionAction.apply();
     $gameMap.clearTiles();
     if (this._decisionAction.hasPendingMove()) {
@@ -115,7 +122,8 @@ BattleManager.updateMove = function() {
 
 /**
  * After a decision is resolved:
- *  - an enemy is asked for another decision as long as it can act and its last decision did something (spent points)
+ *  - an enemy is asked for another decision as long as it can act and its last decision did something
+ *    (spent points, or momentum for free actions)
  *  - a player gets the battle menu back as long as it can act
  * Otherwise, or after a WAIT decision, the battler's turn ends.
  */
@@ -125,18 +133,31 @@ BattleManager.onDecisionEnd = function() {
     $gameMap.clearTiles();
     const isWait = action.option() === BattleOption.WAIT;
     if (this._subject.isEnemy()) {
-        // TODO blocks free actions !!!
         const hasSpentPoints = this._subject.actionAndMovePoints() < this._decisionPointsBefore;
-        if (!isWait && hasSpentPoints && this._subject.isAlive() && this.canActOrMove()) {
+        const hasActed = hasSpentPoints || action.hasSpentMomentum();
+        if (!isWait && hasActed && this._subject.isAlive() && this.canInput()) {
             this.updateEnemyPhase();
             return;
         }
-    } else if (!isWait && this._subject.isAlive() && this.canInput() && this._subject.canInput()) {
-        // Players keep control until they wait or have nothing left to do
-        this._previewMoveOption = BattleOption.WALK;
-        $gameSelector.performTransfer(this._subject.x, this._subject.y);
-        this._battlePhase = BattlePhase.InputCommand;
+    } else if (!isWait && this.canPlayerKeepInput()) {
+        this.resumePlayerInput();
         return;
     }
     this.endAction();
+};
+
+/**
+ * Players keep control until they wait or have nothing left to do
+ */
+BattleManager.canPlayerKeepInput = function() {
+    return this._subject.isAlive() && this.canInput() && this._subject.canInput();
+};
+
+/**
+ * Back to the battle menu of the active player, after a decision or a free action
+ */
+BattleManager.resumePlayerInput = function() {
+    this._previewMoveOption = BattleOption.WALK;
+    $gameSelector.performTransfer(this._subject.x, this._subject.y);
+    this._battlePhase = BattlePhase.InputCommand;
 };

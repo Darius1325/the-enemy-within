@@ -6,7 +6,7 @@ This document contains critical information about working with this codebase. Fo
 
 Our goal is to develop a game mirroring (and expanding on) the Warhammer Fantasy campaign: The Enemy Within (TEW).
 The TEW plugins are intended to implement Warhammer Fantasy's rules with some minor adjustments, in a tactical RPG context.
-The first book of the campaign is ./volume1.pdf ; more documents can be added to this repository at your request for ease of access.
+The first book of the campaign is ./volume1.pdf ; the core rules of the game are in either ./wfrp4e.pdf or ./wfrp5e.pdf (some 5th edition rule updates will not be used) ; more documents can be added to this repository at your request for ease of access.
 
 ## Game principles
 
@@ -34,7 +34,7 @@ The first book of the campaign is ./volume1.pdf ; more documents can be added to
    - Compilation priority should be handled in terms of dependencies: a class inheriting another must be compiled after its parent. The default priority is 100, and Scene_*.ts files for instance are compiled with priority 101 to go after all window definitions.
 
 3. Expanding the codebase
- - Only *.ts files under ./src/** should be modified. *.js files should only be used as reference
+ - Only *.ts files under ./src/** should be modified. *.js files should only be used as reference or for ephemeral tests
  - Incidentally, to modify/extend a base RMMV class, a TS file matching the class's name should be created (such as ./plugins/menu/Window_Base.ts)
  - Incidentally, to modify a base RMMV function, it should be re-written in the corresponding TS file, which will overload the base function once loaded. If the base function is still needed, it should be stored in TEW.MEMORY. An example here:
  ```
@@ -86,11 +86,11 @@ The first book of the campaign is ./volume1.pdf ; more documents can be added to
 
 ### Scope
  - All operations and commands within ./src are allowed, without the need to prompt for authorization
- - Deleting files is discouraged but still allowed without prompt
+ - Deleting files is allowed without prompting the user, though they should be notified of any deletion
  - No file should be modified outside of ./src without prompting for authorization
 
 ### Commands
  - All file reading/editing commands within this repository are allowed
  - Any command outside the repository must prompt for authorization
- - Incidentally, you should always use `cd` as a standalone command, then execute other commands in place, so as to easily check whether it is executed inside this repository
+ - Incidentally, you should always use `cd` as a standalone command, then execute other commands in place, so as to easily check whether they are executed inside this repository
  - Git commands are allowed except `git commit` and `git push`, all updates to the online repository will be handled by a developer

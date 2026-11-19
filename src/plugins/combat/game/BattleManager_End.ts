@@ -63,6 +63,7 @@ BattleManager.processDefeat = function() {
 
 BattleManager.endBattle = function(result: number) {
     this.closeCommand();
+    this.clearAllMomentum(); // Momentum only exists in battle
     this._phase = Phase.BattleEnd;
     $gameMap.clearTiles();
     if (this._eventCallback) {

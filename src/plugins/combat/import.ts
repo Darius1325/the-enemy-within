@@ -367,8 +367,25 @@ TEW.COMBAT.SYSTEM.action = 'Action';
 TEW.COMBAT.SYSTEM.actionAttack = 'Attack';
 TEW.COMBAT.SYSTEM.actionSpell = 'Spell';
 TEW.COMBAT.SYSTEM.actionChannelling = 'Channelling';
-TEW.COMBAT.SYSTEM.advantage = 'Advantages';
+TEW.COMBAT.SYSTEM.momentum = 'Momentum';
+TEW.COMBAT.SYSTEM.momentumTransfer = 'Transfer';
+TEW.COMBAT.SYSTEM.momentumDisengage = 'Disengage';
+TEW.COMBAT.SYSTEM.momentumOffHandAttack = 'Off-hand attack';
 TEW.COMBAT.SYSTEM.wait = 'Wait';
+
+// Momentum (WFRP 5th edition, replaces 4th edition advantages)
+TEW.COMBAT.SYSTEM.momentumTransferComp = 'LEADERSHIP'; // Free action: lose momentum to grant it to an ally on a successful test
+TEW.COMBAT.SYSTEM.momentumTransferModifier = 0; // Challenging leadership test
+TEW.COMBAT.SYSTEM.momentumTransferSuccess = '%1 rallies %2, who gains momentum!';
+TEW.COMBAT.SYSTEM.momentumTransferFailure = '%1 fails to rally %2, and loses momentum.';
+
+// Critical Hits, Fumbles and Miscasts (see TEW_Criticals.ts): %1 is the battler suffering it, %2 the entry name
+TEW.COMBAT.SYSTEM.criticalWoundMessage = '%1 suffers a critical wound: %2!';
+TEW.COMBAT.SYSTEM.fumbleMessage = '%1 fumbles: %2';
+TEW.COMBAT.SYSTEM.minorMiscastMessage = '%1 suffers a minor miscast: %2!';
+TEW.COMBAT.SYSTEM.majorMiscastMessage = '%1 suffers a major miscast: %2!';
+TEW.COMBAT.SYSTEM.fumbleDie = 10; // Oops! table
+TEW.COMBAT.SYSTEM.channellingFumbleMiscastBonus = 10; // Per SL of channelled power lost
 
 TEW.COMBAT.SYSTEM.waitSkillId = 7;
 TEW.COMBAT.SYSTEM.battleStartId = 1;
